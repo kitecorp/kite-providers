@@ -8,7 +8,7 @@ public class WelcomeGreeting implements Greeting {
 
     @Override
     public String getGreeting() {
-        return "Welcome";
+        return "Welcome 4";
     }
 
 }

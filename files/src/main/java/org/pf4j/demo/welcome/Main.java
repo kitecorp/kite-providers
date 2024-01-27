@@ -24,11 +24,11 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Decebal Suiu
  */
-public class WelcomePlugin extends Plugin {
+public class Main extends Plugin {
 
-    private static final Logger logger = LoggerFactory.getLogger(WelcomePlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public WelcomePlugin(PluginWrapper wrapper) {
+    public Main(PluginWrapper wrapper) {
         super(wrapper);
     }
 
