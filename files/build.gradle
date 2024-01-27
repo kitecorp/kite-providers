@@ -23,7 +23,7 @@ dependencies {
 jar {
     manifest {
         attributes(
-                'Plugin-Class': "org.pf4j.demo.welcome.Main",
+                'Plugin-Class': "io.zmeu.file.Main",
                 'Plugin-Id': "${archiveBaseName.get()}-${archiveVersion.get()}",
                 'Plugin-Version': archiveVersion.get(),
                 'Plugin-Provider': "",
