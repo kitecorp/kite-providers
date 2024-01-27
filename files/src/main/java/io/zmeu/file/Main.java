@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.pf4j.demo.welcome;
+package io.zmeu.file;
 
 import org.apache.commons.lang3.StringUtils;
 import org.pf4j.Plugin;
