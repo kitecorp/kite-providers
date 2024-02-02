@@ -15,32 +15,21 @@
  */
 package io.zmeu.file;
 
-import org.apache.commons.lang3.StringUtils;
-import org.pf4j.Plugin;
-import org.pf4j.PluginWrapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import io.zmeu.api.Plugin;
 
 /**
  * @author Decebal Suiu
  */
 public class Main extends Plugin {
 
-    private static final Logger logger = LoggerFactory.getLogger(Main.class);
-
-    public Main(PluginWrapper wrapper) {
-        super(wrapper);
-    }
 
     @Override
     public void start() {
-        logger.info("WelcomePlugin.start()");
-        logger.info(StringUtils.upperCase("WelcomePlugin"));
+
     }
 
     @Override
     public void stop() {
-        logger.info("WelcomePlugin.stop()");
     }
 
 }
