@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.util.List;
 
 @Extension
-public class FileProvider implements Provider<FileResource,FileResource> {
+public class FileProvider implements Provider<FileResource> {
 
     @Override
     public Resources getResources() {

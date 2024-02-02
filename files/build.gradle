@@ -17,6 +17,7 @@ dependencies {
     // compileOnly important!!! We do not want to put the api into the zip file since the main program has it already!
     compileOnly project(':api')
     compileOnly(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
+    implementation 'org.javers:javers-core:7.3.7'
     annotationProcessor(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
     compileOnly "org.projectlombok:lombok:${lombok}"
     annotationProcessor "org.projectlombok:lombok:${lombok}"

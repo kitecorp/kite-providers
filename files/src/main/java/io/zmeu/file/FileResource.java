@@ -1,16 +1,24 @@
 package io.zmeu.file;
 
 import io.zmeu.api.Property;
-import io.zmeu.api.ResourceDeclaration;
+import io.zmeu.api.Resource;
 import io.zmeu.api.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.nio.file.Path;
 import java.util.Optional;
 
 @Data
 @Schema(description = "Used to create local files", typeName = "File")
-public class FileResource implements ResourceDeclaration {
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
+public class FileResource extends Resource {
     @Property(type = "String", name = "name", optional = false)
     private String name;
     @Property(type = "String")
@@ -18,11 +26,12 @@ public class FileResource implements ResourceDeclaration {
     @Property(type = "String")
     private String path;
 
-    public FileResource() {
-    }
 
     public Path path() {
         return Path.of(Optional.ofNullable(path).orElse(name));
     }
 
+    public void setContent(String content) {
+        this.content = content;
+    }
 }
