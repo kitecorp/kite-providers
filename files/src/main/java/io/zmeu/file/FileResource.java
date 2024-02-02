@@ -1,25 +1,28 @@
 package io.zmeu.file;
 
-import com.github.zafarkhaja.semver.Version;
-import io.zmeu.api.Attribute;
-import io.zmeu.api.Metadata;
+import io.zmeu.api.Property;
 import io.zmeu.api.ResourceDeclaration;
 import io.zmeu.api.Schema;
+import lombok.Data;
 
-import java.util.List;
+import java.nio.file.Path;
+import java.util.Optional;
 
-public class FileResource extends ResourceDeclaration {
+@Data
+@Schema(description = "Used to create local files", typeName = "File")
+public class FileResource implements ResourceDeclaration {
+    @Property(type = "String", name = "name", optional = false)
+    private String name;
+    @Property(type = "String")
+    private String content;
+    @Property(type = "String")
+    private String path;
+
     public FileResource() {
-        metadata = new Metadata("File");
-        schema = new Schema();
-        schema.setVersion(Version.forIntegers(0, 0, 1));
-        schema.setDescription("Used to create local files");
-        schema.setAttributes(List.of(
-                Attribute.builder()
-                        .name("name")
-                        .type("String")
-                        .required(true)
-                        .build()
-        ));
     }
+
+    public Path path() {
+        return Path.of(Optional.ofNullable(path).orElse(name));
+    }
+
 }
