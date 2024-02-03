@@ -13,7 +13,7 @@ import java.util.List;
 public class FileProvider implements Provider<FileResource> {
 
     @Override
-    public Resources getResources() {
+    public Resources items() {
         var resource = new FileResource();
 
         return Resources.builder()
