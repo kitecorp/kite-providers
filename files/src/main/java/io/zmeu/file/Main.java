@@ -22,7 +22,6 @@ import io.zmeu.api.Plugin;
  */
 public class Main extends Plugin {
 
-
     @Override
     public void start() {
 

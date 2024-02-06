@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 @Data
-@Schema(description = "Used to create local files", typeName = "File")
+@Schema(description = "Used to create local files", typeName = "Std.File")
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
