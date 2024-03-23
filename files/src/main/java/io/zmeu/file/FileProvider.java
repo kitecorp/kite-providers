@@ -4,7 +4,6 @@ import io.zmeu.api.Provider;
 import io.zmeu.api.Resources;
 import org.pf4j.Extension;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
@@ -13,16 +12,16 @@ import java.util.List;
 public class FileProvider implements Provider<FileResource> {
 
     @Override
-    public Resources items() {
+    public Resources resources() {
         var resource = new FileResource();
 
         return Resources.builder()
-                .resources(List.of(resource))
+                .list(List.of(resource))
                 .build();
     }
 
     @Override
-    public FileResource read(FileResource declaration) throws FileNotFoundException {
+    public FileResource read(FileResource declaration) {
         var path = declaration.path();
 
         if (Files.exists(path)) {
@@ -34,7 +33,7 @@ public class FileProvider implements Provider<FileResource> {
                 throw new RuntimeException(e);
             }
         }
-        throw new FileNotFoundException("File not found at: " + path);
+        throw new RuntimeException("File not found at: " + path);
     }
 
 }
