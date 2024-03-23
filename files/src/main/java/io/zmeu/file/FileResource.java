@@ -14,7 +14,7 @@ import java.nio.file.Path;
 import java.util.Optional;
 
 @Data
-@Schema(description = "Used to create local files", typeName = "Std.File")
+@Schema(description = "Used to create local files", typeName = "File")
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor

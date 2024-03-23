@@ -10,7 +10,7 @@ repositories {
 }
 
 def pf4jVersion = "3.10.0"
-def lombok = '1.18.30'
+def lombok = '1.18.32'
 
 
 dependencies {
@@ -33,7 +33,7 @@ jar {
     manifest {
         attributes(
                 'Plugin-Class': "io.zmeu.file.Main",
-                'Plugin-Id': "${archiveBaseName.get()}-${archiveVersion.get()}",
+                'Plugin-Id': "${archiveBaseName.get()}@${archiveVersion.get()}",
                 'Plugin-Version': archiveVersion.get(),
                 'Plugin-Provider': "",
                 'Plugin-Dependencies': "",
