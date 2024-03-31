@@ -23,17 +23,13 @@ public class FileProvider implements Provider<FileResource> {
     @Override
     public FileResource read(FileResource declaration) {
         var path = declaration.path();
-
-        if (Files.exists(path)) {
-            try {
-                var x = Files.readString(path);
-                declaration.setContent(x);
-                return declaration;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        try {
+            var x = Files.readString(path.resolve(declaration.getName()));
+            declaration.setContent(x);
+            return declaration;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-        throw new RuntimeException("File not found at: " + path);
     }
 
 }

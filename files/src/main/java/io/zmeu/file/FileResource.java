@@ -4,10 +4,7 @@ import io.zmeu.api.Property;
 import io.zmeu.api.Resource;
 import io.zmeu.api.Schema;
 import io.zmeu.api.types.Types;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.nio.file.Path;
@@ -21,6 +18,7 @@ import java.util.Optional;
 @NoArgsConstructor
 public class FileResource extends Resource {
     @Property(type = Types.String, name = "name", optional = false)
+    @NonNull
     private String name;
     @Property(type = Types.String)
     private String content;
