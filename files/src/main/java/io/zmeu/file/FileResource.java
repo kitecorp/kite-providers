@@ -3,7 +3,7 @@ package io.zmeu.file;
 import io.zmeu.api.Property;
 import io.zmeu.api.Resource;
 import io.zmeu.api.Schema;
-import io.zmeu.api.types.Types;
+import io.zmeu.types.Types;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
