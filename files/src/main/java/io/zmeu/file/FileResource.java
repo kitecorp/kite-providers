@@ -3,12 +3,13 @@ package io.zmeu.file;
 import io.zmeu.api.Property;
 import io.zmeu.api.Resource;
 import io.zmeu.api.Schema;
-import io.zmeu.types.Types;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.nio.file.Path;
 import java.util.Optional;
+
+import static io.zmeu.api.Property.*;
 
 @Data
 @Schema(description = "Used to create local files", typeName = "File")
@@ -17,12 +18,12 @@ import java.util.Optional;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FileResource extends Resource {
-    @Property(type = Types.String, name = "name", optional = false)
+    @Property(type = Type.String, name = "name", optional = false)
     @NonNull
     private String name;
-    @Property(type = Types.String)
+    @Property(type = Type.String)
     private String content;
-    @Property(type = Types.String)
+    @Property(type = Type.String)
     private String path;
 
 
