@@ -19,7 +19,6 @@ import static io.zmeu.api.Property.*;
 @NoArgsConstructor
 public class FileResource extends Resource {
     @Property(type = Type.String, name = "name", optional = false)
-    @NonNull
     private String name;
     @Property(type = Type.String)
     private String content;

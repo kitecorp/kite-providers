@@ -6,6 +6,7 @@ import org.pf4j.Extension;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 @Extension
@@ -21,12 +22,25 @@ public class FileProvider implements Provider<FileResource> {
     }
 
     @Override
-    public FileResource read(FileResource declaration) {
-        var path = declaration.path();
+    public FileResource read(FileResource resource) {
+        if (resource.getPath() == null && resource.getName() == null) {
+            throw new IllegalArgumentException("Path and name can't be null at the same time");
+        } else if (resource.getPath() == null) {
+            var content = readContent(resource.getName());
+            resource.setContent(content);
+            return resource;
+        } else if (resource.getName() == null) {
+            var content = readContent(resource.getPath());
+            resource.setContent(content);
+            return resource;
+        } else {
+            throw new IllegalArgumentException("Path and name can't be the same time");
+        }
+    }
+
+    private static String readContent(String filename) {
         try {
-            var x = Files.readString(path.resolve(declaration.getName()));
-            declaration.setContent(x);
-            return declaration;
+            return Files.readString(Path.of(filename));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
