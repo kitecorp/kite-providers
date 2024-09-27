@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id("org.gradlex.extra-java-module-info") version "1.9"
 }
 
 version = "0.0.1"
@@ -9,8 +10,8 @@ repositories {
     mavenCentral()
 }
 
-def pf4jVersion = "3.10.0"
-def lombok = '1.18.32'
+def pf4jVersion = "3.12.0"
+def lombok = '1.18.34'
 
 
 dependencies {
@@ -40,4 +41,8 @@ jar {
                 'Plugin-License': "Apache License 2.0"
         )
     }
+}
+
+extraJavaModuleInfo {
+    automaticModule('javers-core-7.6.2.jar', 'javers.core');
 }

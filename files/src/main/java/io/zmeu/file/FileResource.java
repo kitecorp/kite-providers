@@ -30,7 +30,4 @@ public class FileResource extends Resource {
         return Path.of(Optional.ofNullable(path).orElse(name));
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
 }

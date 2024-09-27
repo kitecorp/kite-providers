@@ -25,7 +25,8 @@ public class FileProvider implements Provider<FileResource> {
     public FileResource read(FileResource resource) {
         if (resource.getPath() == null && resource.getName() == null) {
             throw new IllegalArgumentException("Path and name can't be null at the same time");
-        } else if (resource.getPath() == null) {
+        }
+        if (resource.getPath() == null) {
             var content = readContent(resource.getName());
             resource.setContent(content);
             return resource;
@@ -33,9 +34,9 @@ public class FileProvider implements Provider<FileResource> {
             var content = readContent(resource.getPath());
             resource.setContent(content);
             return resource;
-        } else {
-            throw new IllegalArgumentException("Path and name can't be the same time");
         }
+
+        throw new IllegalArgumentException("Error for "+ resource);
     }
 
     private static String readContent(String filename) {
