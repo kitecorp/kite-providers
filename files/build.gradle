@@ -44,5 +44,5 @@ jar {
 }
 
 extraJavaModuleInfo {
-    automaticModule('javers-core-7.6.2.jar', 'javers.core');
+    automaticModule('org.javers:javers-core', 'javers.core');
 }
