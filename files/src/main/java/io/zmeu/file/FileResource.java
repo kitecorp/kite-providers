@@ -2,7 +2,7 @@ package io.zmeu.file;
 
 import io.zmeu.api.Property;
 import io.zmeu.api.Resource;
-import io.zmeu.api.Schema;
+import io.zmeu.api.SchemaDefinition;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -12,7 +12,7 @@ import java.util.Optional;
 import static io.zmeu.api.Property.*;
 
 @Data
-@Schema(description = "Used to create local files", typeName = "File")
+@SchemaDefinition(description = "Used to create local files", typeName = "File")
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
