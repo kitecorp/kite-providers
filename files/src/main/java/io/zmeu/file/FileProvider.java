@@ -10,33 +10,47 @@ import java.nio.file.Path;
 import java.util.List;
 
 @Extension
-public class FileProvider implements Provider<FileResource> {
+public class FileProvider implements Provider<File> {
 
     @Override
-    public Resources resources() {
-        var resource = new FileResource();
+    public Resources<File> resources() {
+        var resource = new File();
 
-        return Resources.builder()
-                .list(List.of(resource))
-                .build();
+        return new Resources<>(List.of(resource));
     }
 
     @Override
-    public FileResource read(FileResource resource) {
+    public File read(File resource) {
         if (resource.getPath() == null && resource.getName() == null) {
             throw new IllegalArgumentException("Path and name can't be null at the same time");
         }
-        if (resource.getPath() == null) {
-            var content = readContent(resource.getName());
-            resource.setContent(content);
-            return resource;
-        } else if (resource.getName() == null) {
-            var content = readContent(resource.getPath());
-            resource.setContent(content);
-            return resource;
+        try {
+            if (resource.getPath() == null) {
+                var content = readContent(resource.getName());
+                resource.setContent(content);
+                return resource;
+            } else if (resource.getResourceName() == null) {
+                var content = readContent(resource.getPath());
+                resource.setContent(content);
+                return resource;
+            } else {
+                var content = readContent(resource.getPath() + resource.getName());
+                resource.setContent(content);
+                return resource;
+            }
+        } catch (RuntimeException exception) {
+            return null;
         }
+    }
 
-        throw new IllegalArgumentException("Error for "+ resource);
+    @Override
+    public String namespace() {
+        return "File";
+    }
+
+    @Override
+    public String resourceType() {
+        return File.class.getName();
     }
 
     private static String readContent(String filename) {
