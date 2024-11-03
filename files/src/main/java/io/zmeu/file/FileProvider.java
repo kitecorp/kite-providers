@@ -29,7 +29,7 @@ public class FileProvider implements Provider<File> {
                 var content = readContent(resource.getName());
                 resource.setContent(content);
                 return resource;
-            } else if (resource.getResourceName() == null) {
+            } else if (resource.getName() == null) {
                 var content = readContent(resource.getPath());
                 resource.setContent(content);
                 return resource;
