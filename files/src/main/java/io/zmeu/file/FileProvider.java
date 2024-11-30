@@ -1,11 +1,7 @@
 package io.zmeu.file;
 
 import io.zmeu.api.Provider;
-import io.zmeu.api.Resource;
 import io.zmeu.api.Resources;
-import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.pf4j.Extension;
 
 import java.io.IOException;
@@ -65,20 +61,21 @@ public class FileProvider extends Provider<File> {
     }
 
     @Override
-    public File update(File oldResource, File newResource) {
+    public File update(File resource) {
+        requirePathOrName(resource);
+        File oldResource = read(resource);
         requirePathOrName(oldResource);
-        requirePathOrName(newResource);
 
         try {
-            if (!oldResource.path().equals(newResource.path())) {
-                Files.move(Paths.get(oldResource.getPath()), Paths.get(newResource.getPath()), StandardCopyOption.REPLACE_EXISTING);
-            } else if (oldResource.getContent().length() != newResource.getContent().length()) {
-                writeFile(newResource, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
+            if (!oldResource.path().equals(resource.path())) {
+                Files.move(Paths.get(oldResource.getPath()), Paths.get(resource.getPath()), StandardCopyOption.REPLACE_EXISTING);
+            } else if (oldResource.getContent().length() != resource.getContent().length()) {
+                writeFile(resource, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
             }
         } catch (RuntimeException | IOException e) {
-            return newResource;
+            return resource;
         }
-        return newResource;
+        return resource;
     }
 
     private static File writeFile(File resource, StandardOpenOption... options) {
