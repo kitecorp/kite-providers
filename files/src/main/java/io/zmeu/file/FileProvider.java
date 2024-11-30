@@ -67,7 +67,9 @@ public class FileProvider extends Provider<File> {
         requirePathOrName(oldResource);
 
         try {
-            if (!oldResource.path().equals(resource.path())) {
+            if (resource.getPath() == null) {
+                resource.setPath(oldResource.getPath());
+            } else if (!oldResource.path().equals(resource.path())) {
                 Files.move(Paths.get(oldResource.getPath()), Paths.get(resource.getPath()), StandardCopyOption.REPLACE_EXISTING);
             } else if (oldResource.getContent().length() != resource.getContent().length()) {
                 writeFile(resource, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
