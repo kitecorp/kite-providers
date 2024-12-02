@@ -2,7 +2,7 @@ package io.zmeu.file;
 
 import io.zmeu.api.Property;
 import io.zmeu.api.Resource;
-import io.zmeu.api.SchemaDefinition;
+import io.zmeu.api.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +10,6 @@ import lombok.experimental.SuperBuilder;
 import org.javers.core.metamodel.annotation.TypeName;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
 import static io.zmeu.api.Property.Type;
 
@@ -20,13 +19,13 @@ import static io.zmeu.api.Property.Type;
  * it will be like this: resource File resourceName { ... }
  * */
 @Data
-@SchemaDefinition(description = "Used to create local files", typeName = "File")
+@Schema(description = "Used to create local files", typeName = "File")
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @TypeName("File")
 public class File extends Resource {
-    @Property(type = Property.Type.String, name = "name", optional = false)
+    @Property(type = Property.Type.String, name = "name", optional = false, recreateOnChange = true)
     private String name;
     @Property(type = Type.String)
     private String content;
