@@ -101,16 +101,6 @@ public class FileProvider extends Provider<File> {
         }
     }
 
-    @Override
-    public String namespace() {
-        return "File";
-    }
-
-    @Override
-    public String resourceType() {
-        return File.class.getName();
-    }
-
     private static String readContent(String filename) {
         try {
             return Files.readString(Path.of(filename));
