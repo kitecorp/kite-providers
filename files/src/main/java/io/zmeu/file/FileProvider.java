@@ -36,7 +36,7 @@ public class FileProvider extends Provider<File> {
                         .path(resource.getPath())
                         .build();
             } else {
-                var content = readContent(resource.getPath() + resource.getName());
+                var content = readContent(resource.path().toString());
                 return File.builder()
                         .content(content)
                         .name(resource.getName())
