@@ -1,7 +1,7 @@
 package io.zmeu.file;
 
 import io.zmeu.api.Provider;
-import io.zmeu.api.Resources;
+import io.zmeu.api.resource.Resources;
 import org.pf4j.Extension;
 
 import java.io.IOException;

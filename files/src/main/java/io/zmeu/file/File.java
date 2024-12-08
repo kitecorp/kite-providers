@@ -1,8 +1,8 @@
 package io.zmeu.file;
 
-import io.zmeu.api.Property;
-import io.zmeu.api.Resource;
-import io.zmeu.api.Schema;
+import io.zmeu.api.schema.Property;
+import io.zmeu.api.resource.Resource;
+import io.zmeu.api.schema.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,7 +11,7 @@ import org.javers.core.metamodel.annotation.TypeName;
 
 import java.nio.file.Path;
 
-import static io.zmeu.api.Property.Type;
+import static io.zmeu.api.schema.Property.Type;
 
 
 /*
