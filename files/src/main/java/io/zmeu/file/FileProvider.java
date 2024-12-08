@@ -28,6 +28,7 @@ public class FileProvider extends Provider<File> {
                 return File.builder()
                         .content(content)
                         .name(resource.getName())
+                        .path(Paths.get(resource.getName()).toString())
                         .build();
             } else if (resource.getName() == null) {
                 var content = readContent(resource.getPath());
