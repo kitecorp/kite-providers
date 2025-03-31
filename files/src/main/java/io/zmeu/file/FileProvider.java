@@ -13,10 +13,8 @@ import java.util.List;
 public class FileProvider extends Provider<File> {
 
     @Override
-    public Resources<File> resources() {
-        var resource = new File();
-
-        return new Resources<>(List.of(resource));
+    public File initResource() {
+        return new File();
     }
 
     @Override
