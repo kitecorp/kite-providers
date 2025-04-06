@@ -21,10 +21,10 @@ import static io.zmeu.api.schema.Property.Type;
 @Data
 @Schema(description = "Used to create local files", typeName = "File")
 @SuperBuilder
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode
 @AllArgsConstructor
 @TypeName("File")
-public class File extends Resource {
+public class File {
     @Property(type = Property.Type.String, name = "name", optional = false, recreateOnChange = true)
     private String name;
     @Property(type = Type.String)

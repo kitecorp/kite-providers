@@ -1,6 +1,7 @@
 package io.zmeu.file;
 
 import io.zmeu.api.Provider;
+import io.zmeu.api.resource.Resource;
 import io.zmeu.api.resource.Resources;
 import org.pf4j.Extension;
 
@@ -10,7 +11,7 @@ import java.nio.file.*;
 import java.util.List;
 
 @Extension
-public class FileProvider extends Provider<File> {
+public class FileProvider extends Provider {
 
     @Override
     public File initResource() {
@@ -18,7 +19,8 @@ public class FileProvider extends Provider<File> {
     }
 
     @Override
-    public File read(File resource) {
+    public Resource read(Resource resourceBlock) {
+        var resource = (File) resourceBlock.getResource();
         requirePathOrName(resource);
         try {
             if (resource.getPath() == null) {
