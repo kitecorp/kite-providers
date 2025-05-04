@@ -1,8 +1,7 @@
 package io.zmeu.file;
 
-import io.zmeu.api.schema.Property;
-import io.zmeu.api.resource.Resource;
-import io.zmeu.api.schema.Schema;
+import io.zmeu.api.annotations.Property;
+import io.zmeu.api.annotations.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,7 +10,7 @@ import org.javers.core.metamodel.annotation.TypeName;
 
 import java.nio.file.Path;
 
-import static io.zmeu.api.schema.Property.Type;
+import io.zmeu.api.schema.Type;
 
 
 /*
@@ -25,7 +24,7 @@ import static io.zmeu.api.schema.Property.Type;
 @AllArgsConstructor
 @TypeName("File")
 public class File {
-    @Property(type = Property.Type.String, name = "name", optional = false, recreateOnChange = true)
+    @Property(type = Type.String, name = "name", optional = false, recreateOnChange = true)
     private String name;
     @Property(type = Type.String)
     private String content;
