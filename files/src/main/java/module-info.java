@@ -1,4 +1,4 @@
-module zmeu.plugins.files {
+module zmeu.providers.files {
     exports io.zmeu.file;
 
     requires javers.core;

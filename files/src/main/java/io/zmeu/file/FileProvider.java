@@ -2,13 +2,11 @@ package io.zmeu.file;
 
 import io.zmeu.api.Provider;
 import io.zmeu.api.resource.Resource;
-import io.zmeu.api.resource.Resources;
 import org.pf4j.Extension;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.List;
 
 @Extension
 public class FileProvider extends Provider {
