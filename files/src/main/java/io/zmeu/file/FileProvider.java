@@ -18,7 +18,7 @@ public class FileProvider extends Provider {
 
     @Override
     public Resource read(Resource resourceBlock) {
-        var resource = (File) resourceBlock.getResource();
+        var resource = (File) resourceBlock.getProperties();
         requirePathOrName(resource);
         try {
             if (resource.getPath() == null) {
