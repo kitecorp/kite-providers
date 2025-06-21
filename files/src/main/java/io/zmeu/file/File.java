@@ -2,15 +2,14 @@ package io.zmeu.file;
 
 import io.zmeu.api.annotations.Property;
 import io.zmeu.api.annotations.Schema;
+import io.zmeu.api.annotations.TypeName;
+import io.zmeu.api.schema.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
-import org.javers.core.metamodel.annotation.TypeName;
 
 import java.nio.file.Path;
-
-import io.zmeu.api.schema.Type;
 
 
 /*
@@ -18,13 +17,13 @@ import io.zmeu.api.schema.Type;
  * it will be like this: resource File resourceName { ... }
  * */
 @Data
-@Schema(description = "Used to create local files", typeName = "File")
+@Schema(description = "Used to create local files")
 @SuperBuilder
 @EqualsAndHashCode
 @AllArgsConstructor
 @TypeName("File")
 public class File {
-    @Property(type = Type.String, name = "name", optional = false, recreateOnChange = true)
+    @Property(type = Type.String, name = "name", optional = false, immutable = true)
     private String name;
     @Property(type = Type.String)
     private String content;

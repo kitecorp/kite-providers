@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id("org.gradlex.extra-java-module-info") version "1.11"
 }
 
 version = "0.0.1"
@@ -18,7 +17,6 @@ dependencies {
     // compileOnly important!!! We do not want to put the api into the zip file since the main program has it already!
     compileOnly project(':api')
     compileOnly(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
-    implementation 'org.javers:javers-core:7.8.0'
     annotationProcessor(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
     compileOnly "org.projectlombok:lombok:${lombok}"
     annotationProcessor "org.projectlombok:lombok:${lombok}"
@@ -43,6 +41,3 @@ jar {
     }
 }
 
-extraJavaModuleInfo {
-    automaticModule('org.javers:javers-core', 'javers.core')
-}
