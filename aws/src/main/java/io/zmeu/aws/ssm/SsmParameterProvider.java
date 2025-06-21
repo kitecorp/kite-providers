@@ -64,7 +64,14 @@ public class SsmParameterProvider extends Provider<SsmParameter> {
 
     @Override
     public SsmParameter update(SsmParameter resource) {
-        return null;
+        var response = ssmClient.putParameter(PutParameterRequest.builder()
+                .name(resource.getName())
+                .value(resource.getValue())
+                .type(ParameterType.fromValue(resource.getType()))
+                .overwrite(true)
+                .build());
+
+        return resource;
     }
 
     @Override

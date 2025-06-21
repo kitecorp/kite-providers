@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import software.amazon.awssdk.services.ssm.model.ParameterType;
 
 @SuperBuilder
 @Data
@@ -24,7 +25,7 @@ public class SsmParameter {
     private String description;
 
     @Property
-    private String type;
+    private String type = ParameterType.SECURE_STRING.toString();
 
     @Property
     private String keyId;
