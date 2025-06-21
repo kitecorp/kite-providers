@@ -41,7 +41,24 @@ public class SsmParameter {
     @Property
     private String tier;
 
+//    @Property
+//    private Long version;
+
+    @Property
+    private String selector;
+
+    @Property
+    private String sourceResult;
+
+//    @Property
+//    private Instant lastModifiedDate;
+
+    @Property(immutable = true)
+    private String arn;
+
+    @Property
     private String policies;
 
+    @Property
     private String dataType;
 }

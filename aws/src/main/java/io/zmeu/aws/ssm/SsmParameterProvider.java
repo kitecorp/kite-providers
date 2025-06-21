@@ -2,6 +2,8 @@ package io.zmeu.aws.ssm;
 
 import io.zmeu.api.Provider;
 import org.pf4j.Extension;
+import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
+import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.services.ssm.SsmClient;
 import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
 import software.amazon.awssdk.services.ssm.model.ParameterType;
@@ -11,6 +13,21 @@ import software.amazon.awssdk.services.ssm.model.PutParameterRequest;
 public class SsmParameterProvider extends Provider<SsmParameter> {
     private SsmClient ssmClient = SsmClient.builder()
             .build();
+
+    public SsmParameterProvider() {
+        super();
+        var provider = DefaultCredentialsProvider.create();
+        var creds = provider.resolveCredentials();
+        System.out.println("Using credentials:");
+        System.out.println("\tAccess key ID:     " + creds.accessKeyId());
+        if (creds instanceof AwsSessionCredentials) {
+            System.out.println("\tSession token set: yes");
+        }
+    }
+    public SsmParameterProvider(SsmClient ssmClient) {
+        super();
+        this.ssmClient = ssmClient;
+    }
 
     @Override
     protected SsmParameter initResource() {
@@ -39,7 +56,9 @@ public class SsmParameterProvider extends Provider<SsmParameter> {
 
         return SsmParameter.builder()
                 .name(response.parameter().name())
-
+                .value(response.parameter().value())
+                .type(response.parameter().typeAsString())
+                .arn(response.parameter().arn())
                 .build();
     }
 

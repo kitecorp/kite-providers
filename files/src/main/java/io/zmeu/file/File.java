@@ -3,7 +3,6 @@ package io.zmeu.file;
 import io.zmeu.api.annotations.Property;
 import io.zmeu.api.annotations.Schema;
 import io.zmeu.api.annotations.TypeName;
-import io.zmeu.api.schema.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,11 +22,11 @@ import java.nio.file.Path;
 @AllArgsConstructor
 @TypeName("File")
 public class File {
-    @Property(type = Type.String, name = "name", optional = false, immutable = true)
+    @Property(name = "name", optional = false, immutable = true)
     private String name;
-    @Property(type = Type.String)
+    @Property
     private String content;
-    @Property(type = Type.String)
+    @Property
     private String path;
 
     public File() {
