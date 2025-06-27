@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.ssm.model.ParameterType;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-@TypeName("SSMParameter")
+@TypeName("SsmParameter")
 public class SsmParameter {
     @Property(immutable = true)
     private String name;
