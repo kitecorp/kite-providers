@@ -29,10 +29,6 @@ public class SsmParameterProvider extends Provider<SsmParameter> {
         this.ssmClient = ssmClient;
     }
 
-    @Override
-    protected SsmParameter initResource() {
-        return new SsmParameter();
-    }
 
     @Override
     public SsmParameter create(SsmParameter resource) {
