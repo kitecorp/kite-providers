@@ -11,11 +11,6 @@ import java.nio.file.*;
 public class FileProvider extends Provider<File> {
 
     @Override
-    public File initResource() {
-        return new File();
-    }
-
-    @Override
     public File read(File resource) {
         requirePathOrName(resource);
         try {
