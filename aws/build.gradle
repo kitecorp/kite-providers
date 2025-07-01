@@ -9,22 +9,16 @@ repositories {
     mavenCentral()
 }
 
-def pf4jVersion = "3.12.1"
-def lombok = '1.18.38'
 dependencies {
     compileOnly project(':api')
-    implementation("org.pf4j:pf4j:3.13.0") {
-        transitive = true
-    }
 
     implementation(platform("software.amazon.awssdk:bom:2.28.22"))
     implementation("software.amazon.awssdk:ssm")
 
-    annotationProcessor(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
-    compileOnly "org.projectlombok:lombok:${lombok}"
-    annotationProcessor "org.projectlombok:lombok:${lombok}"
+    compileOnly "org.projectlombok:lombok:1.18.38"
+    annotationProcessor "org.projectlombok:lombok:1.18.38"
 
-    testImplementation platform('org.junit:junit-bom:5.11.0-M2')
+    testImplementation platform('org.junit:junit-bom:5.11.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 

@@ -1,7 +1,6 @@
 package io.zmeu.aws.ssm;
 
 import io.zmeu.api.ResourceHandler;
-import org.pf4j.Extension;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.services.ssm.SsmClient;
@@ -9,7 +8,6 @@ import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
 import software.amazon.awssdk.services.ssm.model.ParameterType;
 import software.amazon.awssdk.services.ssm.model.PutParameterRequest;
 
-@Extension
 public class SsmParameterResourceHandler extends ResourceHandler<SsmParameter> {
     private SsmClient ssmClient = SsmClient.builder()
             .build();
