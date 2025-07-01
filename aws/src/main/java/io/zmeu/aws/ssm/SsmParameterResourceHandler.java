@@ -1,6 +1,6 @@
 package io.zmeu.aws.ssm;
 
-import io.zmeu.api.Provider;
+import io.zmeu.api.ResourceHandler;
 import org.pf4j.Extension;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -10,11 +10,11 @@ import software.amazon.awssdk.services.ssm.model.ParameterType;
 import software.amazon.awssdk.services.ssm.model.PutParameterRequest;
 
 @Extension
-public class SsmParameterProvider extends Provider<SsmParameter> {
+public class SsmParameterResourceHandler extends ResourceHandler<SsmParameter> {
     private SsmClient ssmClient = SsmClient.builder()
             .build();
 
-    public SsmParameterProvider() {
+    public SsmParameterResourceHandler() {
         super();
         var provider = DefaultCredentialsProvider.create();
         var creds = provider.resolveCredentials();
@@ -24,7 +24,7 @@ public class SsmParameterProvider extends Provider<SsmParameter> {
             System.out.println("\tSession token set: yes");
         }
     }
-    public SsmParameterProvider(SsmClient ssmClient) {
+    public SsmParameterResourceHandler(SsmClient ssmClient) {
         super();
         this.ssmClient = ssmClient;
     }
@@ -36,7 +36,7 @@ public class SsmParameterProvider extends Provider<SsmParameter> {
                 .name(resource.getName())
                 .value(resource.getValue())
                 .type(ParameterType.SECURE_STRING)
-                .overwrite(true)
+                .overwrite(resource.getOverwrite())
                 .build());
 
         return resource;

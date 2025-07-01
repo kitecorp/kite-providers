@@ -1,6 +1,6 @@
 package io.zmeu.file;
 
-import io.zmeu.api.Provider;
+import io.zmeu.api.ResourceHandler;
 import org.pf4j.Extension;
 
 import java.io.IOException;
@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
 @Extension
-public class FileProvider extends Provider<File> {
+public class FileResourceHandler extends ResourceHandler<File> {
 
     @Override
     public File read(File resource) {
