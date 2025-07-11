@@ -33,7 +33,7 @@ public class SsmParameterResourceHandler extends ResourceHandler<SsmParameter> {
         var response = ssmClient.putParameter(PutParameterRequest.builder()
                 .name(resource.getName())
                 .value(resource.getValue())
-                .type(ParameterType.SECURE_STRING)
+                .type(resource.getType())
                 .overwrite(resource.getOverwrite())
                 .build());
 
