@@ -22,7 +22,7 @@ import java.nio.file.Path;
 @AllArgsConstructor
 @TypeName("File")
 public class File {
-    @Property(name = "name", optional = false, immutable = true)
+    @Property(name = "name", optional = false, cloud = true)
     private String name;
     @Property
     private String content;

@@ -16,7 +16,7 @@ import software.amazon.awssdk.services.ssm.model.ParameterType;
 @NoArgsConstructor
 @TypeName("SsmParameter")
 public class SsmParameter {
-    @Property(immutable = true)
+    @Property(cloud = true)
     private String name;
     @Property
     private String value;
@@ -54,7 +54,7 @@ public class SsmParameter {
 //    @Property
 //    private Instant lastModifiedDate;
 
-    @Property(immutable = true)
+    @Property(cloud = true)
     private String arn;
 
     @Property
