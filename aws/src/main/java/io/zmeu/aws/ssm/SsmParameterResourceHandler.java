@@ -1,6 +1,6 @@
-package io.zmeu.aws.ssm;
+package io.kite.aws.ssm;
 
-import io.zmeu.api.ResourceHandler;
+import io.kite.api.ResourceHandler;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.services.ssm.SsmClient;

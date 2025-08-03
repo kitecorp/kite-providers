@@ -1,8 +1,8 @@
-package io.zmeu.file;
+package io.kite.file;
 
-import io.zmeu.api.annotations.Property;
-import io.zmeu.api.annotations.Schema;
-import io.zmeu.api.annotations.TypeName;
+import io.kite.api.annotations.Property;
+import io.kite.api.annotations.Schema;
+import io.kite.api.annotations.TypeName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

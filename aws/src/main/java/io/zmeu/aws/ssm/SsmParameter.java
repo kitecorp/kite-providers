@@ -1,7 +1,7 @@
-package io.zmeu.aws.ssm;
+package io.kite.aws.ssm;
 
-import io.zmeu.api.annotations.Property;
-import io.zmeu.api.annotations.TypeName;
+import io.kite.api.annotations.Property;
+import io.kite.api.annotations.TypeName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

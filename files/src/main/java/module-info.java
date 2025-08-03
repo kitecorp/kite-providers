@@ -1,7 +1,7 @@
-module zmeu.providers.files {
-    exports io.zmeu.file;
+module kite.providers.files {
+    exports io.kite.file;
 
-    requires zmeu.api;
+    requires kite.api;
     requires lombok;
     requires org.pf4j;
     requires org.apache.commons.lang3;

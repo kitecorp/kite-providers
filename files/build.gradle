@@ -31,7 +31,7 @@ dependencies {
 jar {
     manifest {
         attributes(
-                'Plugin-Class': "io.zmeu.file.Main",
+                'Plugin-Class': "io.kite.file.Main",
                 'Plugin-Id': "${archiveBaseName.get()}@${archiveVersion.get()}",
                 'Plugin-Version': archiveVersion.get(),
                 'Plugin-Provider': "",

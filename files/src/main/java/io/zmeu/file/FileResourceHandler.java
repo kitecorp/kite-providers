@@ -1,6 +1,6 @@
-package io.zmeu.file;
+package io.kite.file;
 
-import io.zmeu.api.ResourceHandler;
+import io.kite.api.ResourceHandler;
 import org.pf4j.Extension;
 
 import java.io.IOException;

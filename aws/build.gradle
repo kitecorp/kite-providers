@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group = 'io.zmeu'
+group = 'io.kite'
 version = '0.0.1'
 
 repositories {
@@ -34,7 +34,7 @@ java {
 jar {
     manifest {
         attributes(
-                'Plugin-Class': "io.zmeu.aws.Main",
+                'Plugin-Class': "io.kite.aws.Main",
                 'Plugin-Id': provider { "${archiveBaseName.get()}@${archiveVersion.get()}" },
                 'Plugin-Version': provider { archiveVersion.get() },
                 'Plugin-Provider': "",

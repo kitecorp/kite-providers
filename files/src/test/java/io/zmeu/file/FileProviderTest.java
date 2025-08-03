@@ -1,4 +1,4 @@
-package io.zmeu.file;
+package io.kite.file;
 
 import junit.framework.TestCase;
 
