@@ -1,5 +1,5 @@
 module kite.providers.files {
-    exports io.kite.file;
+    exports cloud.kitelang.file;
 
     requires kite.api;
     requires lombok;
