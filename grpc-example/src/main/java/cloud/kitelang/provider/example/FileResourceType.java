@@ -1,7 +1,7 @@
 package cloud.kitelang.provider.example;
 
 import cloud.kitelang.provider.Diagnostic;
-import cloud.kitelang.provider.ResourceType;
+import cloud.kitelang.provider.ResourceTypeHandler;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
@@ -19,11 +19,11 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * ResourceType implementation for files.
+ * ResourceTypeHandler implementation for files.
  * Demonstrates how to implement CRUD operations for a resource.
  */
 @Log4j2
-public class FileResourceType extends ResourceType<FileResource> {
+public class FileResourceType extends ResourceTypeHandler<FileResource> {
 
     public FileResourceType() {
         super(FileResource.class);
