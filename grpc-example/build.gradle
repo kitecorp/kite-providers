@@ -55,3 +55,24 @@ jar {
         )
     }
 }
+
+// Generate provider.json manifest for gRPC provider discovery
+tasks.register('generateProviderManifest') {
+    def manifestFile = file("$buildDir/install/grpc-example/provider.json")
+    outputs.file manifestFile
+    doLast {
+        manifestFile.parentFile.mkdirs()
+        manifestFile.text = """{
+    "name": "files",
+    "version": "${project.version}",
+    "protocolVersion": 1,
+    "executable": "bin/provider"
+}
+"""
+    }
+}
+
+// Ensure provider.json is generated with installDist
+tasks.named('installDist') {
+    finalizedBy 'generateProviderManifest'
+}
