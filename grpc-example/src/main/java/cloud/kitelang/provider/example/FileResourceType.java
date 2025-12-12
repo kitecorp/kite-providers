@@ -25,9 +25,6 @@ import java.util.Set;
 @Log4j2
 public class FileResourceType extends ResourceTypeHandler<FileResource> {
 
-    public FileResourceType() {
-        super(FileResource.class);
-    }
 
     @Override
     public FileResource create(FileResource resource) {
