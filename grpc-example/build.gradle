@@ -1,0 +1,53 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'cloud.kitelang'
+version = '0.1.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':kite-provider-sdk')
+    annotationProcessor project(':kite-provider-sdk')
+
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+    implementation 'org.apache.logging.log4j:log4j-core:2.24.1'
+    implementation 'org.apache.logging.log4j:log4j-api:2.24.1'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+application {
+    mainClass = 'cloud.kitelang.provider.example.ExampleProvider'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// Create distribution for easy testing
+tasks.named('startScripts') {
+    applicationName = 'provider'
+}
+
+// Create a single executable JAR
+jar {
+    manifest {
+        attributes(
+            'Main-Class': 'cloud.kitelang.provider.example.ExampleProvider'
+        )
+    }
+}
