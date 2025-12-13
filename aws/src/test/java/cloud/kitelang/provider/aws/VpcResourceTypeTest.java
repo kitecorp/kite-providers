@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import software.amazon.awssdk.awscore.exception.AwsErrorDetails;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
 
@@ -95,9 +96,9 @@ class VpcResourceTypeTest {
         assertEquals("123456789012", result.getOwnerId());
 
         verify(ec2Client).createVpc(any(CreateVpcRequest.class));
-        verify(ec2Client).modifyVpcAttribute(argThat(req ->
+        verify(ec2Client).modifyVpcAttribute(argThat((ModifyVpcAttributeRequest req) ->
                 req.enableDnsSupport() != null && req.enableDnsSupport().value()));
-        verify(ec2Client).modifyVpcAttribute(argThat(req ->
+        verify(ec2Client).modifyVpcAttribute(argThat((ModifyVpcAttributeRequest req) ->
                 req.enableDnsHostnames() != null && req.enableDnsHostnames().value()));
         verify(ec2Client).createTags(any(CreateTagsRequest.class));
     }
@@ -178,7 +179,7 @@ class VpcResourceTypeTest {
 
         // Assert
         assertTrue(result);
-        verify(ec2Client).deleteVpc(argThat(req -> req.vpcId().equals("vpc-12345")));
+        verify(ec2Client).deleteVpc(argThat((DeleteVpcRequest req) -> req.vpcId().equals("vpc-12345")));
     }
 
     @Test
