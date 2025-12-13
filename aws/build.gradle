@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'com.gradleup.shadow' version '9.0.0-beta4'
 }
 
 group = 'cloud.kitelang'
@@ -16,8 +17,8 @@ dependencies {
 
     // AWS SDK v2
     implementation platform('software.amazon.awssdk:bom:2.28.22')
-    implementation 'software.amazon.awssdk:ec2'
-    implementation 'software.amazon.awssdk:sts'
+    implementation 'software.amazon.awssdk:ec2:2.40.7'
+    implementation 'software.amazon.awssdk:sts:2.40.7'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.36'
@@ -57,6 +58,33 @@ tasks.named('startScripts') {
     applicationName = 'provider'
 }
 
+// Shadow JAR configuration - creates a fat JAR with all dependencies
+shadowJar {
+    archiveBaseName.set('aws-provider')
+    archiveClassifier.set('')
+    archiveVersion.set('')
+
+    mergeServiceFiles()
+
+    // Minimize the JAR by removing unused classes
+    minimize {
+        // Don't minimize these - they use reflection
+        exclude(dependency('org.apache.logging.log4j:.*'))
+        exclude(dependency('io.grpc:.*'))
+        exclude(dependency('com.google.protobuf:.*'))
+        exclude(dependency('org.msgpack:.*'))
+        exclude(project(':kite-provider-sdk'))
+        exclude(project(':kite-proto'))
+        exclude(project(':kite-api'))
+    }
+
+    manifest {
+        attributes(
+            'Main-Class': 'cloud.kitelang.provider.aws.AwsProvider'
+        )
+    }
+}
+
 // Create a single executable JAR
 jar {
     manifest {
@@ -85,4 +113,37 @@ tasks.register('generateProviderManifest') {
 // Ensure provider.json is generated with installDist
 tasks.named('installDist') {
     finalizedBy 'generateProviderManifest'
+}
+
+// Create minimized distribution
+tasks.register('installMinDist', Copy) {
+    dependsOn shadowJar
+    from(shadowJar.archiveFile) {
+        into 'lib'
+    }
+    from('src/main/scripts') {
+        into 'bin'
+        fileMode = 0755
+    }
+    into "$buildDir/install/aws-min"
+
+    doLast {
+        // Create simple launcher script
+        def binDir = file("$buildDir/install/aws-min/bin")
+        binDir.mkdirs()
+        file("$binDir/provider").text = '''#!/bin/sh
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+exec java --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED -jar "$SCRIPT_DIR/../lib/aws-provider.jar" "$@"
+'''
+        file("$binDir/provider").setExecutable(true)
+
+        // Generate provider.json
+        file("$buildDir/install/aws-min/provider.json").text = """{
+    "name": "aws",
+    "version": "${project.version}",
+    "protocolVersion": 1,
+    "executable": "bin/provider"
+}
+"""
+    }
 }

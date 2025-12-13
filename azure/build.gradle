@@ -17,6 +17,7 @@ dependencies {
     // Azure SDK - Resource Manager
     implementation 'com.azure.resourcemanager:azure-resourcemanager-resources:2.43.0'
     implementation 'com.azure.resourcemanager:azure-resourcemanager-network:2.43.0'
+    implementation 'com.azure.resourcemanager:azure-resourcemanager-compute:2.43.0'
     implementation 'com.azure:azure-identity:1.14.2'
 
     // Lombok
