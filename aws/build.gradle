@@ -19,6 +19,7 @@ dependencies {
     implementation platform('software.amazon.awssdk:bom:2.28.22')
     implementation 'software.amazon.awssdk:ec2:2.40.7'
     implementation 'software.amazon.awssdk:sts:2.40.7'
+    implementation 'software.amazon.awssdk:elasticloadbalancingv2:2.40.7'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.36'
