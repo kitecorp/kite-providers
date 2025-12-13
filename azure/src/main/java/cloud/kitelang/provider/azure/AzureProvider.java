@@ -47,8 +47,6 @@ public class AzureProvider extends KiteProvider {
 
     public AzureProvider() {
         super("azure", "0.1.0");
-        // Auto-discover all ResourceTypeHandler classes in this package
-        discoverResources();
         log.info("Azure Provider initialized with resources: {}", getResourceTypes().keySet());
     }
 

@@ -32,8 +32,6 @@ public class AwsProvider extends KiteProvider {
 
     public AwsProvider() {
         super("aws", "0.1.0");
-        // Auto-discover all ResourceTypeHandler classes in this package
-        discoverResources();
         log.info("AWS Provider initialized with resources: {}", getResourceTypes().keySet());
     }
 
