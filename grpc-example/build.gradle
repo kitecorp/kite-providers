@@ -3,7 +3,7 @@ plugins {
     id 'application'
 }
 
-group = 'cloud.kitelang'
+group = 'cloud.kitelang.providers'
 version = '0.1.0'
 
 repositories {
@@ -63,7 +63,7 @@ tasks.register('generateProviderManifest') {
     doLast {
         manifestFile.parentFile.mkdirs()
         manifestFile.text = """{
-    "name": "files",
+    "name": "grpc-example",
     "version": "${project.version}",
     "protocolVersion": 1,
     "executable": "bin/provider"

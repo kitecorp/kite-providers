@@ -2,7 +2,7 @@ package cloud.kitelang.providers.files;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import cloud.kitelang.provider.example.FileResource;
+import cloud.kitelang.providers.files.FileResource;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
@@ -79,6 +79,14 @@ public class FileResourceType extends ResourceTypeHandler<FileResource> {
 
             // Compute checksum
             resource.setChecksum(computeChecksum(content));
+
+            // Read permissions (POSIX only)
+            try {
+                var perms = Files.getPosixFilePermissions(path);
+                resource.setPermissions(permissionsToOctal(perms));
+            } catch (UnsupportedOperationException e) {
+                // Non-POSIX system, skip
+            }
 
             return resource;
         } catch (IOException e) {
@@ -182,5 +190,26 @@ public class FileResourceType extends ResourceTypeHandler<FileResource> {
             sb.append((digit & 1) != 0 ? 'x' : '-');
         }
         return sb.toString();
+    }
+
+    /**
+     * Convert POSIX permissions to octal string (e.g., "644").
+     */
+    private String permissionsToOctal(Set<PosixFilePermission> perms) {
+        int owner = 0, group = 0, other = 0;
+
+        if (perms.contains(PosixFilePermission.OWNER_READ)) owner += 4;
+        if (perms.contains(PosixFilePermission.OWNER_WRITE)) owner += 2;
+        if (perms.contains(PosixFilePermission.OWNER_EXECUTE)) owner += 1;
+
+        if (perms.contains(PosixFilePermission.GROUP_READ)) group += 4;
+        if (perms.contains(PosixFilePermission.GROUP_WRITE)) group += 2;
+        if (perms.contains(PosixFilePermission.GROUP_EXECUTE)) group += 1;
+
+        if (perms.contains(PosixFilePermission.OTHERS_READ)) other += 4;
+        if (perms.contains(PosixFilePermission.OTHERS_WRITE)) other += 2;
+        if (perms.contains(PosixFilePermission.OTHERS_EXECUTE)) other += 1;
+
+        return "" + owner + group + other;
     }
 }

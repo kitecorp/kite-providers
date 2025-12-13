@@ -1,43 +1,73 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
-version = "0.0.1"
+group = 'cloud.kitelang'
+version = '0.1.0'
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
-def pf4jVersion = "3.12.1"
-def lombok = '1.18.36'
-
-
 dependencies {
-    // compileOnly important!!! We do not want to put the api into the zip file since the main program has it already!
-    compileOnly project(':kite-api')
-    compileOnly(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
-    annotationProcessor(group: 'org.pf4j', name: 'pf4j', version: "${pf4jVersion}")
-    compileOnly "org.projectlombok:lombok:${lombok}"
-    annotationProcessor "org.projectlombok:lombok:${lombok}"
+    implementation project(':kite-provider-sdk')
+    annotationProcessor project(':kite-provider-sdk')
 
-    testCompileOnly "org.projectlombok:lombok:${lombok}"
-    testAnnotationProcessor "org.projectlombok:lombok:${lombok}"
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
 
-    compileOnly 'org.apache.commons:commons-lang3:3.20.0'
-    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
+    implementation 'org.apache.logging.log4j:log4j-core:2.24.1'
+    implementation 'org.apache.logging.log4j:log4j-api:2.24.1'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+application {
+    mainClass = 'cloud.kitelang.providers.files.FilesProvider'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
+test {
+    useJUnitPlatform()
+    jvmArgs '--add-opens=java.base/java.nio=ALL-UNNAMED',
+            '--add-opens=java.base/sun.nio.ch=ALL-UNNAMED'
+}
+
+tasks.named('startScripts') {
+    applicationName = 'provider'
 }
 
 jar {
     manifest {
         attributes(
-                'Plugin-Class': "io.kite.file.Main",
-                'Plugin-Id': "${archiveBaseName.get()}@${archiveVersion.get()}",
-                'Plugin-Version': archiveVersion.get(),
-                'Plugin-Provider': "",
-                'Plugin-Dependencies': "",
-                'Plugin-License': "Apache License 2.0"
+            'Main-Class': 'cloud.kitelang.providers.files.FilesProvider'
         )
     }
 }
 
+tasks.register('generateProviderManifest') {
+    def manifestFile = file("$buildDir/install/files/provider.json")
+    outputs.file manifestFile
+    doLast {
+        manifestFile.parentFile.mkdirs()
+        manifestFile.text = """{
+    "name": "files",
+    "version": "${project.version}",
+    "protocolVersion": 1,
+    "executable": "bin/provider"
+}
+"""
+    }
+}
+
+tasks.named('installDist') {
+    finalizedBy 'generateProviderManifest'
+}
