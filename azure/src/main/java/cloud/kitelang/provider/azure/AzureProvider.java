@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
  * Provides resources for managing Azure infrastructure:
  * - ResourceGroup: Container for Azure resources
  * - Vnet: Virtual Network (equivalent to AWS VPC)
+ * - NetworkSecurityGroup: Firewall rules (equivalent to AWS Security Group)
  *
  * Authentication uses Azure Default Credential Chain:
  * 1. Environment variables (AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_TENANT_ID)
