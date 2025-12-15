@@ -8,12 +8,13 @@ group = 'cloud.kitelang'
 version = '0.1.0'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-    implementation project(':kite-provider-sdk')
-    annotationProcessor project(':kite-provider-sdk')
+    implementation 'cloud.kitelang:kite-provider-sdk:0.1.0'
+    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.1.0'
 
     // AWS SDK v2
     implementation platform('software.amazon.awssdk:bom:2.28.22')
@@ -76,9 +77,7 @@ shadowJar {
         exclude(dependency('io.grpc:.*'))
         exclude(dependency('com.google.protobuf:.*'))
         exclude(dependency('org.msgpack:.*'))
-        exclude(project(':kite-provider-sdk'))
-        exclude(project(':kite-proto'))
-        exclude(project(':kite-api'))
+        exclude(dependency('cloud.kitelang:.*'))
     }
 
     manifest {
