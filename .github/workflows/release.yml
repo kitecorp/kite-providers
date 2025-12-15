@@ -8,20 +8,10 @@ on:
       - 'files-v*'
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            platform: linux
-            arch: amd64
-          - os: macos-latest
-            platform: darwin
-            arch: arm64
-          - os: macos-13
-            platform: darwin
-            arch: amd64
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -52,40 +42,12 @@ jobs:
         working-directory: ${{ steps.extract.outputs.provider }}
         run: |
           cd build/install/*
-          zip -r ../../../${{ steps.extract.outputs.provider }}-${{ matrix.platform }}-${{ matrix.arch }}.zip .
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.extract.outputs.provider }}-${{ matrix.platform }}-${{ matrix.arch }}
-          path: ${{ steps.extract.outputs.provider }}/${{ steps.extract.outputs.provider }}-${{ matrix.platform }}-${{ matrix.arch }}.zip
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
-    steps:
-      - name: Extract provider and version from tag
-        id: extract
-        run: |
-          TAG=${GITHUB_REF#refs/tags/}
-          PROVIDER=$(echo $TAG | sed 's/-v.*//')
-          VERSION=$(echo $TAG | sed 's/.*-v//')
-          echo "provider=$PROVIDER" >> $GITHUB_OUTPUT
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
+          zip -r ../../../${{ steps.extract.outputs.provider }}.zip .
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           name: ${{ steps.extract.outputs.provider }} v${{ steps.extract.outputs.version }}
           tag_name: ${{ steps.extract.outputs.tag }}
-          files: artifacts/**/*.zip
+          files: ${{ steps.extract.outputs.provider }}.zip
           generate_release_notes: true
