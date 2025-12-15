@@ -22,6 +22,9 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Extract provider and version from tag
         id: extract
         run: |
@@ -32,15 +35,47 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
-      - name: Checkout kite main repo (for SDK)
+      - name: Checkout kite-api
         uses: actions/checkout@v4
         with:
-          repository: kitecorp/kite
-          path: kite-main
-          submodules: recursive
+          repository: kitecorp/kite-api
+          path: sdk-build/kite-api
+
+      - name: Checkout kite-proto
+        uses: actions/checkout@v4
+        with:
+          repository: kitecorp/kite-proto
+          path: sdk-build/kite-proto
+
+      - name: Checkout kite-provider-sdk
+        uses: actions/checkout@v4
+        with:
+          repository: kitecorp/kite-provider-sdk
+          path: sdk-build/kite-provider-sdk
+
+      - name: Create multi-project settings
+        run: |
+          cat > sdk-build/settings.gradle << 'EOF'
+          plugins {
+              id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+          }
+          rootProject.name = 'kite-sdk-build'
+          include 'kite-api'
+          include 'kite-proto'
+          include 'kite-provider-sdk'
+          EOF
+
+          cat > sdk-build/build.gradle << 'EOF'
+          // Root build file - subprojects have their own build.gradle
+          EOF
+
+      - name: Setup Gradle wrapper for SDK build
+        working-directory: sdk-build
+        run: |
+          gradle wrapper --gradle-version 8.13
 
       - name: Build and publish SDK to Maven Local
-        working-directory: kite-main
+        working-directory: sdk-build
         run: |
           ./gradlew :kite-api:publishToMavenLocal :kite-proto:publishToMavenLocal :kite-provider-sdk:publishToMavenLocal --no-daemon
 
