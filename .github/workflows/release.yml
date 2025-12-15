@@ -86,9 +86,14 @@ jobs:
           ./gradlew installDist --no-daemon
 
       - name: Create distribution zip
+        working-directory: ${{ steps.extract.outputs.provider }}
         run: |
-          INSTALL_DIR=$(ls -d ${{ steps.extract.outputs.provider }}/build/install/*/)
+          echo "Contents of build/install:"
+          ls -la build/install/
+          INSTALL_DIR=$(find build/install -mindepth 1 -maxdepth 1 -type d | head -1)
+          echo "Using install dir: $INSTALL_DIR"
           cd "$INSTALL_DIR"
+          ls -la
           zip -r $GITHUB_WORKSPACE/${{ steps.extract.outputs.provider }}.zip .
 
       - name: Create Release
