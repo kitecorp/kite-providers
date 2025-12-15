@@ -87,7 +87,8 @@ jobs:
 
       - name: Create distribution zip
         run: |
-          cd ${{ steps.extract.outputs.provider }}/build/install/*
+          INSTALL_DIR=$(ls -d ${{ steps.extract.outputs.provider }}/build/install/*/)
+          cd "$INSTALL_DIR"
           zip -r $GITHUB_WORKSPACE/${{ steps.extract.outputs.provider }}.zip .
 
       - name: Create Release
