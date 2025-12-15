@@ -32,6 +32,18 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
+      - name: Checkout kite main repo (for SDK)
+        uses: actions/checkout@v4
+        with:
+          repository: kitecorp/kite
+          path: kite-main
+          submodules: recursive
+
+      - name: Build and publish SDK to Maven Local
+        working-directory: kite-main
+        run: |
+          ./gradlew :kite-api:publishToMavenLocal :kite-proto:publishToMavenLocal :kite-provider-sdk:publishToMavenLocal --no-daemon
+
       - name: Build provider
         working-directory: ${{ steps.extract.outputs.provider }}
         run: |

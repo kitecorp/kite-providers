@@ -13,6 +13,8 @@ repositories {
 }
 
 dependencies {
+    // Use local SDK if available, otherwise from mavenLocal
+    // Run `./gradlew :kite-provider-sdk:publishToMavenLocal` from main kite repo first
     implementation 'cloud.kitelang:kite-provider-sdk:0.1.0'
     annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.1.0'
 
