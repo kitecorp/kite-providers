@@ -100,7 +100,9 @@ jar {
 
 // Generate provider.json manifest for gRPC provider discovery
 tasks.register('generateProviderManifest') {
-    def manifestFile = file("$buildDir/install/aws/provider.json")
+    dependsOn installDist
+    def installDir = tasks.installDist.destinationDir
+    def manifestFile = file("${installDir}/provider.json")
     outputs.file manifestFile
     doLast {
         manifestFile.parentFile.mkdirs()
