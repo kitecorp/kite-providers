@@ -99,7 +99,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          name: ${{ steps.extract.outputs.provider }} v${{ steps.extract.outputs.version }}
+          name: ${{ steps.extract.outputs.provider }} ${{ steps.extract.outputs.version }}
           tag_name: ${{ steps.extract.outputs.tag }}
           files: ${{ steps.extract.outputs.provider }}.zip
           generate_release_notes: true
