@@ -12,7 +12,7 @@ repositories {
 
 kiteProvider {
     name = 'grpc-example'
-    mainClass = 'cloud.kitelang.provider.example.ExampleProvider'
+    // mainClass auto-detected from ProviderServer subclass
 }
 
 dependencies {

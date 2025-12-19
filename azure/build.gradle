@@ -12,7 +12,7 @@ repositories {
 
 kiteProvider {
     name = 'azure'
-    mainClass = 'cloud.kitelang.provider.azure.AzureProvider'
+    // mainClass auto-detected from ProviderServer subclass
 }
 
 dependencies {

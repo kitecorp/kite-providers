@@ -12,7 +12,7 @@ repositories {
 
 kiteProvider {
     name = 'files'
-    mainClass = 'cloud.kitelang.providers.files.FilesProvider'
+    // mainClass auto-detected from ProviderServer subclass
 }
 
 dependencies {
