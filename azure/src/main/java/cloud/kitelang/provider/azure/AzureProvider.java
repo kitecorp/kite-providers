@@ -46,7 +46,7 @@ import lombok.extern.log4j.Log4j2;
 public class AzureProvider extends KiteProvider {
 
     public AzureProvider() {
-        super("azure", "0.1.0");
+        // Name and version auto-loaded from provider-info.properties
         log.info("Azure Provider initialized with resources: {}", getResourceTypes().keySet());
     }
 

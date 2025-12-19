@@ -23,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
 public class ExampleProvider extends KiteProvider {
 
     public ExampleProvider() {
-        super("example", "0.1.0");
+        // Name and version auto-loaded from provider-info.properties
         log.info("Example provider initialized with {} resource types", getResourceTypes().size());
     }
 

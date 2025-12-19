@@ -16,7 +16,7 @@ import lombok.extern.log4j.Log4j2;
 public class FilesProvider extends KiteProvider {
 
     public FilesProvider() {
-        super("files", "0.1.0");
+        // Name and version auto-loaded from provider-info.properties
         log.info("Files provider initialized");
     }
 

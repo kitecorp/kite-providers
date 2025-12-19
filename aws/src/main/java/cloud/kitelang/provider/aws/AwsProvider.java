@@ -31,7 +31,7 @@ import lombok.extern.log4j.Log4j2;
 public class AwsProvider extends KiteProvider {
 
     public AwsProvider() {
-        super("aws", "0.1.0");
+        // Name and version auto-loaded from provider-info.properties
         log.info("AWS Provider initialized with resources: {}", getResourceTypes().keySet());
     }
 
