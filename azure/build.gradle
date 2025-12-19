@@ -1,16 +1,22 @@
 plugins {
-    id 'java'
-    id 'application'
+    id 'cloud.kitelang.provider' version '0.1.0'
 }
 
 group = 'cloud.kitelang'
 version = '0.1.0'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
+kiteProvider {
+    name = 'azure'
+    mainClass = 'cloud.kitelang.provider.azure.AzureProvider'
+}
+
 dependencies {
+    // Use project SDK when building from monorepo
     implementation project(':kite-provider-sdk')
     annotationProcessor project(':kite-provider-sdk')
 
@@ -38,10 +44,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
 }
 
-application {
-    mainClass = 'cloud.kitelang.provider.azure.AzureProvider'
-}
-
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
@@ -50,42 +52,6 @@ java {
 
 test {
     useJUnitPlatform()
-    // Required for msgpack DirectByteBuffer access in Java 17+
     jvmArgs '--add-opens=java.base/java.nio=ALL-UNNAMED',
             '--add-opens=java.base/sun.nio.ch=ALL-UNNAMED'
-}
-
-// Create distribution for easy testing
-tasks.named('startScripts') {
-    applicationName = 'provider'
-}
-
-// Create a single executable JAR
-jar {
-    manifest {
-        attributes(
-            'Main-Class': 'cloud.kitelang.provider.azure.AzureProvider'
-        )
-    }
-}
-
-// Generate provider.json manifest for gRPC provider discovery
-tasks.register('generateProviderManifest') {
-    def manifestFile = file("$buildDir/install/azure/provider.json")
-    outputs.file manifestFile
-    doLast {
-        manifestFile.parentFile.mkdirs()
-        manifestFile.text = """{
-    "name": "azure",
-    "version": "${project.version}",
-    "protocolVersion": 1,
-    "executable": "bin/provider"
-}
-"""
-    }
-}
-
-// Ensure provider.json is generated with installDist
-tasks.named('installDist') {
-    finalizedBy 'generateProviderManifest'
 }
