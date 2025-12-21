@@ -2,7 +2,7 @@ package cloud.kitelang.provider.azure;
 
 import cloud.kitelang.provider.KiteProvider;
 import cloud.kitelang.provider.ProviderServer;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Azure Provider for Kite.
@@ -42,7 +42,7 @@ import lombok.extern.log4j.Log4j2;
  * }
  * </pre>
  */
-@Log4j2
+@Slf4j
 public class AzureProvider extends KiteProvider {
 
     public AzureProvider() {

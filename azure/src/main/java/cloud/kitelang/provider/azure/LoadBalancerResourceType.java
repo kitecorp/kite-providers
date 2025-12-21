@@ -7,7 +7,7 @@ import com.azure.core.management.profile.AzureProfile;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.*;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * ResourceTypeHandler for Azure Load Balancer.
  * Implements CRUD operations using Azure Network SDK.
  */
-@Log4j2
+@Slf4j
 public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerResource> {
 
     private static final Set<String> VALID_SKUS = Set.of("Basic", "Standard");

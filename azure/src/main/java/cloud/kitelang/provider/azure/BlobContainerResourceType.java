@@ -8,7 +8,7 @@ import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.storage.StorageManager;
 import com.azure.resourcemanager.storage.models.BlobContainer;
 import com.azure.resourcemanager.storage.models.PublicAccess;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.Set;
  * ResourceTypeHandler for Azure Blob Container.
  * Implements CRUD operations using Azure Storage SDK.
  */
-@Log4j2
+@Slf4j
 public class BlobContainerResourceType extends ResourceTypeHandler<BlobContainerResource> {
 
     private static final Set<String> VALID_PUBLIC_ACCESS = Set.of("None", "Blob", "Container");

@@ -8,7 +8,7 @@ import com.azure.core.management.profile.AzureProfile;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.resources.ResourceManager;
 import com.azure.resourcemanager.resources.models.ResourceGroup;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +18,7 @@ import java.util.List;
  * ResourceTypeHandler for Azure Resource Group.
  * Implements CRUD operations for Resource Groups using Azure SDK.
  */
-@Log4j2
+@Slf4j
 public class ResourceGroupResourceType extends ResourceTypeHandler<ResourceGroupResource> {
 
     private final ResourceManager resourceManager;

@@ -2,7 +2,7 @@ package cloud.kitelang.provider.aws;
 
 import cloud.kitelang.provider.KiteProvider;
 import cloud.kitelang.provider.ProviderServer;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * AWS Provider for Kite.
@@ -27,7 +27,7 @@ import lombok.extern.log4j.Log4j2;
  * }
  * </pre>
  */
-@Log4j2
+@Slf4j
 public class AwsProvider extends KiteProvider {
 
     public AwsProvider() {

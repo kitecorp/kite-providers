@@ -2,7 +2,7 @@ package cloud.kitelang.provider.aws;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
@@ -14,7 +14,7 @@ import java.util.List;
  * ResourceTypeHandler for AWS S3 Bucket Policy.
  * Implements CRUD operations using AWS S3 SDK.
  */
-@Log4j2
+@Slf4j
 public class S3BucketPolicyResourceType extends ResourceTypeHandler<S3BucketPolicyResource> {
 
     private final S3Client s3Client;

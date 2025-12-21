@@ -12,7 +12,7 @@ import com.azure.resourcemanager.resources.fluentcore.arm.AvailabilityZoneId;
 import com.azure.resourcemanager.compute.models.DiskSkuTypes;
 import com.azure.resourcemanager.compute.models.DiskStorageAccountTypes;
 import com.azure.resourcemanager.compute.models.OperatingSystemTypes;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ import java.util.Set;
  * ResourceTypeHandler for Azure Managed Disk.
  * Implements CRUD operations for disks using Azure SDK.
  */
-@Log4j2
+@Slf4j
 public class ManagedDiskResourceType extends ResourceTypeHandler<ManagedDiskResource> {
 
     private static final Set<String> VALID_SKUS = Set.of(

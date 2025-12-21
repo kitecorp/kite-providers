@@ -10,7 +10,7 @@ import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.fluent.models.NatGatewayInner;
 import com.azure.resourcemanager.network.models.NatGatewaySku;
 import com.azure.resourcemanager.network.models.NatGatewaySkuName;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  *
  * Note: Uses lower-level service client as NetworkManager doesn't expose NAT Gateway fluent API.
  */
-@Log4j2
+@Slf4j
 public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResource> {
 
     private final NetworkManager networkManager;

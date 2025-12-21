@@ -7,7 +7,7 @@ import com.azure.core.management.profile.AzureProfile;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.dns.DnsZoneManager;
 import com.azure.resourcemanager.dns.models.*;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * ResourceTypeHandler for Azure DNS Record Set.
  * Implements CRUD operations using Azure DNS SDK.
  */
-@Log4j2
+@Slf4j
 public class DnsRecordSetResourceType extends ResourceTypeHandler<DnsRecordSetResource> {
 
     private static final Set<String> VALID_TYPES = Set.of(

@@ -2,7 +2,7 @@ package cloud.kitelang.provider.aws;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
 
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * ResourceTypeHandler for AWS Elastic IP.
  * Implements CRUD operations for Elastic IPs using AWS EC2 SDK.
  */
-@Log4j2
+@Slf4j
 public class ElasticIpResourceType extends ResourceTypeHandler<ElasticIpResource> {
 
     private final Ec2Client ec2Client;

@@ -2,7 +2,7 @@ package cloud.kitelang.providers.files;
 
 import cloud.kitelang.provider.KiteProvider;
 import cloud.kitelang.provider.ProviderServer;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Files provider for managing local files.
@@ -12,7 +12,7 @@ import lombok.extern.log4j.Log4j2;
  *   <li>{@link FileResource} - Manages local files with content and permissions</li>
  * </ul>
  */
-@Log4j2
+@Slf4j
 public class FilesProvider extends KiteProvider {
 
     public FilesProvider() {

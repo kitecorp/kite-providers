@@ -7,7 +7,7 @@ import com.azure.core.management.profile.AzureProfile;
 import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.storage.StorageManager;
 import com.azure.resourcemanager.storage.models.*;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
  * ResourceTypeHandler for Azure Storage Account.
  * Implements CRUD operations using Azure Storage SDK.
  */
-@Log4j2
+@Slf4j
 public class StorageAccountResourceType extends ResourceTypeHandler<StorageAccountResource> {
 
     private static final Set<String> VALID_SKUS = Set.of(

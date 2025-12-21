@@ -9,7 +9,7 @@ import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.Network;
 import com.azure.resourcemanager.network.models.ServiceEndpointType;
 import com.azure.resourcemanager.network.models.Subnet;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  * ResourceTypeHandler for Azure Subnet.
  * Implements CRUD operations for Subnets using Azure SDK.
  */
-@Log4j2
+@Slf4j
 public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
 
     private final NetworkManager networkManager;

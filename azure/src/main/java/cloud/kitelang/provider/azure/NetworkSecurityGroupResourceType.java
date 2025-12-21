@@ -11,7 +11,7 @@ import com.azure.resourcemanager.network.models.NetworkSecurityGroup;
 import com.azure.resourcemanager.network.models.SecurityRuleAccess;
 import com.azure.resourcemanager.network.models.SecurityRuleDirection;
 import com.azure.resourcemanager.network.models.SecurityRuleProtocol;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
  * ResourceTypeHandler for Azure Network Security Group (NSG).
  * Implements CRUD operations for NSGs using Azure SDK.
  */
-@Log4j2
+@Slf4j
 public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<NetworkSecurityGroupResource> {
 
     private final NetworkManager networkManager;

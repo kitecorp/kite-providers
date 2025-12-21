@@ -2,7 +2,7 @@ package cloud.kitelang.provider.example;
 
 import cloud.kitelang.provider.KiteProvider;
 import cloud.kitelang.provider.ProviderServer;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Example gRPC provider demonstrating the Kite Provider SDK.
@@ -19,7 +19,7 @@ import lombok.extern.log4j.Log4j2;
  *   <li>{@link FileResource} - Manages local files with content and permissions</li>
  * </ul>
  */
-@Log4j2
+@Slf4j
 public class ExampleProvider extends KiteProvider {
 
     public ExampleProvider() {

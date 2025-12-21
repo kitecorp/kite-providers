@@ -9,7 +9,7 @@ import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.RouteNextHopType;
 import com.azure.resourcemanager.network.models.RouteTable;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * ResourceTypeHandler for Azure Route Table.
  * Implements CRUD operations for Route Tables using Azure SDK.
  */
-@Log4j2
+@Slf4j
 public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResource> {
 
     private final NetworkManager networkManager;

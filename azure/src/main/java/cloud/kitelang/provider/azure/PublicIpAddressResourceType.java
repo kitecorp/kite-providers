@@ -11,7 +11,7 @@ import com.azure.resourcemanager.network.models.IpAllocationMethod;
 import com.azure.resourcemanager.network.models.IpVersion;
 import com.azure.resourcemanager.network.models.PublicIPSkuType;
 import com.azure.resourcemanager.network.models.PublicIpAddress;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import java.util.List;
  * ResourceTypeHandler for Azure Public IP Address.
  * Implements CRUD operations for Public IPs using Azure SDK.
  */
-@Log4j2
+@Slf4j
 public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAddressResource> {
 
     private final NetworkManager networkManager;

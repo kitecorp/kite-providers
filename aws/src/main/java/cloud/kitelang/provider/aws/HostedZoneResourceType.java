@@ -2,7 +2,7 @@ package cloud.kitelang.provider.aws;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.route53.Route53Client;
 import software.amazon.awssdk.services.route53.model.*;
 
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * ResourceTypeHandler for AWS Route53 Hosted Zone.
  * Implements CRUD operations using AWS Route53 SDK.
  */
-@Log4j2
+@Slf4j
 public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResource> {
 
     private final Route53Client route53Client;

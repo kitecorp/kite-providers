@@ -2,7 +2,7 @@ package cloud.kitelang.provider.aws;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.elasticloadbalancingv2.ElasticLoadBalancingV2Client;
 import software.amazon.awssdk.services.elasticloadbalancingv2.model.*;
 
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * ResourceTypeHandler for AWS Load Balancer Listener.
  * Implements CRUD operations using AWS ELBv2 SDK.
  */
-@Log4j2
+@Slf4j
 public class ListenerResourceType extends ResourceTypeHandler<ListenerResource> {
 
     private static final Set<String> VALID_PROTOCOLS = Set.of(

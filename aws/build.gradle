@@ -28,9 +28,9 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.42'
     annotationProcessor 'org.projectlombok:lombok:1.18.42'
 
-    // Logging
-    implementation 'org.apache.logging.log4j:log4j-core:2.24.1'
-    implementation 'org.apache.logging.log4j:log4j-api:2.24.1'
+    // SLF4J with JDK logging
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    implementation 'org.slf4j:slf4j-jdk14:2.0.17'
 
     // Testing
     testImplementation platform('org.junit:junit-bom:6.0.1')
@@ -55,7 +55,7 @@ test {
 // Optional: customize shadowJar minimize if needed
 shadowJar {
     minimize {
-        exclude(dependency('org.apache.logging.log4j:.*'))
+        exclude(dependency('org.slf4j:.*'))
         exclude(dependency('io.grpc:.*'))
         exclude(dependency('com.google.protobuf:.*'))
         exclude(dependency('org.msgpack:.*'))

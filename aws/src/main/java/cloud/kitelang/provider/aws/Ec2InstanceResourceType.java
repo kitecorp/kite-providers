@@ -2,7 +2,7 @@ package cloud.kitelang.provider.aws;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
 
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  * ResourceTypeHandler for AWS EC2 Instance.
  * Implements CRUD operations for EC2 instances using AWS SDK.
  */
-@Log4j2
+@Slf4j
 public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceResource> {
 
     private final Ec2Client ec2Client;

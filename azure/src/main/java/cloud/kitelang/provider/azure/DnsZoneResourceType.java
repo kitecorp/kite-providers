@@ -8,7 +8,7 @@ import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.dns.DnsZoneManager;
 import com.azure.resourcemanager.dns.models.DnsZone;
 import com.azure.resourcemanager.dns.models.ZoneType;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.Set;
  * (Private DNS Zones) and not through the standard DNS Zone API.
  * This handler supports public DNS zones.
  */
-@Log4j2
+@Slf4j
 public class DnsZoneResourceType extends ResourceTypeHandler<DnsZoneResource> {
 
     private final DnsZoneManager dnsManager;
