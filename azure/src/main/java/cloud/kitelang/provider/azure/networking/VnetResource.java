@@ -63,7 +63,7 @@ public class VnetResource {
 
     // --- Cloud-managed properties (read-only) ---
 
-    @Cloud
+    @Cloud(importable = true)
     @Property(description = "The Azure resource ID of the VNet")
     private String id;
 

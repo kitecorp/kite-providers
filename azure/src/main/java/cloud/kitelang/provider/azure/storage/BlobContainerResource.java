@@ -47,112 +47,58 @@ import java.util.Map;
 @TypeName("BlobContainer")
 public class BlobContainerResource {
 
-    /**
-     * The name of the blob container.
-     * Must be 3-63 characters, lowercase letters, numbers, and hyphens.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the blob container. Must be 3-63 characters, lowercase letters, numbers, and hyphens", optional = false)
     private String name;
 
-    /**
-     * The name of the storage account.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the storage account", optional = false)
     private String storageAccountName;
 
-    /**
-     * The resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The level of public access to the container.
-     * Valid values: None, Blob, Container
-     * - None: No public access (default)
-     * - Blob: Public read access for blobs only
-     * - Container: Public read access for container and blobs
-     */
-    @Property
-    private String publicAccess;
+    @Property(description = "The level of public access to the container. None: No public access, Blob: Public read access for blobs only, Container: Public read access for container and blobs",
+              validValues = {"None", "Blob", "Container"})
+    private String publicAccess = "None";
 
-    /**
-     * Container metadata as key-value pairs.
-     */
-    @Property
+    @Property(description = "Container metadata as key-value pairs")
     private Map<String, String> metadata;
 
-    /**
-     * Enable immutable storage with versioning.
-     * Once enabled, cannot be disabled.
-     */
-    @Property
+    @Property(description = "Enable immutable storage with versioning. Once enabled, cannot be disabled")
     private Boolean immutableStorageWithVersioning;
 
-    /**
-     * Default encryption scope for the container.
-     */
-    @Property
+    @Property(description = "Default encryption scope for the container")
     private String defaultEncryptionScope;
 
-    /**
-     * Deny encryption scope override.
-     * When true, blobs must use the container's default encryption scope.
-     */
-    @Property
+    @Property(description = "Deny encryption scope override. When true, blobs must use the container's default encryption scope")
     private Boolean denyEncryptionScopeOverride;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The resource ID of the container.
-     */
-    @Cloud
-    @Property
+    @Cloud(importable = true)
+    @Property(description = "The resource ID of the container")
     private String id;
 
-    /**
-     * The ETag of the container.
-     */
     @Cloud
-    @Property
+    @Property(description = "The ETag of the container")
     private String etag;
 
-    /**
-     * The last modified time.
-     */
     @Cloud
-    @Property
+    @Property(description = "The last modified time")
     private String lastModifiedTime;
 
-    /**
-     * The lease status.
-     */
     @Cloud
-    @Property
+    @Property(description = "The lease status")
     private String leaseStatus;
 
-    /**
-     * The lease state.
-     */
     @Cloud
-    @Property
+    @Property(description = "The lease state")
     private String leaseState;
 
-    /**
-     * Whether the container has immutability policy.
-     */
     @Cloud
-    @Property
+    @Property(description = "Whether the container has immutability policy")
     private Boolean hasImmutabilityPolicy;
 
-    /**
-     * Whether the container has legal hold.
-     */
     @Cloud
-    @Property
+    @Property(description = "Whether the container has legal hold")
     private Boolean hasLegalHold;
 }

@@ -43,7 +43,7 @@ _These properties are set by the cloud provider after resource creation._
 
 | Name | Type | Default | Valid Values | Required | Description |
 |------|------|---------|--------------|----------|-------------|
-| `arn` | `string` | — | — | No | *☁️ cloud-managed* The Amazon Resource Name (ARN) of the target group |
+| `arn` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Amazon Resource Name (ARN) of the target group |
 | `loadBalancerArns` | `list` | — | — | No | *☁️ cloud-managed* The load balancer ARNs attached to this target group |
 
 [← Back to Index](README.md)

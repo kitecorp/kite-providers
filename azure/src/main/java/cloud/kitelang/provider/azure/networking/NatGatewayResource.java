@@ -35,86 +35,46 @@ import java.util.Map;
 @TypeName("NatGateway")
 public class NatGatewayResource {
 
-    /**
-     * The name of the NAT gateway.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the NAT gateway", optional = false)
     private String name;
 
-    /**
-     * The Azure resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The Azure region/location.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure region/location", optional = false)
     private String location;
 
-    /**
-     * The idle timeout in minutes.
-     * Default: 4, Range: 4-120
-     */
-    @Property
-    private Integer idleTimeoutInMinutes;
+    @Property(description = "The idle timeout in minutes. Range: 4-120")
+    private Integer idleTimeoutInMinutes = 4;
 
-    /**
-     * List of public IP address resource IDs to associate.
-     */
-    @Property
+    @Property(description = "List of public IP address resource IDs to associate")
     private List<String> publicIpAddressIds;
 
-    /**
-     * List of public IP prefix resource IDs to associate.
-     */
-    @Property
+    @Property(description = "List of public IP prefix resource IDs to associate")
     private List<String> publicIpPrefixIds;
 
-    /**
-     * The SKU name: Standard.
-     * Default: Standard (only option currently)
-     */
-    @Property
-    private String skuName;
+    @Property(description = "The SKU name",
+              validValues = {"Standard"})
+    private String skuName = "Standard";
 
-    /**
-     * Tags to apply to the NAT gateway.
-     */
-    @Property
+    @Property(description = "Tags to apply to the NAT gateway")
     private Map<String, String> tags;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The Azure resource ID of the NAT gateway.
-     */
-    @Cloud
-    @Property
+    @Cloud(importable = true)
+    @Property(description = "The Azure resource ID of the NAT gateway")
     private String id;
 
-    /**
-     * The provisioning state of the NAT gateway.
-     */
     @Cloud
-    @Property
+    @Property(description = "The provisioning state of the NAT gateway")
     private String provisioningState;
 
-    /**
-     * The resource GUID of the NAT gateway.
-     */
     @Cloud
-    @Property
+    @Property(description = "The resource GUID of the NAT gateway")
     private String resourceGuid;
 
-    /**
-     * List of subnet IDs using this NAT gateway.
-     */
     @Cloud
-    @Property
+    @Property(description = "List of subnet IDs using this NAT gateway")
     private List<String> subnetIds;
 }

@@ -42,66 +42,35 @@ import java.util.Map;
 @TypeName("RouteTable")
 public class RouteTableResource {
 
-    /**
-     * The name of the route table.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the route table", optional = false)
     private String name;
 
-    /**
-     * The Azure resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The Azure region/location.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure region/location", optional = false)
     private String location;
 
-    /**
-     * Whether to disable BGP route propagation.
-     * Default: false
-     */
-    @Property
-    private Boolean disableBgpRoutePropagation;
+    @Property(description = "Whether to disable BGP route propagation")
+    private Boolean disableBgpRoutePropagation = false;
 
-    /**
-     * Routes in this route table.
-     */
-    @Property
+    @Property(description = "Routes in this route table")
     private List<RouteEntry> routes;
 
-    /**
-     * Tags to apply to the route table.
-     */
-    @Property
+    @Property(description = "Tags to apply to the route table")
     private Map<String, String> tags;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The Azure resource ID of the route table.
-     */
-    @Cloud
-    @Property
+    @Cloud(importable = true)
+    @Property(description = "The Azure resource ID of the route table")
     private String id;
 
-    /**
-     * The provisioning state of the route table.
-     */
     @Cloud
-    @Property
+    @Property(description = "The provisioning state of the route table")
     private String provisioningState;
 
-    /**
-     * List of subnet IDs associated with this route table.
-     */
     @Cloud
-    @Property
+    @Property(description = "List of subnet IDs associated with this route table")
     private List<String> associatedSubnetIds;
 }

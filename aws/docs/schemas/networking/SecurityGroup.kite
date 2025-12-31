@@ -10,6 +10,6 @@ schema SecurityGroup {
     string    securityGroupId  // The security group ID assigned by AWS
     @cloud
     string    ownerId          // The AWS account ID that owns the security group
-    @cloud
+    @cloud(importable)
     string    arn              // The Amazon Resource Name (ARN)
 }

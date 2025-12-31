@@ -12,7 +12,7 @@ schema EbsVolume {
     map       tags                // Tags to apply to the volume
     @cloud
     string    volumeId            // The volume ID assigned by AWS
-    @cloud
+    @cloud(importable)
     string    arn                 // The Amazon Resource Name (ARN) of the volume
     @cloud
     string    state               // The current state of the volume

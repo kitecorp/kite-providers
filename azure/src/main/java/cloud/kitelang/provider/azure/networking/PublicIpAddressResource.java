@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,111 +35,58 @@ import java.util.Map;
 @TypeName("PublicIpAddress")
 public class PublicIpAddressResource {
 
-    /**
-     * The name of the public IP address.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the public IP address", optional = false)
     private String name;
 
-    /**
-     * The Azure resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The Azure region/location.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure region/location", optional = false)
     private String location;
 
-    /**
-     * The SKU: "Basic" or "Standard".
-     * Standard is required for zone redundancy and NAT Gateway.
-     * Default: "Basic"
-     */
-    @Property
-    private String sku;
+    @Property(description = "The SKU. Standard is required for zone redundancy and NAT Gateway",
+              validValues = {"Basic", "Standard"})
+    private String sku = "Basic";
 
-    /**
-     * The allocation method: "Static" or "Dynamic".
-     * Standard SKU requires Static.
-     * Default: "Dynamic"
-     */
-    @Property
-    private String allocationMethod;
+    @Property(description = "The allocation method. Standard SKU requires Static",
+              validValues = {"Static", "Dynamic"})
+    private String allocationMethod = "Dynamic";
 
-    /**
-     * The IP version: "IPv4" or "IPv6".
-     * Default: "IPv4"
-     */
-    @Property
-    private String ipVersion;
+    @Property(description = "The IP version",
+              validValues = {"IPv4", "IPv6"})
+    private String ipVersion = "IPv4";
 
-    /**
-     * The idle timeout in minutes.
-     * Range: 4-30. Default: 4
-     */
-    @Property
-    private Integer idleTimeoutInMinutes;
+    @Property(description = "The idle timeout in minutes. Range: 4-30")
+    private Integer idleTimeoutInMinutes = 4;
 
-    /**
-     * The domain name label for DNS.
-     * Creates: {label}.{region}.cloudapp.azure.com
-     */
-    @Property
+    @Property(description = "The domain name label for DNS. Creates: {label}.{region}.cloudapp.azure.com")
     private String domainNameLabel;
 
-    /**
-     * The availability zones for the IP.
-     * Only for Standard SKU.
-     */
-    @Property
-    private java.util.List<String> zones;
+    @Property(description = "The availability zones for the IP. Only for Standard SKU")
+    private List<String> zones;
 
-    /**
-     * Tags to apply to the public IP address.
-     */
-    @Property
+    @Property(description = "Tags to apply to the public IP address")
     private Map<String, String> tags;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The Azure resource ID of the public IP.
-     */
-    @Cloud
-    @Property
+    @Cloud(importable = true)
+    @Property(description = "The Azure resource ID of the public IP")
     private String id;
 
-    /**
-     * The assigned IP address.
-     */
     @Cloud
-    @Property
+    @Property(description = "The assigned IP address")
     private String ipAddress;
 
-    /**
-     * The provisioning state of the public IP.
-     */
     @Cloud
-    @Property
+    @Property(description = "The provisioning state of the public IP")
     private String provisioningState;
 
-    /**
-     * The resource GUID.
-     */
     @Cloud
-    @Property
+    @Property(description = "The resource GUID")
     private String resourceGuid;
 
-    /**
-     * The FQDN of the DNS record.
-     */
     @Cloud
-    @Property
+    @Property(description = "The FQDN of the DNS record")
     private String fqdn;
 }

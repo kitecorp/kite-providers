@@ -19,6 +19,6 @@ schema Subnet {
     boolean   defaultForAz                 // Whether this is the default subnet for the AZ
     @cloud
     string    ownerId                      // The AWS account ID that owns the subnet
-    @cloud
+    @cloud(importable)
     string    arn                          // The Amazon Resource Name (ARN) of the subnet
 }

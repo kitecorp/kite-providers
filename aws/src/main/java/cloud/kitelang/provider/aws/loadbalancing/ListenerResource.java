@@ -74,7 +74,7 @@ public class ListenerResource {
 
     // --- Cloud-managed properties (read-only) ---
 
-    @Cloud
+    @Cloud(importable = true)
     @Property(description = "The ARN of the listener")
     private String arn;
 

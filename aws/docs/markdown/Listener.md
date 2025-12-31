@@ -39,6 +39,6 @@ _These properties are set by the cloud provider after resource creation._
 
 | Name | Type | Default | Valid Values | Required | Description |
 |------|------|---------|--------------|----------|-------------|
-| `arn` | `string` | — | — | No | *☁️ cloud-managed* The ARN of the listener |
+| `arn` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The ARN of the listener |
 
 [← Back to Index](README.md)

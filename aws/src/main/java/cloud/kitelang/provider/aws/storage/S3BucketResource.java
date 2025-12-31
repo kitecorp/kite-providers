@@ -105,7 +105,7 @@ public class S3BucketResource {
 
     // --- Cloud-managed properties (read-only) ---
 
-    @Cloud
+    @Cloud(importable = true)
     @Property(description = "The ARN of the bucket")
     private String arn;
 

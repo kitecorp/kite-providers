@@ -11,6 +11,6 @@ schema Listener {
     redirectconfig redirectConfig         // Redirect configuration when defaultActionType is 'redirect'
     fixedresponseconfig fixedResponseConfig    // Fixed response configuration when defaultActionType is 'fixed-response'
     map       tags                   // Tags to apply to the listener
-    @cloud
+    @cloud(importable)
     string    arn                    // The ARN of the listener
 }

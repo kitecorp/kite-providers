@@ -87,7 +87,7 @@ public class SecurityGroupResource {
     @Property(description = "The AWS account ID that owns the security group")
     private String ownerId;
 
-    @Cloud
+    @Cloud(importable = true)
     @Property(description = "The Amazon Resource Name (ARN)")
     private String arn;
 }

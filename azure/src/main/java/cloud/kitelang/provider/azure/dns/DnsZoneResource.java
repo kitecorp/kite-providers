@@ -40,83 +40,44 @@ import java.util.Map;
 @TypeName("DnsZone")
 public class DnsZoneResource {
 
-    /**
-     * The domain name for the DNS zone.
-     * Must be a fully qualified domain name (e.g., "example.com").
-     * Required.
-     */
-    @Property
+    @Property(description = "The domain name for the DNS zone. Must be a fully qualified domain name (e.g., example.com)", optional = false)
     private String name;
 
-    /**
-     * The resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The type of DNS zone.
-     * Valid values: Public, Private.
-     * Default: Public
-     */
-    @Property
-    private String zoneType;
+    @Property(description = "The type of DNS zone",
+              validValues = {"Public", "Private"})
+    private String zoneType = "Public";
 
-    /**
-     * Virtual network IDs for auto-registration (private zones only).
-     * VMs in these networks will have their DNS records auto-registered.
-     */
-    @Property
+    @Property(description = "Virtual network IDs for auto-registration (private zones only). VMs in these networks will have their DNS records auto-registered")
     private List<String> registrationVirtualNetworkIds;
 
-    /**
-     * Virtual network IDs for resolution (private zones only).
-     * VMs in these networks can resolve records in this zone.
-     */
-    @Property
+    @Property(description = "Virtual network IDs for resolution (private zones only). VMs in these networks can resolve records in this zone")
     private List<String> resolutionVirtualNetworkIds;
 
-    /**
-     * Tags to apply to the DNS zone.
-     */
-    @Property
+    @Property(description = "Tags to apply to the DNS zone")
     private Map<String, String> tags;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The resource ID of the DNS zone.
-     */
-    @Cloud
-    @Property
+    @Cloud(importable = true)
+    @Property(description = "The resource ID of the DNS zone")
     private String id;
 
-    /**
-     * The name servers for the DNS zone.
-     */
     @Cloud
-    @Property
+    @Property(description = "The name servers for the DNS zone")
     private List<String> nameServers;
 
-    /**
-     * The number of record sets in the DNS zone.
-     */
     @Cloud
-    @Property
+    @Property(description = "The number of record sets in the DNS zone")
     private Long numberOfRecordSets;
 
-    /**
-     * The maximum number of record sets allowed.
-     */
     @Cloud
-    @Property
+    @Property(description = "The maximum number of record sets allowed")
     private Long maxNumberOfRecordSets;
 
-    /**
-     * The ETag of the DNS zone.
-     */
     @Cloud
-    @Property
+    @Property(description = "The ETag of the DNS zone")
     private String etag;
 }

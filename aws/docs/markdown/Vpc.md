@@ -35,6 +35,6 @@ _These properties are set by the cloud provider after resource creation._
 | `defaultNetworkAclId` | `string` | — | — | No | *☁️ cloud-managed* The ID of the default network ACL |
 | `defaultSecurityGroupId` | `string` | — | — | No | *☁️ cloud-managed* The ID of the default security group |
 | `ownerId` | `string` | — | — | No | *☁️ cloud-managed* The AWS account ID that owns the VPC |
-| `arn` | `string` | — | — | No | *☁️ cloud-managed* The Amazon Resource Name (ARN) of the VPC |
+| `arn` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Amazon Resource Name (ARN) of the VPC |
 
 [← Back to Index](README.md)

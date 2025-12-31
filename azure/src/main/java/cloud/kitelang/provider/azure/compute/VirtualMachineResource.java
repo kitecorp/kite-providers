@@ -107,7 +107,7 @@ public class VirtualMachineResource {
 
     // --- Cloud-managed properties (read-only) ---
 
-    @Cloud
+    @Cloud(importable = true)
     @Property(description = "The Azure resource ID of the VM")
     private String id;
 

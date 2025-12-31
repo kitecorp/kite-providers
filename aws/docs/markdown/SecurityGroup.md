@@ -31,6 +31,6 @@ _These properties are set by the cloud provider after resource creation._
 |------|------|---------|--------------|----------|-------------|
 | `securityGroupId` | `string` | — | — | No | *☁️ cloud-managed* The security group ID assigned by AWS |
 | `ownerId` | `string` | — | — | No | *☁️ cloud-managed* The AWS account ID that owns the security group |
-| `arn` | `string` | — | — | No | *☁️ cloud-managed* The Amazon Resource Name (ARN) |
+| `arn` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Amazon Resource Name (ARN) |
 
 [← Back to Index](README.md)

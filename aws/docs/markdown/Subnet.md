@@ -37,6 +37,6 @@ _These properties are set by the cloud provider after resource creation._
 | `availableIpAddressCount` | `integer` | — | — | No | *☁️ cloud-managed* The number of available IPv4 addresses |
 | `defaultForAz` | `boolean` | — | — | No | *☁️ cloud-managed* Whether this is the default subnet for the AZ |
 | `ownerId` | `string` | — | — | No | *☁️ cloud-managed* The AWS account ID that owns the subnet |
-| `arn` | `string` | — | — | No | *☁️ cloud-managed* The Amazon Resource Name (ARN) of the subnet |
+| `arn` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Amazon Resource Name (ARN) of the subnet |
 
 [← Back to Index](README.md)

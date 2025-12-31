@@ -76,7 +76,7 @@ public class VpcResource {
     @Property(description = "The AWS account ID that owns the VPC")
     private String ownerId;
 
-    @Cloud
+    @Cloud(importable = true)
     @Property(description = "The Amazon Resource Name (ARN) of the VPC")
     private String arn;
 }

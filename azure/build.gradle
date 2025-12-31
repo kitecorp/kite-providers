@@ -16,9 +16,6 @@ kiteProvider {
 }
 
 dependencies {
-    // Use project SDK when building from monorepo
-    implementation project(':kite-provider-sdk')
-    annotationProcessor project(':kite-provider-sdk')
 
     // Azure SDK - Resource Manager
     implementation 'com.azure.resourcemanager:azure-resourcemanager-resources:2.43.0'

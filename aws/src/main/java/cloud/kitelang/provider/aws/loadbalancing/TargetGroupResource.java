@@ -87,7 +87,7 @@ public class TargetGroupResource {
 
     // --- Cloud-managed properties (read-only) ---
 
-    @Cloud
+    @Cloud(importable = true)
     @Property(description = "The Amazon Resource Name (ARN) of the target group")
     private String arn;
 

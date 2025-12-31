@@ -83,7 +83,7 @@ public class LoadBalancerResource {
 
     // --- Cloud-managed properties (read-only) ---
 
-    @Cloud
+    @Cloud(importable = true)
     @Property(description = "The Amazon Resource Name (ARN) of the load balancer")
     private String arn;
 

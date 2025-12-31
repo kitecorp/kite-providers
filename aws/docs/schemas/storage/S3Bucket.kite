@@ -14,7 +14,7 @@ schema S3Bucket {
     list      lifecycleRules                // Lifecycle rules for object management
     loggingconfig logging                       // Access logging configuration
     map       tags                          // Tags to apply to the bucket
-    @cloud
+    @cloud(importable)
     string    arn                           // The ARN of the bucket
     @cloud
     string    domainName                    // The domain name of the bucket

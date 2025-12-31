@@ -13,7 +13,7 @@ schema TargetGroup {
     stickiness stickiness           // Stickiness configuration
     list      targets              // Target IDs to register (instance IDs or IP addresses)
     map       tags                 // Tags to apply to the target group
-    @cloud
+    @cloud(importable)
     string    arn                  // The Amazon Resource Name (ARN) of the target group
     @cloud
     list      loadBalancerArns     // The load balancer ARNs attached to this target group

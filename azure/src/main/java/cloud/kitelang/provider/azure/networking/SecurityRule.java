@@ -32,68 +32,39 @@ import lombok.NoArgsConstructor;
 @TypeName("SecurityRule")
 public class SecurityRule {
 
-    /**
-     * Name of the security rule.
-     * Must be unique within the NSG.
-     */
-    @Property
+    @Property(description = "Name of the security rule. Must be unique within the NSG", optional = false)
     private String name;
 
-    /**
-     * Priority of the rule (100-4096).
-     * Lower numbers have higher priority.
-     */
-    @Property
+    @Property(description = "Priority of the rule (100-4096). Lower numbers have higher priority", optional = false)
     private Integer priority;
 
-    /**
-     * Direction of traffic: "Inbound" or "Outbound".
-     */
-    @Property
+    @Property(description = "Direction of traffic",
+              validValues = {"Inbound", "Outbound"},
+              optional = false)
     private String direction;
 
-    /**
-     * Whether to allow or deny: "Allow" or "Deny".
-     */
-    @Property
+    @Property(description = "Whether to allow or deny",
+              validValues = {"Allow", "Deny"},
+              optional = false)
     private String access;
 
-    /**
-     * Network protocol: "Tcp", "Udp", "Icmp", or "*" for all.
-     */
-    @Property
+    @Property(description = "Network protocol",
+              validValues = {"Tcp", "Udp", "Icmp", "*"},
+              optional = false)
     private String protocol;
 
-    /**
-     * Source address prefix (CIDR, tag, or "*").
-     * Examples: "10.0.0.0/8", "VirtualNetwork", "Internet", "*"
-     */
-    @Property
+    @Property(description = "Source address prefix (CIDR, tag, or *). Examples: 10.0.0.0/8, VirtualNetwork, Internet, *")
     private String sourceAddressPrefix;
 
-    /**
-     * Source port or range.
-     * Examples: "22", "80-443", "*"
-     */
-    @Property
+    @Property(description = "Source port or range. Examples: 22, 80-443, *")
     private String sourcePortRange;
 
-    /**
-     * Destination address prefix (CIDR, tag, or "*").
-     */
-    @Property
+    @Property(description = "Destination address prefix (CIDR, tag, or *)")
     private String destinationAddressPrefix;
 
-    /**
-     * Destination port or range.
-     * Examples: "22", "80-443", "*"
-     */
-    @Property
+    @Property(description = "Destination port or range. Examples: 22, 80-443, *")
     private String destinationPortRange;
 
-    /**
-     * Optional description of the rule.
-     */
-    @Property
+    @Property(description = "Optional description of the rule")
     private String description;
 }

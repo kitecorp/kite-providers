@@ -91,7 +91,7 @@ public class ManagedDiskResource {
 
     // --- Cloud-managed properties (read-only) ---
 
-    @Cloud
+    @Cloud(importable = true)
     @Property(description = "The Azure resource ID of the disk")
     private String id;
 

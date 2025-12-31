@@ -27,31 +27,17 @@ import lombok.NoArgsConstructor;
 @TypeName("RouteEntry")
 public class RouteEntry {
 
-    /**
-     * The name of the route.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the route", optional = false)
     private String name;
 
-    /**
-     * The destination CIDR to which the route applies.
-     * Required. Example: "0.0.0.0/0" or "10.0.0.0/8"
-     */
-    @Property
+    @Property(description = "The destination CIDR to which the route applies. Example: 0.0.0.0/0 or 10.0.0.0/8", optional = false)
     private String addressPrefix;
 
-    /**
-     * The type of next hop.
-     * Valid values: VirtualNetworkGateway, VnetLocal, Internet, VirtualAppliance, None
-     */
-    @Property
+    @Property(description = "The type of next hop",
+              validValues = {"VirtualNetworkGateway", "VnetLocal", "Internet", "VirtualAppliance", "None"},
+              optional = false)
     private String nextHopType;
 
-    /**
-     * The IP address of the next hop.
-     * Required when nextHopType is VirtualAppliance.
-     */
-    @Property
+    @Property(description = "The IP address of the next hop. Required when nextHopType is VirtualAppliance")
     private String nextHopIpAddress;
 }

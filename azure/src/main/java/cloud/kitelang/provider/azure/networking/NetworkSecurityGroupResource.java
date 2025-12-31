@@ -59,74 +59,40 @@ import java.util.Map;
 @TypeName("NetworkSecurityGroup")
 public class NetworkSecurityGroupResource {
 
-    /**
-     * The name of the network security group.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the network security group", optional = false)
     private String name;
 
-    /**
-     * The Azure resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The Azure region/location.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure region/location", optional = false)
     private String location;
 
-    /**
-     * List of security rules.
-     * Each rule defines allowed or denied traffic.
-     */
-    @Property
+    @Property(description = "List of security rules. Each rule defines allowed or denied traffic")
     private List<SecurityRule> securityRules;
 
-    /**
-     * Tags to apply to the NSG.
-     */
-    @Property
+    @Property(description = "Tags to apply to the NSG")
     private Map<String, String> tags;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The Azure resource ID.
-     */
-    @Cloud
-    @Property
+    @Cloud(importable = true)
+    @Property(description = "The Azure resource ID")
     private String id;
 
-    /**
-     * The provisioning state.
-     */
     @Cloud
-    @Property
+    @Property(description = "The provisioning state")
     private String provisioningState;
 
-    /**
-     * The resource GUID.
-     */
     @Cloud
-    @Property
+    @Property(description = "The resource GUID")
     private String resourceGuid;
 
-    /**
-     * List of network interfaces associated with this NSG.
-     */
     @Cloud
-    @Property
+    @Property(description = "List of network interfaces associated with this NSG")
     private List<String> networkInterfaceIds;
 
-    /**
-     * List of subnets associated with this NSG.
-     */
     @Cloud
-    @Property
+    @Property(description = "List of subnets associated with this NSG")
     private List<String> subnetIds;
 }

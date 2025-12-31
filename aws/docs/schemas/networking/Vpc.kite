@@ -18,6 +18,6 @@ schema Vpc {
     string    defaultSecurityGroupId  // The ID of the default security group
     @cloud
     string    ownerId                 // The AWS account ID that owns the VPC
-    @cloud
+    @cloud(importable)
     string    arn                     // The Amazon Resource Name (ARN) of the VPC
 }

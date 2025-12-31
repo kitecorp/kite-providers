@@ -65,100 +65,52 @@ import java.util.Map;
 @TypeName("LoadBalancer")
 public class LoadBalancerResource {
 
-    /**
-     * The name of the load balancer.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the load balancer", optional = false)
     private String name;
 
-    /**
-     * The resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The Azure region.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure region", optional = false)
     private String location;
 
-    /**
-     * The SKU of the load balancer.
-     * Valid values: Basic, Standard.
-     * Default: Standard
-     */
-    @Property
-    private String sku;
+    @Property(description = "The SKU of the load balancer",
+              validValues = {"Basic", "Standard"})
+    private String sku = "Standard";
 
-    /**
-     * The SKU tier.
-     * Valid values: Regional, Global.
-     * Default: Regional
-     */
-    @Property
-    private String tier;
+    @Property(description = "The SKU tier",
+              validValues = {"Regional", "Global"})
+    private String tier = "Regional";
 
-    /**
-     * Frontend IP configurations.
-     * At least one is required.
-     */
-    @Property
+    @Property(description = "Frontend IP configurations. At least one is required", optional = false)
     private List<FrontendIpConfiguration> frontendIpConfigurations;
 
-    /**
-     * Backend address pools.
-     */
-    @Property
+    @Property(description = "Backend address pools")
     private List<BackendAddressPool> backendAddressPools;
 
-    /**
-     * Health probes for backend health monitoring.
-     */
-    @Property
+    @Property(description = "Health probes for backend health monitoring")
     private List<HealthProbe> healthProbes;
 
-    /**
-     * Load balancing rules.
-     */
-    @Property
+    @Property(description = "Load balancing rules")
     private List<LoadBalancingRule> loadBalancingRules;
 
-    /**
-     * Inbound NAT rules for port forwarding.
-     */
-    @Property
+    @Property(description = "Inbound NAT rules for port forwarding")
     private List<InboundNatRule> inboundNatRules;
 
-    /**
-     * Outbound rules (Standard SKU only).
-     */
-    @Property
+    @Property(description = "Outbound rules (Standard SKU only)")
     private List<OutboundRule> outboundRules;
 
-    /**
-     * Tags to apply to the load balancer.
-     */
-    @Property
+    @Property(description = "Tags to apply to the load balancer")
     private Map<String, String> tags;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The resource ID of the load balancer.
-     */
-    @Cloud
-    @Property
+    @Cloud(importable = true)
+    @Property(description = "The resource ID of the load balancer")
     private String id;
 
-    /**
-     * Provisioning state of the load balancer.
-     */
     @Cloud
-    @Property
+    @Property(description = "Provisioning state of the load balancer")
     private String provisioningState;
 
     @Data
@@ -166,38 +118,23 @@ public class LoadBalancerResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class FrontendIpConfiguration {
-        /**
-         * Name of the frontend IP configuration.
-         * Required.
-         */
+        @Property(description = "Name of the frontend IP configuration", optional = false)
         private String name;
 
-        /**
-         * Resource ID of the public IP address.
-         * Required for public load balancers.
-         */
+        @Property(description = "Resource ID of the public IP address. Required for public load balancers")
         private String publicIpAddressId;
 
-        /**
-         * Resource ID of the subnet for internal load balancers.
-         */
+        @Property(description = "Resource ID of the subnet for internal load balancers")
         private String subnetId;
 
-        /**
-         * Private IP address for internal load balancers.
-         */
+        @Property(description = "Private IP address for internal load balancers")
         private String privateIpAddress;
 
-        /**
-         * Private IP allocation method.
-         * Valid values: Dynamic, Static.
-         * Default: Dynamic
-         */
-        private String privateIpAllocationMethod;
+        @Property(description = "Private IP allocation method",
+                  validValues = {"Dynamic", "Static"})
+        private String privateIpAllocationMethod = "Dynamic";
 
-        /**
-         * Availability zones.
-         */
+        @Property(description = "Availability zones")
         private List<String> zones;
     }
 
@@ -206,15 +143,10 @@ public class LoadBalancerResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class BackendAddressPool {
-        /**
-         * Name of the backend address pool.
-         * Required.
-         */
+        @Property(description = "Name of the backend address pool", optional = false)
         private String name;
 
-        /**
-         * Virtual network ID for backend addresses (Standard SKU).
-         */
+        @Property(description = "Virtual network ID for backend addresses (Standard SKU)")
         private String virtualNetworkId;
     }
 
@@ -223,42 +155,25 @@ public class LoadBalancerResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class HealthProbe {
-        /**
-         * Name of the probe.
-         * Required.
-         */
+        @Property(description = "Name of the probe", optional = false)
         private String name;
 
-        /**
-         * Protocol for the probe.
-         * Valid values: Http, Https, Tcp.
-         * Required.
-         */
+        @Property(description = "Protocol for the probe",
+                  validValues = {"Http", "Https", "Tcp"},
+                  optional = false)
         private String protocol;
 
-        /**
-         * Port to probe.
-         * Required.
-         */
+        @Property(description = "Port to probe", optional = false)
         private Integer port;
 
-        /**
-         * Request path for HTTP/HTTPS probes.
-         * Required for HTTP/HTTPS protocol.
-         */
+        @Property(description = "Request path for HTTP/HTTPS probes. Required for HTTP/HTTPS protocol")
         private String requestPath;
 
-        /**
-         * Interval between probes in seconds.
-         * Default: 15
-         */
-        private Integer intervalInSeconds;
+        @Property(description = "Interval between probes in seconds")
+        private Integer intervalInSeconds = 15;
 
-        /**
-         * Number of failed probes before marking unhealthy.
-         * Default: 2
-         */
-        private Integer numberOfProbes;
+        @Property(description = "Number of failed probes before marking unhealthy")
+        private Integer numberOfProbes = 2;
     }
 
     @Data
@@ -266,78 +181,44 @@ public class LoadBalancerResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LoadBalancingRule {
-        /**
-         * Name of the rule.
-         * Required.
-         */
+        @Property(description = "Name of the rule", optional = false)
         private String name;
 
-        /**
-         * Name of the frontend IP configuration.
-         * Required.
-         */
+        @Property(description = "Name of the frontend IP configuration", optional = false)
         private String frontendIpConfigurationName;
 
-        /**
-         * Name of the backend address pool.
-         * Required.
-         */
+        @Property(description = "Name of the backend address pool", optional = false)
         private String backendAddressPoolName;
 
-        /**
-         * Name of the health probe.
-         */
+        @Property(description = "Name of the health probe")
         private String probeName;
 
-        /**
-         * Protocol for the rule.
-         * Valid values: Tcp, Udp, All.
-         * Required.
-         */
+        @Property(description = "Protocol for the rule",
+                  validValues = {"Tcp", "Udp", "All"},
+                  optional = false)
         private String protocol;
 
-        /**
-         * Frontend port.
-         * Required.
-         */
+        @Property(description = "Frontend port", optional = false)
         private Integer frontendPort;
 
-        /**
-         * Backend port.
-         * Required.
-         */
+        @Property(description = "Backend port", optional = false)
         private Integer backendPort;
 
-        /**
-         * Enable floating IP (Direct Server Return).
-         * Default: false
-         */
-        private Boolean enableFloatingIP;
+        @Property(description = "Enable floating IP (Direct Server Return)")
+        private Boolean enableFloatingIP = false;
 
-        /**
-         * Enable TCP reset for idle connections (Standard SKU).
-         * Default: false
-         */
-        private Boolean enableTcpReset;
+        @Property(description = "Enable TCP reset for idle connections (Standard SKU)")
+        private Boolean enableTcpReset = false;
 
-        /**
-         * Idle timeout in minutes.
-         * Default: 4
-         */
-        private Integer idleTimeoutInMinutes;
+        @Property(description = "Idle timeout in minutes")
+        private Integer idleTimeoutInMinutes = 4;
 
-        /**
-         * Load distribution mode.
-         * Valid values: Default, SourceIP, SourceIPProtocol.
-         * Default: Default
-         */
-        private String loadDistribution;
+        @Property(description = "Load distribution mode",
+                  validValues = {"Default", "SourceIP", "SourceIPProtocol"})
+        private String loadDistribution = "Default";
 
-        /**
-         * Disable outbound SNAT for this rule.
-         * Default: false
-         */
-        private Boolean disableOutboundSnat;
+        @Property(description = "Disable outbound SNAT for this rule")
+        private Boolean disableOutboundSnat = false;
     }
 
     @Data
@@ -345,54 +226,31 @@ public class LoadBalancerResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class InboundNatRule {
-        /**
-         * Name of the NAT rule.
-         * Required.
-         */
+        @Property(description = "Name of the NAT rule", optional = false)
         private String name;
 
-        /**
-         * Name of the frontend IP configuration.
-         * Required.
-         */
+        @Property(description = "Name of the frontend IP configuration", optional = false)
         private String frontendIpConfigurationName;
 
-        /**
-         * Protocol.
-         * Valid values: Tcp, Udp, All.
-         * Required.
-         */
+        @Property(description = "Protocol",
+                  validValues = {"Tcp", "Udp", "All"},
+                  optional = false)
         private String protocol;
 
-        /**
-         * Frontend port.
-         * Required.
-         */
+        @Property(description = "Frontend port", optional = false)
         private Integer frontendPort;
 
-        /**
-         * Backend port.
-         * Required.
-         */
+        @Property(description = "Backend port", optional = false)
         private Integer backendPort;
 
-        /**
-         * Idle timeout in minutes.
-         * Default: 4
-         */
-        private Integer idleTimeoutInMinutes;
+        @Property(description = "Idle timeout in minutes")
+        private Integer idleTimeoutInMinutes = 4;
 
-        /**
-         * Enable floating IP.
-         * Default: false
-         */
-        private Boolean enableFloatingIP;
+        @Property(description = "Enable floating IP")
+        private Boolean enableFloatingIP = false;
 
-        /**
-         * Enable TCP reset.
-         * Default: false
-         */
-        private Boolean enableTcpReset;
+        @Property(description = "Enable TCP reset")
+        private Boolean enableTcpReset = false;
     }
 
     @Data
@@ -400,46 +258,27 @@ public class LoadBalancerResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OutboundRule {
-        /**
-         * Name of the outbound rule.
-         * Required.
-         */
+        @Property(description = "Name of the outbound rule", optional = false)
         private String name;
 
-        /**
-         * Name of the backend address pool.
-         * Required.
-         */
+        @Property(description = "Name of the backend address pool", optional = false)
         private String backendAddressPoolName;
 
-        /**
-         * Names of the frontend IP configurations.
-         * Required.
-         */
+        @Property(description = "Names of the frontend IP configurations", optional = false)
         private List<String> frontendIpConfigurationNames;
 
-        /**
-         * Protocol.
-         * Valid values: Tcp, Udp, All.
-         * Required.
-         */
+        @Property(description = "Protocol",
+                  validValues = {"Tcp", "Udp", "All"},
+                  optional = false)
         private String protocol;
 
-        /**
-         * Number of outbound ports per instance.
-         */
+        @Property(description = "Number of outbound ports per instance")
         private Integer allocatedOutboundPorts;
 
-        /**
-         * Idle timeout in minutes.
-         * Default: 4
-         */
-        private Integer idleTimeoutInMinutes;
+        @Property(description = "Idle timeout in minutes")
+        private Integer idleTimeoutInMinutes = 4;
 
-        /**
-         * Enable TCP reset.
-         * Default: false
-         */
-        private Boolean enableTcpReset;
+        @Property(description = "Enable TCP reset")
+        private Boolean enableTcpReset = false;
     }
 }

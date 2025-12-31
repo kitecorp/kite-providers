@@ -72,7 +72,7 @@ public class EbsVolumeResource {
     @Property(description = "The volume ID assigned by AWS")
     private String volumeId;
 
-    @Cloud
+    @Cloud(importable = true)
     @Property(description = "The Amazon Resource Name (ARN) of the volume")
     private String arn;
 

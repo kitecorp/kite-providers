@@ -33,39 +33,22 @@ import java.util.Map;
 @TypeName("ResourceGroup")
 public class ResourceGroupResource {
 
-    /**
-     * The name of the resource group.
-     * Required. Must be unique within the subscription.
-     */
-    @Property
+    @Property(description = "The name of the resource group. Must be unique within the subscription", optional = false)
     private String name;
 
-    /**
-     * The Azure region/location (e.g., "eastus", "westeurope").
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure region/location (e.g., eastus, westeurope)", optional = false)
     private String location;
 
-    /**
-     * Tags to apply to the resource group.
-     */
-    @Property
+    @Property(description = "Tags to apply to the resource group")
     private Map<String, String> tags;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The Azure resource ID of the resource group.
-     */
-    @Cloud
-    @Property
+    @Cloud(importable = true)
+    @Property(description = "The Azure resource ID of the resource group")
     private String id;
 
-    /**
-     * The provisioning state of the resource group.
-     */
     @Cloud
-    @Property
+    @Property(description = "The provisioning state of the resource group")
     private String provisioningState;
 }

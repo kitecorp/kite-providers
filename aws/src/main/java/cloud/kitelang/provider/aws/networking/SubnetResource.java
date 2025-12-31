@@ -81,7 +81,7 @@ public class SubnetResource {
     @Property(description = "The AWS account ID that owns the subnet")
     private String ownerId;
 
-    @Cloud
+    @Cloud(importable = true)
     @Property(description = "The Amazon Resource Name (ARN) of the subnet")
     private String arn;
 }

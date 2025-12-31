@@ -96,7 +96,7 @@ public class StorageAccountResource {
 
     // --- Cloud-managed properties (read-only) ---
 
-    @Cloud
+    @Cloud(importable = true)
     @Property(description = "The resource ID of the storage account")
     private String id;
 

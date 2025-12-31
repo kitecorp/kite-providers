@@ -14,7 +14,7 @@ schema LoadBalancer {
     string    accessLogsBucket        // S3 bucket for access logs
     string    accessLogsPrefix        // S3 bucket prefix for access logs
     map       tags                    // Tags to apply to the load balancer
-    @cloud
+    @cloud(importable)
     string    arn                     // The Amazon Resource Name (ARN) of the load balancer
     @cloud
     string    dnsName                 // The DNS name of the load balancer

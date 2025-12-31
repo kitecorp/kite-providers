@@ -76,147 +76,72 @@ import java.util.Map;
 @TypeName("DnsRecordSet")
 public class DnsRecordSetResource {
 
-    /**
-     * The name of the DNS zone.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the DNS zone", optional = false)
     private String zoneName;
 
-    /**
-     * The resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The name of the record set.
-     * Use "@" for the zone apex.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the record set. Use @ for the zone apex", optional = false)
     private String name;
 
-    /**
-     * The DNS record type.
-     * Valid values: A, AAAA, CNAME, MX, TXT, NS, SRV, CAA, PTR, SOA.
-     * Required.
-     */
-    @Property
+    @Property(description = "The DNS record type",
+              validValues = {"A", "AAAA", "CNAME", "MX", "TXT", "NS", "SRV", "CAA", "PTR", "SOA"},
+              optional = false)
     private String type;
 
-    /**
-     * The TTL (time to live) in seconds.
-     * Required unless targetResourceId is specified.
-     */
-    @Property
+    @Property(description = "The TTL (time to live) in seconds. Required unless targetResourceId is specified")
     private Long ttl;
 
-    /**
-     * A records (IPv4 addresses).
-     * Used when type = "A".
-     */
-    @Property
+    @Property(description = "A records (IPv4 addresses). Used when type = A")
     private List<String> aRecords;
 
-    /**
-     * AAAA records (IPv6 addresses).
-     * Used when type = "AAAA".
-     */
-    @Property
+    @Property(description = "AAAA records (IPv6 addresses). Used when type = AAAA")
     private List<String> aaaaRecords;
 
-    /**
-     * CNAME record (canonical name).
-     * Used when type = "CNAME".
-     */
-    @Property
+    @Property(description = "CNAME record (canonical name). Used when type = CNAME")
     private String cnameRecord;
 
-    /**
-     * MX records.
-     * Used when type = "MX".
-     */
-    @Property
+    @Property(description = "MX records. Used when type = MX")
     private List<MxRecord> mxRecords;
 
-    /**
-     * TXT records.
-     * Used when type = "TXT".
-     */
-    @Property
+    @Property(description = "TXT records. Used when type = TXT")
     private List<String> txtRecords;
 
-    /**
-     * NS records.
-     * Used when type = "NS".
-     */
-    @Property
+    @Property(description = "NS records. Used when type = NS")
     private List<String> nsRecords;
 
-    /**
-     * SRV records.
-     * Used when type = "SRV".
-     */
-    @Property
+    @Property(description = "SRV records. Used when type = SRV")
     private List<SrvRecord> srvRecords;
 
-    /**
-     * CAA records.
-     * Used when type = "CAA".
-     */
-    @Property
+    @Property(description = "CAA records. Used when type = CAA")
     private List<CaaRecord> caaRecords;
 
-    /**
-     * PTR records.
-     * Used when type = "PTR".
-     */
-    @Property
+    @Property(description = "PTR records. Used when type = PTR")
     private List<String> ptrRecords;
 
-    /**
-     * Target resource ID for alias record.
-     * Points to an Azure resource (e.g., Public IP, Traffic Manager).
-     */
-    @Property
+    @Property(description = "Target resource ID for alias record. Points to an Azure resource (e.g., Public IP, Traffic Manager)")
     private String targetResourceId;
 
-    /**
-     * Metadata for the record set.
-     */
-    @Property
+    @Property(description = "Metadata for the record set")
     private Map<String, String> metadata;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The resource ID of the record set.
-     */
-    @Cloud
-    @Property
+    @Cloud(importable = true)
+    @Property(description = "The resource ID of the record set")
     private String id;
 
-    /**
-     * The fully qualified domain name of the record set.
-     */
     @Cloud
-    @Property
+    @Property(description = "The fully qualified domain name of the record set")
     private String fqdn;
 
-    /**
-     * The provisioning state.
-     */
     @Cloud
-    @Property
+    @Property(description = "The provisioning state")
     private String provisioningState;
 
-    /**
-     * The ETag of the record set.
-     */
     @Cloud
-    @Property
+    @Property(description = "The ETag of the record set")
     private String etag;
 
     @Data
@@ -224,14 +149,10 @@ public class DnsRecordSetResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class MxRecord {
-        /**
-         * The preference value (lower = higher priority).
-         */
+        @Property(description = "The preference value (lower = higher priority)")
         private Integer preference;
 
-        /**
-         * The mail exchange server.
-         */
+        @Property(description = "The mail exchange server")
         private String exchange;
     }
 
@@ -240,24 +161,16 @@ public class DnsRecordSetResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class SrvRecord {
-        /**
-         * The priority value (lower = higher priority).
-         */
+        @Property(description = "The priority value (lower = higher priority)")
         private Integer priority;
 
-        /**
-         * The weight for load balancing.
-         */
+        @Property(description = "The weight for load balancing")
         private Integer weight;
 
-        /**
-         * The port number.
-         */
+        @Property(description = "The port number")
         private Integer port;
 
-        /**
-         * The target server hostname.
-         */
+        @Property(description = "The target server hostname")
         private String target;
     }
 
@@ -266,19 +179,14 @@ public class DnsRecordSetResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CaaRecord {
-        /**
-         * The flags (0-255).
-         */
+        @Property(description = "The flags (0-255)")
         private Integer flags;
 
-        /**
-         * The tag (e.g., "issue", "issuewild", "iodef").
-         */
+        @Property(description = "The tag",
+                  validValues = {"issue", "issuewild", "iodef"})
         private String tag;
 
-        /**
-         * The value.
-         */
+        @Property(description = "The value")
         private String value;
     }
 }
