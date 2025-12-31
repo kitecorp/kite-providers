@@ -36,38 +36,41 @@ import java.util.Map;
 @TypeName("LoadBalancer")
 public class LoadBalancerResource {
 
-    @Property(description = "The name of the load balancer. Must be unique within your AWS account")
+    @Property(description = "The name of the load balancer. Must be unique within your AWS account", optional = false)
     private String name;
 
-    @Property(description = "The type: application (ALB), network (NLB), gateway (GWLB)")
-    private String type;
+    @Property(description = "The type of load balancer",
+              validValues = {"application", "network", "gateway"})
+    private String type = "application";
 
-    @Property(description = "The scheme: internet-facing or internal. Default: internet-facing")
-    private String scheme;
+    @Property(description = "The scheme for the load balancer",
+              validValues = {"internet-facing", "internal"})
+    private String scheme = "internet-facing";
 
-    @Property(description = "The subnet IDs. At least two in different Availability Zones")
+    @Property(description = "The subnet IDs. At least two in different Availability Zones", optional = false)
     private List<String> subnets;
 
     @Property(description = "The security group IDs. Required for ALB, not applicable for NLB")
     private List<String> securityGroups;
 
-    @Property(description = "The IP address type: ipv4 or dualstack. Default: ipv4")
-    private String ipAddressType;
+    @Property(description = "The IP address type",
+              validValues = {"ipv4", "dualstack"})
+    private String ipAddressType = "ipv4";
 
-    @Property(description = "Enable deletion protection. Default: false")
-    private Boolean deletionProtection;
+    @Property(description = "Enable deletion protection")
+    private Boolean deletionProtection = false;
 
-    @Property(description = "Enable cross-zone load balancing. Default: true for ALB, false for NLB")
+    @Property(description = "Enable cross-zone load balancing")
     private Boolean crossZoneLoadBalancing;
 
-    @Property(description = "Enable HTTP/2 support (ALB only). Default: true")
-    private Boolean enableHttp2;
+    @Property(description = "Enable HTTP/2 support (ALB only)")
+    private Boolean enableHttp2 = true;
 
-    @Property(description = "Idle timeout in seconds (ALB only). Default: 60")
-    private Integer idleTimeout;
+    @Property(description = "Idle timeout in seconds (ALB only)")
+    private Integer idleTimeout = 60;
 
     @Property(description = "Enable access logs")
-    private Boolean accessLogsEnabled;
+    private Boolean accessLogsEnabled = false;
 
     @Property(description = "S3 bucket for access logs")
     private String accessLogsBucket;

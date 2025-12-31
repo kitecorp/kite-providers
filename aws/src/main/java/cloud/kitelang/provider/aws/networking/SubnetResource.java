@@ -34,10 +34,10 @@ import java.util.Map;
 @TypeName("Subnet")
 public class SubnetResource {
 
-    @Property(description = "The VPC ID where the subnet will be created")
+    @Property(description = "The VPC ID where the subnet will be created", optional = false)
     private String vpcId;
 
-    @Property(description = "The IPv4 CIDR block for the subnet (e.g., 10.0.1.0/24)")
+    @Property(description = "The IPv4 CIDR block for the subnet (e.g., 10.0.1.0/24)", optional = false)
     private String cidrBlock;
 
     @Property(description = "The IPv6 CIDR block for the subnet")
@@ -46,11 +46,11 @@ public class SubnetResource {
     @Property(description = "The Availability Zone for the subnet (e.g., us-east-1a)")
     private String availabilityZone;
 
-    @Property(description = "Auto-assign public IPv4 addresses to instances. Default: false")
-    private Boolean mapPublicIpOnLaunch;
+    @Property(description = "Auto-assign public IPv4 addresses to instances")
+    private Boolean mapPublicIpOnLaunch = false;
 
-    @Property(description = "Assign IPv6 addresses to instances. Default: false")
-    private Boolean assignIpv6AddressOnCreation;
+    @Property(description = "Assign IPv6 addresses to instances")
+    private Boolean assignIpv6AddressOnCreation = false;
 
     @Property(description = "Tags to apply to the subnet")
     private Map<String, String> tags;

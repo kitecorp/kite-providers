@@ -35,14 +35,15 @@ import java.util.Map;
 @TypeName("EbsVolume")
 public class EbsVolumeResource {
 
-    @Property(description = "The Availability Zone in which to create the volume")
+    @Property(description = "The Availability Zone in which to create the volume", optional = false)
     private String availabilityZone;
 
-    @Property(description = "The size of the volume in GiBs")
+    @Property(description = "The size of the volume in GiBs", optional = false)
     private Integer size;
 
-    @Property(description = "The volume type: gp2, gp3, io1, io2, st1, sc1, standard. Default: gp3")
-    private String volumeType;
+    @Property(description = "The volume type",
+              validValues = {"gp2", "gp3", "io1", "io2", "st1", "sc1", "standard"})
+    private String volumeType = "gp3";
 
     @Property(description = "The number of I/O operations per second (IOPS)")
     private Integer iops;
@@ -50,8 +51,8 @@ public class EbsVolumeResource {
     @Property(description = "The throughput in MiB/s. Only valid for gp3 volumes")
     private Integer throughput;
 
-    @Property(description = "Whether the volume should be encrypted. Default: false")
-    private Boolean encrypted;
+    @Property(description = "Whether the volume should be encrypted")
+    private Boolean encrypted = false;
 
     @Property(description = "The ARN of the KMS key to use for encryption")
     private String kmsKeyId;
@@ -60,7 +61,7 @@ public class EbsVolumeResource {
     private String snapshotId;
 
     @Property(description = "Enable Multi-Attach for io1/io2 volumes")
-    private Boolean multiAttachEnabled;
+    private Boolean multiAttachEnabled = false;
 
     @Property(description = "Tags to apply to the volume")
     private Map<String, String> tags;

@@ -17,7 +17,7 @@ import java.util.Map;
  * <pre>
  * resource ElasticIp nat {
  *     domain = "vpc"
- *     tags = {
+ *     tags   = {
  *         Name: "nat-eip",
  *         Environment: "production"
  *     }

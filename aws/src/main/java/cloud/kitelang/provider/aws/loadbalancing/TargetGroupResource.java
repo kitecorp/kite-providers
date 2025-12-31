@@ -42,35 +42,39 @@ import java.util.Map;
 @TypeName("TargetGroup")
 public class TargetGroupResource {
 
-    @Property(description = "The name of the target group")
+    @Property(description = "The name of the target group", optional = false)
     private String name;
 
-    @Property(description = "The port on which targets receive traffic")
+    @Property(description = "The port on which targets receive traffic", optional = false)
     private Integer port;
 
-    @Property(description = "The protocol: HTTP, HTTPS, TCP, TLS, UDP, TCP_UDP, GENEVE")
-    private String protocol;
+    @Property(description = "The protocol for routing traffic",
+              validValues = {"HTTP", "HTTPS", "TCP", "TLS", "UDP", "TCP_UDP", "GENEVE"})
+    private String protocol = "HTTP";
 
-    @Property(description = "The protocol version (ALB only): HTTP1, HTTP2, GRPC")
-    private String protocolVersion;
+    @Property(description = "The protocol version (ALB only)",
+              validValues = {"HTTP1", "HTTP2", "GRPC"})
+    private String protocolVersion = "HTTP1";
 
-    @Property(description = "The VPC ID for the target group")
+    @Property(description = "The VPC ID for the target group", optional = false)
     private String vpcId;
 
-    @Property(description = "The target type: instance, ip, lambda, alb. Default: instance")
-    private String targetType;
+    @Property(description = "The target type",
+              validValues = {"instance", "ip", "lambda", "alb"})
+    private String targetType = "instance";
 
-    @Property(description = "The IP address type: ipv4 or ipv6. Default: ipv4")
-    private String ipAddressType;
+    @Property(description = "The IP address type",
+              validValues = {"ipv4", "ipv6"})
+    private String ipAddressType = "ipv4";
 
     @Property(description = "Health check configuration")
     private HealthCheck healthCheck;
 
-    @Property(description = "Deregistration delay in seconds. Default: 300")
-    private Integer deregistrationDelay;
+    @Property(description = "Deregistration delay in seconds")
+    private Integer deregistrationDelay = 300;
 
-    @Property(description = "Slow start duration in seconds (ALB only). Default: 0")
-    private Integer slowStart;
+    @Property(description = "Slow start duration in seconds (ALB only)")
+    private Integer slowStart = 0;
 
     @Property(description = "Stickiness configuration")
     private Stickiness stickiness;

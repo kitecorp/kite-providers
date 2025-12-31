@@ -59,26 +59,28 @@ import java.util.Map;
 @TypeName("S3Bucket")
 public class S3BucketResource {
 
-    @Property(description = "Bucket name (globally unique, DNS-compliant)")
+    @Property(description = "Bucket name (globally unique, DNS-compliant)", optional = false)
     private String bucket;
 
-    @Property(description = "Canned ACL: private, public-read, public-read-write, authenticated-read")
-    private String acl;
+    @Property(description = "Canned ACL for the bucket",
+              validValues = {"private", "public-read", "public-read-write", "authenticated-read"})
+    private String acl = "private";
 
     @Property(description = "Enable versioning for the bucket")
-    private Boolean versioning;
+    private Boolean versioning = false;
 
     @Property(description = "AWS region for the bucket")
     private String region;
 
-    @Property(description = "Server-side encryption: AES256 or aws:kms")
+    @Property(description = "Server-side encryption algorithm",
+              validValues = {"AES256", "aws:kms"})
     private String serverSideEncryption;
 
     @Property(description = "KMS key ID for encryption (when using aws:kms)")
     private String kmsKeyId;
 
-    @Property(description = "Block all public access. Default: true")
-    private Boolean blockPublicAccess;
+    @Property(description = "Block all public access")
+    private Boolean blockPublicAccess = true;
 
     @Property(description = "Index document for static website hosting")
     private String websiteIndexDocument;
