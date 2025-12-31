@@ -31,20 +31,21 @@ import lombok.NoArgsConstructor;
 @TypeName("Vpc")
 public class VpcResource {
 
-    @Property(description = "The IPv4 CIDR block for the VPC (e.g., 10.0.0.0/16)")
+    @Property(description = "The IPv4 CIDR block for the VPC (e.g., 10.0.0.0/16)", optional = false)
     private String cidrBlock;
 
     @Property(description = "The IPv6 CIDR block for the VPC. If specified, AWS associates an IPv6 CIDR block")
     private String ipv6CidrBlock;
 
-    @Property(description = "Tenancy option for instances. Valid values: default, dedicated")
-    private String instanceTenancy;
+    @Property(description = "Tenancy option for instances",
+              validValues = {"default", "dedicated"})
+    private String instanceTenancy = "default";
 
-    @Property(description = "Enable DNS support in the VPC. Default: true")
-    private Boolean enableDnsSupport;
+    @Property(description = "Enable DNS support in the VPC")
+    private Boolean enableDnsSupport = true;
 
-    @Property(description = "Enable DNS hostnames in the VPC. Default: false")
-    private Boolean enableDnsHostnames;
+    @Property(description = "Enable DNS hostnames in the VPC")
+    private Boolean enableDnsHostnames = false;
 
     @Property(description = "Tags to apply to the VPC")
     private java.util.Map<String, String> tags;

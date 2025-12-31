@@ -37,10 +37,10 @@ import java.util.Map;
 @TypeName("Ec2Instance")
 public class Ec2InstanceResource {
 
-    @Property(description = "The AMI ID to use for the instance")
+    @Property(description = "The AMI ID to use for the instance", optional = false)
     private String ami;
 
-    @Property(description = "The instance type (e.g., t3.micro, m5.large)")
+    @Property(description = "The instance type (e.g., t3.micro, m5.large)", optional = false)
     private String instanceType;
 
     @Property(description = "The subnet ID to launch the instance in")
@@ -53,7 +53,7 @@ public class Ec2InstanceResource {
     private String keyName;
 
     @Property(description = "Whether to associate a public IP address")
-    private Boolean associatePublicIpAddress;
+    private Boolean associatePublicIpAddress = false;
 
     @Property(description = "The IAM instance profile name or ARN")
     private String iamInstanceProfile;
@@ -64,20 +64,22 @@ public class Ec2InstanceResource {
     @Property(description = "The availability zone to launch in")
     private String availabilityZone;
 
-    @Property(description = "Enable detailed monitoring. Default: false")
-    private Boolean monitoring;
+    @Property(description = "Enable detailed monitoring")
+    private Boolean monitoring = false;
 
-    @Property(description = "Tenancy: default, dedicated, or host")
-    private String tenancy;
+    @Property(description = "Instance tenancy option",
+              validValues = {"default", "dedicated", "host"})
+    private String tenancy = "default";
 
     @Property(description = "Root volume size in GiB")
     private Integer rootVolumeSize;
 
-    @Property(description = "Root volume type: gp2, gp3, io1, io2, st1, sc1")
-    private String rootVolumeType;
+    @Property(description = "Root volume type",
+              validValues = {"gp2", "gp3", "io1", "io2", "st1", "sc1"})
+    private String rootVolumeType = "gp3";
 
-    @Property(description = "Delete root volume on termination. Default: true")
-    private Boolean deleteRootVolumeOnTermination;
+    @Property(description = "Delete root volume on termination")
+    private Boolean deleteRootVolumeOnTermination = true;
 
     @Property(description = "Tags to apply to the instance")
     private Map<String, String> tags;
