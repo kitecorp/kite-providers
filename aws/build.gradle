@@ -1,5 +1,5 @@
 plugins {
-    id 'cloud.kitelang.provider' version '0.2.0'
+    id 'cloud.kitelang.provider' version '0.2.1'
 }
 
 group = 'cloud.kitelang'

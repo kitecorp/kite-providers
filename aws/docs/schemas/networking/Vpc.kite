@@ -1,0 +1,23 @@
+// Vpc
+schema Vpc {
+    string    cidrBlock               // The IPv4 CIDR block for the VPC (e.g., 10.0.0.0/16)
+    string    ipv6CidrBlock           // The IPv6 CIDR block for the VPC. If specified, AWS associates an IPv6 CIDR block
+    string    instanceTenancy         // Tenancy option for instances | default: default | valid: default, dedicated
+    boolean   enableDnsSupport        // Enable DNS support in the VPC | default: true
+    boolean   enableDnsHostnames      // Enable DNS hostnames in the VPC | default: false
+    map       tags                    // Tags to apply to the VPC
+    @cloud
+    string    vpcId                   // The VPC ID assigned by AWS
+    @cloud
+    string    state                   // The current state of the VPC (pending, available)
+    @cloud
+    string    mainRouteTableId        // The ID of the main route table
+    @cloud
+    string    defaultNetworkAclId     // The ID of the default network ACL
+    @cloud
+    string    defaultSecurityGroupId  // The ID of the default security group
+    @cloud
+    string    ownerId                 // The AWS account ID that owns the VPC
+    @cloud
+    string    arn                     // The Amazon Resource Name (ARN) of the VPC
+}

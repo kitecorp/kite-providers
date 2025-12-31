@@ -1,0 +1,10 @@
+// File
+schema File {
+    string    path
+    string    content
+    string    permissions
+    @cloud
+    string    checksum
+    @cloud
+    string    lastModified
+}
