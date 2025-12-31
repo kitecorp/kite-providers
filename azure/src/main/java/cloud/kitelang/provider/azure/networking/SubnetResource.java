@@ -29,89 +29,44 @@ import lombok.NoArgsConstructor;
 @TypeName("Subnet")
 public class SubnetResource {
 
-    /**
-     * The name of the subnet.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the subnet", optional = false)
     private String name;
 
-    /**
-     * The Azure resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The name of the parent Virtual Network.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the parent Virtual Network", optional = false)
     private String vnetName;
 
-    /**
-     * The address prefix for the subnet in CIDR notation.
-     * Required. Example: "10.0.1.0/24"
-     */
-    @Property
+    @Property(description = "The address prefix for the subnet in CIDR notation (e.g., 10.0.1.0/24)", optional = false)
     private String addressPrefix;
 
-    /**
-     * The ID of the Network Security Group to associate.
-     * Optional.
-     */
-    @Property
+    @Property(description = "The ID of the Network Security Group to associate")
     private String networkSecurityGroupId;
 
-    /**
-     * The ID of the Route Table to associate.
-     * Optional.
-     */
-    @Property
+    @Property(description = "The ID of the Route Table to associate")
     private String routeTableId;
 
-    /**
-     * Enable private endpoint network policies.
-     * Default: true
-     */
-    @Property
-    private Boolean privateEndpointNetworkPolicies;
+    @Property(description = "Enable private endpoint network policies")
+    private Boolean privateEndpointNetworkPolicies = true;
 
-    /**
-     * Enable private link service network policies.
-     * Default: true
-     */
-    @Property
-    private Boolean privateLinkServiceNetworkPolicies;
+    @Property(description = "Enable private link service network policies")
+    private Boolean privateLinkServiceNetworkPolicies = true;
 
-    /**
-     * Service endpoints to enable on the subnet.
-     * Example: ["Microsoft.Storage", "Microsoft.Sql"]
-     */
-    @Property
+    @Property(description = "Service endpoints to enable (e.g., Microsoft.Storage, Microsoft.Sql)")
     private java.util.List<String> serviceEndpoints;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The Azure resource ID of the subnet.
-     */
     @Cloud
-    @Property
+    @Property(description = "The Azure resource ID of the subnet")
     private String id;
 
-    /**
-     * The provisioning state of the subnet.
-     */
     @Cloud
-    @Property
+    @Property(description = "The provisioning state of the subnet")
     private String provisioningState;
 
-    /**
-     * The purpose of the subnet (e.g., for private endpoints).
-     */
     @Cloud
-    @Property
+    @Property(description = "The purpose of the subnet (e.g., for private endpoints)")
     private String purpose;
 }

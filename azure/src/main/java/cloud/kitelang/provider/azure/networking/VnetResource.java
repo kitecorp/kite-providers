@@ -37,89 +37,45 @@ import java.util.Map;
 @TypeName("Vnet")
 public class VnetResource {
 
-    /**
-     * The name of the virtual network.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the virtual network", optional = false)
     private String name;
 
-    /**
-     * The Azure resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The Azure region/location (e.g., "eastus", "westeurope").
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure region/location (e.g., eastus, westeurope)", optional = false)
     private String location;
 
-    /**
-     * The address spaces for the VNet in CIDR notation.
-     * At least one is required.
-     * Example: ["10.0.0.0/16", "172.16.0.0/16"]
-     */
-    @Property
+    @Property(description = "The address spaces for the VNet in CIDR notation", optional = false)
     private List<String> addressSpaces;
 
-    /**
-     * Custom DNS servers for the VNet.
-     * If not specified, Azure-provided DNS is used.
-     */
-    @Property
+    @Property(description = "Custom DNS servers for the VNet. If not specified, Azure-provided DNS is used")
     private List<String> dnsServers;
 
-    /**
-     * Enable DDoS protection for the VNet.
-     * Default: false (Basic protection)
-     */
-    @Property
-    private Boolean enableDdosProtection;
+    @Property(description = "Enable DDoS protection for the VNet")
+    private Boolean enableDdosProtection = false;
 
-    /**
-     * Enable VM protection for the VNet.
-     * Default: false
-     */
-    @Property
-    private Boolean enableVmProtection;
+    @Property(description = "Enable VM protection for the VNet")
+    private Boolean enableVmProtection = false;
 
-    /**
-     * Tags to apply to the VNet.
-     */
-    @Property
+    @Property(description = "Tags to apply to the VNet")
     private Map<String, String> tags;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The Azure resource ID of the VNet.
-     */
     @Cloud
-    @Property
+    @Property(description = "The Azure resource ID of the VNet")
     private String id;
 
-    /**
-     * The provisioning state of the VNet.
-     */
     @Cloud
-    @Property
+    @Property(description = "The provisioning state of the VNet")
     private String provisioningState;
 
-    /**
-     * The resource GUID of the VNet.
-     */
     @Cloud
-    @Property
+    @Property(description = "The resource GUID of the VNet")
     private String resourceGuid;
 
-    /**
-     * Whether the VNet has any subnets.
-     */
     @Cloud
-    @Property
+    @Property(description = "Whether the VNet has any subnets")
     private Boolean hasSubnets;
 }

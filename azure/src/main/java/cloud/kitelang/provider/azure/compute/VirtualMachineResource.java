@@ -40,203 +40,102 @@ import java.util.Map;
 @TypeName("VirtualMachine")
 public class VirtualMachineResource {
 
-    /**
-     * The name of the virtual machine.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the virtual machine", optional = false)
     private String name;
 
-    /**
-     * The Azure resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The Azure region/location.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure region/location", optional = false)
     private String location;
 
-    /**
-     * The VM size (e.g., Standard_B2s, Standard_D2s_v3).
-     * Required.
-     */
-    @Property
+    @Property(description = "The VM size (e.g., Standard_B2s, Standard_D2s_v3)", optional = false)
     private String size;
 
-    /**
-     * The admin username for the VM.
-     * Required.
-     */
-    @Property
+    @Property(description = "The admin username for the VM", optional = false)
     private String adminUsername;
 
-    /**
-     * The admin password (for Windows or password auth).
-     * Either adminPassword or sshPublicKey is required.
-     */
-    @Property
+    @Property(description = "The admin password (for Windows or password auth)")
     private String adminPassword;
 
-    /**
-     * The SSH public key for Linux VMs.
-     * Either adminPassword or sshPublicKey is required.
-     */
-    @Property
+    @Property(description = "The SSH public key for Linux VMs")
     private String sshPublicKey;
 
-    /**
-     * The image publisher (e.g., Canonical, MicrosoftWindowsServer).
-     * Required.
-     */
-    @Property
+    @Property(description = "The image publisher (e.g., Canonical, MicrosoftWindowsServer)", optional = false)
     private String imagePublisher;
 
-    /**
-     * The image offer (e.g., 0001-com-ubuntu-server-jammy, WindowsServer).
-     * Required.
-     */
-    @Property
+    @Property(description = "The image offer (e.g., 0001-com-ubuntu-server-jammy, WindowsServer)", optional = false)
     private String imageOffer;
 
-    /**
-     * The image SKU (e.g., 22_04-lts-gen2, 2022-datacenter-azure-edition).
-     * Required.
-     */
-    @Property
+    @Property(description = "The image SKU (e.g., 22_04-lts-gen2, 2022-datacenter-azure-edition)", optional = false)
     private String imageSku;
 
-    /**
-     * The image version.
-     * Default: "latest"
-     */
-    @Property
-    private String imageVersion;
+    @Property(description = "The image version")
+    private String imageVersion = "latest";
 
-    /**
-     * The subnet ID to attach the VM to.
-     * Required.
-     */
-    @Property
+    @Property(description = "The subnet ID to attach the VM to", optional = false)
     private String subnetId;
 
-    /**
-     * The public IP address ID to associate.
-     */
-    @Property
+    @Property(description = "The public IP address ID to associate")
     private String publicIpAddressId;
 
-    /**
-     * The network security group ID for the NIC.
-     */
-    @Property
+    @Property(description = "The network security group ID for the NIC")
     private String networkSecurityGroupId;
 
-    /**
-     * The OS disk size in GB.
-     */
-    @Property
+    @Property(description = "The OS disk size in GB")
     private Integer osDiskSizeGb;
 
-    /**
-     * The OS disk type: Standard_LRS, StandardSSD_LRS, Premium_LRS, UltraSSD_LRS.
-     * Default: Premium_LRS
-     */
-    @Property
-    private String osDiskType;
+    @Property(description = "The OS disk type",
+              validValues = {"Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "UltraSSD_LRS"})
+    private String osDiskType = "Premium_LRS";
 
-    /**
-     * The OS disk caching: None, ReadOnly, ReadWrite.
-     * Default: ReadWrite
-     */
-    @Property
-    private String osDiskCaching;
+    @Property(description = "The OS disk caching",
+              validValues = {"None", "ReadOnly", "ReadWrite"})
+    private String osDiskCaching = "ReadWrite";
 
-    /**
-     * The computer name (hostname).
-     * Default: same as VM name
-     */
-    @Property
+    @Property(description = "The computer name (hostname). Defaults to VM name")
     private String computerName;
 
-    /**
-     * Custom data for cloud-init (Linux) or CustomScriptExtension (Windows).
-     * Will be base64 encoded.
-     */
-    @Property
+    @Property(description = "Custom data for cloud-init (Linux) or CustomScriptExtension (Windows)")
     private String customData;
 
-    /**
-     * Availability zones for the VM.
-     */
-    @Property
+    @Property(description = "Availability zones for the VM")
     private List<String> zones;
 
-    /**
-     * Tags to apply to the VM and its resources.
-     */
-    @Property
+    @Property(description = "Tags to apply to the VM and its resources")
     private Map<String, String> tags;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The Azure resource ID of the VM.
-     */
     @Cloud
-    @Property
+    @Property(description = "The Azure resource ID of the VM")
     private String id;
 
-    /**
-     * The VM unique ID.
-     */
     @Cloud
-    @Property
+    @Property(description = "The VM unique ID")
     private String vmId;
 
-    /**
-     * The provisioning state.
-     */
     @Cloud
-    @Property
+    @Property(description = "The provisioning state")
     private String provisioningState;
 
-    /**
-     * The power state (running, deallocated, etc.).
-     */
     @Cloud
-    @Property
+    @Property(description = "The power state (running, deallocated, etc.)")
     private String powerState;
 
-    /**
-     * The private IP address.
-     */
     @Cloud
-    @Property
+    @Property(description = "The private IP address")
     private String privateIp;
 
-    /**
-     * The public IP address (if assigned).
-     */
     @Cloud
-    @Property
+    @Property(description = "The public IP address (if assigned)")
     private String publicIp;
 
-    /**
-     * The network interface ID.
-     */
     @Cloud
-    @Property
+    @Property(description = "The network interface ID")
     private String networkInterfaceId;
 
-    /**
-     * The OS disk name.
-     */
     @Cloud
-    @Property
+    @Property(description = "The OS disk name")
     private String osDiskName;
 }

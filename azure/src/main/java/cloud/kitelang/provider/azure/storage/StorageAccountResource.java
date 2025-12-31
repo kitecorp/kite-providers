@@ -45,169 +45,87 @@ import java.util.Map;
 @TypeName("StorageAccount")
 public class StorageAccountResource {
 
-    /**
-     * The name of the storage account.
-     * Must be 3-24 characters, lowercase letters and numbers only.
-     * Must be globally unique.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the storage account (3-24 chars, lowercase letters and numbers, globally unique)", optional = false)
     private String name;
 
-    /**
-     * The resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The Azure region for the storage account.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure region for the storage account", optional = false)
     private String location;
 
-    /**
-     * The SKU (pricing tier and replication).
-     * Valid values: Standard_LRS, Standard_GRS, Standard_RAGRS, Standard_ZRS,
-     *               Premium_LRS, Premium_ZRS
-     * Default: Standard_LRS
-     */
-    @Property
-    private String sku;
+    @Property(description = "The SKU (pricing tier and replication)",
+              validValues = {"Standard_LRS", "Standard_GRS", "Standard_RAGRS", "Standard_ZRS", "Premium_LRS", "Premium_ZRS"})
+    private String sku = "Standard_LRS";
 
-    /**
-     * The kind of storage account.
-     * Valid values: Storage, StorageV2, BlobStorage, BlockBlobStorage, FileStorage
-     * Default: StorageV2
-     */
-    @Property
-    private String kind;
+    @Property(description = "The kind of storage account",
+              validValues = {"Storage", "StorageV2", "BlobStorage", "BlockBlobStorage", "FileStorage"})
+    private String kind = "StorageV2";
 
-    /**
-     * The access tier for blob storage.
-     * Valid values: Hot, Cool
-     * Default: Hot
-     */
-    @Property
-    private String accessTier;
+    @Property(description = "The access tier for blob storage",
+              validValues = {"Hot", "Cool"})
+    private String accessTier = "Hot";
 
-    /**
-     * Enable HTTPS traffic only.
-     * Default: true
-     */
-    @Property
-    private Boolean enableHttpsTrafficOnly;
+    @Property(description = "Enable HTTPS traffic only")
+    private Boolean enableHttpsTrafficOnly = true;
 
-    /**
-     * Minimum TLS version.
-     * Valid values: TLS1_0, TLS1_1, TLS1_2
-     * Default: TLS1_2
-     */
-    @Property
-    private String minimumTlsVersion;
+    @Property(description = "Minimum TLS version",
+              validValues = {"TLS1_0", "TLS1_1", "TLS1_2"})
+    private String minimumTlsVersion = "TLS1_2";
 
-    /**
-     * Allow blob public access.
-     * Default: false
-     */
-    @Property
-    private Boolean allowBlobPublicAccess;
+    @Property(description = "Allow blob public access")
+    private Boolean allowBlobPublicAccess = false;
 
-    /**
-     * Allow shared key access.
-     * Default: true
-     */
-    @Property
-    private Boolean allowSharedKeyAccess;
+    @Property(description = "Allow shared key access")
+    private Boolean allowSharedKeyAccess = true;
 
-    /**
-     * Enable hierarchical namespace (Data Lake Storage Gen2).
-     */
-    @Property
-    private Boolean enableHierarchicalNamespace;
+    @Property(description = "Enable hierarchical namespace (Data Lake Storage Gen2)")
+    private Boolean enableHierarchicalNamespace = false;
 
-    /**
-     * Enable infrastructure encryption.
-     */
-    @Property
-    private Boolean infrastructureEncryptionEnabled;
+    @Property(description = "Enable infrastructure encryption")
+    private Boolean infrastructureEncryptionEnabled = false;
 
-    /**
-     * Enable large file shares (100 TiB capacity).
-     */
-    @Property
-    private Boolean largeFileSharesEnabled;
+    @Property(description = "Enable large file shares (100 TiB capacity)")
+    private Boolean largeFileSharesEnabled = false;
 
-    /**
-     * Network rules for firewall configuration.
-     */
-    @Property
+    @Property(description = "Network rules for firewall configuration")
     private NetworkRules networkRules;
 
-    /**
-     * Tags to apply to the storage account.
-     */
-    @Property
+    @Property(description = "Tags to apply to the storage account")
     private Map<String, String> tags;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The resource ID of the storage account.
-     */
     @Cloud
-    @Property
+    @Property(description = "The resource ID of the storage account")
     private String id;
 
-    /**
-     * The primary blob endpoint.
-     */
     @Cloud
-    @Property
+    @Property(description = "The primary blob endpoint")
     private String primaryBlobEndpoint;
 
-    /**
-     * The primary file endpoint.
-     */
     @Cloud
-    @Property
+    @Property(description = "The primary file endpoint")
     private String primaryFileEndpoint;
 
-    /**
-     * The primary queue endpoint.
-     */
     @Cloud
-    @Property
+    @Property(description = "The primary queue endpoint")
     private String primaryQueueEndpoint;
 
-    /**
-     * The primary table endpoint.
-     */
     @Cloud
-    @Property
+    @Property(description = "The primary table endpoint")
     private String primaryTableEndpoint;
 
-    /**
-     * The primary access key.
-     */
     @Cloud
-    @Property
+    @Property(description = "The primary access key")
     private String primaryAccessKey;
 
-    /**
-     * The primary connection string.
-     */
     @Cloud
-    @Property
+    @Property(description = "The primary connection string")
     private String primaryConnectionString;
 
-    /**
-     * The provisioning state.
-     */
     @Cloud
-    @Property
+    @Property(description = "The provisioning state")
     private String provisioningState;
 
     @Data

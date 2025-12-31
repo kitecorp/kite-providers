@@ -35,166 +35,83 @@ import java.util.Map;
 @TypeName("ManagedDisk")
 public class ManagedDiskResource {
 
-    /**
-     * The name of the managed disk.
-     * Required.
-     */
-    @Property
+    @Property(description = "The name of the managed disk", optional = false)
     private String name;
 
-    /**
-     * The Azure resource group name.
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure resource group name", optional = false)
     private String resourceGroup;
 
-    /**
-     * The Azure region/location (e.g., "eastus", "westeurope").
-     * Required.
-     */
-    @Property
+    @Property(description = "The Azure region/location (e.g., eastus, westeurope)", optional = false)
     private String location;
 
-    /**
-     * The size of the disk in GB.
-     * Required unless sourceResourceId is specified.
-     */
-    @Property
+    @Property(description = "The size of the disk in GB")
     private Integer size;
 
-    /**
-     * The disk SKU (storage type).
-     * Valid values: Standard_LRS, Premium_LRS, StandardSSD_LRS, UltraSSD_LRS, Premium_ZRS, StandardSSD_ZRS
-     * Default: StandardSSD_LRS
-     */
-    @Property
-    private String sku;
+    @Property(description = "The disk SKU (storage type)",
+              validValues = {"Standard_LRS", "Premium_LRS", "StandardSSD_LRS", "UltraSSD_LRS", "Premium_ZRS", "StandardSSD_ZRS"})
+    private String sku = "StandardSSD_LRS";
 
-    /**
-     * The disk tier for Premium and Ultra disks.
-     * Controls the baseline IOPS and throughput of the disk.
-     * Example: P30, P40, P50 for Premium_LRS
-     */
-    @Property
+    @Property(description = "The disk tier for Premium and Ultra disks (e.g., P30, P40, P50)")
     private String tier;
 
-    /**
-     * The IOPS read/write budget for Ultra disks.
-     * Range: 100 - 160,000 IOPS
-     */
-    @Property
+    @Property(description = "The IOPS read/write budget for Ultra disks (100 - 160,000)")
     private Long diskIops;
 
-    /**
-     * The throughput in MB/s for Ultra disks.
-     * Range: 1 - 2,000 MB/s
-     */
-    @Property
+    @Property(description = "The throughput in MB/s for Ultra disks (1 - 2,000)")
     private Long diskMbps;
 
-    /**
-     * The operating system type if this is an OS disk.
-     * Valid values: Linux, Windows
-     */
-    @Property
+    @Property(description = "The operating system type if this is an OS disk",
+              validValues = {"Linux", "Windows"})
     private String osType;
 
-    /**
-     * The source resource ID to create the disk from.
-     * Can be a snapshot, image, or another disk.
-     */
-    @Property
+    @Property(description = "The source resource ID to create the disk from (snapshot, image, or disk)")
     private String sourceResourceId;
 
-    /**
-     * The source URI for import/upload scenarios.
-     * Used for importing a VHD from a storage account.
-     */
-    @Property
+    @Property(description = "The source URI for importing a VHD from a storage account")
     private String sourceUri;
 
-    /**
-     * The storage account ID where sourceUri is located.
-     */
-    @Property
+    @Property(description = "The storage account ID where sourceUri is located")
     private String storageAccountId;
 
-    /**
-     * The availability zone for the disk.
-     * Example: "1", "2", "3"
-     */
-    @Property
+    @Property(description = "The availability zone for the disk (1, 2, or 3)")
     private String zone;
 
-    /**
-     * Whether to enable bursting for Premium SSD disks.
-     * Only supported for Premium_LRS disks larger than 512 GB.
-     */
-    @Property
-    private Boolean burstingEnabled;
+    @Property(description = "Enable bursting for Premium SSD disks > 512 GB")
+    private Boolean burstingEnabled = false;
 
-    /**
-     * Enable network access policy for the disk.
-     * Valid values: AllowAll, AllowPrivate, DenyAll
-     */
-    @Property
-    private String networkAccessPolicy;
+    @Property(description = "Network access policy for the disk",
+              validValues = {"AllowAll", "AllowPrivate", "DenyAll"})
+    private String networkAccessPolicy = "AllowAll";
 
-    /**
-     * The disk access ID for private endpoint connections.
-     */
-    @Property
+    @Property(description = "The disk access ID for private endpoint connections")
     private String diskAccessId;
 
-    /**
-     * Tags to apply to the disk.
-     */
-    @Property
+    @Property(description = "Tags to apply to the disk")
     private Map<String, String> tags;
 
     // --- Cloud-managed properties (read-only) ---
 
-    /**
-     * The Azure resource ID of the disk.
-     */
     @Cloud
-    @Property
+    @Property(description = "The Azure resource ID of the disk")
     private String id;
 
-    /**
-     * The provisioning state of the disk.
-     */
     @Cloud
-    @Property
+    @Property(description = "The provisioning state of the disk")
     private String provisioningState;
 
-    /**
-     * The disk state.
-     * Values: Unattached, Attached, Reserved, ActiveSAS, ReadyToUpload, ActiveUpload
-     */
     @Cloud
-    @Property
+    @Property(description = "The disk state (Unattached, Attached, Reserved, etc.)")
     private String diskState;
 
-    /**
-     * The unique identifier for the disk.
-     */
     @Cloud
-    @Property
+    @Property(description = "The unique identifier for the disk")
     private String uniqueId;
 
-    /**
-     * The time the disk was created.
-     */
     @Cloud
-    @Property
+    @Property(description = "The time the disk was created")
     private String timeCreated;
 
-    /**
-     * The ID of the VM this disk is attached to (if any).
-     */
     @Cloud
-    @Property
+    @Property(description = "The ID of the VM this disk is attached to")
     private String managedBy;
 }
