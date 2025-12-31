@@ -1,5 +1,7 @@
 package cloud.kitelang.provider.aws;
 
+import cloud.kitelang.provider.aws.networking.VpcResource;
+import cloud.kitelang.provider.aws.networking.VpcResourceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
