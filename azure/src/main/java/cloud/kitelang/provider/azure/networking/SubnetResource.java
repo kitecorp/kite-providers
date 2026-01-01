@@ -21,6 +21,8 @@ import lombok.NoArgsConstructor;
  *     networkSecurityGroupId = nsg.id
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/virtual-network/virtual-network-manage-subnet">Azure Subnet Documentation</a>
  */
 @Data
 @Builder

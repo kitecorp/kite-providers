@@ -27,12 +27,12 @@ resource HostedZone example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `hostedZoneId` | `string` | — | — | No | *☁️ cloud-managed* The hosted zone ID (without /hostedzone/ prefix) |
-| `nameServers` | `list` | — | — | No | *☁️ cloud-managed* The name servers for the hosted zone |
-| `resourceRecordSetCount` | `integer` | — | — | No | *☁️ cloud-managed* The number of resource record sets in the hosted zone |
-| `callerReference` | `string` | — | — | No | *☁️ cloud-managed* A unique string that identifies the request to create the zone |
-| `arn` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Amazon Resource Name (ARN) of the hosted zone |
+| Name | Type | Description |
+|------|------|-------------|
+| `hostedZoneId` | `string` | The hosted zone ID (without /hostedzone/ prefix) |
+| `nameServers` | `list` | The name servers for the hosted zone |
+| `resourceRecordSetCount` | `integer` | The number of resource record sets in the hosted zone |
+| `callerReference` | `string` | A unique string that identifies the request to create the zone |
+| `arn` | `string` | *📥 importable* The Amazon Resource Name (ARN) of the hosted zone |
 
 [← Back to Index](README.md)

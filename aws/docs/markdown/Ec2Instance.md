@@ -45,16 +45,16 @@ resource Ec2Instance example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `instanceId` | `string` | — | — | No | *☁️ cloud-managed* The instance ID assigned by AWS |
-| `state` | `string` | — | — | No | *☁️ cloud-managed* Instance state: pending, running, stopping, stopped, terminated |
-| `publicIp` | `string` | — | — | No | *☁️ cloud-managed* The public IP address (if assigned) |
-| `privateIp` | `string` | — | — | No | *☁️ cloud-managed* The private IP address |
-| `publicDnsName` | `string` | — | — | No | *☁️ cloud-managed* The public DNS name |
-| `privateDnsName` | `string` | — | — | No | *☁️ cloud-managed* The private DNS name |
-| `vpcId` | `string` | — | — | No | *☁️ cloud-managed* The VPC ID the instance is in |
-| `architecture` | `string` | — | — | No | *☁️ cloud-managed* The architecture: x86_64 or arm64 |
-| `rootDeviceName` | `string` | — | — | No | *☁️ cloud-managed* The root device name |
+| Name | Type | Description |
+|------|------|-------------|
+| `instanceId` | `string` | The instance ID assigned by AWS |
+| `state` | `string` | Instance state: pending, running, stopping, stopped, terminated |
+| `publicIp` | `string` | The public IP address (if assigned) |
+| `privateIp` | `string` | The private IP address |
+| `publicDnsName` | `string` | The public DNS name |
+| `privateDnsName` | `string` | The private DNS name |
+| `vpcId` | `string` | The VPC ID the instance is in |
+| `architecture` | `string` | The architecture: x86_64 or arm64 |
+| `rootDeviceName` | `string` | The root device name |
 
 [← Back to Index](README.md)

@@ -24,6 +24,8 @@ import lombok.NoArgsConstructor;
  *     destinationPortRange: "22"
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview">Azure Security Rule Documentation</a>
  */
 @Data
 @Builder

@@ -32,6 +32,8 @@ import java.util.Map;
  *     resolutionVirtualNetworkIds = [vnet2.id]
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/dns/dns-zones-records">Azure DNS Zone Documentation</a>
  */
 @Data
 @Builder

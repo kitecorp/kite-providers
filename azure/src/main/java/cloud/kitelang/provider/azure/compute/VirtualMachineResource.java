@@ -32,6 +32,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/virtual-machines/overview">Azure Virtual Machine Documentation</a>
  */
 @Data
 @Builder

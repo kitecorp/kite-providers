@@ -27,14 +27,14 @@ resource Vpc example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `vpcId` | `string` | — | — | No | *☁️ cloud-managed* The VPC ID assigned by AWS |
-| `state` | `string` | — | — | No | *☁️ cloud-managed* The current state of the VPC (pending, available) |
-| `mainRouteTableId` | `string` | — | — | No | *☁️ cloud-managed* The ID of the main route table |
-| `defaultNetworkAclId` | `string` | — | — | No | *☁️ cloud-managed* The ID of the default network ACL |
-| `defaultSecurityGroupId` | `string` | — | — | No | *☁️ cloud-managed* The ID of the default security group |
-| `ownerId` | `string` | — | — | No | *☁️ cloud-managed* The AWS account ID that owns the VPC |
-| `arn` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Amazon Resource Name (ARN) of the VPC |
+| Name | Type | Description |
+|------|------|-------------|
+| `vpcId` | `string` | The VPC ID assigned by AWS |
+| `state` | `string` | The current state of the VPC (pending, available) |
+| `mainRouteTableId` | `string` | The ID of the main route table |
+| `defaultNetworkAclId` | `string` | The ID of the default network ACL |
+| `defaultSecurityGroupId` | `string` | The ID of the default security group |
+| `ownerId` | `string` | The AWS account ID that owns the VPC |
+| `arn` | `string` | *📥 importable* The Amazon Resource Name (ARN) of the VPC |
 
 [← Back to Index](README.md)

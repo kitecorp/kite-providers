@@ -19,10 +19,10 @@ resource InternetGateway example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `internetGatewayId` | `string` | — | — | No | *☁️ cloud-managed* The internet gateway ID assigned by AWS |
-| `ownerId` | `string` | — | — | No | *☁️ cloud-managed* The AWS account ID that owns the internet gateway |
-| `attachmentState` | `string` | — | — | No | *☁️ cloud-managed* Attachment state (available, attaching, detaching) |
+| Name | Type | Description |
+|------|------|-------------|
+| `internetGatewayId` | `string` | The internet gateway ID assigned by AWS |
+| `ownerId` | `string` | The AWS account ID that owns the internet gateway |
+| `attachmentState` | `string` | Attachment state (available, attaching, detaching) |
 
 [← Back to Index](README.md)

@@ -19,6 +19,8 @@ import lombok.NoArgsConstructor;
  *     nextHopIpAddress: "10.0.1.4"
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/virtual-network/manage-route-table">Azure Route Table Documentation</a>
  */
 @Data
 @Builder

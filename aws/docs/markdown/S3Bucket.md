@@ -43,12 +43,12 @@ resource S3Bucket example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `arn` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The ARN of the bucket |
-| `domainName` | `string` | — | — | No | *☁️ cloud-managed* The domain name of the bucket |
-| `regionalDomainName` | `string` | — | — | No | *☁️ cloud-managed* The regional domain name of the bucket |
-| `websiteEndpoint` | `string` | — | — | No | *☁️ cloud-managed* Website endpoint (if hosting enabled) |
-| `creationDate` | `string` | — | — | No | *☁️ cloud-managed* The creation date of the bucket |
+| Name | Type | Description |
+|------|------|-------------|
+| `arn` | `string` | *📥 importable* The ARN of the bucket |
+| `domainName` | `string` | The domain name of the bucket |
+| `regionalDomainName` | `string` | The regional domain name of the bucket |
+| `websiteEndpoint` | `string` | Website endpoint (if hosting enabled) |
+| `creationDate` | `string` | The creation date of the bucket |
 
 [← Back to Index](README.md)

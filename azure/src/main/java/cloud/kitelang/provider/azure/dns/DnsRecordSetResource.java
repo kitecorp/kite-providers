@@ -68,6 +68,8 @@ import java.util.Map;
  *     targetResourceId = pip.id
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/dns/dns-zones-records">Azure DNS Records Documentation</a>
  */
 @Data
 @Builder

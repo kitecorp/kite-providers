@@ -27,10 +27,10 @@ resource SecurityGroup example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `securityGroupId` | `string` | — | — | No | *☁️ cloud-managed* The security group ID assigned by AWS |
-| `ownerId` | `string` | — | — | No | *☁️ cloud-managed* The AWS account ID that owns the security group |
-| `arn` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Amazon Resource Name (ARN) |
+| Name | Type | Description |
+|------|------|-------------|
+| `securityGroupId` | `string` | The security group ID assigned by AWS |
+| `ownerId` | `string` | The AWS account ID that owns the security group |
+| `arn` | `string` | *📥 importable* The Amazon Resource Name (ARN) |
 
 [← Back to Index](README.md)

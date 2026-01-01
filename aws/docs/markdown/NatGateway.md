@@ -23,12 +23,12 @@ resource NatGateway example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `natGatewayId` | `string` | — | — | No | *☁️ cloud-managed* The NAT gateway ID assigned by AWS |
-| `state` | `string` | — | — | No | *☁️ cloud-managed* The current state of the NAT gateway |
-| `vpcId` | `string` | — | — | No | *☁️ cloud-managed* The VPC ID that contains the NAT gateway |
-| `publicIp` | `string` | — | — | No | *☁️ cloud-managed* The public IP address associated with the NAT gateway |
-| `privateIp` | `string` | — | — | No | *☁️ cloud-managed* The private IP address of the NAT gateway |
+| Name | Type | Description |
+|------|------|-------------|
+| `natGatewayId` | `string` | The NAT gateway ID assigned by AWS |
+| `state` | `string` | The current state of the NAT gateway |
+| `vpcId` | `string` | The VPC ID that contains the NAT gateway |
+| `publicIp` | `string` | The public IP address associated with the NAT gateway |
+| `privateIp` | `string` | The private IP address of the NAT gateway |
 
 [← Back to Index](README.md)

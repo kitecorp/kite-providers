@@ -25,6 +25,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal">Azure Resource Group Documentation</a>
  */
 @Data
 @Builder

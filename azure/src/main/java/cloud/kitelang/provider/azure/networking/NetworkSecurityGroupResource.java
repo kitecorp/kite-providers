@@ -51,6 +51,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview">Azure Network Security Group Documentation</a>
  */
 @Data
 @Builder

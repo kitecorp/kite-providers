@@ -20,6 +20,8 @@ import lombok.NoArgsConstructor;
  *     description: "Allow HTTPS"
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/vpc/latest/userguide/security-group-rules.html">AWS Security Group Rules Documentation</a>
  */
 @Data
 @Builder
@@ -28,49 +30,25 @@ import lombok.NoArgsConstructor;
 @TypeName("SecurityGroupRule")
 public class SecurityGroupRule {
 
-    /**
-     * Protocol: "tcp", "udp", "icmp", or "-1" for all.
-     */
-    @Property
+    @Property(description = "Protocol: 'tcp', 'udp', 'icmp', or '-1' for all",
+              validValues = {"tcp", "udp", "icmp", "-1"})
     private String protocol;
 
-    /**
-     * Start of port range (0-65535).
-     * Use -1 for all ports when protocol is -1.
-     */
-    @Property
+    @Property(description = "Start of port range (0-65535). Use -1 for all ports when protocol is -1")
     private Integer fromPort;
 
-    /**
-     * End of port range (0-65535).
-     * Use -1 for all ports when protocol is -1.
-     */
-    @Property
+    @Property(description = "End of port range (0-65535). Use -1 for all ports when protocol is -1")
     private Integer toPort;
 
-    /**
-     * List of CIDR blocks to allow/deny.
-     * Example: ["10.0.0.0/8", "0.0.0.0/0"]
-     */
-    @Property
+    @Property(description = "List of CIDR blocks to allow/deny")
     private java.util.List<String> cidrBlocks;
 
-    /**
-     * List of IPv6 CIDR blocks.
-     */
-    @Property
+    @Property(description = "List of IPv6 CIDR blocks")
     private java.util.List<String> ipv6CidrBlocks;
 
-    /**
-     * List of security group IDs to allow traffic from/to.
-     * For self-referencing, use the security group's own ID.
-     */
-    @Property
+    @Property(description = "List of security group IDs to allow traffic from/to")
     private java.util.List<String> securityGroupIds;
 
-    /**
-     * Description of the rule.
-     */
-    @Property
+    @Property(description = "Description of the rule")
     private String description;
 }

@@ -382,9 +382,6 @@
         <tr>
             <th data-sort="name" class="sortable-header">Name <span class="sort-icon">↕</span></th>
             <th data-sort="type" class="sortable-header">Type <span class="sort-icon">↕</span></th>
-            <th>Default</th>
-            <th>Valid Values</th>
-            <th data-sort="optional" class="sortable-header">Optional <span class="sort-icon">↕</span></th>
             <th>Description</th>
         </tr>
     </thead>
@@ -392,33 +389,21 @@
 <tr id="hostedZoneId" data-name="hostedzoneid" data-type="string" data-optional="true">
   <td><a href="#hostedZoneId" class="prop-name-link"><span class="prop-name">hostedZoneId</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The hosted zone ID (without /hostedzone/ prefix)</td>
 </tr>
 <tr id="nameServers" data-name="nameservers" data-type="list" data-optional="true">
   <td><a href="#nameServers" class="prop-name-link"><span class="prop-name">nameServers</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">list</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The name servers for the hosted zone</td>
 </tr>
 <tr id="resourceRecordSetCount" data-name="resourcerecordsetcount" data-type="integer" data-optional="true">
   <td><a href="#resourceRecordSetCount" class="prop-name-link"><span class="prop-name">resourceRecordSetCount</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">integer</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The number of resource record sets in the hosted zone</td>
 </tr>
 <tr id="callerReference" data-name="callerreference" data-type="string" data-optional="true">
   <td><a href="#callerReference" class="prop-name-link"><span class="prop-name">callerReference</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>A unique string that identifies the request to create the zone</td>
 </tr>
 <tr id="arn" data-name="arn" data-type="string" data-optional="true">
@@ -427,10 +412,7 @@
       <span class="badge badge-importable">importable</span>
     </div></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The Amazon Resource Name (ARN) of the hosted zone</td>
+  <td>The Amazon Resource Name (ARN) of the hosted zone <span class="badge badge-importable">importable</span></td>
 </tr>
     </tbody>
 </table>

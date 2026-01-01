@@ -115,23 +115,14 @@ public class RecordSetResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class AliasTarget {
-        /**
-         * The hosted zone ID of the alias target.
-         * Required.
-         */
+        @Property(description = "The hosted zone ID of the alias target", optional = false)
         private String hostedZoneId;
 
-        /**
-         * The DNS name of the alias target.
-         * Required.
-         */
+        @Property(description = "The DNS name of the alias target", optional = false)
         private String dnsName;
 
-        /**
-         * Whether to evaluate target health.
-         * Default: false
-         */
-        private Boolean evaluateTargetHealth;
+        @Property(description = "Whether to evaluate target health")
+        private Boolean evaluateTargetHealth = false;
     }
 
     @Data
@@ -139,20 +130,14 @@ public class RecordSetResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GeoLocation {
-        /**
-         * The continent code.
-         * Valid values: AF, AN, AS, EU, OC, NA, SA.
-         */
+        @Property(description = "The continent code",
+                  validValues = {"AF", "AN", "AS", "EU", "OC", "NA", "SA"})
         private String continentCode;
 
-        /**
-         * The country code (ISO 3166-1 alpha-2).
-         */
+        @Property(description = "The country code (ISO 3166-1 alpha-2)")
         private String countryCode;
 
-        /**
-         * The subdivision code (e.g., US state code).
-         */
+        @Property(description = "The subdivision code (e.g., US state code)")
         private String subdivisionCode;
     }
 }

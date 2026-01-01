@@ -34,6 +34,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/virtual-network/manage-route-table">Azure Route Table Documentation</a>
  */
 @Data
 @Builder

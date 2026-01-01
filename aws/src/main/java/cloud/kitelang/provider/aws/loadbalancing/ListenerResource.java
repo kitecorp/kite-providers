@@ -87,41 +87,25 @@ public class ListenerResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RedirectConfig {
-        /**
-         * The protocol (HTTP or HTTPS).
-         * Default: #{protocol}
-         */
-        private String protocol;
+        @Property(description = "The protocol (HTTP or HTTPS)",
+                  validValues = {"HTTP", "HTTPS"})
+        private String protocol = "#{protocol}";
 
-        /**
-         * The hostname.
-         * Default: #{host}
-         */
-        private String host;
+        @Property(description = "The hostname")
+        private String host = "#{host}";
 
-        /**
-         * The port.
-         * Default: #{port}
-         */
-        private String port;
+        @Property(description = "The port")
+        private String port = "#{port}";
 
-        /**
-         * The path.
-         * Default: /#{path}
-         */
-        private String path;
+        @Property(description = "The path")
+        private String path = "/#{path}";
 
-        /**
-         * The query string.
-         * Default: #{query}
-         */
-        private String query;
+        @Property(description = "The query string")
+        private String query = "#{query}";
 
-        /**
-         * The HTTP redirect code.
-         * Valid values: HTTP_301, HTTP_302.
-         * Required.
-         */
+        @Property(description = "The HTTP redirect code",
+                  validValues = {"HTTP_301", "HTTP_302"},
+                  optional = false)
         private String statusCode;
     }
 
@@ -130,21 +114,14 @@ public class ListenerResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class FixedResponseConfig {
-        /**
-         * The HTTP response code.
-         * Required.
-         */
+        @Property(description = "The HTTP response code", optional = false)
         private String statusCode;
 
-        /**
-         * The content type.
-         * Valid values: text/plain, text/css, text/html, application/javascript, application/json.
-         */
+        @Property(description = "The content type",
+                  validValues = {"text/plain", "text/css", "text/html", "application/javascript", "application/json"})
         private String contentType;
 
-        /**
-         * The message body.
-         */
+        @Property(description = "The message body")
         private String messageBody;
     }
 }

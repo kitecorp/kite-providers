@@ -23,13 +23,13 @@ resource ElasticIp example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `allocationId` | `string` | — | — | No | *☁️ cloud-managed* The allocation ID for the Elastic IP |
-| `publicIp` | `string` | — | — | No | *☁️ cloud-managed* The Elastic IP address |
-| `instanceId` | `string` | — | — | No | *☁️ cloud-managed* The ID of the associated instance (if any) |
-| `associationId` | `string` | — | — | No | *☁️ cloud-managed* The association ID (if associated) |
-| `networkInterfaceId` | `string` | — | — | No | *☁️ cloud-managed* The ID of the network interface (if associated) |
-| `privateIpAddress` | `string` | — | — | No | *☁️ cloud-managed* The private IP address associated with the Elastic IP |
+| Name | Type | Description |
+|------|------|-------------|
+| `allocationId` | `string` | The allocation ID for the Elastic IP |
+| `publicIp` | `string` | The Elastic IP address |
+| `instanceId` | `string` | The ID of the associated instance (if any) |
+| `associationId` | `string` | The association ID (if associated) |
+| `networkInterfaceId` | `string` | The ID of the network interface (if associated) |
+| `privateIpAddress` | `string` | The private IP address associated with the Elastic IP |
 
 [← Back to Index](README.md)

@@ -35,12 +35,12 @@ resource EbsVolume example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `volumeId` | `string` | — | — | No | *☁️ cloud-managed* The volume ID assigned by AWS |
-| `arn` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Amazon Resource Name (ARN) of the volume |
-| `state` | `string` | — | — | No | *☁️ cloud-managed* The current state of the volume |
-| `createTime` | `string` | — | — | No | *☁️ cloud-managed* The time the volume was created |
-| `attachments` | `string` | — | — | No | *☁️ cloud-managed* Information about the volume attachments |
+| Name | Type | Description |
+|------|------|-------------|
+| `volumeId` | `string` | The volume ID assigned by AWS |
+| `arn` | `string` | *📥 importable* The Amazon Resource Name (ARN) of the volume |
+| `state` | `string` | The current state of the volume |
+| `createTime` | `string` | The time the volume was created |
+| `attachments` | `string` | Information about the volume attachments |
 
 [← Back to Index](README.md)

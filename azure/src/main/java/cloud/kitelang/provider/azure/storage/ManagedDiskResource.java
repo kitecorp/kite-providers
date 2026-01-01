@@ -27,6 +27,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/virtual-machines/managed-disks-overview">Azure Managed Disk Documentation</a>
  */
 @Data
 @Builder

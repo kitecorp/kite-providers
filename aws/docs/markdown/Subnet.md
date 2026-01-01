@@ -29,14 +29,14 @@ resource Subnet example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `subnetId` | `string` | — | — | No | *☁️ cloud-managed* The subnet ID assigned by AWS |
-| `state` | `string` | — | — | No | *☁️ cloud-managed* The current state of the subnet (pending, available) |
-| `availabilityZoneId` | `string` | — | — | No | *☁️ cloud-managed* The Availability Zone ID |
-| `availableIpAddressCount` | `integer` | — | — | No | *☁️ cloud-managed* The number of available IPv4 addresses |
-| `defaultForAz` | `boolean` | — | — | No | *☁️ cloud-managed* Whether this is the default subnet for the AZ |
-| `ownerId` | `string` | — | — | No | *☁️ cloud-managed* The AWS account ID that owns the subnet |
-| `arn` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Amazon Resource Name (ARN) of the subnet |
+| Name | Type | Description |
+|------|------|-------------|
+| `subnetId` | `string` | The subnet ID assigned by AWS |
+| `state` | `string` | The current state of the subnet (pending, available) |
+| `availabilityZoneId` | `string` | The Availability Zone ID |
+| `availableIpAddressCount` | `integer` | The number of available IPv4 addresses |
+| `defaultForAz` | `boolean` | Whether this is the default subnet for the AZ |
+| `ownerId` | `string` | The AWS account ID that owns the subnet |
+| `arn` | `string` | *📥 importable* The Amazon Resource Name (ARN) of the subnet |
 
 [← Back to Index](README.md)

@@ -132,29 +132,19 @@ public class S3BucketResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CorsRule {
-        /**
-         * Allowed origins (e.g., ["https://example.com"] or ["*"]).
-         */
+        @Property(description = "Allowed origins (e.g., ['https://example.com'] or ['*'])")
         private List<String> allowedOrigins;
 
-        /**
-         * Allowed HTTP methods (GET, PUT, POST, DELETE, HEAD).
-         */
+        @Property(description = "Allowed HTTP methods")
         private List<String> allowedMethods;
 
-        /**
-         * Allowed headers.
-         */
+        @Property(description = "Allowed headers")
         private List<String> allowedHeaders;
 
-        /**
-         * Headers to expose in the response.
-         */
+        @Property(description = "Headers to expose in the response")
         private List<String> exposeHeaders;
 
-        /**
-         * Max age in seconds for preflight cache.
-         */
+        @Property(description = "Max age in seconds for preflight cache")
         private Integer maxAgeSeconds;
     }
 
@@ -163,44 +153,29 @@ public class S3BucketResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LifecycleRule {
-        /**
-         * Unique identifier for the rule.
-         */
+        @Property(description = "Unique identifier for the rule")
         private String id;
 
-        /**
-         * Whether the rule is enabled.
-         */
+        @Property(description = "Whether the rule is enabled")
         private Boolean enabled;
 
-        /**
-         * Object key prefix to apply the rule to.
-         */
+        @Property(description = "Object key prefix to apply the rule to")
         private String prefix;
 
-        /**
-         * Days after which to expire objects.
-         */
+        @Property(description = "Days after which to expire objects")
         private Integer expirationDays;
 
-        /**
-         * Days after which to transition to a storage class.
-         */
+        @Property(description = "Days after which to transition to a storage class")
         private Integer transitionDays;
 
-        /**
-         * Storage class to transition to (GLACIER, DEEP_ARCHIVE, INTELLIGENT_TIERING, etc.).
-         */
+        @Property(description = "Storage class to transition to",
+                  validValues = {"GLACIER", "DEEP_ARCHIVE", "INTELLIGENT_TIERING", "STANDARD_IA", "ONEZONE_IA", "GLACIER_IR"})
         private String transitionStorageClass;
 
-        /**
-         * Days after which to expire incomplete multipart uploads.
-         */
+        @Property(description = "Days after which to expire incomplete multipart uploads")
         private Integer abortIncompleteMultipartUploadDays;
 
-        /**
-         * Days after which to expire noncurrent versions.
-         */
+        @Property(description = "Days after which to expire noncurrent versions")
         private Integer noncurrentVersionExpirationDays;
     }
 
@@ -209,14 +184,10 @@ public class S3BucketResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class LoggingConfig {
-        /**
-         * Target bucket for access logs.
-         */
+        @Property(description = "Target bucket for access logs")
         private String targetBucket;
 
-        /**
-         * Prefix for log objects.
-         */
+        @Property(description = "Prefix for log objects")
         private String targetPrefix;
     }
 }

@@ -39,6 +39,8 @@ import java.util.Map;
  *     immutableStorageWithVersioning = true
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction">Azure Blob Storage Documentation</a>
  */
 @Data
 @Builder

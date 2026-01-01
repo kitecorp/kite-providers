@@ -37,6 +37,8 @@ import java.util.Map;
  *     enableHierarchicalNamespace = true
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/storage/common/storage-account-overview">Azure Storage Account Documentation</a>
  */
 @Data
 @Builder
@@ -133,24 +135,17 @@ public class StorageAccountResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class NetworkRules {
-        /**
-         * Default action: Allow or Deny.
-         */
-        private String defaultAction;
+        @Property(description = "Default action for network rules",
+                  validValues = {"Allow", "Deny"})
+        private String defaultAction = "Allow";
 
-        /**
-         * IP rules - list of allowed IP addresses or CIDR ranges.
-         */
+        @Property(description = "List of allowed IP addresses or CIDR ranges")
         private java.util.List<String> ipRules;
 
-        /**
-         * Virtual network subnet IDs that are allowed.
-         */
+        @Property(description = "Virtual network subnet IDs that are allowed")
         private java.util.List<String> virtualNetworkSubnetIds;
 
-        /**
-         * Bypass options: AzureServices, Metrics, Logging, None.
-         */
+        @Property(description = "Services to bypass network rules")
         private java.util.List<String> bypass;
     }
 }

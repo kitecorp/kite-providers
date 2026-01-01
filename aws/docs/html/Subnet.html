@@ -391,9 +391,6 @@
         <tr>
             <th data-sort="name" class="sortable-header">Name <span class="sort-icon">↕</span></th>
             <th data-sort="type" class="sortable-header">Type <span class="sort-icon">↕</span></th>
-            <th>Default</th>
-            <th>Valid Values</th>
-            <th data-sort="optional" class="sortable-header">Optional <span class="sort-icon">↕</span></th>
             <th>Description</th>
         </tr>
     </thead>
@@ -401,49 +398,31 @@
 <tr id="subnetId" data-name="subnetid" data-type="string" data-optional="true">
   <td><a href="#subnetId" class="prop-name-link"><span class="prop-name">subnetId</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The subnet ID assigned by AWS</td>
 </tr>
 <tr id="state" data-name="state" data-type="string" data-optional="true">
   <td><a href="#state" class="prop-name-link"><span class="prop-name">state</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The current state of the subnet (pending, available)</td>
 </tr>
 <tr id="availabilityZoneId" data-name="availabilityzoneid" data-type="string" data-optional="true">
   <td><a href="#availabilityZoneId" class="prop-name-link"><span class="prop-name">availabilityZoneId</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The Availability Zone ID</td>
 </tr>
 <tr id="availableIpAddressCount" data-name="availableipaddresscount" data-type="integer" data-optional="true">
   <td><a href="#availableIpAddressCount" class="prop-name-link"><span class="prop-name">availableIpAddressCount</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">integer</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The number of available IPv4 addresses</td>
 </tr>
 <tr id="defaultForAz" data-name="defaultforaz" data-type="boolean" data-optional="true">
   <td><a href="#defaultForAz" class="prop-name-link"><span class="prop-name">defaultForAz</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">boolean</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>Whether this is the default subnet for the AZ</td>
 </tr>
 <tr id="ownerId" data-name="ownerid" data-type="string" data-optional="true">
   <td><a href="#ownerId" class="prop-name-link"><span class="prop-name">ownerId</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The AWS account ID that owns the subnet</td>
 </tr>
 <tr id="arn" data-name="arn" data-type="string" data-optional="true">
@@ -452,10 +431,7 @@
       <span class="badge badge-importable">importable</span>
     </div></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The Amazon Resource Name (ARN) of the subnet</td>
+  <td>The Amazon Resource Name (ARN) of the subnet <span class="badge badge-importable">importable</span></td>
 </tr>
     </tbody>
 </table>

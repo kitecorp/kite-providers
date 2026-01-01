@@ -102,53 +102,29 @@ public class TargetGroupResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class HealthCheck {
-        /**
-         * The protocol for health checks.
-         * Default: same as target group protocol.
-         */
+        @Property(description = "The protocol for health checks")
         private String protocol;
 
-        /**
-         * The port for health checks.
-         * Default: traffic-port
-         */
-        private String port;
+        @Property(description = "The port for health checks")
+        private String port = "traffic-port";
 
-        /**
-         * The path for HTTP/HTTPS health checks.
-         * Default: /
-         */
-        private String path;
+        @Property(description = "The path for HTTP/HTTPS health checks")
+        private String path = "/";
 
-        /**
-         * The interval between health checks in seconds.
-         * Default: 30
-         */
-        private Integer interval;
+        @Property(description = "The interval between health checks in seconds")
+        private Integer interval = 30;
 
-        /**
-         * The timeout for health checks in seconds.
-         * Default: 5
-         */
-        private Integer timeout;
+        @Property(description = "The timeout for health checks in seconds")
+        private Integer timeout = 5;
 
-        /**
-         * The number of consecutive successful checks required.
-         * Default: 5
-         */
-        private Integer healthyThreshold;
+        @Property(description = "The number of consecutive successful checks required")
+        private Integer healthyThreshold = 5;
 
-        /**
-         * The number of consecutive failed checks required.
-         * Default: 2
-         */
-        private Integer unhealthyThreshold;
+        @Property(description = "The number of consecutive failed checks required")
+        private Integer unhealthyThreshold = 2;
 
-        /**
-         * The HTTP codes to consider healthy (e.g., "200" or "200-299").
-         * Default: 200
-         */
-        private String matcher;
+        @Property(description = "The HTTP codes to consider healthy (e.g., '200' or '200-299')")
+        private String matcher = "200";
     }
 
     @Data
@@ -156,26 +132,17 @@ public class TargetGroupResource {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Stickiness {
-        /**
-         * Enable stickiness.
-         */
+        @Property(description = "Enable stickiness")
         private Boolean enabled;
 
-        /**
-         * Stickiness type.
-         * Valid values: lb_cookie (ALB), source_ip (NLB).
-         */
+        @Property(description = "Stickiness type",
+                  validValues = {"lb_cookie", "source_ip", "app_cookie"})
         private String type;
 
-        /**
-         * Cookie duration in seconds (ALB lb_cookie only).
-         * Default: 86400
-         */
-        private Integer duration;
+        @Property(description = "Cookie duration in seconds (ALB lb_cookie only)")
+        private Integer duration = 86400;
 
-        /**
-         * Application cookie name (ALB app_cookie only).
-         */
+        @Property(description = "Application cookie name (ALB app_cookie only)")
         private String cookieName;
     }
 }

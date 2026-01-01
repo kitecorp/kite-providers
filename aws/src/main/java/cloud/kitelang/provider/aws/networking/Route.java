@@ -17,6 +17,8 @@ import lombok.NoArgsConstructor;
  *     gatewayId: igw.internetGatewayId
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html">AWS Route Table Documentation</a>
  */
 @Data
 @Builder
@@ -25,57 +27,30 @@ import lombok.NoArgsConstructor;
 @TypeName("Route")
 public class Route {
 
-    /**
-     * The IPv4 CIDR block for the route destination.
-     */
-    @Property
+    @Property(description = "The IPv4 CIDR block for the route destination")
     private String destinationCidrBlock;
 
-    /**
-     * The IPv6 CIDR block for the route destination.
-     */
-    @Property
+    @Property(description = "The IPv6 CIDR block for the route destination")
     private String destinationIpv6CidrBlock;
 
-    /**
-     * The ID of an internet gateway.
-     */
-    @Property
+    @Property(description = "The ID of an internet gateway")
     private String gatewayId;
 
-    /**
-     * The ID of a NAT gateway.
-     */
-    @Property
+    @Property(description = "The ID of a NAT gateway")
     private String natGatewayId;
 
-    /**
-     * The ID of a network interface.
-     */
-    @Property
+    @Property(description = "The ID of a network interface")
     private String networkInterfaceId;
 
-    /**
-     * The ID of a VPC peering connection.
-     */
-    @Property
+    @Property(description = "The ID of a VPC peering connection")
     private String vpcPeeringConnectionId;
 
-    /**
-     * The ID of a transit gateway.
-     */
-    @Property
+    @Property(description = "The ID of a transit gateway")
     private String transitGatewayId;
 
-    /**
-     * The ID of a VPC endpoint.
-     */
-    @Property
+    @Property(description = "The ID of a VPC endpoint")
     private String vpcEndpointId;
 
-    /**
-     * The ID of an egress-only internet gateway.
-     */
-    @Property
+    @Property(description = "The ID of an egress-only internet gateway")
     private String egressOnlyInternetGatewayId;
 }

@@ -21,11 +21,11 @@ resource RouteTable example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `routeTableId` | `string` | — | — | No | *☁️ cloud-managed* The route table ID assigned by AWS |
-| `ownerId` | `string` | — | — | No | *☁️ cloud-managed* The AWS account ID that owns the route table |
-| `main` | `boolean` | — | — | No | *☁️ cloud-managed* Whether this is the main route table for the VPC |
-| `associatedSubnetIds` | `list` | — | — | No | *☁️ cloud-managed* List of subnet IDs associated with this route table |
+| Name | Type | Description |
+|------|------|-------------|
+| `routeTableId` | `string` | The route table ID assigned by AWS |
+| `ownerId` | `string` | The AWS account ID that owns the route table |
+| `main` | `boolean` | Whether this is the main route table for the VPC |
+| `associatedSubnetIds` | `list` | List of subnet IDs associated with this route table |
 
 [← Back to Index](README.md)

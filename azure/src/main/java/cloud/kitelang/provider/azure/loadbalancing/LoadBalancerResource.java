@@ -57,6 +57,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://learn.microsoft.com/en-us/azure/load-balancer/load-balancer-overview">Azure Load Balancer Documentation</a>
  */
 @Data
 @Builder
