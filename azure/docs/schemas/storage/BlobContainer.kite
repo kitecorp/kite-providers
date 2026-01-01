@@ -3,7 +3,8 @@ schema BlobContainer {
     string    name                            // The name of the blob container. Must be 3-63 characters, lowercase letters, numbers, and hyphens
     string    storageAccountName              // The name of the storage account
     string    resourceGroup                   // The resource group name
-    string    publicAccess                    // The level of public access to the container. None: No public access, Blob: Public read access for blobs only, Container: Public read access for container and blobs | default: None | valid: None, Blob, Container
+    @allowed("None", "Blob", "Container")
+    string    publicAccess = "None"           // The level of public access to the container. None: No public access, Blob: Public read access for blobs only, Container: Public read access for container and blobs
     map       metadata                        // Container metadata as key-value pairs
     boolean   immutableStorageWithVersioning  // Enable immutable storage with versioning. Once enabled, cannot be disabled
     string    defaultEncryptionScope          // Default encryption scope for the container

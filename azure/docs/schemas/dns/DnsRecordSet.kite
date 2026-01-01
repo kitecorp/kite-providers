@@ -3,7 +3,8 @@ schema DnsRecordSet {
     string    zoneName           // The name of the DNS zone
     string    resourceGroup      // The resource group name
     string    name               // The name of the record set. Use @ for the zone apex
-    string    type               // The DNS record type | valid: A, AAAA, CNAME, MX, TXT, NS, SRV, CAA, PTR, SOA
+    @allowed("A", "AAAA", "CNAME", "MX", "TXT", "NS", "SRV", "CAA", "PTR", "SOA")
+    string    type               // The DNS record type
     integer   ttl                // The TTL (time to live) in seconds. Required unless targetResourceId is specified
     list      aRecords           // A records (IPv4 addresses). Used when type = A
     list      aaaaRecords        // AAAA records (IPv6 addresses). Used when type = AAAA

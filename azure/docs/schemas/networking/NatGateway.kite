@@ -1,19 +1,20 @@
 // NatGateway
 schema NatGateway {
-    string    name                  // The name of the NAT gateway
-    string    resourceGroup         // The Azure resource group name
-    string    location              // The Azure region/location
-    integer   idleTimeoutInMinutes  // The idle timeout in minutes. Range: 4-120 | default: 4
-    list      publicIpAddressIds    // List of public IP address resource IDs to associate
-    list      publicIpPrefixIds     // List of public IP prefix resource IDs to associate
-    string    skuName               // The SKU name | default: Standard | valid: Standard
-    map       tags                  // Tags to apply to the NAT gateway
+    string    name                      // The name of the NAT gateway
+    string    resourceGroup             // The Azure resource group name
+    string    location                  // The Azure region/location
+    integer   idleTimeoutInMinutes = 4  // The idle timeout in minutes. Range: 4-120
+    list      publicIpAddressIds        // List of public IP address resource IDs to associate
+    list      publicIpPrefixIds         // List of public IP prefix resource IDs to associate
+    @allowed("Standard")
+    string    skuName = "Standard"      // The SKU name
+    map       tags                      // Tags to apply to the NAT gateway
     @cloud(importable)
-    string    id                    // The Azure resource ID of the NAT gateway
+    string    id                        // The Azure resource ID of the NAT gateway
     @cloud
-    string    provisioningState     // The provisioning state of the NAT gateway
+    string    provisioningState         // The provisioning state of the NAT gateway
     @cloud
-    string    resourceGuid          // The resource GUID of the NAT gateway
+    string    resourceGuid              // The resource GUID of the NAT gateway
     @cloud
-    list      subnetIds             // List of subnet IDs using this NAT gateway
+    list      subnetIds                 // List of subnet IDs using this NAT gateway
 }

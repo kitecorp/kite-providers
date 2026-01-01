@@ -1,32 +1,35 @@
 // ManagedDisk
 schema ManagedDisk {
-    string    name                 // The name of the managed disk
-    string    resourceGroup        // The Azure resource group name
-    string    location             // The Azure region/location (e.g., eastus, westeurope)
-    integer   size                 // The size of the disk in GB
-    string    sku                  // The disk SKU (storage type) | default: StandardSSD_LRS | valid: Standard_LRS, Premium_LRS, StandardSSD_LRS, UltraSSD_LRS, Premium_ZRS, StandardSSD_ZRS
-    string    tier                 // The disk tier for Premium and Ultra disks (e.g., P30, P40, P50)
-    integer   diskIops             // The IOPS read/write budget for Ultra disks (100 - 160,000)
-    integer   diskMbps             // The throughput in MB/s for Ultra disks (1 - 2,000)
-    string    osType               // The operating system type if this is an OS disk | valid: Linux, Windows
-    string    sourceResourceId     // The source resource ID to create the disk from (snapshot, image, or disk)
-    string    sourceUri            // The source URI for importing a VHD from a storage account
-    string    storageAccountId     // The storage account ID where sourceUri is located
-    string    zone                 // The availability zone for the disk (1, 2, or 3)
-    boolean   burstingEnabled      // Enable bursting for Premium SSD disks > 512 GB | default: false
-    string    networkAccessPolicy  // Network access policy for the disk | default: AllowAll | valid: AllowAll, AllowPrivate, DenyAll
-    string    diskAccessId         // The disk access ID for private endpoint connections
-    map       tags                 // Tags to apply to the disk
+    string    name                              // The name of the managed disk
+    string    resourceGroup                     // The Azure resource group name
+    string    location                          // The Azure region/location (e.g., eastus, westeurope)
+    integer   size                              // The size of the disk in GB
+    @allowed("Standard_LRS", "Premium_LRS", "StandardSSD_LRS", "UltraSSD_LRS", "Premium_ZRS", "StandardSSD_ZRS")
+    string    sku = "StandardSSD_LRS"           // The disk SKU (storage type)
+    string    tier                              // The disk tier for Premium and Ultra disks (e.g., P30, P40, P50)
+    integer   diskIops                          // The IOPS read/write budget for Ultra disks (100 - 160,000)
+    integer   diskMbps                          // The throughput in MB/s for Ultra disks (1 - 2,000)
+    @allowed("Linux", "Windows")
+    string    osType                            // The operating system type if this is an OS disk
+    string    sourceResourceId                  // The source resource ID to create the disk from (snapshot, image, or disk)
+    string    sourceUri                         // The source URI for importing a VHD from a storage account
+    string    storageAccountId                  // The storage account ID where sourceUri is located
+    string    zone                              // The availability zone for the disk (1, 2, or 3)
+    boolean   burstingEnabled = false           // Enable bursting for Premium SSD disks > 512 GB
+    @allowed("AllowAll", "AllowPrivate", "DenyAll")
+    string    networkAccessPolicy = "AllowAll"  // Network access policy for the disk
+    string    diskAccessId                      // The disk access ID for private endpoint connections
+    map       tags                              // Tags to apply to the disk
     @cloud(importable)
-    string    id                   // The Azure resource ID of the disk
+    string    id                                // The Azure resource ID of the disk
     @cloud
-    string    provisioningState    // The provisioning state of the disk
+    string    provisioningState                 // The provisioning state of the disk
     @cloud
-    string    diskState            // The disk state (Unattached, Attached, Reserved, etc.)
+    string    diskState                         // The disk state (Unattached, Attached, Reserved, etc.)
     @cloud
-    string    uniqueId             // The unique identifier for the disk
+    string    uniqueId                          // The unique identifier for the disk
     @cloud
-    string    timeCreated          // The time the disk was created
+    string    timeCreated                       // The time the disk was created
     @cloud
-    string    managedBy            // The ID of the VM this disk is attached to
+    string    managedBy                         // The ID of the VM this disk is attached to
 }

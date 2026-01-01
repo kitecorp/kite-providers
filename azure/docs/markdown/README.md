@@ -47,4 +47,4 @@
 | [ResourceGroup](ResourceGroup.md) | 5 |  |
 
 ---
-*Generated on 2025-12-31*
+*Generated on 2026-01-01*

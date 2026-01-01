@@ -1,24 +1,24 @@
 // Subnet
 schema Subnet {
-    string    vpcId                        // The VPC ID where the subnet will be created
-    string    cidrBlock                    // The IPv4 CIDR block for the subnet (e.g., 10.0.1.0/24)
-    string    ipv6CidrBlock                // The IPv6 CIDR block for the subnet
-    string    availabilityZone             // The Availability Zone for the subnet (e.g., us-east-1a)
-    boolean   mapPublicIpOnLaunch          // Auto-assign public IPv4 addresses to instances | default: false
-    boolean   assignIpv6AddressOnCreation  // Assign IPv6 addresses to instances | default: false
-    map       tags                         // Tags to apply to the subnet
+    string    vpcId                                // The VPC ID where the subnet will be created
+    string    cidrBlock                            // The IPv4 CIDR block for the subnet (e.g., 10.0.1.0/24)
+    string    ipv6CidrBlock                        // The IPv6 CIDR block for the subnet
+    string    availabilityZone                     // The Availability Zone for the subnet (e.g., us-east-1a)
+    boolean   mapPublicIpOnLaunch = false          // Auto-assign public IPv4 addresses to instances
+    boolean   assignIpv6AddressOnCreation = false  // Assign IPv6 addresses to instances
+    map       tags                                 // Tags to apply to the subnet
     @cloud
-    string    subnetId                     // The subnet ID assigned by AWS
+    string    subnetId                             // The subnet ID assigned by AWS
     @cloud
-    string    state                        // The current state of the subnet (pending, available)
+    string    state                                // The current state of the subnet (pending, available)
     @cloud
-    string    availabilityZoneId           // The Availability Zone ID
+    string    availabilityZoneId                   // The Availability Zone ID
     @cloud
-    integer   availableIpAddressCount      // The number of available IPv4 addresses
+    integer   availableIpAddressCount              // The number of available IPv4 addresses
     @cloud
-    boolean   defaultForAz                 // Whether this is the default subnet for the AZ
+    boolean   defaultForAz                         // Whether this is the default subnet for the AZ
     @cloud
-    string    ownerId                      // The AWS account ID that owns the subnet
+    string    ownerId                              // The AWS account ID that owns the subnet
     @cloud(importable)
-    string    arn                          // The Amazon Resource Name (ARN) of the subnet
+    string    arn                                  // The Amazon Resource Name (ARN) of the subnet
 }
