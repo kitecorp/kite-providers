@@ -1,26 +1,26 @@
 // BlobContainer
 schema BlobContainer {
-    string    name                            // The name of the blob container. Must be 3-63 characters, lowercase letters, numbers, and hyphens
-    string    storageAccountName              // The name of the storage account
-    string    resourceGroup                   // The resource group name
+    string name                            // The name of the blob container. Must be 3-63 characters, lowercase letters, numbers, and hyphens
+    string storageAccountName              // The name of the storage account
+    string resourceGroup                   // The resource group name
     @allowed(["None", "Blob", "Container"])
-    string    publicAccess = "None"           // The level of public access to the container. None: No public access, Blob: Public read access for blobs only, Container: Public read access for container and blobs
-    map       metadata                        // Container metadata as key-value pairs
-    boolean   immutableStorageWithVersioning  // Enable immutable storage with versioning. Once enabled, cannot be disabled
-    string    defaultEncryptionScope          // Default encryption scope for the container
-    boolean   denyEncryptionScopeOverride     // Deny encryption scope override. When true, blobs must use the container's default encryption scope
+    string publicAccess = "None"           // The level of public access to the container. None: No public access, Blob: Public read access for blobs only, Container: Public read access for container and blobs
+    map metadata                        // Container metadata as key-value pairs
+    boolean immutableStorageWithVersioning  // Enable immutable storage with versioning. Once enabled, cannot be disabled
+    string defaultEncryptionScope          // Default encryption scope for the container
+    boolean denyEncryptionScopeOverride     // Deny encryption scope override. When true, blobs must use the container's default encryption scope
     @cloud(importable)
-    string    id                              // The resource ID of the container
+    string id                              // The resource ID of the container
     @cloud
-    string    etag                            // The ETag of the container
+    string etag                            // The ETag of the container
     @cloud
-    string    lastModifiedTime                // The last modified time
+    string lastModifiedTime                // The last modified time
     @cloud
-    string    leaseStatus                     // The lease status
+    string leaseStatus                     // The lease status
     @cloud
-    string    leaseState                      // The lease state
+    string leaseState                      // The lease state
     @cloud
-    boolean   hasImmutabilityPolicy           // Whether the container has immutability policy
+    boolean hasImmutabilityPolicy           // Whether the container has immutability policy
     @cloud
-    boolean   hasLegalHold                    // Whether the container has legal hold
+    boolean hasLegalHold                    // Whether the container has legal hold
 }

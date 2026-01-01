@@ -1,19 +1,19 @@
 // Vnet
 schema Vnet {
-    string    name                          // The name of the virtual network
-    string    resourceGroup                 // The Azure resource group name
-    string    location                      // The Azure region/location (e.g., eastus, westeurope)
-    list      addressSpaces                 // The address spaces for the VNet in CIDR notation
-    list      dnsServers                    // Custom DNS servers for the VNet. If not specified, Azure-provided DNS is used
-    boolean   enableDdosProtection = false  // Enable DDoS protection for the VNet
-    boolean   enableVmProtection = false    // Enable VM protection for the VNet
-    map       tags                          // Tags to apply to the VNet
+    string name                          // The name of the virtual network
+    string resourceGroup                 // The Azure resource group name
+    string location                      // The Azure region/location (e.g., eastus, westeurope)
+    list addressSpaces                 // The address spaces for the VNet in CIDR notation
+    list dnsServers                    // Custom DNS servers for the VNet. If not specified, Azure-provided DNS is used
+    boolean enableDdosProtection = false  // Enable DDoS protection for the VNet
+    boolean enableVmProtection = false    // Enable VM protection for the VNet
+    map tags                          // Tags to apply to the VNet
     @cloud(importable)
-    string    id                            // The Azure resource ID of the VNet
+    string id                            // The Azure resource ID of the VNet
     @cloud
-    string    provisioningState             // The provisioning state of the VNet
+    string provisioningState             // The provisioning state of the VNet
     @cloud
-    string    resourceGuid                  // The resource GUID of the VNet
+    string resourceGuid                  // The resource GUID of the VNet
     @cloud
-    boolean   hasSubnets                    // Whether the VNet has any subnets
+    boolean hasSubnets                    // Whether the VNet has any subnets
 }

@@ -128,41 +128,32 @@
     .bool { color: #fb923c; }
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
+    .decorator { color: #fb923c; }
 
-    .type-tooltip {
-        position: relative;
-        cursor: help;
-        border-bottom: 1px dashed #38bdf8;
+    .schema-section {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
     }
-    .type-tooltip::after {
-        content: attr(data-schema);
-        position: absolute;
-        left: 0;
-        top: 100%%;
-        margin-top: 0.5rem;
-        padding: 1rem;
-        background: #0f172a;
-        border: 1px solid #334155;
-        border-radius: 0.5rem;
-        font-family: 'SF Mono', 'Fira Code', monospace;
+    .schema-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        cursor: pointer;
+        user-select: none;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: color 0.15s;
+    }
+    .schema-header:hover { color: var(--kite-primary); }
+    .schema-toggle {
         font-size: 0.75rem;
-        line-height: 1.5;
-        white-space: pre;
-        color: #e2e8f0;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.2s, visibility 0.2s;
-        min-width: 400px;
-        max-width: 600px;
-        max-height: 400px;
-        overflow: auto;
+        transition: transform 0.2s;
     }
-    .type-tooltip:hover::after {
-        opacity: 1;
-        visibility: visible;
-    }
+    .schema-section:not(.collapsed) .schema-toggle { transform: rotate(90deg); }
+    .schema-section.collapsed .schema-content { display: none; }
+    .schema-content { margin-top: 0.5rem; }
 
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
@@ -227,26 +218,27 @@
     }
     .meta p { margin: 0.25rem 0; }
 
-    .domain-group { margin-bottom: 1.5rem; }
+    .domain-group { margin-bottom: 2rem; }
     .domain-header {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.75rem 1rem;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
+        padding: 0.5rem 0;
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 0.75rem;
         cursor: pointer;
         user-select: none;
-        font-size: 1rem;
-        transition: border-color 0.15s;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        transition: color 0.15s;
     }
-    .domain-header:hover { border-color: var(--kite-primary); }
+    .domain-header:hover { color: var(--kite-primary); }
     .domain-icon { font-size: 1.25rem; }
-    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); }
+    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); font-size: 0.875rem; }
     .domain-group.collapsed .collapse-icon { transform: rotate(-90deg); }
     .domain-group.collapsed .resource-list { display: none; }
+    .resource-list { padding-left: 0.5rem; }
 
     .breadcrumbs {
         display: flex;
@@ -338,30 +330,7 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// EbsVolume
-schema EbsVolume {
-    string    availabilityZone            // The Availability Zone in which to create the volume
-    integer   size                        // The size of the volume in GiBs
-    @allowed([&quot;gp2&quot;, &quot;gp3&quot;, &quot;io1&quot;, &quot;io2&quot;, &quot;st1&quot;, &quot;sc1&quot;, &quot;standard&quot;])
-    string    volumeType = &quot;gp3&quot;          // The volume type
-    integer   iops                        // The number of I/O operations per second (IOPS)
-    integer   throughput                  // The throughput in MiB/s. Only valid for gp3 volumes
-    boolean   encrypted = false           // Whether the volume should be encrypted
-    string    kmsKeyId                    // The ARN of the KMS key to use for encryption
-    string    snapshotId                  // The snapshot ID to create the volume from
-    boolean   multiAttachEnabled = false  // Enable Multi-Attach for io1/io2 volumes
-    map       tags                        // Tags to apply to the volume
-    @cloud
-    string    volumeId                    // The volume ID assigned by AWS
-    @cloud(importable)
-    string    arn                         // The Amazon Resource Name (ARN) of the volume
-    @cloud
-    string    state                       // The current state of the volume
-    @cloud
-    string    createTime                  // The time the volume was created
-    @cloud
-    string    attachments                 // Information about the volume attachments
-}">EbsVolume</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type">EbsVolume</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">availabilityZone</span>   <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">size</span>               <span class="eq">=</span> <span class="num">42</span>
     <span class="prop">volumeType</span>         <span class="eq">=</span> <span class="str">"gp3"</span>
@@ -373,6 +342,40 @@ schema EbsVolume {
     <span class="prop">multiAttachEnabled</span> <span class="eq">=</span> <span class="bool">false</span>
     <span class="prop">tags</span>               <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
 <span class="brace">}</span></code></div>
+</div>
+<div class="schema-section collapsed">
+<div class="schema-header" onclick="toggleSchema(this)">
+<span class="schema-toggle">▶</span> Schema
+</div>
+<div class="schema-content">
+<div class="code-wrapper">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<div class="code-block"><code><span class="comment">// EbsVolume</span>
+<span class="kw">schema</span> <span class="type">EbsVolume</span> <span class="brace">{</span>
+    <span class="type">string</span>    <span class="prop">availabilityZone</span>            <span class="comment">// The Availability Zone in which to create the volume</span>
+    <span class="type">integer</span>   <span class="prop">size</span>                        <span class="comment">// The size of the volume in GiBs</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"gp2"</span>, <span class="str">"gp3"</span>, <span class="str">"io1"</span>, <span class="str">"io2"</span>, <span class="str">"st1"</span>, <span class="str">"sc1"</span>, <span class="str">"standard"</span><span class="brace">])</span>
+    <span class="type">string</span>    <span class="prop">volumeType</span> <span class="eq">=</span> <span class="str">&quot;gp3&quot;</span>          <span class="comment">// The volume type</span>
+    <span class="type">integer</span>   <span class="prop">iops</span>                        <span class="comment">// The number of I/O operations per second (IOPS)</span>
+    <span class="type">integer</span>   <span class="prop">throughput</span>                  <span class="comment">// The throughput in MiB/s. Only valid for gp3 volumes</span>
+    <span class="type">boolean</span>   <span class="prop">encrypted</span> <span class="eq">=</span> <span class="bool">false</span>           <span class="comment">// Whether the volume should be encrypted</span>
+    <span class="type">string</span>    <span class="prop">kmsKeyId</span>                    <span class="comment">// The ARN of the KMS key to use for encryption</span>
+    <span class="type">string</span>    <span class="prop">snapshotId</span>                  <span class="comment">// The snapshot ID to create the volume from</span>
+    <span class="type">boolean</span>   <span class="prop">multiAttachEnabled</span> <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Enable Multi-Attach for io1/io2 volumes</span>
+    <span class="type">map</span>       <span class="prop">tags</span>                        <span class="comment">// Tags to apply to the volume</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span>    <span class="prop">volumeId</span>                    <span class="comment">// The volume ID assigned by AWS</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span>    <span class="prop">arn</span>                         <span class="comment">// The Amazon Resource Name (ARN) of the volume</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span>    <span class="prop">state</span>                       <span class="comment">// The current state of the volume</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span>    <span class="prop">createTime</span>                  <span class="comment">// The time the volume was created</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span>    <span class="prop">attachments</span>                 <span class="comment">// Information about the volume attachments</span>
+<span class="brace">}</span></code></div>
+</div>
+</div>
 </div>
 <h2>Properties</h2>
 <table class="sortable">
@@ -529,6 +532,11 @@ schema EbsVolume {
                     btn.classList.remove('copied');
                 }, 2000);
             });
+        }
+
+        function toggleSchema(header) {
+            const section = header.parentElement;
+            section.classList.toggle('collapsed');
         }
 
         document.querySelectorAll('.sortable-header').forEach(header => {

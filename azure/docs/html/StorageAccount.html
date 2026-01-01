@@ -128,41 +128,32 @@
     .bool { color: #fb923c; }
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
+    .decorator { color: #fb923c; }
 
-    .type-tooltip {
-        position: relative;
-        cursor: help;
-        border-bottom: 1px dashed #38bdf8;
+    .schema-section {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
     }
-    .type-tooltip::after {
-        content: attr(data-schema);
-        position: absolute;
-        left: 0;
-        top: 100%%;
-        margin-top: 0.5rem;
-        padding: 1rem;
-        background: #0f172a;
-        border: 1px solid #334155;
-        border-radius: 0.5rem;
-        font-family: 'SF Mono', 'Fira Code', monospace;
+    .schema-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        cursor: pointer;
+        user-select: none;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: color 0.15s;
+    }
+    .schema-header:hover { color: var(--kite-primary); }
+    .schema-toggle {
         font-size: 0.75rem;
-        line-height: 1.5;
-        white-space: pre;
-        color: #e2e8f0;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.2s, visibility 0.2s;
-        min-width: 400px;
-        max-width: 600px;
-        max-height: 400px;
-        overflow: auto;
+        transition: transform 0.2s;
     }
-    .type-tooltip:hover::after {
-        opacity: 1;
-        visibility: visible;
-    }
+    .schema-section:not(.collapsed) .schema-toggle { transform: rotate(90deg); }
+    .schema-section.collapsed .schema-content { display: none; }
+    .schema-content { margin-top: 0.5rem; }
 
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
@@ -227,26 +218,27 @@
     }
     .meta p { margin: 0.25rem 0; }
 
-    .domain-group { margin-bottom: 1.5rem; }
+    .domain-group { margin-bottom: 2rem; }
     .domain-header {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.75rem 1rem;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
+        padding: 0.5rem 0;
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 0.75rem;
         cursor: pointer;
         user-select: none;
-        font-size: 1rem;
-        transition: border-color 0.15s;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        transition: color 0.15s;
     }
-    .domain-header:hover { border-color: var(--kite-primary); }
+    .domain-header:hover { color: var(--kite-primary); }
     .domain-icon { font-size: 1.25rem; }
-    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); }
+    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); font-size: 0.875rem; }
     .domain-group.collapsed .collapse-icon { transform: rotate(-90deg); }
     .domain-group.collapsed .resource-list { display: none; }
+    .resource-list { padding-left: 0.5rem; }
 
     .breadcrumbs {
         display: flex;
@@ -338,44 +330,7 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// StorageAccount
-schema StorageAccount {
-    string    name                                     // The name of the storage account (3-24 chars, lowercase letters and numbers, globally unique)
-    string    resourceGroup                            // The resource group name
-    string    location                                 // The Azure region for the storage account
-    @allowed([&quot;Standard_LRS&quot;, &quot;Standard_GRS&quot;, &quot;Standard_RAGRS&quot;, &quot;Standard_ZRS&quot;, &quot;Premium_LRS&quot;, &quot;Premium_ZRS&quot;])
-    string    sku = &quot;Standard_LRS&quot;                     // The SKU (pricing tier and replication)
-    @allowed([&quot;Storage&quot;, &quot;StorageV2&quot;, &quot;BlobStorage&quot;, &quot;BlockBlobStorage&quot;, &quot;FileStorage&quot;])
-    string    kind = &quot;StorageV2&quot;                       // The kind of storage account
-    @allowed([&quot;Hot&quot;, &quot;Cool&quot;])
-    string    accessTier = &quot;Hot&quot;                       // The access tier for blob storage
-    boolean   enableHttpsTrafficOnly = true            // Enable HTTPS traffic only
-    @allowed([&quot;TLS1_0&quot;, &quot;TLS1_1&quot;, &quot;TLS1_2&quot;])
-    string    minimumTlsVersion = &quot;TLS1_2&quot;             // Minimum TLS version
-    boolean   allowBlobPublicAccess = false            // Allow blob public access
-    boolean   allowSharedKeyAccess = true              // Allow shared key access
-    boolean   enableHierarchicalNamespace = false      // Enable hierarchical namespace (Data Lake Storage Gen2)
-    boolean   infrastructureEncryptionEnabled = false  // Enable infrastructure encryption
-    boolean   largeFileSharesEnabled = false           // Enable large file shares (100 TiB capacity)
-    networkrules networkRules                             // Network rules for firewall configuration
-    map       tags                                     // Tags to apply to the storage account
-    @cloud(importable)
-    string    id                                       // The resource ID of the storage account
-    @cloud
-    string    primaryBlobEndpoint                      // The primary blob endpoint
-    @cloud
-    string    primaryFileEndpoint                      // The primary file endpoint
-    @cloud
-    string    primaryQueueEndpoint                     // The primary queue endpoint
-    @cloud
-    string    primaryTableEndpoint                     // The primary table endpoint
-    @cloud
-    string    primaryAccessKey                         // The primary access key
-    @cloud
-    string    primaryConnectionString                  // The primary connection string
-    @cloud
-    string    provisioningState                        // The provisioning state
-}">StorageAccount</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type">StorageAccount</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">name</span>                            <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">resourceGroup</span>                   <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">location</span>                        <span class="eq">=</span> <span class="str">"example-value"</span>
@@ -392,6 +347,54 @@ schema StorageAccount {
     <span class="prop">networkRules</span>                    <span class="eq">=</span> <span class="str">"..."</span>
     <span class="prop">tags</span>                            <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
 <span class="brace">}</span></code></div>
+</div>
+<div class="schema-section collapsed">
+<div class="schema-header" onclick="toggleSchema(this)">
+<span class="schema-toggle">▶</span> Schema
+</div>
+<div class="schema-content">
+<div class="code-wrapper">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<div class="code-block"><code><span class="comment">// StorageAccount</span>
+<span class="kw">schema</span> <span class="type">StorageAccount</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">name</span>                                     <span class="comment">// The name of the storage account (3-24 chars, lowercase letters and numbers, globally unique)</span>
+    <span class="type">string</span> <span class="prop">resourceGroup</span>                            <span class="comment">// The resource group name</span>
+    <span class="type">string</span> <span class="prop">location</span>                                 <span class="comment">// The Azure region for the storage account</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"Standard_LRS"</span>, <span class="str">"Standard_GRS"</span>, <span class="str">"Standard_RAGRS"</span>, <span class="str">"Standard_ZRS"</span>, <span class="str">"Premium_LRS"</span>, <span class="str">"Premium_ZRS"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">sku</span> <span class="eq">=</span> <span class="str">&quot;Standard_LRS&quot;</span>                     <span class="comment">// The SKU (pricing tier and replication)</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"Storage"</span>, <span class="str">"StorageV2"</span>, <span class="str">"BlobStorage"</span>, <span class="str">"BlockBlobStorage"</span>, <span class="str">"FileStorage"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">kind</span> <span class="eq">=</span> <span class="str">&quot;StorageV2&quot;</span>                       <span class="comment">// The kind of storage account</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"Hot"</span>, <span class="str">"Cool"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">accessTier</span> <span class="eq">=</span> <span class="str">&quot;Hot&quot;</span>                       <span class="comment">// The access tier for blob storage</span>
+    <span class="type">boolean</span> <span class="prop">enableHttpsTrafficOnly</span> <span class="eq">=</span> <span class="bool">true</span>            <span class="comment">// Enable HTTPS traffic only</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"TLS1_0"</span>, <span class="str">"TLS1_1"</span>, <span class="str">"TLS1_2"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">minimumTlsVersion</span> <span class="eq">=</span> <span class="str">&quot;TLS1_2&quot;</span>             <span class="comment">// Minimum TLS version</span>
+    <span class="type">boolean</span> <span class="prop">allowBlobPublicAccess</span> <span class="eq">=</span> <span class="bool">false</span>            <span class="comment">// Allow blob public access</span>
+    <span class="type">boolean</span> <span class="prop">allowSharedKeyAccess</span> <span class="eq">=</span> <span class="bool">true</span>              <span class="comment">// Allow shared key access</span>
+    <span class="type">boolean</span> <span class="prop">enableHierarchicalNamespace</span> <span class="eq">=</span> <span class="bool">false</span>      <span class="comment">// Enable hierarchical namespace (Data Lake Storage Gen2)</span>
+    <span class="type">boolean</span> <span class="prop">infrastructureEncryptionEnabled</span> <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Enable infrastructure encryption</span>
+    <span class="type">boolean</span> <span class="prop">largeFileSharesEnabled</span> <span class="eq">=</span> <span class="bool">false</span>           <span class="comment">// Enable large file shares (100 TiB capacity)</span>
+    <span class="type">networkrules</span> <span class="prop">networkRules</span>                             <span class="comment">// Network rules for firewall configuration</span>
+    <span class="type">map</span> <span class="prop">tags</span>                                     <span class="comment">// Tags to apply to the storage account</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">id</span>                                       <span class="comment">// The resource ID of the storage account</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">primaryBlobEndpoint</span>                      <span class="comment">// The primary blob endpoint</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">primaryFileEndpoint</span>                      <span class="comment">// The primary file endpoint</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">primaryQueueEndpoint</span>                     <span class="comment">// The primary queue endpoint</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">primaryTableEndpoint</span>                     <span class="comment">// The primary table endpoint</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">primaryAccessKey</span>                         <span class="comment">// The primary access key</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">primaryConnectionString</span>                  <span class="comment">// The primary connection string</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">provisioningState</span>                        <span class="comment">// The provisioning state</span>
+<span class="brace">}</span></code></div>
+</div>
+</div>
 </div>
 <h2>Properties</h2>
 <table class="sortable">
@@ -603,6 +606,11 @@ schema StorageAccount {
                     btn.classList.remove('copied');
                 }, 2000);
             });
+        }
+
+        function toggleSchema(header) {
+            const section = header.parentElement;
+            section.classList.toggle('collapsed');
         }
 
         document.querySelectorAll('.sortable-header').forEach(header => {

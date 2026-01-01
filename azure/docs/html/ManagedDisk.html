@@ -128,41 +128,32 @@
     .bool { color: #fb923c; }
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
+    .decorator { color: #fb923c; }
 
-    .type-tooltip {
-        position: relative;
-        cursor: help;
-        border-bottom: 1px dashed #38bdf8;
+    .schema-section {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
     }
-    .type-tooltip::after {
-        content: attr(data-schema);
-        position: absolute;
-        left: 0;
-        top: 100%%;
-        margin-top: 0.5rem;
-        padding: 1rem;
-        background: #0f172a;
-        border: 1px solid #334155;
-        border-radius: 0.5rem;
-        font-family: 'SF Mono', 'Fira Code', monospace;
+    .schema-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        cursor: pointer;
+        user-select: none;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: color 0.15s;
+    }
+    .schema-header:hover { color: var(--kite-primary); }
+    .schema-toggle {
         font-size: 0.75rem;
-        line-height: 1.5;
-        white-space: pre;
-        color: #e2e8f0;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.2s, visibility 0.2s;
-        min-width: 400px;
-        max-width: 600px;
-        max-height: 400px;
-        overflow: auto;
+        transition: transform 0.2s;
     }
-    .type-tooltip:hover::after {
-        opacity: 1;
-        visibility: visible;
-    }
+    .schema-section:not(.collapsed) .schema-toggle { transform: rotate(90deg); }
+    .schema-section.collapsed .schema-content { display: none; }
+    .schema-content { margin-top: 0.5rem; }
 
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
@@ -227,26 +218,27 @@
     }
     .meta p { margin: 0.25rem 0; }
 
-    .domain-group { margin-bottom: 1.5rem; }
+    .domain-group { margin-bottom: 2rem; }
     .domain-header {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.75rem 1rem;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
+        padding: 0.5rem 0;
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 0.75rem;
         cursor: pointer;
         user-select: none;
-        font-size: 1rem;
-        transition: border-color 0.15s;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        transition: color 0.15s;
     }
-    .domain-header:hover { border-color: var(--kite-primary); }
+    .domain-header:hover { color: var(--kite-primary); }
     .domain-icon { font-size: 1.25rem; }
-    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); }
+    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); font-size: 0.875rem; }
     .domain-group.collapsed .collapse-icon { transform: rotate(-90deg); }
     .domain-group.collapsed .resource-list { display: none; }
+    .resource-list { padding-left: 0.5rem; }
 
     .breadcrumbs {
         display: flex;
@@ -338,41 +330,7 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// ManagedDisk
-schema ManagedDisk {
-    string    name                              // The name of the managed disk
-    string    resourceGroup                     // The Azure resource group name
-    string    location                          // The Azure region/location (e.g., eastus, westeurope)
-    integer   size                              // The size of the disk in GB
-    @allowed([&quot;Standard_LRS&quot;, &quot;Premium_LRS&quot;, &quot;StandardSSD_LRS&quot;, &quot;UltraSSD_LRS&quot;, &quot;Premium_ZRS&quot;, &quot;StandardSSD_ZRS&quot;])
-    string    sku = &quot;StandardSSD_LRS&quot;           // The disk SKU (storage type)
-    string    tier                              // The disk tier for Premium and Ultra disks (e.g., P30, P40, P50)
-    integer   diskIops                          // The IOPS read/write budget for Ultra disks (100 - 160,000)
-    integer   diskMbps                          // The throughput in MB/s for Ultra disks (1 - 2,000)
-    @allowed([&quot;Linux&quot;, &quot;Windows&quot;])
-    string    osType                            // The operating system type if this is an OS disk
-    string    sourceResourceId                  // The source resource ID to create the disk from (snapshot, image, or disk)
-    string    sourceUri                         // The source URI for importing a VHD from a storage account
-    string    storageAccountId                  // The storage account ID where sourceUri is located
-    string    zone                              // The availability zone for the disk (1, 2, or 3)
-    boolean   burstingEnabled = false           // Enable bursting for Premium SSD disks &gt; 512 GB
-    @allowed([&quot;AllowAll&quot;, &quot;AllowPrivate&quot;, &quot;DenyAll&quot;])
-    string    networkAccessPolicy = &quot;AllowAll&quot;  // Network access policy for the disk
-    string    diskAccessId                      // The disk access ID for private endpoint connections
-    map       tags                              // Tags to apply to the disk
-    @cloud(importable)
-    string    id                                // The Azure resource ID of the disk
-    @cloud
-    string    provisioningState                 // The provisioning state of the disk
-    @cloud
-    string    diskState                         // The disk state (Unattached, Attached, Reserved, etc.)
-    @cloud
-    string    uniqueId                          // The unique identifier for the disk
-    @cloud
-    string    timeCreated                       // The time the disk was created
-    @cloud
-    string    managedBy                         // The ID of the VM this disk is attached to
-}">ManagedDisk</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type">ManagedDisk</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">name</span>                <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">resourceGroup</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">location</span>            <span class="eq">=</span> <span class="str">"example-value"</span>
@@ -391,6 +349,51 @@ schema ManagedDisk {
     <span class="prop">diskAccessId</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">tags</span>                <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
 <span class="brace">}</span></code></div>
+</div>
+<div class="schema-section collapsed">
+<div class="schema-header" onclick="toggleSchema(this)">
+<span class="schema-toggle">▶</span> Schema
+</div>
+<div class="schema-content">
+<div class="code-wrapper">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<div class="code-block"><code><span class="comment">// ManagedDisk</span>
+<span class="kw">schema</span> <span class="type">ManagedDisk</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">name</span>                              <span class="comment">// The name of the managed disk</span>
+    <span class="type">string</span> <span class="prop">resourceGroup</span>                     <span class="comment">// The Azure resource group name</span>
+    <span class="type">string</span> <span class="prop">location</span>                          <span class="comment">// The Azure region/location (e.g., eastus, westeurope)</span>
+    <span class="type">integer</span> <span class="prop">size</span>                              <span class="comment">// The size of the disk in GB</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"Standard_LRS"</span>, <span class="str">"Premium_LRS"</span>, <span class="str">"StandardSSD_LRS"</span>, <span class="str">"UltraSSD_LRS"</span>, <span class="str">"Premium_ZRS"</span>, <span class="str">"StandardSSD_ZRS"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">sku</span> <span class="eq">=</span> <span class="str">&quot;StandardSSD_LRS&quot;</span>           <span class="comment">// The disk SKU (storage type)</span>
+    <span class="type">string</span> <span class="prop">tier</span>                              <span class="comment">// The disk tier for Premium and Ultra disks (e.g., P30, P40, P50)</span>
+    <span class="type">integer</span> <span class="prop">diskIops</span>                          <span class="comment">// The IOPS read/write budget for Ultra disks (100 - 160,000)</span>
+    <span class="type">integer</span> <span class="prop">diskMbps</span>                          <span class="comment">// The throughput in MB/s for Ultra disks (1 - 2,000)</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"Linux"</span>, <span class="str">"Windows"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">osType</span>                            <span class="comment">// The operating system type if this is an OS disk</span>
+    <span class="type">string</span> <span class="prop">sourceResourceId</span>                  <span class="comment">// The source resource ID to create the disk from (snapshot, image, or disk)</span>
+    <span class="type">string</span> <span class="prop">sourceUri</span>                         <span class="comment">// The source URI for importing a VHD from a storage account</span>
+    <span class="type">string</span> <span class="prop">storageAccountId</span>                  <span class="comment">// The storage account ID where sourceUri is located</span>
+    <span class="type">string</span> <span class="prop">zone</span>                              <span class="comment">// The availability zone for the disk (1, 2, or 3)</span>
+    <span class="type">boolean</span> <span class="prop">burstingEnabled</span> <span class="eq">=</span> <span class="bool">false</span>           <span class="comment">// Enable bursting for Premium SSD disks &gt; 512 GB</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"AllowAll"</span>, <span class="str">"AllowPrivate"</span>, <span class="str">"DenyAll"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">networkAccessPolicy</span> <span class="eq">=</span> <span class="str">&quot;AllowAll&quot;</span>  <span class="comment">// Network access policy for the disk</span>
+    <span class="type">string</span> <span class="prop">diskAccessId</span>                      <span class="comment">// The disk access ID for private endpoint connections</span>
+    <span class="type">map</span> <span class="prop">tags</span>                              <span class="comment">// Tags to apply to the disk</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">id</span>                                <span class="comment">// The Azure resource ID of the disk</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">provisioningState</span>                 <span class="comment">// The provisioning state of the disk</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">diskState</span>                         <span class="comment">// The disk state (Unattached, Attached, Reserved, etc.)</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">uniqueId</span>                          <span class="comment">// The unique identifier for the disk</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">timeCreated</span>                       <span class="comment">// The time the disk was created</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">managedBy</span>                         <span class="comment">// The ID of the VM this disk is attached to</span>
+<span class="brace">}</span></code></div>
+</div>
+</div>
 </div>
 <h2>Properties</h2>
 <table class="sortable">
@@ -608,6 +611,11 @@ schema ManagedDisk {
                     btn.classList.remove('copied');
                 }, 2000);
             });
+        }
+
+        function toggleSchema(header) {
+            const section = header.parentElement;
+            section.classList.toggle('collapsed');
         }
 
         document.querySelectorAll('.sortable-header').forEach(header => {

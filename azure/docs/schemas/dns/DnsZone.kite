@@ -1,20 +1,20 @@
 // DnsZone
 schema DnsZone {
-    string    name                           // The domain name for the DNS zone. Must be a fully qualified domain name (e.g., example.com)
-    string    resourceGroup                  // The resource group name
+    string name                           // The domain name for the DNS zone. Must be a fully qualified domain name (e.g., example.com)
+    string resourceGroup                  // The resource group name
     @allowed(["Public", "Private"])
-    string    zoneType = "Public"            // The type of DNS zone
-    list      registrationVirtualNetworkIds  // Virtual network IDs for auto-registration (private zones only). VMs in these networks will have their DNS records auto-registered
-    list      resolutionVirtualNetworkIds    // Virtual network IDs for resolution (private zones only). VMs in these networks can resolve records in this zone
-    map       tags                           // Tags to apply to the DNS zone
+    string zoneType = "Public"            // The type of DNS zone
+    list registrationVirtualNetworkIds  // Virtual network IDs for auto-registration (private zones only). VMs in these networks will have their DNS records auto-registered
+    list resolutionVirtualNetworkIds    // Virtual network IDs for resolution (private zones only). VMs in these networks can resolve records in this zone
+    map tags                           // Tags to apply to the DNS zone
     @cloud(importable)
-    string    id                             // The resource ID of the DNS zone
+    string id                             // The resource ID of the DNS zone
     @cloud
-    list      nameServers                    // The name servers for the DNS zone
+    list nameServers                    // The name servers for the DNS zone
     @cloud
-    integer   numberOfRecordSets             // The number of record sets in the DNS zone
+    integer numberOfRecordSets             // The number of record sets in the DNS zone
     @cloud
-    integer   maxNumberOfRecordSets          // The maximum number of record sets allowed
+    integer maxNumberOfRecordSets          // The maximum number of record sets allowed
     @cloud
-    string    etag                           // The ETag of the DNS zone
+    string etag                           // The ETag of the DNS zone
 }

@@ -128,41 +128,32 @@
     .bool { color: #fb923c; }
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
+    .decorator { color: #fb923c; }
 
-    .type-tooltip {
-        position: relative;
-        cursor: help;
-        border-bottom: 1px dashed #38bdf8;
+    .schema-section {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
     }
-    .type-tooltip::after {
-        content: attr(data-schema);
-        position: absolute;
-        left: 0;
-        top: 100%%;
-        margin-top: 0.5rem;
-        padding: 1rem;
-        background: #0f172a;
-        border: 1px solid #334155;
-        border-radius: 0.5rem;
-        font-family: 'SF Mono', 'Fira Code', monospace;
+    .schema-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        cursor: pointer;
+        user-select: none;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: color 0.15s;
+    }
+    .schema-header:hover { color: var(--kite-primary); }
+    .schema-toggle {
         font-size: 0.75rem;
-        line-height: 1.5;
-        white-space: pre;
-        color: #e2e8f0;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.2s, visibility 0.2s;
-        min-width: 400px;
-        max-width: 600px;
-        max-height: 400px;
-        overflow: auto;
+        transition: transform 0.2s;
     }
-    .type-tooltip:hover::after {
-        opacity: 1;
-        visibility: visible;
-    }
+    .schema-section:not(.collapsed) .schema-toggle { transform: rotate(90deg); }
+    .schema-section.collapsed .schema-content { display: none; }
+    .schema-content { margin-top: 0.5rem; }
 
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
@@ -227,26 +218,27 @@
     }
     .meta p { margin: 0.25rem 0; }
 
-    .domain-group { margin-bottom: 1.5rem; }
+    .domain-group { margin-bottom: 2rem; }
     .domain-header {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.75rem 1rem;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
+        padding: 0.5rem 0;
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 0.75rem;
         cursor: pointer;
         user-select: none;
-        font-size: 1rem;
-        transition: border-color 0.15s;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        transition: color 0.15s;
     }
-    .domain-header:hover { border-color: var(--kite-primary); }
+    .domain-header:hover { color: var(--kite-primary); }
     .domain-icon { font-size: 1.25rem; }
-    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); }
+    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); font-size: 0.875rem; }
     .domain-group.collapsed .collapse-icon { transform: rotate(-90deg); }
     .domain-group.collapsed .resource-list { display: none; }
+    .resource-list { padding-left: 0.5rem; }
 
     .breadcrumbs {
         display: flex;
@@ -338,38 +330,7 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// LoadBalancer
-schema LoadBalancer {
-    string    name                        // The name of the load balancer. Must be unique within your AWS account
-    @allowed([&quot;application&quot;, &quot;network&quot;, &quot;gateway&quot;])
-    string    type = &quot;application&quot;        // The type of load balancer
-    @allowed([&quot;internet-facing&quot;, &quot;internal&quot;])
-    string    scheme = &quot;internet-facing&quot;  // The scheme for the load balancer
-    list      subnets                     // The subnet IDs. At least two in different Availability Zones
-    list      securityGroups              // The security group IDs. Required for ALB, not applicable for NLB
-    @allowed([&quot;ipv4&quot;, &quot;dualstack&quot;])
-    string    ipAddressType = &quot;ipv4&quot;      // The IP address type
-    boolean   deletionProtection = false  // Enable deletion protection
-    boolean   crossZoneLoadBalancing      // Enable cross-zone load balancing
-    boolean   enableHttp2 = true          // Enable HTTP/2 support (ALB only)
-    integer   idleTimeout = 60            // Idle timeout in seconds (ALB only)
-    boolean   accessLogsEnabled = false   // Enable access logs
-    string    accessLogsBucket            // S3 bucket for access logs
-    string    accessLogsPrefix            // S3 bucket prefix for access logs
-    map       tags                        // Tags to apply to the load balancer
-    @cloud(importable)
-    string    arn                         // The Amazon Resource Name (ARN) of the load balancer
-    @cloud
-    string    dnsName                     // The DNS name of the load balancer
-    @cloud
-    string    canonicalHostedZoneId       // The canonical hosted zone ID of the load balancer
-    @cloud
-    string    vpcId                       // The VPC ID of the load balancer
-    @cloud
-    string    state                       // The current state of the load balancer
-    @cloud
-    list      availabilityZones           // The Availability Zones for the load balancer
-}">LoadBalancer</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type">LoadBalancer</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">name</span>                   <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">type</span>                   <span class="eq">=</span> <span class="str">"application"</span>
     <span class="prop">scheme</span>                 <span class="eq">=</span> <span class="str">"internet-facing"</span>
@@ -385,6 +346,48 @@ schema LoadBalancer {
     <span class="prop">accessLogsPrefix</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">tags</span>                   <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
 <span class="brace">}</span></code></div>
+</div>
+<div class="schema-section collapsed">
+<div class="schema-header" onclick="toggleSchema(this)">
+<span class="schema-toggle">▶</span> Schema
+</div>
+<div class="schema-content">
+<div class="code-wrapper">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<div class="code-block"><code><span class="comment">// LoadBalancer</span>
+<span class="kw">schema</span> <span class="type">LoadBalancer</span> <span class="brace">{</span>
+    <span class="type">string</span>    <span class="prop">name</span>                        <span class="comment">// The name of the load balancer. Must be unique within your AWS account</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"application"</span>, <span class="str">"network"</span>, <span class="str">"gateway"</span><span class="brace">])</span>
+    <span class="type">string</span>    <span class="prop">type</span> <span class="eq">=</span> <span class="str">&quot;application&quot;</span>        <span class="comment">// The type of load balancer</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"internet-facing"</span>, <span class="str">"internal"</span><span class="brace">])</span>
+    <span class="type">string</span>    <span class="prop">scheme</span> <span class="eq">=</span> <span class="str">&quot;internet-facing&quot;</span>  <span class="comment">// The scheme for the load balancer</span>
+    <span class="type">list</span>      <span class="prop">subnets</span>                     <span class="comment">// The subnet IDs. At least two in different Availability Zones</span>
+    <span class="type">list</span>      <span class="prop">securityGroups</span>              <span class="comment">// The security group IDs. Required for ALB, not applicable for NLB</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"ipv4"</span>, <span class="str">"dualstack"</span><span class="brace">])</span>
+    <span class="type">string</span>    <span class="prop">ipAddressType</span> <span class="eq">=</span> <span class="str">&quot;ipv4&quot;</span>      <span class="comment">// The IP address type</span>
+    <span class="type">boolean</span>   <span class="prop">deletionProtection</span> <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Enable deletion protection</span>
+    <span class="type">boolean</span>   <span class="prop">crossZoneLoadBalancing</span>      <span class="comment">// Enable cross-zone load balancing</span>
+    <span class="type">boolean</span>   <span class="prop">enableHttp2</span> <span class="eq">=</span> <span class="bool">true</span>          <span class="comment">// Enable HTTP/2 support (ALB only)</span>
+    <span class="type">integer</span>   <span class="prop">idleTimeout</span> <span class="eq">=</span> <span class="num">60</span>            <span class="comment">// Idle timeout in seconds (ALB only)</span>
+    <span class="type">boolean</span>   <span class="prop">accessLogsEnabled</span> <span class="eq">=</span> <span class="bool">false</span>   <span class="comment">// Enable access logs</span>
+    <span class="type">string</span>    <span class="prop">accessLogsBucket</span>            <span class="comment">// S3 bucket for access logs</span>
+    <span class="type">string</span>    <span class="prop">accessLogsPrefix</span>            <span class="comment">// S3 bucket prefix for access logs</span>
+    <span class="type">map</span>       <span class="prop">tags</span>                        <span class="comment">// Tags to apply to the load balancer</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span>    <span class="prop">arn</span>                         <span class="comment">// The Amazon Resource Name (ARN) of the load balancer</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span>    <span class="prop">dnsName</span>                     <span class="comment">// The DNS name of the load balancer</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span>    <span class="prop">canonicalHostedZoneId</span>       <span class="comment">// The canonical hosted zone ID of the load balancer</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span>    <span class="prop">vpcId</span>                       <span class="comment">// The VPC ID of the load balancer</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span>    <span class="prop">state</span>                       <span class="comment">// The current state of the load balancer</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">list</span>      <span class="prop">availabilityZones</span>           <span class="comment">// The Availability Zones for the load balancer</span>
+<span class="brace">}</span></code></div>
+</div>
+</div>
 </div>
 <h2>Properties</h2>
 <table class="sortable">
@@ -578,6 +581,11 @@ schema LoadBalancer {
                     btn.classList.remove('copied');
                 }, 2000);
             });
+        }
+
+        function toggleSchema(header) {
+            const section = header.parentElement;
+            section.classList.toggle('collapsed');
         }
 
         document.querySelectorAll('.sortable-header').forEach(header => {

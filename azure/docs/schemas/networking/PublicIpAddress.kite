@@ -1,26 +1,26 @@
 // PublicIpAddress
 schema PublicIpAddress {
-    string    name                          // The name of the public IP address
-    string    resourceGroup                 // The Azure resource group name
-    string    location                      // The Azure region/location
+    string name                          // The name of the public IP address
+    string resourceGroup                 // The Azure resource group name
+    string location                      // The Azure region/location
     @allowed(["Basic", "Standard"])
-    string    sku = "Basic"                 // The SKU. Standard is required for zone redundancy and NAT Gateway
+    string sku = "Basic"                 // The SKU. Standard is required for zone redundancy and NAT Gateway
     @allowed(["Static", "Dynamic"])
-    string    allocationMethod = "Dynamic"  // The allocation method. Standard SKU requires Static
+    string allocationMethod = "Dynamic"  // The allocation method. Standard SKU requires Static
     @allowed(["IPv4", "IPv6"])
-    string    ipVersion = "IPv4"            // The IP version
-    integer   idleTimeoutInMinutes = 4      // The idle timeout in minutes. Range: 4-30
-    string    domainNameLabel               // The domain name label for DNS. Creates: {label}.{region}.cloudapp.azure.com
-    list      zones                         // The availability zones for the IP. Only for Standard SKU
-    map       tags                          // Tags to apply to the public IP address
+    string ipVersion = "IPv4"            // The IP version
+    integer idleTimeoutInMinutes = 4      // The idle timeout in minutes. Range: 4-30
+    string domainNameLabel               // The domain name label for DNS. Creates: {label}.{region}.cloudapp.azure.com
+    list zones                         // The availability zones for the IP. Only for Standard SKU
+    map tags                          // Tags to apply to the public IP address
     @cloud(importable)
-    string    id                            // The Azure resource ID of the public IP
+    string id                            // The Azure resource ID of the public IP
     @cloud
-    string    ipAddress                     // The assigned IP address
+    string ipAddress                     // The assigned IP address
     @cloud
-    string    provisioningState             // The provisioning state of the public IP
+    string provisioningState             // The provisioning state of the public IP
     @cloud
-    string    resourceGuid                  // The resource GUID
+    string resourceGuid                  // The resource GUID
     @cloud
-    string    fqdn                          // The FQDN of the DNS record
+    string fqdn                          // The FQDN of the DNS record
 }
