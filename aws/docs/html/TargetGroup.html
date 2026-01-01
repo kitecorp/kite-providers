@@ -129,6 +129,41 @@
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
 
+    .type-tooltip {
+        position: relative;
+        cursor: help;
+        border-bottom: 1px dashed #38bdf8;
+    }
+    .type-tooltip::after {
+        content: attr(data-schema);
+        position: absolute;
+        left: 0;
+        top: 100%%;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        white-space: pre;
+        color: #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        min-width: 400px;
+        max-width: 600px;
+        max-height: 400px;
+        overflow: auto;
+    }
+    .type-tooltip:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
     th {
@@ -303,7 +338,30 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type">TargetGroup</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// TargetGroup
+schema TargetGroup {
+    string    name                       // The name of the target group
+    integer   port                       // The port on which targets receive traffic
+    @allowed([&quot;HTTP&quot;, &quot;HTTPS&quot;, &quot;TCP&quot;, &quot;TLS&quot;, &quot;UDP&quot;, &quot;TCP_UDP&quot;, &quot;GENEVE&quot;])
+    string    protocol = &quot;HTTP&quot;          // The protocol for routing traffic
+    @allowed([&quot;HTTP1&quot;, &quot;HTTP2&quot;, &quot;GRPC&quot;])
+    string    protocolVersion = &quot;HTTP1&quot;  // The protocol version (ALB only)
+    string    vpcId                      // The VPC ID for the target group
+    @allowed([&quot;instance&quot;, &quot;ip&quot;, &quot;lambda&quot;, &quot;alb&quot;])
+    string    targetType = &quot;instance&quot;    // The target type
+    @allowed([&quot;ipv4&quot;, &quot;ipv6&quot;])
+    string    ipAddressType = &quot;ipv4&quot;     // The IP address type
+    healthcheck healthCheck                // Health check configuration
+    integer   deregistrationDelay = 300  // Deregistration delay in seconds
+    integer   slowStart = 0              // Slow start duration in seconds (ALB only)
+    stickiness stickiness                 // Stickiness configuration
+    list      targets                    // Target IDs to register (instance IDs or IP addresses)
+    map       tags                       // Tags to apply to the target group
+    @cloud(importable)
+    string    arn                        // The Amazon Resource Name (ARN) of the target group
+    @cloud
+    list      loadBalancerArns           // The load balancer ARNs attached to this target group
+}">TargetGroup</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">name</span>                <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">port</span>                <span class="eq">=</span> <span class="num">42</span>
     <span class="prop">protocol</span>            <span class="eq">=</span> <span class="str">"HTTP"</span>

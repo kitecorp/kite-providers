@@ -129,6 +129,41 @@
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
 
+    .type-tooltip {
+        position: relative;
+        cursor: help;
+        border-bottom: 1px dashed #38bdf8;
+    }
+    .type-tooltip::after {
+        content: attr(data-schema);
+        position: absolute;
+        left: 0;
+        top: 100%%;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        white-space: pre;
+        color: #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        min-width: 400px;
+        max-width: 600px;
+        max-height: 400px;
+        overflow: auto;
+    }
+    .type-tooltip:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
     th {
@@ -303,7 +338,44 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type">Ec2Instance</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// Ec2Instance
+schema Ec2Instance {
+    string    ami                                   // The AMI ID to use for the instance
+    string    instanceType                          // The instance type (e.g., t3.micro, m5.large)
+    string    subnetId                              // The subnet ID to launch the instance in
+    list      securityGroupIds                      // List of security group IDs to attach
+    string    keyName                               // The name of the key pair for SSH access
+    boolean   associatePublicIpAddress = false      // Whether to associate a public IP address
+    string    iamInstanceProfile                    // The IAM instance profile name or ARN
+    string    userData                              // User data script for instance initialization (base64 encoded)
+    string    availabilityZone                      // The availability zone to launch in
+    boolean   monitoring = false                    // Enable detailed monitoring
+    @allowed([&quot;default&quot;, &quot;dedicated&quot;, &quot;host&quot;])
+    string    tenancy = &quot;default&quot;                   // Instance tenancy option
+    integer   rootVolumeSize                        // Root volume size in GiB
+    @allowed([&quot;gp2&quot;, &quot;gp3&quot;, &quot;io1&quot;, &quot;io2&quot;, &quot;st1&quot;, &quot;sc1&quot;])
+    string    rootVolumeType = &quot;gp3&quot;                // Root volume type
+    boolean   deleteRootVolumeOnTermination = true  // Delete root volume on termination
+    map       tags                                  // Tags to apply to the instance
+    @cloud
+    string    instanceId                            // The instance ID assigned by AWS
+    @cloud
+    string    state                                 // Instance state: pending, running, stopping, stopped, terminated
+    @cloud
+    string    publicIp                              // The public IP address (if assigned)
+    @cloud
+    string    privateIp                             // The private IP address
+    @cloud
+    string    publicDnsName                         // The public DNS name
+    @cloud
+    string    privateDnsName                        // The private DNS name
+    @cloud
+    string    vpcId                                 // The VPC ID the instance is in
+    @cloud
+    string    architecture                          // The architecture: x86_64 or arm64
+    @cloud
+    string    rootDeviceName                        // The root device name
+}">Ec2Instance</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">ami</span>                           <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">instanceType</span>                  <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">subnetId</span>                      <span class="eq">=</span> <span class="str">"example-value"</span>

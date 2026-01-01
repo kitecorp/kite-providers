@@ -49,13 +49,13 @@ resource ManagedDisk example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Azure resource ID of the disk |
-| `provisioningState` | `string` | — | — | No | *☁️ cloud-managed* The provisioning state of the disk |
-| `diskState` | `string` | — | — | No | *☁️ cloud-managed* The disk state (Unattached, Attached, Reserved, etc.) |
-| `uniqueId` | `string` | — | — | No | *☁️ cloud-managed* The unique identifier for the disk |
-| `timeCreated` | `string` | — | — | No | *☁️ cloud-managed* The time the disk was created |
-| `managedBy` | `string` | — | — | No | *☁️ cloud-managed* The ID of the VM this disk is attached to |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The Azure resource ID of the disk |
+| `provisioningState` | `string` | The provisioning state of the disk |
+| `diskState` | `string` | The disk state (Unattached, Attached, Reserved, etc.) |
+| `uniqueId` | `string` | The unique identifier for the disk |
+| `timeCreated` | `string` | The time the disk was created |
+| `managedBy` | `string` | The ID of the VM this disk is attached to |
 
 [← Back to Index](README.md)

@@ -129,6 +129,41 @@
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
 
+    .type-tooltip {
+        position: relative;
+        cursor: help;
+        border-bottom: 1px dashed #38bdf8;
+    }
+    .type-tooltip::after {
+        content: attr(data-schema);
+        position: absolute;
+        left: 0;
+        top: 100%%;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        white-space: pre;
+        color: #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        min-width: 400px;
+        max-width: 600px;
+        max-height: 400px;
+        overflow: auto;
+    }
+    .type-tooltip:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
     th {
@@ -303,7 +338,48 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type">VirtualMachine</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// VirtualMachine
+schema VirtualMachine {
+    string    name                         // The name of the virtual machine
+    string    resourceGroup                // The Azure resource group name
+    string    location                     // The Azure region/location
+    string    size                         // The VM size (e.g., Standard_B2s, Standard_D2s_v3)
+    string    adminUsername                // The admin username for the VM
+    string    adminPassword                // The admin password (for Windows or password auth)
+    string    sshPublicKey                 // The SSH public key for Linux VMs
+    string    imagePublisher               // The image publisher (e.g., Canonical, MicrosoftWindowsServer)
+    string    imageOffer                   // The image offer (e.g., 0001-com-ubuntu-server-jammy, WindowsServer)
+    string    imageSku                     // The image SKU (e.g., 22_04-lts-gen2, 2022-datacenter-azure-edition)
+    string    imageVersion = &quot;latest&quot;      // The image version
+    string    subnetId                     // The subnet ID to attach the VM to
+    string    publicIpAddressId            // The public IP address ID to associate
+    string    networkSecurityGroupId       // The network security group ID for the NIC
+    integer   osDiskSizeGb                 // The OS disk size in GB
+    @allowed([&quot;Standard_LRS&quot;, &quot;StandardSSD_LRS&quot;, &quot;Premium_LRS&quot;, &quot;UltraSSD_LRS&quot;])
+    string    osDiskType = &quot;Premium_LRS&quot;   // The OS disk type
+    @allowed([&quot;None&quot;, &quot;ReadOnly&quot;, &quot;ReadWrite&quot;])
+    string    osDiskCaching = &quot;ReadWrite&quot;  // The OS disk caching
+    string    computerName                 // The computer name (hostname). Defaults to VM name
+    string    customData                   // Custom data for cloud-init (Linux) or CustomScriptExtension (Windows)
+    list      zones                        // Availability zones for the VM
+    map       tags                         // Tags to apply to the VM and its resources
+    @cloud(importable)
+    string    id                           // The Azure resource ID of the VM
+    @cloud
+    string    vmId                         // The VM unique ID
+    @cloud
+    string    provisioningState            // The provisioning state
+    @cloud
+    string    powerState                   // The power state (running, deallocated, etc.)
+    @cloud
+    string    privateIp                    // The private IP address
+    @cloud
+    string    publicIp                     // The public IP address (if assigned)
+    @cloud
+    string    networkInterfaceId           // The network interface ID
+    @cloud
+    string    osDiskName                   // The OS disk name
+}">VirtualMachine</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">name</span>                   <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">resourceGroup</span>          <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">location</span>               <span class="eq">=</span> <span class="str">"example-value"</span>
@@ -517,9 +593,6 @@
         <tr>
             <th data-sort="name" class="sortable-header">Name <span class="sort-icon">↕</span></th>
             <th data-sort="type" class="sortable-header">Type <span class="sort-icon">↕</span></th>
-            <th>Default</th>
-            <th>Valid Values</th>
-            <th data-sort="optional" class="sortable-header">Optional <span class="sort-icon">↕</span></th>
             <th>Description</th>
         </tr>
     </thead>
@@ -530,65 +603,41 @@
       <span class="badge badge-importable">importable</span>
     </div></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The Azure resource ID of the VM</td>
+  <td>The Azure resource ID of the VM <span class="badge badge-importable">importable</span></td>
 </tr>
 <tr id="vmId" data-name="vmid" data-type="string" data-optional="true">
   <td><a href="#vmId" class="prop-name-link"><span class="prop-name">vmId</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The VM unique ID</td>
 </tr>
 <tr id="provisioningState" data-name="provisioningstate" data-type="string" data-optional="true">
   <td><a href="#provisioningState" class="prop-name-link"><span class="prop-name">provisioningState</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The provisioning state</td>
 </tr>
 <tr id="powerState" data-name="powerstate" data-type="string" data-optional="true">
   <td><a href="#powerState" class="prop-name-link"><span class="prop-name">powerState</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The power state (running, deallocated, etc.)</td>
 </tr>
 <tr id="privateIp" data-name="privateip" data-type="string" data-optional="true">
   <td><a href="#privateIp" class="prop-name-link"><span class="prop-name">privateIp</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The private IP address</td>
 </tr>
 <tr id="publicIp" data-name="publicip" data-type="string" data-optional="true">
   <td><a href="#publicIp" class="prop-name-link"><span class="prop-name">publicIp</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The public IP address (if assigned)</td>
 </tr>
 <tr id="networkInterfaceId" data-name="networkinterfaceid" data-type="string" data-optional="true">
   <td><a href="#networkInterfaceId" class="prop-name-link"><span class="prop-name">networkInterfaceId</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The network interface ID</td>
 </tr>
 <tr id="osDiskName" data-name="osdiskname" data-type="string" data-optional="true">
   <td><a href="#osDiskName" class="prop-name-link"><span class="prop-name">osDiskName</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The OS disk name</td>
 </tr>
     </tbody>

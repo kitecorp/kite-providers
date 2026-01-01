@@ -27,10 +27,10 @@ resource RouteTable example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Azure resource ID of the route table |
-| `provisioningState` | `string` | — | — | No | *☁️ cloud-managed* The provisioning state of the route table |
-| `associatedSubnetIds` | `list` | — | — | No | *☁️ cloud-managed* List of subnet IDs associated with this route table |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The Azure resource ID of the route table |
+| `provisioningState` | `string` | The provisioning state of the route table |
+| `associatedSubnetIds` | `list` | List of subnet IDs associated with this route table |
 
 [← Back to Index](README.md)

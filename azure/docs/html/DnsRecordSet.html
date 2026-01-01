@@ -129,6 +129,41 @@
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
 
+    .type-tooltip {
+        position: relative;
+        cursor: help;
+        border-bottom: 1px dashed #38bdf8;
+    }
+    .type-tooltip::after {
+        content: attr(data-schema);
+        position: absolute;
+        left: 0;
+        top: 100%%;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        white-space: pre;
+        color: #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        min-width: 400px;
+        max-width: 600px;
+        max-height: 400px;
+        overflow: auto;
+    }
+    .type-tooltip:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
     th {
@@ -303,7 +338,34 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type">DnsRecordSet</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// DnsRecordSet
+schema DnsRecordSet {
+    string    zoneName           // The name of the DNS zone
+    string    resourceGroup      // The resource group name
+    string    name               // The name of the record set. Use @ for the zone apex
+    @allowed([&quot;A&quot;, &quot;AAAA&quot;, &quot;CNAME&quot;, &quot;MX&quot;, &quot;TXT&quot;, &quot;NS&quot;, &quot;SRV&quot;, &quot;CAA&quot;, &quot;PTR&quot;, &quot;SOA&quot;])
+    string    type               // The DNS record type
+    integer   ttl                // The TTL (time to live) in seconds. Required unless targetResourceId is specified
+    list      aRecords           // A records (IPv4 addresses). Used when type = A
+    list      aaaaRecords        // AAAA records (IPv6 addresses). Used when type = AAAA
+    string    cnameRecord        // CNAME record (canonical name). Used when type = CNAME
+    list      mxRecords          // MX records. Used when type = MX
+    list      txtRecords         // TXT records. Used when type = TXT
+    list      nsRecords          // NS records. Used when type = NS
+    list      srvRecords         // SRV records. Used when type = SRV
+    list      caaRecords         // CAA records. Used when type = CAA
+    list      ptrRecords         // PTR records. Used when type = PTR
+    string    targetResourceId   // Target resource ID for alias record. Points to an Azure resource (e.g., Public IP, Traffic Manager)
+    map       metadata           // Metadata for the record set
+    @cloud(importable)
+    string    id                 // The resource ID of the record set
+    @cloud
+    string    fqdn               // The fully qualified domain name of the record set
+    @cloud
+    string    provisioningState  // The provisioning state
+    @cloud
+    string    etag               // The ETag of the record set
+}">DnsRecordSet</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">zoneName</span>         <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">resourceGroup</span>    <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">name</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
@@ -472,9 +534,6 @@
         <tr>
             <th data-sort="name" class="sortable-header">Name <span class="sort-icon">↕</span></th>
             <th data-sort="type" class="sortable-header">Type <span class="sort-icon">↕</span></th>
-            <th>Default</th>
-            <th>Valid Values</th>
-            <th data-sort="optional" class="sortable-header">Optional <span class="sort-icon">↕</span></th>
             <th>Description</th>
         </tr>
     </thead>
@@ -485,33 +544,21 @@
       <span class="badge badge-importable">importable</span>
     </div></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The resource ID of the record set</td>
+  <td>The resource ID of the record set <span class="badge badge-importable">importable</span></td>
 </tr>
 <tr id="fqdn" data-name="fqdn" data-type="string" data-optional="true">
   <td><a href="#fqdn" class="prop-name-link"><span class="prop-name">fqdn</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The fully qualified domain name of the record set</td>
 </tr>
 <tr id="provisioningState" data-name="provisioningstate" data-type="string" data-optional="true">
   <td><a href="#provisioningState" class="prop-name-link"><span class="prop-name">provisioningState</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The provisioning state</td>
 </tr>
 <tr id="etag" data-name="etag" data-type="string" data-optional="true">
   <td><a href="#etag" class="prop-name-link"><span class="prop-name">etag</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The ETag of the record set</td>
 </tr>
     </tbody>

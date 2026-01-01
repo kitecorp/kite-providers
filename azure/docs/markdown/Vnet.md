@@ -31,11 +31,11 @@ resource Vnet example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Azure resource ID of the VNet |
-| `provisioningState` | `string` | — | — | No | *☁️ cloud-managed* The provisioning state of the VNet |
-| `resourceGuid` | `string` | — | — | No | *☁️ cloud-managed* The resource GUID of the VNet |
-| `hasSubnets` | `boolean` | — | — | No | *☁️ cloud-managed* Whether the VNet has any subnets |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The Azure resource ID of the VNet |
+| `provisioningState` | `string` | The provisioning state of the VNet |
+| `resourceGuid` | `string` | The resource GUID of the VNet |
+| `hasSubnets` | `boolean` | Whether the VNet has any subnets |
 
 [← Back to Index](README.md)

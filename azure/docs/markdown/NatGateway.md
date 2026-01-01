@@ -31,11 +31,11 @@ resource NatGateway example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Azure resource ID of the NAT gateway |
-| `provisioningState` | `string` | — | — | No | *☁️ cloud-managed* The provisioning state of the NAT gateway |
-| `resourceGuid` | `string` | — | — | No | *☁️ cloud-managed* The resource GUID of the NAT gateway |
-| `subnetIds` | `list` | — | — | No | *☁️ cloud-managed* List of subnet IDs using this NAT gateway |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The Azure resource ID of the NAT gateway |
+| `provisioningState` | `string` | The provisioning state of the NAT gateway |
+| `resourceGuid` | `string` | The resource GUID of the NAT gateway |
+| `subnetIds` | `list` | List of subnet IDs using this NAT gateway |
 
 [← Back to Index](README.md)

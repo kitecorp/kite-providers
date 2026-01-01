@@ -39,9 +39,9 @@ resource LoadBalancer example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The resource ID of the load balancer |
-| `provisioningState` | `string` | — | — | No | *☁️ cloud-managed* Provisioning state of the load balancer |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The resource ID of the load balancer |
+| `provisioningState` | `string` | Provisioning state of the load balancer |
 
 [← Back to Index](README.md)

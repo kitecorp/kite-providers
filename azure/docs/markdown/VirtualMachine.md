@@ -57,15 +57,15 @@ resource VirtualMachine example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Azure resource ID of the VM |
-| `vmId` | `string` | — | — | No | *☁️ cloud-managed* The VM unique ID |
-| `provisioningState` | `string` | — | — | No | *☁️ cloud-managed* The provisioning state |
-| `powerState` | `string` | — | — | No | *☁️ cloud-managed* The power state (running, deallocated, etc.) |
-| `privateIp` | `string` | — | — | No | *☁️ cloud-managed* The private IP address |
-| `publicIp` | `string` | — | — | No | *☁️ cloud-managed* The public IP address (if assigned) |
-| `networkInterfaceId` | `string` | — | — | No | *☁️ cloud-managed* The network interface ID |
-| `osDiskName` | `string` | — | — | No | *☁️ cloud-managed* The OS disk name |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The Azure resource ID of the VM |
+| `vmId` | `string` | The VM unique ID |
+| `provisioningState` | `string` | The provisioning state |
+| `powerState` | `string` | The power state (running, deallocated, etc.) |
+| `privateIp` | `string` | The private IP address |
+| `publicIp` | `string` | The public IP address (if assigned) |
+| `networkInterfaceId` | `string` | The network interface ID |
+| `osDiskName` | `string` | The OS disk name |
 
 [← Back to Index](README.md)

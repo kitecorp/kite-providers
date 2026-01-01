@@ -45,15 +45,15 @@ resource StorageAccount example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The resource ID of the storage account |
-| `primaryBlobEndpoint` | `string` | — | — | No | *☁️ cloud-managed* The primary blob endpoint |
-| `primaryFileEndpoint` | `string` | — | — | No | *☁️ cloud-managed* The primary file endpoint |
-| `primaryQueueEndpoint` | `string` | — | — | No | *☁️ cloud-managed* The primary queue endpoint |
-| `primaryTableEndpoint` | `string` | — | — | No | *☁️ cloud-managed* The primary table endpoint |
-| `primaryAccessKey` | `string` | — | — | No | *☁️ cloud-managed* The primary access key |
-| `primaryConnectionString` | `string` | — | — | No | *☁️ cloud-managed* The primary connection string |
-| `provisioningState` | `string` | — | — | No | *☁️ cloud-managed* The provisioning state |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The resource ID of the storage account |
+| `primaryBlobEndpoint` | `string` | The primary blob endpoint |
+| `primaryFileEndpoint` | `string` | The primary file endpoint |
+| `primaryQueueEndpoint` | `string` | The primary queue endpoint |
+| `primaryTableEndpoint` | `string` | The primary table endpoint |
+| `primaryAccessKey` | `string` | The primary access key |
+| `primaryConnectionString` | `string` | The primary connection string |
+| `provisioningState` | `string` | The provisioning state |
 
 [← Back to Index](README.md)

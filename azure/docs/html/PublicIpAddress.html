@@ -129,6 +129,41 @@
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
 
+    .type-tooltip {
+        position: relative;
+        cursor: help;
+        border-bottom: 1px dashed #38bdf8;
+    }
+    .type-tooltip::after {
+        content: attr(data-schema);
+        position: absolute;
+        left: 0;
+        top: 100%%;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        white-space: pre;
+        color: #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        min-width: 400px;
+        max-width: 600px;
+        max-height: 400px;
+        overflow: auto;
+    }
+    .type-tooltip:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
     th {
@@ -303,7 +338,32 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type">PublicIpAddress</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// PublicIpAddress
+schema PublicIpAddress {
+    string    name                          // The name of the public IP address
+    string    resourceGroup                 // The Azure resource group name
+    string    location                      // The Azure region/location
+    @allowed([&quot;Basic&quot;, &quot;Standard&quot;])
+    string    sku = &quot;Basic&quot;                 // The SKU. Standard is required for zone redundancy and NAT Gateway
+    @allowed([&quot;Static&quot;, &quot;Dynamic&quot;])
+    string    allocationMethod = &quot;Dynamic&quot;  // The allocation method. Standard SKU requires Static
+    @allowed([&quot;IPv4&quot;, &quot;IPv6&quot;])
+    string    ipVersion = &quot;IPv4&quot;            // The IP version
+    integer   idleTimeoutInMinutes = 4      // The idle timeout in minutes. Range: 4-30
+    string    domainNameLabel               // The domain name label for DNS. Creates: {label}.{region}.cloudapp.azure.com
+    list      zones                         // The availability zones for the IP. Only for Standard SKU
+    map       tags                          // Tags to apply to the public IP address
+    @cloud(importable)
+    string    id                            // The Azure resource ID of the public IP
+    @cloud
+    string    ipAddress                     // The assigned IP address
+    @cloud
+    string    provisioningState             // The provisioning state of the public IP
+    @cloud
+    string    resourceGuid                  // The resource GUID
+    @cloud
+    string    fqdn                          // The FQDN of the DNS record
+}">PublicIpAddress</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">name</span>                 <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">resourceGroup</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">location</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
@@ -418,9 +478,6 @@
         <tr>
             <th data-sort="name" class="sortable-header">Name <span class="sort-icon">↕</span></th>
             <th data-sort="type" class="sortable-header">Type <span class="sort-icon">↕</span></th>
-            <th>Default</th>
-            <th>Valid Values</th>
-            <th data-sort="optional" class="sortable-header">Optional <span class="sort-icon">↕</span></th>
             <th>Description</th>
         </tr>
     </thead>
@@ -431,41 +488,26 @@
       <span class="badge badge-importable">importable</span>
     </div></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The Azure resource ID of the public IP</td>
+  <td>The Azure resource ID of the public IP <span class="badge badge-importable">importable</span></td>
 </tr>
 <tr id="ipAddress" data-name="ipaddress" data-type="string" data-optional="true">
   <td><a href="#ipAddress" class="prop-name-link"><span class="prop-name">ipAddress</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The assigned IP address</td>
 </tr>
 <tr id="provisioningState" data-name="provisioningstate" data-type="string" data-optional="true">
   <td><a href="#provisioningState" class="prop-name-link"><span class="prop-name">provisioningState</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The provisioning state of the public IP</td>
 </tr>
 <tr id="resourceGuid" data-name="resourceguid" data-type="string" data-optional="true">
   <td><a href="#resourceGuid" class="prop-name-link"><span class="prop-name">resourceGuid</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The resource GUID</td>
 </tr>
 <tr id="fqdn" data-name="fqdn" data-type="string" data-optional="true">
   <td><a href="#fqdn" class="prop-name-link"><span class="prop-name">fqdn</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The FQDN of the DNS record</td>
 </tr>
     </tbody>

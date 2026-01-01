@@ -47,11 +47,11 @@ resource DnsRecordSet example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The resource ID of the record set |
-| `fqdn` | `string` | — | — | No | *☁️ cloud-managed* The fully qualified domain name of the record set |
-| `provisioningState` | `string` | — | — | No | *☁️ cloud-managed* The provisioning state |
-| `etag` | `string` | — | — | No | *☁️ cloud-managed* The ETag of the record set |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The resource ID of the record set |
+| `fqdn` | `string` | The fully qualified domain name of the record set |
+| `provisioningState` | `string` | The provisioning state |
+| `etag` | `string` | The ETag of the record set |
 
 [← Back to Index](README.md)

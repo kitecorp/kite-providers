@@ -27,12 +27,12 @@ resource DnsZone example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The resource ID of the DNS zone |
-| `nameServers` | `list` | — | — | No | *☁️ cloud-managed* The name servers for the DNS zone |
-| `numberOfRecordSets` | `integer` | — | — | No | *☁️ cloud-managed* The number of record sets in the DNS zone |
-| `maxNumberOfRecordSets` | `integer` | — | — | No | *☁️ cloud-managed* The maximum number of record sets allowed |
-| `etag` | `string` | — | — | No | *☁️ cloud-managed* The ETag of the DNS zone |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The resource ID of the DNS zone |
+| `nameServers` | `list` | The name servers for the DNS zone |
+| `numberOfRecordSets` | `integer` | The number of record sets in the DNS zone |
+| `maxNumberOfRecordSets` | `integer` | The maximum number of record sets allowed |
+| `etag` | `string` | The ETag of the DNS zone |
 
 [← Back to Index](README.md)

@@ -129,6 +129,41 @@
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
 
+    .type-tooltip {
+        position: relative;
+        cursor: help;
+        border-bottom: 1px dashed #38bdf8;
+    }
+    .type-tooltip::after {
+        content: attr(data-schema);
+        position: absolute;
+        left: 0;
+        top: 100%%;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        white-space: pre;
+        color: #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        min-width: 400px;
+        max-width: 600px;
+        max-height: 400px;
+        overflow: auto;
+    }
+    .type-tooltip:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
     th {
@@ -303,7 +338,32 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type">BlobContainer</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// BlobContainer
+schema BlobContainer {
+    string    name                            // The name of the blob container. Must be 3-63 characters, lowercase letters, numbers, and hyphens
+    string    storageAccountName              // The name of the storage account
+    string    resourceGroup                   // The resource group name
+    @allowed([&quot;None&quot;, &quot;Blob&quot;, &quot;Container&quot;])
+    string    publicAccess = &quot;None&quot;           // The level of public access to the container. None: No public access, Blob: Public read access for blobs only, Container: Public read access for container and blobs
+    map       metadata                        // Container metadata as key-value pairs
+    boolean   immutableStorageWithVersioning  // Enable immutable storage with versioning. Once enabled, cannot be disabled
+    string    defaultEncryptionScope          // Default encryption scope for the container
+    boolean   denyEncryptionScopeOverride     // Deny encryption scope override. When true, blobs must use the container's default encryption scope
+    @cloud(importable)
+    string    id                              // The resource ID of the container
+    @cloud
+    string    etag                            // The ETag of the container
+    @cloud
+    string    lastModifiedTime                // The last modified time
+    @cloud
+    string    leaseStatus                     // The lease status
+    @cloud
+    string    leaseState                      // The lease state
+    @cloud
+    boolean   hasImmutabilityPolicy           // Whether the container has immutability policy
+    @cloud
+    boolean   hasLegalHold                    // Whether the container has legal hold
+}">BlobContainer</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">name</span>                           <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">storageAccountName</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">resourceGroup</span>                  <span class="eq">=</span> <span class="str">"example-value"</span>
@@ -400,9 +460,6 @@
         <tr>
             <th data-sort="name" class="sortable-header">Name <span class="sort-icon">↕</span></th>
             <th data-sort="type" class="sortable-header">Type <span class="sort-icon">↕</span></th>
-            <th>Default</th>
-            <th>Valid Values</th>
-            <th data-sort="optional" class="sortable-header">Optional <span class="sort-icon">↕</span></th>
             <th>Description</th>
         </tr>
     </thead>
@@ -413,57 +470,36 @@
       <span class="badge badge-importable">importable</span>
     </div></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The resource ID of the container</td>
+  <td>The resource ID of the container <span class="badge badge-importable">importable</span></td>
 </tr>
 <tr id="etag" data-name="etag" data-type="string" data-optional="true">
   <td><a href="#etag" class="prop-name-link"><span class="prop-name">etag</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The ETag of the container</td>
 </tr>
 <tr id="lastModifiedTime" data-name="lastmodifiedtime" data-type="string" data-optional="true">
   <td><a href="#lastModifiedTime" class="prop-name-link"><span class="prop-name">lastModifiedTime</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The last modified time</td>
 </tr>
 <tr id="leaseStatus" data-name="leasestatus" data-type="string" data-optional="true">
   <td><a href="#leaseStatus" class="prop-name-link"><span class="prop-name">leaseStatus</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The lease status</td>
 </tr>
 <tr id="leaseState" data-name="leasestate" data-type="string" data-optional="true">
   <td><a href="#leaseState" class="prop-name-link"><span class="prop-name">leaseState</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The lease state</td>
 </tr>
 <tr id="hasImmutabilityPolicy" data-name="hasimmutabilitypolicy" data-type="boolean" data-optional="true">
   <td><a href="#hasImmutabilityPolicy" class="prop-name-link"><span class="prop-name">hasImmutabilityPolicy</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">boolean</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>Whether the container has immutability policy</td>
 </tr>
 <tr id="hasLegalHold" data-name="haslegalhold" data-type="boolean" data-optional="true">
   <td><a href="#hasLegalHold" class="prop-name-link"><span class="prop-name">hasLegalHold</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">boolean</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>Whether the container has legal hold</td>
 </tr>
     </tbody>

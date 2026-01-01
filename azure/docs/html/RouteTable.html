@@ -129,6 +129,41 @@
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
 
+    .type-tooltip {
+        position: relative;
+        cursor: help;
+        border-bottom: 1px dashed #38bdf8;
+    }
+    .type-tooltip::after {
+        content: attr(data-schema);
+        position: absolute;
+        left: 0;
+        top: 100%%;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        white-space: pre;
+        color: #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        min-width: 400px;
+        max-width: 600px;
+        max-height: 400px;
+        overflow: auto;
+    }
+    .type-tooltip:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
     th {
@@ -303,7 +338,21 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type">RouteTable</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// RouteTable
+schema RouteTable {
+    string    name                                // The name of the route table
+    string    resourceGroup                       // The Azure resource group name
+    string    location                            // The Azure region/location
+    boolean   disableBgpRoutePropagation = false  // Whether to disable BGP route propagation
+    list      routes                              // Routes in this route table
+    map       tags                                // Tags to apply to the route table
+    @cloud(importable)
+    string    id                                  // The Azure resource ID of the route table
+    @cloud
+    string    provisioningState                   // The provisioning state of the route table
+    @cloud
+    list      associatedSubnetIds                 // List of subnet IDs associated with this route table
+}">RouteTable</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">name</span>                       <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">resourceGroup</span>              <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">location</span>                   <span class="eq">=</span> <span class="str">"example-value"</span>
@@ -382,9 +431,6 @@
         <tr>
             <th data-sort="name" class="sortable-header">Name <span class="sort-icon">↕</span></th>
             <th data-sort="type" class="sortable-header">Type <span class="sort-icon">↕</span></th>
-            <th>Default</th>
-            <th>Valid Values</th>
-            <th data-sort="optional" class="sortable-header">Optional <span class="sort-icon">↕</span></th>
             <th>Description</th>
         </tr>
     </thead>
@@ -395,25 +441,16 @@
       <span class="badge badge-importable">importable</span>
     </div></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The Azure resource ID of the route table</td>
+  <td>The Azure resource ID of the route table <span class="badge badge-importable">importable</span></td>
 </tr>
 <tr id="provisioningState" data-name="provisioningstate" data-type="string" data-optional="true">
   <td><a href="#provisioningState" class="prop-name-link"><span class="prop-name">provisioningState</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The provisioning state of the route table</td>
 </tr>
 <tr id="associatedSubnetIds" data-name="associatedsubnetids" data-type="list" data-optional="true">
   <td><a href="#associatedSubnetIds" class="prop-name-link"><span class="prop-name">associatedSubnetIds</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">list</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>List of subnet IDs associated with this route table</td>
 </tr>
     </tbody>

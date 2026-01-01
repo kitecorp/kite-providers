@@ -25,12 +25,12 @@ resource NetworkSecurityGroup example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Azure resource ID |
-| `provisioningState` | `string` | — | — | No | *☁️ cloud-managed* The provisioning state |
-| `resourceGuid` | `string` | — | — | No | *☁️ cloud-managed* The resource GUID |
-| `networkInterfaceIds` | `list` | — | — | No | *☁️ cloud-managed* List of network interfaces associated with this NSG |
-| `subnetIds` | `list` | — | — | No | *☁️ cloud-managed* List of subnets associated with this NSG |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The Azure resource ID |
+| `provisioningState` | `string` | The provisioning state |
+| `resourceGuid` | `string` | The resource GUID |
+| `networkInterfaceIds` | `list` | List of network interfaces associated with this NSG |
+| `subnetIds` | `list` | List of subnets associated with this NSG |
 
 [← Back to Index](README.md)

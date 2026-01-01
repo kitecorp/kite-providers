@@ -21,9 +21,9 @@ resource ResourceGroup example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Azure resource ID of the resource group |
-| `provisioningState` | `string` | — | — | No | *☁️ cloud-managed* The provisioning state of the resource group |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The Azure resource ID of the resource group |
+| `provisioningState` | `string` | The provisioning state of the resource group |
 
 [← Back to Index](README.md)

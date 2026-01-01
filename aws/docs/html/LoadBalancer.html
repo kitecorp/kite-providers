@@ -129,6 +129,41 @@
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
 
+    .type-tooltip {
+        position: relative;
+        cursor: help;
+        border-bottom: 1px dashed #38bdf8;
+    }
+    .type-tooltip::after {
+        content: attr(data-schema);
+        position: absolute;
+        left: 0;
+        top: 100%%;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        white-space: pre;
+        color: #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        min-width: 400px;
+        max-width: 600px;
+        max-height: 400px;
+        overflow: auto;
+    }
+    .type-tooltip:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
     th {
@@ -303,7 +338,38 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type">LoadBalancer</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// LoadBalancer
+schema LoadBalancer {
+    string    name                        // The name of the load balancer. Must be unique within your AWS account
+    @allowed([&quot;application&quot;, &quot;network&quot;, &quot;gateway&quot;])
+    string    type = &quot;application&quot;        // The type of load balancer
+    @allowed([&quot;internet-facing&quot;, &quot;internal&quot;])
+    string    scheme = &quot;internet-facing&quot;  // The scheme for the load balancer
+    list      subnets                     // The subnet IDs. At least two in different Availability Zones
+    list      securityGroups              // The security group IDs. Required for ALB, not applicable for NLB
+    @allowed([&quot;ipv4&quot;, &quot;dualstack&quot;])
+    string    ipAddressType = &quot;ipv4&quot;      // The IP address type
+    boolean   deletionProtection = false  // Enable deletion protection
+    boolean   crossZoneLoadBalancing      // Enable cross-zone load balancing
+    boolean   enableHttp2 = true          // Enable HTTP/2 support (ALB only)
+    integer   idleTimeout = 60            // Idle timeout in seconds (ALB only)
+    boolean   accessLogsEnabled = false   // Enable access logs
+    string    accessLogsBucket            // S3 bucket for access logs
+    string    accessLogsPrefix            // S3 bucket prefix for access logs
+    map       tags                        // Tags to apply to the load balancer
+    @cloud(importable)
+    string    arn                         // The Amazon Resource Name (ARN) of the load balancer
+    @cloud
+    string    dnsName                     // The DNS name of the load balancer
+    @cloud
+    string    canonicalHostedZoneId       // The canonical hosted zone ID of the load balancer
+    @cloud
+    string    vpcId                       // The VPC ID of the load balancer
+    @cloud
+    string    state                       // The current state of the load balancer
+    @cloud
+    list      availabilityZones           // The Availability Zones for the load balancer
+}">LoadBalancer</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">name</span>                   <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">type</span>                   <span class="eq">=</span> <span class="str">"application"</span>
     <span class="prop">scheme</span>                 <span class="eq">=</span> <span class="str">"internet-facing"</span>

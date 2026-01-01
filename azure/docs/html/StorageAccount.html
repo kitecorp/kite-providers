@@ -129,6 +129,41 @@
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
 
+    .type-tooltip {
+        position: relative;
+        cursor: help;
+        border-bottom: 1px dashed #38bdf8;
+    }
+    .type-tooltip::after {
+        content: attr(data-schema);
+        position: absolute;
+        left: 0;
+        top: 100%%;
+        margin-top: 0.5rem;
+        padding: 1rem;
+        background: #0f172a;
+        border: 1px solid #334155;
+        border-radius: 0.5rem;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        font-size: 0.75rem;
+        line-height: 1.5;
+        white-space: pre;
+        color: #e2e8f0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s, visibility 0.2s;
+        min-width: 400px;
+        max-width: 600px;
+        max-height: 400px;
+        overflow: auto;
+    }
+    .type-tooltip:hover::after {
+        opacity: 1;
+        visibility: visible;
+    }
+
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
     th {
@@ -303,7 +338,44 @@
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type">StorageAccount</span> <span class="name">example</span> <span class="brace">{</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type type-tooltip" data-schema="// StorageAccount
+schema StorageAccount {
+    string    name                                     // The name of the storage account (3-24 chars, lowercase letters and numbers, globally unique)
+    string    resourceGroup                            // The resource group name
+    string    location                                 // The Azure region for the storage account
+    @allowed([&quot;Standard_LRS&quot;, &quot;Standard_GRS&quot;, &quot;Standard_RAGRS&quot;, &quot;Standard_ZRS&quot;, &quot;Premium_LRS&quot;, &quot;Premium_ZRS&quot;])
+    string    sku = &quot;Standard_LRS&quot;                     // The SKU (pricing tier and replication)
+    @allowed([&quot;Storage&quot;, &quot;StorageV2&quot;, &quot;BlobStorage&quot;, &quot;BlockBlobStorage&quot;, &quot;FileStorage&quot;])
+    string    kind = &quot;StorageV2&quot;                       // The kind of storage account
+    @allowed([&quot;Hot&quot;, &quot;Cool&quot;])
+    string    accessTier = &quot;Hot&quot;                       // The access tier for blob storage
+    boolean   enableHttpsTrafficOnly = true            // Enable HTTPS traffic only
+    @allowed([&quot;TLS1_0&quot;, &quot;TLS1_1&quot;, &quot;TLS1_2&quot;])
+    string    minimumTlsVersion = &quot;TLS1_2&quot;             // Minimum TLS version
+    boolean   allowBlobPublicAccess = false            // Allow blob public access
+    boolean   allowSharedKeyAccess = true              // Allow shared key access
+    boolean   enableHierarchicalNamespace = false      // Enable hierarchical namespace (Data Lake Storage Gen2)
+    boolean   infrastructureEncryptionEnabled = false  // Enable infrastructure encryption
+    boolean   largeFileSharesEnabled = false           // Enable large file shares (100 TiB capacity)
+    networkrules networkRules                             // Network rules for firewall configuration
+    map       tags                                     // Tags to apply to the storage account
+    @cloud(importable)
+    string    id                                       // The resource ID of the storage account
+    @cloud
+    string    primaryBlobEndpoint                      // The primary blob endpoint
+    @cloud
+    string    primaryFileEndpoint                      // The primary file endpoint
+    @cloud
+    string    primaryQueueEndpoint                     // The primary queue endpoint
+    @cloud
+    string    primaryTableEndpoint                     // The primary table endpoint
+    @cloud
+    string    primaryAccessKey                         // The primary access key
+    @cloud
+    string    primaryConnectionString                  // The primary connection string
+    @cloud
+    string    provisioningState                        // The provisioning state
+}">StorageAccount</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">name</span>                            <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">resourceGroup</span>                   <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">location</span>                        <span class="eq">=</span> <span class="str">"example-value"</span>
@@ -463,9 +535,6 @@
         <tr>
             <th data-sort="name" class="sortable-header">Name <span class="sort-icon">↕</span></th>
             <th data-sort="type" class="sortable-header">Type <span class="sort-icon">↕</span></th>
-            <th>Default</th>
-            <th>Valid Values</th>
-            <th data-sort="optional" class="sortable-header">Optional <span class="sort-icon">↕</span></th>
             <th>Description</th>
         </tr>
     </thead>
@@ -476,65 +545,41 @@
       <span class="badge badge-importable">importable</span>
     </div></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The resource ID of the storage account</td>
+  <td>The resource ID of the storage account <span class="badge badge-importable">importable</span></td>
 </tr>
 <tr id="primaryBlobEndpoint" data-name="primaryblobendpoint" data-type="string" data-optional="true">
   <td><a href="#primaryBlobEndpoint" class="prop-name-link"><span class="prop-name">primaryBlobEndpoint</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The primary blob endpoint</td>
 </tr>
 <tr id="primaryFileEndpoint" data-name="primaryfileendpoint" data-type="string" data-optional="true">
   <td><a href="#primaryFileEndpoint" class="prop-name-link"><span class="prop-name">primaryFileEndpoint</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The primary file endpoint</td>
 </tr>
 <tr id="primaryQueueEndpoint" data-name="primaryqueueendpoint" data-type="string" data-optional="true">
   <td><a href="#primaryQueueEndpoint" class="prop-name-link"><span class="prop-name">primaryQueueEndpoint</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The primary queue endpoint</td>
 </tr>
 <tr id="primaryTableEndpoint" data-name="primarytableendpoint" data-type="string" data-optional="true">
   <td><a href="#primaryTableEndpoint" class="prop-name-link"><span class="prop-name">primaryTableEndpoint</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The primary table endpoint</td>
 </tr>
 <tr id="primaryAccessKey" data-name="primaryaccesskey" data-type="string" data-optional="true">
   <td><a href="#primaryAccessKey" class="prop-name-link"><span class="prop-name">primaryAccessKey</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The primary access key</td>
 </tr>
 <tr id="primaryConnectionString" data-name="primaryconnectionstring" data-type="string" data-optional="true">
   <td><a href="#primaryConnectionString" class="prop-name-link"><span class="prop-name">primaryConnectionString</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The primary connection string</td>
 </tr>
 <tr id="provisioningState" data-name="provisioningstate" data-type="string" data-optional="true">
   <td><a href="#provisioningState" class="prop-name-link"><span class="prop-name">provisioningState</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td>The provisioning state</td>
 </tr>
     </tbody>

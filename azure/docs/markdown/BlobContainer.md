@@ -31,14 +31,14 @@ resource BlobContainer example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The resource ID of the container |
-| `etag` | `string` | — | — | No | *☁️ cloud-managed* The ETag of the container |
-| `lastModifiedTime` | `string` | — | — | No | *☁️ cloud-managed* The last modified time |
-| `leaseStatus` | `string` | — | — | No | *☁️ cloud-managed* The lease status |
-| `leaseState` | `string` | — | — | No | *☁️ cloud-managed* The lease state |
-| `hasImmutabilityPolicy` | `boolean` | — | — | No | *☁️ cloud-managed* Whether the container has immutability policy |
-| `hasLegalHold` | `boolean` | — | — | No | *☁️ cloud-managed* Whether the container has legal hold |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The resource ID of the container |
+| `etag` | `string` | The ETag of the container |
+| `lastModifiedTime` | `string` | The last modified time |
+| `leaseStatus` | `string` | The lease status |
+| `leaseState` | `string` | The lease state |
+| `hasImmutabilityPolicy` | `boolean` | Whether the container has immutability policy |
+| `hasLegalHold` | `boolean` | Whether the container has legal hold |
 
 [← Back to Index](README.md)

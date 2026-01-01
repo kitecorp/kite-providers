@@ -35,12 +35,12 @@ resource PublicIpAddress example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `id` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Azure resource ID of the public IP |
-| `ipAddress` | `string` | — | — | No | *☁️ cloud-managed* The assigned IP address |
-| `provisioningState` | `string` | — | — | No | *☁️ cloud-managed* The provisioning state of the public IP |
-| `resourceGuid` | `string` | — | — | No | *☁️ cloud-managed* The resource GUID |
-| `fqdn` | `string` | — | — | No | *☁️ cloud-managed* The FQDN of the DNS record |
+| Name | Type | Description |
+|------|------|-------------|
+| `id` | `string` | *📥 importable* The Azure resource ID of the public IP |
+| `ipAddress` | `string` | The assigned IP address |
+| `provisioningState` | `string` | The provisioning state of the public IP |
+| `resourceGuid` | `string` | The resource GUID |
+| `fqdn` | `string` | The FQDN of the DNS record |
 
 [← Back to Index](README.md)
