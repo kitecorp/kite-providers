@@ -6,12 +6,12 @@
 resource Listener example {
     loadBalancerArn       = "example-value"
     port                  = 42
-    protocol              = "example-value"
+    protocol              = "HTTP"
     certificateArn        = "example-value"
     sslPolicy             = "example-value"
     alpnPolicy            = "example-value"
     defaultTargetGroupArn = "example-value"
-    defaultActionType     = "example-value"
+    defaultActionType     = "forward"
     redirectConfig        = "..."
     fixedResponseConfig   = "..."
     tags                  = { key = "value" }
@@ -24,12 +24,12 @@ resource Listener example {
 |------|------|---------|--------------|----------|-------------|
 | `loadBalancerArn` | `string` | — | — | No | The ARN of the load balancer |
 | `port` | `integer` | — | — | No | The port on which the listener listens |
-| `protocol` | `string` | — | — | No | The protocol: HTTP, HTTPS, TCP, TLS, UDP, TCP_UDP, GENEVE |
+| `protocol` | `string` | — | `HTTP`, `HTTPS`, `TCP`, `TLS`, `UDP`, `TCP_UDP`, `GENEVE` | No | The protocol for the listener |
 | `certificateArn` | `string` | — | — | No | The ARN of the default SSL server certificate (HTTPS/TLS only) |
 | `sslPolicy` | `string` | — | — | No | The SSL policy for HTTPS/TLS listeners |
 | `alpnPolicy` | `string` | — | — | No | The ALPN policy for TLS listeners (NLB only) |
 | `defaultTargetGroupArn` | `string` | — | — | No | The ARN of the default target group for forward action |
-| `defaultActionType` | `string` | — | — | No | The default action type: forward, redirect, fixed-response |
+| `defaultActionType` | `string` | `forward` | `forward`, `redirect`, `fixed-response` | No | The default action type |
 | `redirectConfig` | `redirectconfig` | — | — | No | Redirect configuration when defaultActionType is 'redirect' |
 | `fixedResponseConfig` | `fixedresponseconfig` | — | — | No | Fixed response configuration when defaultActionType is 'fixed-response' |
 | `tags` | `map` | — | — | No | Tags to apply to the listener |

@@ -25,6 +25,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/vpc/latest/userguide/vpc-nat-gateway.html">AWS NAT Gateway Documentation</a>
  */
 @Data
 @Builder
@@ -39,8 +41,9 @@ public class NatGatewayResource {
     @Property(description = "The allocation ID of the Elastic IP for public NAT gateway")
     private String allocationId;
 
-    @Property(description = "The connectivity type: 'public' or 'private'. Default: 'public'")
-    private String connectivityType;
+    @Property(description = "The connectivity type for the NAT gateway",
+              validValues = {"public", "private"})
+    private String connectivityType = "public";
 
     @Property(description = "Tags to apply to the NAT gateway")
     private Map<String, String> tags;

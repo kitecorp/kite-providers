@@ -3,9 +3,9 @@ schema LoadBalancer {
     string    name                      // The name of the load balancer
     string    resourceGroup             // The resource group name
     string    location                  // The Azure region
-    @allowed("Basic", "Standard")
+    @allowed(["Basic", "Standard"])
     string    sku = "Standard"          // The SKU of the load balancer
-    @allowed("Regional", "Global")
+    @allowed(["Regional", "Global"])
     string    tier = "Regional"         // The SKU tier
     list      frontendIpConfigurations  // Frontend IP configurations. At least one is required
     list      backendAddressPools       // Backend address pools

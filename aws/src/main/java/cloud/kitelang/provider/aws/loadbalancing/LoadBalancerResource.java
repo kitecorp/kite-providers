@@ -28,6 +28,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html">AWS Elastic Load Balancing Documentation</a>
  */
 @Data
 @Builder

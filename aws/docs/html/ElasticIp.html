@@ -304,7 +304,7 @@
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
 <div class="code-block"><code><span class="kw">resource</span> <span class="type">ElasticIp</span> <span class="name">example</span> <span class="brace">{</span>
-    <span class="prop">domain</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">domain</span>             <span class="eq">=</span> <span class="str">"vpc"</span>
     <span class="prop">networkBorderGroup</span> <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">publicIpv4Pool</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">tags</span>               <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
@@ -326,10 +326,10 @@
 <tr id="domain" data-name="domain" data-type="string" data-optional="true">
   <td><a href="#domain" class="prop-name-link"><span class="prop-name">domain</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
+  <td><code class="default-value">vpc</code></td>
+  <td><div class="valid-values"><code class="valid-value">vpc</code> <code class="valid-value">standard</code> </div></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The domain: 'vpc' or 'standard'. Default: 'vpc'</td>
+  <td>The domain for the Elastic IP</td>
 </tr>
 <tr id="networkBorderGroup" data-name="networkbordergroup" data-type="string" data-optional="true">
   <td><a href="#networkBorderGroup" class="prop-name-link"><span class="prop-name">networkBorderGroup</span><span class="anchor-icon">#</span></a></td>

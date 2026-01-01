@@ -2,7 +2,7 @@
 schema EbsVolume {
     string    availabilityZone            // The Availability Zone in which to create the volume
     integer   size                        // The size of the volume in GiBs
-    @allowed("gp2", "gp3", "io1", "io2", "st1", "sc1", "standard")
+    @allowed(["gp2", "gp3", "io1", "io2", "st1", "sc1", "standard"])
     string    volumeType = "gp3"          // The volume type
     integer   iops                        // The number of I/O operations per second (IOPS)
     integer   throughput                  // The throughput in MiB/s. Only valid for gp3 volumes

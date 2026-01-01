@@ -1,6 +1,7 @@
 // ElasticIp
 schema ElasticIp {
-    string    domain              // The domain: 'vpc' or 'standard'. Default: 'vpc'
+    @allowed(["vpc", "standard"])
+    string    domain = "vpc"      // The domain for the Elastic IP
     string    networkBorderGroup  // The ID of the network border group for Local/Wavelength Zones
     string    publicIpv4Pool      // The ID of an address pool for BYOIP
     map       tags                // Tags to apply to the Elastic IP

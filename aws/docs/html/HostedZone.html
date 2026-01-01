@@ -306,7 +306,7 @@
 <div class="code-block"><code><span class="kw">resource</span> <span class="type">HostedZone</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">name</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">comment</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">privateZone</span> <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">privateZone</span> <span class="eq">=</span> <span class="bool">false</span>
     <span class="prop">vpcId</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">vpcRegion</span>   <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">tags</span>        <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
@@ -344,10 +344,10 @@
 <tr id="privateZone" data-name="privatezone" data-type="boolean" data-optional="true">
   <td><a href="#privateZone" class="prop-name-link"><span class="prop-name">privateZone</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">boolean</span></td>
-  <td><span class="no-value">—</span></td>
+  <td><code class="default-value">false</code></td>
   <td><span class="no-value">—</span></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>Whether this is a private hosted zone. Default: false</td>
+  <td>Whether this is a private hosted zone</td>
 </tr>
 <tr id="vpcId" data-name="vpcid" data-type="string" data-optional="true">
   <td><a href="#vpcId" class="prop-name-link"><span class="prop-name">vpcId</span><span class="anchor-icon">#</span></a></td>

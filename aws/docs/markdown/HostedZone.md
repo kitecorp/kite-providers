@@ -6,7 +6,7 @@
 resource HostedZone example {
     name        = "example-value"
     comment     = "example-value"
-    privateZone = true
+    privateZone = false
     vpcId       = "example-value"
     vpcRegion   = "example-value"
     tags        = { key = "value" }
@@ -19,7 +19,7 @@ resource HostedZone example {
 |------|------|---------|--------------|----------|-------------|
 | `name` | `string` | — | — | No | The domain name for the hosted zone (e.g., 'example.com') |
 | `comment` | `string` | — | — | No | A comment for the hosted zone |
-| `privateZone` | `boolean` | — | — | No | Whether this is a private hosted zone. Default: false |
+| `privateZone` | `boolean` | `false` | — | No | Whether this is a private hosted zone |
 | `vpcId` | `string` | — | — | No | VPC ID to associate with private hosted zone |
 | `vpcRegion` | `string` | — | — | No | VPC region for private hosted zone |
 | `tags` | `map` | — | — | No | Tags to apply to the hosted zone |

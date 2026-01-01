@@ -1,11 +1,11 @@
 // S3Bucket
 schema S3Bucket {
     string    bucket                        // Bucket name (globally unique, DNS-compliant)
-    @allowed("private", "public-read", "public-read-write", "authenticated-read")
+    @allowed(["private", "public-read", "public-read-write", "authenticated-read"])
     string    acl = "private"               // Canned ACL for the bucket
     boolean   versioning = false            // Enable versioning for the bucket
     string    region                        // AWS region for the bucket
-    @allowed("AES256", "aws:kms")
+    @allowed(["AES256", "aws:kms"])
     string    serverSideEncryption          // Server-side encryption algorithm
     string    kmsKeyId                      // KMS key ID for encryption (when using aws:kms)
     boolean   blockPublicAccess = true      // Block all public access

@@ -6,7 +6,7 @@ schema NatGateway {
     integer   idleTimeoutInMinutes = 4  // The idle timeout in minutes. Range: 4-120
     list      publicIpAddressIds        // List of public IP address resource IDs to associate
     list      publicIpPrefixIds         // List of public IP prefix resource IDs to associate
-    @allowed("Standard")
+    @allowed(["Standard"])
     string    skuName = "Standard"      // The SKU name
     map       tags                      // Tags to apply to the NAT gateway
     @cloud(importable)

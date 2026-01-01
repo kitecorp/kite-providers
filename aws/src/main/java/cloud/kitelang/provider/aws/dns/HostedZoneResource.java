@@ -32,6 +32,8 @@ import java.util.Map;
  *     comment = "Private internal zone"
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zones-working-with.html">AWS Route53 Hosted Zone Documentation</a>
  */
 @Data
 @Builder
@@ -46,8 +48,8 @@ public class HostedZoneResource {
     @Property(description = "A comment for the hosted zone")
     private String comment;
 
-    @Property(description = "Whether this is a private hosted zone. Default: false")
-    private Boolean privateZone;
+    @Property(description = "Whether this is a private hosted zone")
+    private Boolean privateZone = false;
 
     @Property(description = "VPC ID to associate with private hosted zone")
     private String vpcId;

@@ -306,13 +306,13 @@
 <div class="code-block"><code><span class="kw">resource</span> <span class="type">RecordSet</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">hostedZoneId</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">name</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">type</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">type</span>             <span class="eq">=</span> <span class="str">"A"</span>
     <span class="prop">ttl</span>              <span class="eq">=</span> <span class="num">42</span>
     <span class="prop">records</span>          <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
     <span class="prop">aliasTarget</span>      <span class="eq">=</span> <span class="str">"..."</span>
     <span class="prop">weight</span>           <span class="eq">=</span> <span class="num">42</span>
     <span class="prop">setIdentifier</span>    <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">failover</span>         <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">failover</span>         <span class="eq">=</span> <span class="str">"PRIMARY"</span>
     <span class="prop">geoLocation</span>      <span class="eq">=</span> <span class="str">"..."</span>
     <span class="prop">healthCheckId</span>    <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">multiValueAnswer</span> <span class="eq">=</span> <span class="bool">true</span>
@@ -351,9 +351,9 @@
   <td><a href="#type" class="prop-name-link"><span class="prop-name">type</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
   <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
+  <td><div class="valid-values"><code class="valid-value">A</code> <code class="valid-value">AAAA</code> <code class="valid-value">CNAME</code> <code class="valid-value">MX</code> <code class="valid-value">TXT</code> <code class="valid-value">NS</code> <code class="valid-value">SOA</code> <code class="valid-value">SRV</code> <code class="valid-value">CAA</code> <code class="valid-value">PTR</code> </div></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The DNS record type: A, AAAA, CNAME, MX, TXT, NS, SOA, SRV, CAA, PTR</td>
+  <td>The DNS record type</td>
 </tr>
 <tr id="ttl" data-name="ttl" data-type="integer" data-optional="true">
   <td><a href="#ttl" class="prop-name-link"><span class="prop-name">ttl</span><span class="anchor-icon">#</span></a></td>
@@ -399,9 +399,9 @@
   <td><a href="#failover" class="prop-name-link"><span class="prop-name">failover</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
   <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
+  <td><div class="valid-values"><code class="valid-value">PRIMARY</code> <code class="valid-value">SECONDARY</code> </div></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>Failover routing type: PRIMARY or SECONDARY</td>
+  <td>Failover routing type</td>
 </tr>
 <tr id="geoLocation" data-name="geolocation" data-type="geolocation" data-optional="true">
   <td><a href="#geoLocation" class="prop-name-link"><span class="prop-name">geoLocation</span><span class="anchor-icon">#</span></a></td>

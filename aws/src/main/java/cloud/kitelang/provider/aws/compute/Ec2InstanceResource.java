@@ -29,6 +29,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/concepts.html">AWS EC2 Documentation</a>
  */
 @Data
 @Builder

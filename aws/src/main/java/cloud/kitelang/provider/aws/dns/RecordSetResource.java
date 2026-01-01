@@ -62,6 +62,8 @@ import java.util.List;
  *     records = ["\"v=spf1 include:_spf.google.com ~all\""]
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/rrsets-working-with.html">AWS Route53 Record Set Documentation</a>
  */
 @Data
 @Builder
@@ -76,7 +78,8 @@ public class RecordSetResource {
     @Property(description = "The name of the record (fully qualified domain name)")
     private String name;
 
-    @Property(description = "The DNS record type: A, AAAA, CNAME, MX, TXT, NS, SOA, SRV, CAA, PTR")
+    @Property(description = "The DNS record type",
+              validValues = {"A", "AAAA", "CNAME", "MX", "TXT", "NS", "SOA", "SRV", "CAA", "PTR"})
     private String type;
 
     @Property(description = "The TTL (time to live) in seconds")
@@ -94,7 +97,8 @@ public class RecordSetResource {
     @Property(description = "Set identifier for routing policies")
     private String setIdentifier;
 
-    @Property(description = "Failover routing type: PRIMARY or SECONDARY")
+    @Property(description = "Failover routing type",
+              validValues = {"PRIMARY", "SECONDARY"})
     private String failover;
 
     @Property(description = "Geolocation routing configuration")

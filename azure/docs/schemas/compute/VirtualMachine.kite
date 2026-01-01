@@ -15,9 +15,9 @@ schema VirtualMachine {
     string    publicIpAddressId            // The public IP address ID to associate
     string    networkSecurityGroupId       // The network security group ID for the NIC
     integer   osDiskSizeGb                 // The OS disk size in GB
-    @allowed("Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "UltraSSD_LRS")
+    @allowed(["Standard_LRS", "StandardSSD_LRS", "Premium_LRS", "UltraSSD_LRS"])
     string    osDiskType = "Premium_LRS"   // The OS disk type
-    @allowed("None", "ReadOnly", "ReadWrite")
+    @allowed(["None", "ReadOnly", "ReadWrite"])
     string    osDiskCaching = "ReadWrite"  // The OS disk caching
     string    computerName                 // The computer name (hostname). Defaults to VM name
     string    customData                   // Custom data for cloud-init (Linux) or CustomScriptExtension (Windows)

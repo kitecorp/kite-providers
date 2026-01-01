@@ -1,13 +1,13 @@
 // LoadBalancer
 schema LoadBalancer {
     string    name                        // The name of the load balancer. Must be unique within your AWS account
-    @allowed("application", "network", "gateway")
+    @allowed(["application", "network", "gateway"])
     string    type = "application"        // The type of load balancer
-    @allowed("internet-facing", "internal")
+    @allowed(["internet-facing", "internal"])
     string    scheme = "internet-facing"  // The scheme for the load balancer
     list      subnets                     // The subnet IDs. At least two in different Availability Zones
     list      securityGroups              // The security group IDs. Required for ALB, not applicable for NLB
-    @allowed("ipv4", "dualstack")
+    @allowed(["ipv4", "dualstack"])
     string    ipAddressType = "ipv4"      // The IP address type
     boolean   deletionProtection = false  // Enable deletion protection
     boolean   crossZoneLoadBalancing      // Enable cross-zone load balancing

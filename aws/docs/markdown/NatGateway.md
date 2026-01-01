@@ -6,7 +6,7 @@
 resource NatGateway example {
     subnetId         = "example-value"
     allocationId     = "example-value"
-    connectivityType = "example-value"
+    connectivityType = "public"
     tags             = { key = "value" }
 }
 ```
@@ -17,7 +17,7 @@ resource NatGateway example {
 |------|------|---------|--------------|----------|-------------|
 | `subnetId` | `string` | — | — | No | The subnet ID where the NAT gateway will be created |
 | `allocationId` | `string` | — | — | No | The allocation ID of the Elastic IP for public NAT gateway |
-| `connectivityType` | `string` | — | — | No | The connectivity type: 'public' or 'private'. Default: 'public' |
+| `connectivityType` | `string` | `public` | `public`, `private` | No | The connectivity type for the NAT gateway |
 | `tags` | `map` | — | — | No | Tags to apply to the NAT gateway |
 ## Cloud Properties
 

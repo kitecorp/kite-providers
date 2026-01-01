@@ -306,12 +306,12 @@
 <div class="code-block"><code><span class="kw">resource</span> <span class="type">Listener</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">loadBalancerArn</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">port</span>                  <span class="eq">=</span> <span class="num">42</span>
-    <span class="prop">protocol</span>              <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">protocol</span>              <span class="eq">=</span> <span class="str">"HTTP"</span>
     <span class="prop">certificateArn</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">sslPolicy</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">alpnPolicy</span>            <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">defaultTargetGroupArn</span> <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">defaultActionType</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">defaultActionType</span>     <span class="eq">=</span> <span class="str">"forward"</span>
     <span class="prop">redirectConfig</span>        <span class="eq">=</span> <span class="str">"..."</span>
     <span class="prop">fixedResponseConfig</span>   <span class="eq">=</span> <span class="str">"..."</span>
     <span class="prop">tags</span>                  <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
@@ -350,9 +350,9 @@
   <td><a href="#protocol" class="prop-name-link"><span class="prop-name">protocol</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
   <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
+  <td><div class="valid-values"><code class="valid-value">HTTP</code> <code class="valid-value">HTTPS</code> <code class="valid-value">TCP</code> <code class="valid-value">TLS</code> <code class="valid-value">UDP</code> <code class="valid-value">TCP_UDP</code> <code class="valid-value">GENEVE</code> </div></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The protocol: HTTP, HTTPS, TCP, TLS, UDP, TCP_UDP, GENEVE</td>
+  <td>The protocol for the listener</td>
 </tr>
 <tr id="certificateArn" data-name="certificatearn" data-type="string" data-optional="true">
   <td><a href="#certificateArn" class="prop-name-link"><span class="prop-name">certificateArn</span><span class="anchor-icon">#</span></a></td>
@@ -389,10 +389,10 @@
 <tr id="defaultActionType" data-name="defaultactiontype" data-type="string" data-optional="true">
   <td><a href="#defaultActionType" class="prop-name-link"><span class="prop-name">defaultActionType</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
+  <td><code class="default-value">forward</code></td>
+  <td><div class="valid-values"><code class="valid-value">forward</code> <code class="valid-value">redirect</code> <code class="valid-value">fixed-response</code> </div></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The default action type: forward, redirect, fixed-response</td>
+  <td>The default action type</td>
 </tr>
 <tr id="redirectConfig" data-name="redirectconfig" data-type="redirectconfig" data-optional="true">
   <td><a href="#redirectConfig" class="prop-name-link"><span class="prop-name">redirectConfig</span><span class="anchor-icon">#</span></a></td>

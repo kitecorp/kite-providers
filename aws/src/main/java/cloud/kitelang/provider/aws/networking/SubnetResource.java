@@ -26,6 +26,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/vpc/latest/userguide/configure-subnets.html">AWS Subnet Documentation</a>
  */
 @Data
 @Builder

@@ -2,7 +2,7 @@
 schema DnsZone {
     string    name                           // The domain name for the DNS zone. Must be a fully qualified domain name (e.g., example.com)
     string    resourceGroup                  // The resource group name
-    @allowed("Public", "Private")
+    @allowed(["Public", "Private"])
     string    zoneType = "Public"            // The type of DNS zone
     list      registrationVirtualNetworkIds  // Virtual network IDs for auto-registration (private zones only). VMs in these networks will have their DNS records auto-registered
     list      resolutionVirtualNetworkIds    // Virtual network IDs for resolution (private zones only). VMs in these networks can resolve records in this zone

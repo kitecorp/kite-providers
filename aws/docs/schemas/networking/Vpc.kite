@@ -2,7 +2,7 @@
 schema Vpc {
     string    cidrBlock                    // The IPv4 CIDR block for the VPC (e.g., 10.0.0.0/16)
     string    ipv6CidrBlock                // The IPv6 CIDR block for the VPC. If specified, AWS associates an IPv6 CIDR block
-    @allowed("default", "dedicated")
+    @allowed(["default", "dedicated"])
     string    instanceTenancy = "default"  // Tenancy option for instances
     boolean   enableDnsSupport = true      // Enable DNS support in the VPC
     boolean   enableDnsHostnames = false   // Enable DNS hostnames in the VPC

@@ -30,6 +30,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html">AWS Route Table Documentation</a>
  */
 @Data
 @Builder

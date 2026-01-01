@@ -10,10 +10,10 @@ schema Ec2Instance {
     string    userData                              // User data script for instance initialization (base64 encoded)
     string    availabilityZone                      // The availability zone to launch in
     boolean   monitoring = false                    // Enable detailed monitoring
-    @allowed("default", "dedicated", "host")
+    @allowed(["default", "dedicated", "host"])
     string    tenancy = "default"                   // Instance tenancy option
     integer   rootVolumeSize                        // Root volume size in GiB
-    @allowed("gp2", "gp3", "io1", "io2", "st1", "sc1")
+    @allowed(["gp2", "gp3", "io1", "io2", "st1", "sc1"])
     string    rootVolumeType = "gp3"                // Root volume type
     boolean   deleteRootVolumeOnTermination = true  // Delete root volume on termination
     map       tags                                  // Tags to apply to the instance

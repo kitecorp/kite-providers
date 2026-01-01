@@ -4,7 +4,7 @@
 
 ```kite
 resource ElasticIp example {
-    domain             = "example-value"
+    domain             = "vpc"
     networkBorderGroup = "example-value"
     publicIpv4Pool     = "example-value"
     tags               = { key = "value" }
@@ -15,7 +15,7 @@ resource ElasticIp example {
 
 | Name | Type | Default | Valid Values | Required | Description |
 |------|------|---------|--------------|----------|-------------|
-| `domain` | `string` | — | — | No | The domain: 'vpc' or 'standard'. Default: 'vpc' |
+| `domain` | `string` | `vpc` | `vpc`, `standard` | No | The domain for the Elastic IP |
 | `networkBorderGroup` | `string` | — | — | No | The ID of the network border group for Local/Wavelength Zones |
 | `publicIpv4Pool` | `string` | — | — | No | The ID of an address pool for BYOIP |
 | `tags` | `map` | — | — | No | Tags to apply to the Elastic IP |

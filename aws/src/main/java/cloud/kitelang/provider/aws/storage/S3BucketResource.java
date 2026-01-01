@@ -51,6 +51,8 @@ import java.util.Map;
  *     ]
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html">AWS S3 Documentation</a>
  */
 @Data
 @Builder

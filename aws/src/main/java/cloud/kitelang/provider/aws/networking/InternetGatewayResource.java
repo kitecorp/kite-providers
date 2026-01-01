@@ -23,6 +23,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Internet_Gateway.html">AWS Internet Gateway Documentation</a>
  */
 @Data
 @Builder

@@ -1,16 +1,18 @@
 // Listener
 schema Listener {
-    string    loadBalancerArn        // The ARN of the load balancer
-    integer   port                   // The port on which the listener listens
-    string    protocol               // The protocol: HTTP, HTTPS, TCP, TLS, UDP, TCP_UDP, GENEVE
-    string    certificateArn         // The ARN of the default SSL server certificate (HTTPS/TLS only)
-    string    sslPolicy              // The SSL policy for HTTPS/TLS listeners
-    string    alpnPolicy             // The ALPN policy for TLS listeners (NLB only)
-    string    defaultTargetGroupArn  // The ARN of the default target group for forward action
-    string    defaultActionType      // The default action type: forward, redirect, fixed-response
-    redirectconfig redirectConfig         // Redirect configuration when defaultActionType is 'redirect'
-    fixedresponseconfig fixedResponseConfig    // Fixed response configuration when defaultActionType is 'fixed-response'
-    map       tags                   // Tags to apply to the listener
+    string    loadBalancerArn                // The ARN of the load balancer
+    integer   port                           // The port on which the listener listens
+    @allowed(["HTTP", "HTTPS", "TCP", "TLS", "UDP", "TCP_UDP", "GENEVE"])
+    string    protocol                       // The protocol for the listener
+    string    certificateArn                 // The ARN of the default SSL server certificate (HTTPS/TLS only)
+    string    sslPolicy                      // The SSL policy for HTTPS/TLS listeners
+    string    alpnPolicy                     // The ALPN policy for TLS listeners (NLB only)
+    string    defaultTargetGroupArn          // The ARN of the default target group for forward action
+    @allowed(["forward", "redirect", "fixed-response"])
+    string    defaultActionType = "forward"  // The default action type
+    redirectconfig redirectConfig                 // Redirect configuration when defaultActionType is 'redirect'
+    fixedresponseconfig fixedResponseConfig            // Fixed response configuration when defaultActionType is 'fixed-response'
+    map       tags                           // Tags to apply to the listener
     @cloud(importable)
-    string    arn                    // The ARN of the listener
+    string    arn                            // The ARN of the listener
 }

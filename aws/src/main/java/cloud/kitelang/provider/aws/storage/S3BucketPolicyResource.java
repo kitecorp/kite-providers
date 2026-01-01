@@ -56,6 +56,8 @@ import lombok.NoArgsConstructor;
  *     """
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucket-policies.html">AWS S3 Bucket Policy Documentation</a>
  */
 @Data
 @Builder

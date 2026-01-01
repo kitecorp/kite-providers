@@ -27,6 +27,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/ebs/latest/userguide/what-is-ebs.html">AWS EBS Documentation</a>
  */
 @Data
 @Builder

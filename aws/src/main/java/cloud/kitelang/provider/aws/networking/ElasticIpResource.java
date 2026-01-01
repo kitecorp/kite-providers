@@ -23,6 +23,8 @@ import java.util.Map;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html">AWS Elastic IP Documentation</a>
  */
 @Data
 @Builder
@@ -31,8 +33,9 @@ import java.util.Map;
 @TypeName("ElasticIp")
 public class ElasticIpResource {
 
-    @Property(description = "The domain: 'vpc' or 'standard'. Default: 'vpc'")
-    private String domain;
+    @Property(description = "The domain for the Elastic IP",
+              validValues = {"vpc", "standard"})
+    private String domain = "vpc";
 
     @Property(description = "The ID of the network border group for Local/Wavelength Zones")
     private String networkBorderGroup;

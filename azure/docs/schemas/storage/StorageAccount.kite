@@ -3,14 +3,14 @@ schema StorageAccount {
     string    name                                     // The name of the storage account (3-24 chars, lowercase letters and numbers, globally unique)
     string    resourceGroup                            // The resource group name
     string    location                                 // The Azure region for the storage account
-    @allowed("Standard_LRS", "Standard_GRS", "Standard_RAGRS", "Standard_ZRS", "Premium_LRS", "Premium_ZRS")
+    @allowed(["Standard_LRS", "Standard_GRS", "Standard_RAGRS", "Standard_ZRS", "Premium_LRS", "Premium_ZRS"])
     string    sku = "Standard_LRS"                     // The SKU (pricing tier and replication)
-    @allowed("Storage", "StorageV2", "BlobStorage", "BlockBlobStorage", "FileStorage")
+    @allowed(["Storage", "StorageV2", "BlobStorage", "BlockBlobStorage", "FileStorage"])
     string    kind = "StorageV2"                       // The kind of storage account
-    @allowed("Hot", "Cool")
+    @allowed(["Hot", "Cool"])
     string    accessTier = "Hot"                       // The access tier for blob storage
     boolean   enableHttpsTrafficOnly = true            // Enable HTTPS traffic only
-    @allowed("TLS1_0", "TLS1_1", "TLS1_2")
+    @allowed(["TLS1_0", "TLS1_1", "TLS1_2"])
     string    minimumTlsVersion = "TLS1_2"             // Minimum TLS version
     boolean   allowBlobPublicAccess = false            // Allow blob public access
     boolean   allowSharedKeyAccess = true              // Allow shared key access

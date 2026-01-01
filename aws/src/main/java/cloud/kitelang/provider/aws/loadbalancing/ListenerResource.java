@@ -31,6 +31,8 @@ import java.util.Map;
  *     defaultTargetGroupArn = tg.arn
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html">AWS Listener Documentation</a>
  */
 @Data
 @Builder
@@ -45,7 +47,8 @@ public class ListenerResource {
     @Property(description = "The port on which the listener listens")
     private Integer port;
 
-    @Property(description = "The protocol: HTTP, HTTPS, TCP, TLS, UDP, TCP_UDP, GENEVE")
+    @Property(description = "The protocol for the listener",
+              validValues = {"HTTP", "HTTPS", "TCP", "TLS", "UDP", "TCP_UDP", "GENEVE"})
     private String protocol;
 
     @Property(description = "The ARN of the default SSL server certificate (HTTPS/TLS only)")
@@ -60,8 +63,9 @@ public class ListenerResource {
     @Property(description = "The ARN of the default target group for forward action")
     private String defaultTargetGroupArn;
 
-    @Property(description = "The default action type: forward, redirect, fixed-response")
-    private String defaultActionType;
+    @Property(description = "The default action type",
+              validValues = {"forward", "redirect", "fixed-response"})
+    private String defaultActionType = "forward";
 
     @Property(description = "Redirect configuration when defaultActionType is 'redirect'")
     private RedirectConfig redirectConfig;

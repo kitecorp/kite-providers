@@ -306,7 +306,7 @@
 <div class="code-block"><code><span class="kw">resource</span> <span class="type">NatGateway</span> <span class="name">example</span> <span class="brace">{</span>
     <span class="prop">subnetId</span>         <span class="eq">=</span> <span class="str">"example-value"</span>
     <span class="prop">allocationId</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">connectivityType</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">connectivityType</span> <span class="eq">=</span> <span class="str">"public"</span>
     <span class="prop">tags</span>             <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
 <span class="brace">}</span></code></div>
 </div>
@@ -342,10 +342,10 @@
 <tr id="connectivityType" data-name="connectivitytype" data-type="string" data-optional="true">
   <td><a href="#connectivityType" class="prop-name-link"><span class="prop-name">connectivityType</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
+  <td><code class="default-value">public</code></td>
+  <td><div class="valid-values"><code class="valid-value">public</code> <code class="valid-value">private</code> </div></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The connectivity type: 'public' or 'private'. Default: 'public'</td>
+  <td>The connectivity type for the NAT gateway</td>
 </tr>
 <tr id="tags" data-name="tags" data-type="map" data-optional="true">
   <td><a href="#tags" class="prop-name-link"><span class="prop-name">tags</span><span class="anchor-icon">#</span></a></td>

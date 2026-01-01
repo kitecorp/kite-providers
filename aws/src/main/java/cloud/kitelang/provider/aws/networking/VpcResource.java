@@ -23,6 +23,8 @@ import lombok.NoArgsConstructor;
  *     }
  * }
  * </pre>
+ *
+ * @see <a href="https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html">AWS VPC Documentation</a>
  */
 @Data
 @Builder
