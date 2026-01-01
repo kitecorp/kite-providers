@@ -1,0 +1,19 @@
+// LoadBalancer
+schema LoadBalancer {
+    string    name                      // The name of the load balancer
+    string    resourceGroup             // The resource group name
+    string    location                  // The Azure region
+    string    sku                       // The SKU of the load balancer | default: Standard | valid: Basic, Standard
+    string    tier                      // The SKU tier | default: Regional | valid: Regional, Global
+    list      frontendIpConfigurations  // Frontend IP configurations. At least one is required
+    list      backendAddressPools       // Backend address pools
+    list      healthProbes              // Health probes for backend health monitoring
+    list      loadBalancingRules        // Load balancing rules
+    list      inboundNatRules           // Inbound NAT rules for port forwarding
+    list      outboundRules             // Outbound rules (Standard SKU only)
+    map       tags                      // Tags to apply to the load balancer
+    @cloud(importable)
+    string    id                        // The resource ID of the load balancer
+    @cloud
+    string    provisioningState         // Provisioning state of the load balancer
+}

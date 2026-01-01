@@ -1,0 +1,34 @@
+// StorageAccount
+schema StorageAccount {
+    string    name                             // The name of the storage account (3-24 chars, lowercase letters and numbers, globally unique)
+    string    resourceGroup                    // The resource group name
+    string    location                         // The Azure region for the storage account
+    string    sku                              // The SKU (pricing tier and replication) | default: Standard_LRS | valid: Standard_LRS, Standard_GRS, Standard_RAGRS, Standard_ZRS, Premium_LRS, Premium_ZRS
+    string    kind                             // The kind of storage account | default: StorageV2 | valid: Storage, StorageV2, BlobStorage, BlockBlobStorage, FileStorage
+    string    accessTier                       // The access tier for blob storage | default: Hot | valid: Hot, Cool
+    boolean   enableHttpsTrafficOnly           // Enable HTTPS traffic only | default: true
+    string    minimumTlsVersion                // Minimum TLS version | default: TLS1_2 | valid: TLS1_0, TLS1_1, TLS1_2
+    boolean   allowBlobPublicAccess            // Allow blob public access | default: false
+    boolean   allowSharedKeyAccess             // Allow shared key access | default: true
+    boolean   enableHierarchicalNamespace      // Enable hierarchical namespace (Data Lake Storage Gen2) | default: false
+    boolean   infrastructureEncryptionEnabled  // Enable infrastructure encryption | default: false
+    boolean   largeFileSharesEnabled           // Enable large file shares (100 TiB capacity) | default: false
+    networkrules networkRules                     // Network rules for firewall configuration
+    map       tags                             // Tags to apply to the storage account
+    @cloud(importable)
+    string    id                               // The resource ID of the storage account
+    @cloud
+    string    primaryBlobEndpoint              // The primary blob endpoint
+    @cloud
+    string    primaryFileEndpoint              // The primary file endpoint
+    @cloud
+    string    primaryQueueEndpoint             // The primary queue endpoint
+    @cloud
+    string    primaryTableEndpoint             // The primary table endpoint
+    @cloud
+    string    primaryAccessKey                 // The primary access key
+    @cloud
+    string    primaryConnectionString          // The primary connection string
+    @cloud
+    string    provisioningState                // The provisioning state
+}

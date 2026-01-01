@@ -1,0 +1,23 @@
+// PublicIpAddress
+schema PublicIpAddress {
+    string    name                  // The name of the public IP address
+    string    resourceGroup         // The Azure resource group name
+    string    location              // The Azure region/location
+    string    sku                   // The SKU. Standard is required for zone redundancy and NAT Gateway | default: Basic | valid: Basic, Standard
+    string    allocationMethod      // The allocation method. Standard SKU requires Static | default: Dynamic | valid: Static, Dynamic
+    string    ipVersion             // The IP version | default: IPv4 | valid: IPv4, IPv6
+    integer   idleTimeoutInMinutes  // The idle timeout in minutes. Range: 4-30 | default: 4
+    string    domainNameLabel       // The domain name label for DNS. Creates: {label}.{region}.cloudapp.azure.com
+    list      zones                 // The availability zones for the IP. Only for Standard SKU
+    map       tags                  // Tags to apply to the public IP address
+    @cloud(importable)
+    string    id                    // The Azure resource ID of the public IP
+    @cloud
+    string    ipAddress             // The assigned IP address
+    @cloud
+    string    provisioningState     // The provisioning state of the public IP
+    @cloud
+    string    resourceGuid          // The resource GUID
+    @cloud
+    string    fqdn                  // The FQDN of the DNS record
+}

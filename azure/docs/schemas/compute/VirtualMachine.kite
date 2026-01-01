@@ -1,0 +1,40 @@
+// VirtualMachine
+schema VirtualMachine {
+    string    name                    // The name of the virtual machine
+    string    resourceGroup           // The Azure resource group name
+    string    location                // The Azure region/location
+    string    size                    // The VM size (e.g., Standard_B2s, Standard_D2s_v3)
+    string    adminUsername           // The admin username for the VM
+    string    adminPassword           // The admin password (for Windows or password auth)
+    string    sshPublicKey            // The SSH public key for Linux VMs
+    string    imagePublisher          // The image publisher (e.g., Canonical, MicrosoftWindowsServer)
+    string    imageOffer              // The image offer (e.g., 0001-com-ubuntu-server-jammy, WindowsServer)
+    string    imageSku                // The image SKU (e.g., 22_04-lts-gen2, 2022-datacenter-azure-edition)
+    string    imageVersion            // The image version | default: latest
+    string    subnetId                // The subnet ID to attach the VM to
+    string    publicIpAddressId       // The public IP address ID to associate
+    string    networkSecurityGroupId  // The network security group ID for the NIC
+    integer   osDiskSizeGb            // The OS disk size in GB
+    string    osDiskType              // The OS disk type | default: Premium_LRS | valid: Standard_LRS, StandardSSD_LRS, Premium_LRS, UltraSSD_LRS
+    string    osDiskCaching           // The OS disk caching | default: ReadWrite | valid: None, ReadOnly, ReadWrite
+    string    computerName            // The computer name (hostname). Defaults to VM name
+    string    customData              // Custom data for cloud-init (Linux) or CustomScriptExtension (Windows)
+    list      zones                   // Availability zones for the VM
+    map       tags                    // Tags to apply to the VM and its resources
+    @cloud(importable)
+    string    id                      // The Azure resource ID of the VM
+    @cloud
+    string    vmId                    // The VM unique ID
+    @cloud
+    string    provisioningState       // The provisioning state
+    @cloud
+    string    powerState              // The power state (running, deallocated, etc.)
+    @cloud
+    string    privateIp               // The private IP address
+    @cloud
+    string    publicIp                // The public IP address (if assigned)
+    @cloud
+    string    networkInterfaceId      // The network interface ID
+    @cloud
+    string    osDiskName              // The OS disk name
+}

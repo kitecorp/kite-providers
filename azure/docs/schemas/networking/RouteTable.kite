@@ -1,0 +1,15 @@
+// RouteTable
+schema RouteTable {
+    string    name                        // The name of the route table
+    string    resourceGroup               // The Azure resource group name
+    string    location                    // The Azure region/location
+    boolean   disableBgpRoutePropagation  // Whether to disable BGP route propagation | default: false
+    list      routes                      // Routes in this route table
+    map       tags                        // Tags to apply to the route table
+    @cloud(importable)
+    string    id                          // The Azure resource ID of the route table
+    @cloud
+    string    provisioningState           // The provisioning state of the route table
+    @cloud
+    list      associatedSubnetIds         // List of subnet IDs associated with this route table
+}

@@ -32,7 +32,7 @@
 
 | Resource | Properties | Description |
 |----------|------------|-------------|
-| [HostedZone](HostedZone.md) | 10 |  |
+| [HostedZone](HostedZone.md) | 11 |  |
 | [RecordSet](RecordSet.md) | 12 |  |
 
 ## ⚖️ Loadbalancing

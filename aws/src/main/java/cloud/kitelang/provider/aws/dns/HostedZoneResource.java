@@ -75,4 +75,8 @@ public class HostedZoneResource {
     @Cloud
     @Property(description = "A unique string that identifies the request to create the zone")
     private String callerReference;
+
+    @Cloud(importable = true)
+    @Property(description = "The Amazon Resource Name (ARN) of the hosted zone")
+    private String arn;
 }

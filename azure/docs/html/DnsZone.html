@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HostedZone - Aws Provider</title>
+    <title>DnsZone - Azure Provider</title>
     <style>
     :root {
         --kite-primary: #0ea5e9;
@@ -290,26 +290,26 @@
 <body>
     <div class="container">
         <nav class="breadcrumbs">
-            <a href="index.html">Aws</a>
+            <a href="index.html">Azure</a>
             <span class="separator">→</span>
             <a href="index.html#dns">📍 Dns</a>
             <span class="separator">→</span>
-            <span class="current">HostedZone</span>
+            <span class="current">DnsZone</span>
         </nav>
 
         <header>
-            <h1>HostedZone</h1>
+            <h1>DnsZone</h1>
 </header>
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type">HostedZone</span> <span class="name">example</span> <span class="brace">{</span>
-    <span class="prop">name</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">comment</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">privateZone</span> <span class="eq">=</span> <span class="bool">true</span>
-    <span class="prop">vpcId</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">vpcRegion</span>   <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">tags</span>        <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type">DnsZone</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                          <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">resourceGroup</span>                 <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">zoneType</span>                      <span class="eq">=</span> <span class="str">"Public"</span>
+    <span class="prop">registrationVirtualNetworkIds</span> <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">resolutionVirtualNetworkIds</span>   <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">tags</span>                          <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
 <span class="brace">}</span></code></div>
 </div>
 <h2>Properties</h2>
@@ -331,39 +331,39 @@
   <td><span class="no-value">—</span></td>
   <td><span class="no-value">—</span></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The domain name for the hosted zone (e.g., 'example.com')</td>
+  <td>The domain name for the DNS zone. Must be a fully qualified domain name (e.g., example.com)</td>
 </tr>
-<tr id="comment" data-name="comment" data-type="string" data-optional="true">
-  <td><a href="#comment" class="prop-name-link"><span class="prop-name">comment</span><span class="anchor-icon">#</span></a></td>
+<tr id="resourceGroup" data-name="resourcegroup" data-type="string" data-optional="true">
+  <td><a href="#resourceGroup" class="prop-name-link"><span class="prop-name">resourceGroup</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
   <td><span class="no-value">—</span></td>
   <td><span class="no-value">—</span></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>A comment for the hosted zone</td>
+  <td>The resource group name</td>
 </tr>
-<tr id="privateZone" data-name="privatezone" data-type="boolean" data-optional="true">
-  <td><a href="#privateZone" class="prop-name-link"><span class="prop-name">privateZone</span><span class="anchor-icon">#</span></a></td>
-  <td><span class="prop-type">boolean</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>Whether this is a private hosted zone. Default: false</td>
-</tr>
-<tr id="vpcId" data-name="vpcid" data-type="string" data-optional="true">
-  <td><a href="#vpcId" class="prop-name-link"><span class="prop-name">vpcId</span><span class="anchor-icon">#</span></a></td>
+<tr id="zoneType" data-name="zonetype" data-type="string" data-optional="true">
+  <td><a href="#zoneType" class="prop-name-link"><span class="prop-name">zoneType</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
+  <td><code class="default-value">Public</code></td>
+  <td><div class="valid-values"><code class="valid-value">Public</code> <code class="valid-value">Private</code> </div></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>VPC ID to associate with private hosted zone</td>
+  <td>The type of DNS zone</td>
 </tr>
-<tr id="vpcRegion" data-name="vpcregion" data-type="string" data-optional="true">
-  <td><a href="#vpcRegion" class="prop-name-link"><span class="prop-name">vpcRegion</span><span class="anchor-icon">#</span></a></td>
-  <td><span class="prop-type">string</span></td>
+<tr id="registrationVirtualNetworkIds" data-name="registrationvirtualnetworkids" data-type="list" data-optional="true">
+  <td><a href="#registrationVirtualNetworkIds" class="prop-name-link"><span class="prop-name">registrationVirtualNetworkIds</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">list</span></td>
   <td><span class="no-value">—</span></td>
   <td><span class="no-value">—</span></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>VPC region for private hosted zone</td>
+  <td>Virtual network IDs for auto-registration (private zones only). VMs in these networks will have their DNS records auto-registered</td>
+</tr>
+<tr id="resolutionVirtualNetworkIds" data-name="resolutionvirtualnetworkids" data-type="list" data-optional="true">
+  <td><a href="#resolutionVirtualNetworkIds" class="prop-name-link"><span class="prop-name">resolutionVirtualNetworkIds</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">list</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>Virtual network IDs for resolution (private zones only). VMs in these networks can resolve records in this zone</td>
 </tr>
 <tr id="tags" data-name="tags" data-type="map" data-optional="true">
   <td><a href="#tags" class="prop-name-link"><span class="prop-name">tags</span><span class="anchor-icon">#</span></a></td>
@@ -371,7 +371,7 @@
   <td><span class="no-value">—</span></td>
   <td><span class="no-value">—</span></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>Tags to apply to the hosted zone</td>
+  <td>Tags to apply to the DNS zone</td>
 </tr>
     </tbody>
 </table>
@@ -389,40 +389,8 @@
         </tr>
     </thead>
     <tbody>
-<tr id="hostedZoneId" data-name="hostedzoneid" data-type="string" data-optional="true">
-  <td><a href="#hostedZoneId" class="prop-name-link"><span class="prop-name">hostedZoneId</span><span class="anchor-icon">#</span></a></td>
-  <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The hosted zone ID (without /hostedzone/ prefix)</td>
-</tr>
-<tr id="nameServers" data-name="nameservers" data-type="list" data-optional="true">
-  <td><a href="#nameServers" class="prop-name-link"><span class="prop-name">nameServers</span><span class="anchor-icon">#</span></a></td>
-  <td><span class="prop-type">list</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The name servers for the hosted zone</td>
-</tr>
-<tr id="resourceRecordSetCount" data-name="resourcerecordsetcount" data-type="integer" data-optional="true">
-  <td><a href="#resourceRecordSetCount" class="prop-name-link"><span class="prop-name">resourceRecordSetCount</span><span class="anchor-icon">#</span></a></td>
-  <td><span class="prop-type">integer</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The number of resource record sets in the hosted zone</td>
-</tr>
-<tr id="callerReference" data-name="callerreference" data-type="string" data-optional="true">
-  <td><a href="#callerReference" class="prop-name-link"><span class="prop-name">callerReference</span><span class="anchor-icon">#</span></a></td>
-  <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>A unique string that identifies the request to create the zone</td>
-</tr>
-<tr id="arn" data-name="arn" data-type="string" data-optional="true">
-  <td><a href="#arn" class="prop-name-link"><span class="prop-name">arn</span><span class="anchor-icon">#</span></a>
+<tr id="id" data-name="id" data-type="string" data-optional="true">
+  <td><a href="#id" class="prop-name-link"><span class="prop-name">id</span><span class="anchor-icon">#</span></a>
     <div class="prop-badges">
       <span class="badge badge-importable">importable</span>
     </div></td>
@@ -430,13 +398,45 @@
   <td><span class="no-value">—</span></td>
   <td><span class="no-value">—</span></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The Amazon Resource Name (ARN) of the hosted zone</td>
+  <td>The resource ID of the DNS zone</td>
+</tr>
+<tr id="nameServers" data-name="nameservers" data-type="list" data-optional="true">
+  <td><a href="#nameServers" class="prop-name-link"><span class="prop-name">nameServers</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">list</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The name servers for the DNS zone</td>
+</tr>
+<tr id="numberOfRecordSets" data-name="numberofrecordsets" data-type="integer" data-optional="true">
+  <td><a href="#numberOfRecordSets" class="prop-name-link"><span class="prop-name">numberOfRecordSets</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">integer</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The number of record sets in the DNS zone</td>
+</tr>
+<tr id="maxNumberOfRecordSets" data-name="maxnumberofrecordsets" data-type="integer" data-optional="true">
+  <td><a href="#maxNumberOfRecordSets" class="prop-name-link"><span class="prop-name">maxNumberOfRecordSets</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">integer</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The maximum number of record sets allowed</td>
+</tr>
+<tr id="etag" data-name="etag" data-type="string" data-optional="true">
+  <td><a href="#etag" class="prop-name-link"><span class="prop-name">etag</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The ETag of the DNS zone</td>
 </tr>
     </tbody>
 </table>
 <nav class="resource-nav">
-<a href="ElasticIp.html" class="prev">ElasticIp</a>
-<a href="InternetGateway.html" class="next">InternetGateway</a>
+<a href="DnsRecordSet.html" class="prev">DnsRecordSet</a>
+<a href="LoadBalancer.html" class="next">LoadBalancer</a>
 </nav>
         <footer class="meta">
             <p><a href="index.html">← Back to Index</a></p>

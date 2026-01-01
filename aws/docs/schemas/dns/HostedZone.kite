@@ -14,4 +14,6 @@ schema HostedZone {
     integer   resourceRecordSetCount  // The number of resource record sets in the hosted zone
     @cloud
     string    callerReference         // A unique string that identifies the request to create the zone
+    @cloud(importable)
+    string    arn                     // The Amazon Resource Name (ARN) of the hosted zone
 }

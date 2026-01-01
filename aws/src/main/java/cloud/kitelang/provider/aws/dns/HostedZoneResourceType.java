@@ -251,6 +251,7 @@ public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResour
         resource.setHostedZoneId(zoneId);
         resource.setResourceRecordSetCount(hostedZone.resourceRecordSetCount());
         resource.setCallerReference(hostedZone.callerReference());
+        resource.setArn("arn:aws:route53:::hostedzone/" + zoneId);
 
         // Get name servers (for public zones)
         if (resource.getPrivateZone() == null || !resource.getPrivateZone()) {

@@ -33,5 +33,6 @@ _These properties are set by the cloud provider after resource creation._
 | `nameServers` | `list` | — | — | No | *☁️ cloud-managed* The name servers for the hosted zone |
 | `resourceRecordSetCount` | `integer` | — | — | No | *☁️ cloud-managed* The number of resource record sets in the hosted zone |
 | `callerReference` | `string` | — | — | No | *☁️ cloud-managed* A unique string that identifies the request to create the zone |
+| `arn` | `string` | — | — | No | *☁️ cloud-managed, 📥 importable* The Amazon Resource Name (ARN) of the hosted zone |
 
 [← Back to Index](README.md)

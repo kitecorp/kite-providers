@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HostedZone - Aws Provider</title>
+    <title>ManagedDisk - Azure Provider</title>
     <style>
     :root {
         --kite-primary: #0ea5e9;
@@ -290,26 +290,37 @@
 <body>
     <div class="container">
         <nav class="breadcrumbs">
-            <a href="index.html">Aws</a>
+            <a href="index.html">Azure</a>
             <span class="separator">→</span>
-            <a href="index.html#dns">📍 Dns</a>
+            <a href="index.html#storage">💾 Storage</a>
             <span class="separator">→</span>
-            <span class="current">HostedZone</span>
+            <span class="current">ManagedDisk</span>
         </nav>
 
         <header>
-            <h1>HostedZone</h1>
+            <h1>ManagedDisk</h1>
 </header>
 <h2>Example</h2>
 <div class="code-wrapper">
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<div class="code-block"><code><span class="kw">resource</span> <span class="type">HostedZone</span> <span class="name">example</span> <span class="brace">{</span>
-    <span class="prop">name</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">comment</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">privateZone</span> <span class="eq">=</span> <span class="bool">true</span>
-    <span class="prop">vpcId</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">vpcRegion</span>   <span class="eq">=</span> <span class="str">"example-value"</span>
-    <span class="prop">tags</span>        <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<div class="code-block"><code><span class="kw">resource</span> <span class="type">ManagedDisk</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">resourceGroup</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">location</span>            <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">size</span>                <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">sku</span>                 <span class="eq">=</span> <span class="str">"StandardSSD_LRS"</span>
+    <span class="prop">tier</span>                <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">diskIops</span>            <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">diskMbps</span>            <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">osType</span>              <span class="eq">=</span> <span class="str">"Linux"</span>
+    <span class="prop">sourceResourceId</span>    <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">sourceUri</span>           <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">storageAccountId</span>    <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">zone</span>                <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">burstingEnabled</span>     <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">networkAccessPolicy</span> <span class="eq">=</span> <span class="str">"AllowAll"</span>
+    <span class="prop">diskAccessId</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">tags</span>                <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
 <span class="brace">}</span></code></div>
 </div>
 <h2>Properties</h2>
@@ -331,39 +342,127 @@
   <td><span class="no-value">—</span></td>
   <td><span class="no-value">—</span></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The domain name for the hosted zone (e.g., 'example.com')</td>
+  <td>The name of the managed disk</td>
 </tr>
-<tr id="comment" data-name="comment" data-type="string" data-optional="true">
-  <td><a href="#comment" class="prop-name-link"><span class="prop-name">comment</span><span class="anchor-icon">#</span></a></td>
+<tr id="resourceGroup" data-name="resourcegroup" data-type="string" data-optional="true">
+  <td><a href="#resourceGroup" class="prop-name-link"><span class="prop-name">resourceGroup</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
   <td><span class="no-value">—</span></td>
   <td><span class="no-value">—</span></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>A comment for the hosted zone</td>
+  <td>The Azure resource group name</td>
 </tr>
-<tr id="privateZone" data-name="privatezone" data-type="boolean" data-optional="true">
-  <td><a href="#privateZone" class="prop-name-link"><span class="prop-name">privateZone</span><span class="anchor-icon">#</span></a></td>
+<tr id="location" data-name="location" data-type="string" data-optional="true">
+  <td><a href="#location" class="prop-name-link"><span class="prop-name">location</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The Azure region/location (e.g., eastus, westeurope)</td>
+</tr>
+<tr id="size" data-name="size" data-type="integer" data-optional="true">
+  <td><a href="#size" class="prop-name-link"><span class="prop-name">size</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">integer</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The size of the disk in GB</td>
+</tr>
+<tr id="sku" data-name="sku" data-type="string" data-optional="true">
+  <td><a href="#sku" class="prop-name-link"><span class="prop-name">sku</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><code class="default-value">StandardSSD_LRS</code></td>
+  <td><div class="valid-values"><code class="valid-value">Standard_LRS</code> <code class="valid-value">Premium_LRS</code> <code class="valid-value">StandardSSD_LRS</code> <code class="valid-value">UltraSSD_LRS</code> <code class="valid-value">Premium_ZRS</code> <code class="valid-value">StandardSSD_ZRS</code> </div></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The disk SKU (storage type)</td>
+</tr>
+<tr id="tier" data-name="tier" data-type="string" data-optional="true">
+  <td><a href="#tier" class="prop-name-link"><span class="prop-name">tier</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The disk tier for Premium and Ultra disks (e.g., P30, P40, P50)</td>
+</tr>
+<tr id="diskIops" data-name="diskiops" data-type="integer" data-optional="true">
+  <td><a href="#diskIops" class="prop-name-link"><span class="prop-name">diskIops</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">integer</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The IOPS read/write budget for Ultra disks (100 - 160,000)</td>
+</tr>
+<tr id="diskMbps" data-name="diskmbps" data-type="integer" data-optional="true">
+  <td><a href="#diskMbps" class="prop-name-link"><span class="prop-name">diskMbps</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">integer</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The throughput in MB/s for Ultra disks (1 - 2,000)</td>
+</tr>
+<tr id="osType" data-name="ostype" data-type="string" data-optional="true">
+  <td><a href="#osType" class="prop-name-link"><span class="prop-name">osType</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><div class="valid-values"><code class="valid-value">Linux</code> <code class="valid-value">Windows</code> </div></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The operating system type if this is an OS disk</td>
+</tr>
+<tr id="sourceResourceId" data-name="sourceresourceid" data-type="string" data-optional="true">
+  <td><a href="#sourceResourceId" class="prop-name-link"><span class="prop-name">sourceResourceId</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The source resource ID to create the disk from (snapshot, image, or disk)</td>
+</tr>
+<tr id="sourceUri" data-name="sourceuri" data-type="string" data-optional="true">
+  <td><a href="#sourceUri" class="prop-name-link"><span class="prop-name">sourceUri</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The source URI for importing a VHD from a storage account</td>
+</tr>
+<tr id="storageAccountId" data-name="storageaccountid" data-type="string" data-optional="true">
+  <td><a href="#storageAccountId" class="prop-name-link"><span class="prop-name">storageAccountId</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The storage account ID where sourceUri is located</td>
+</tr>
+<tr id="zone" data-name="zone" data-type="string" data-optional="true">
+  <td><a href="#zone" class="prop-name-link"><span class="prop-name">zone</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The availability zone for the disk (1, 2, or 3)</td>
+</tr>
+<tr id="burstingEnabled" data-name="burstingenabled" data-type="boolean" data-optional="true">
+  <td><a href="#burstingEnabled" class="prop-name-link"><span class="prop-name">burstingEnabled</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">boolean</span></td>
-  <td><span class="no-value">—</span></td>
+  <td><code class="default-value">false</code></td>
   <td><span class="no-value">—</span></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>Whether this is a private hosted zone. Default: false</td>
+  <td>Enable bursting for Premium SSD disks &gt; 512 GB</td>
 </tr>
-<tr id="vpcId" data-name="vpcid" data-type="string" data-optional="true">
-  <td><a href="#vpcId" class="prop-name-link"><span class="prop-name">vpcId</span><span class="anchor-icon">#</span></a></td>
+<tr id="networkAccessPolicy" data-name="networkaccesspolicy" data-type="string" data-optional="true">
+  <td><a href="#networkAccessPolicy" class="prop-name-link"><span class="prop-name">networkAccessPolicy</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><code class="default-value">AllowAll</code></td>
+  <td><div class="valid-values"><code class="valid-value">AllowAll</code> <code class="valid-value">AllowPrivate</code> <code class="valid-value">DenyAll</code> </div></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>Network access policy for the disk</td>
+</tr>
+<tr id="diskAccessId" data-name="diskaccessid" data-type="string" data-optional="true">
+  <td><a href="#diskAccessId" class="prop-name-link"><span class="prop-name">diskAccessId</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
   <td><span class="no-value">—</span></td>
   <td><span class="no-value">—</span></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>VPC ID to associate with private hosted zone</td>
-</tr>
-<tr id="vpcRegion" data-name="vpcregion" data-type="string" data-optional="true">
-  <td><a href="#vpcRegion" class="prop-name-link"><span class="prop-name">vpcRegion</span><span class="anchor-icon">#</span></a></td>
-  <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>VPC region for private hosted zone</td>
+  <td>The disk access ID for private endpoint connections</td>
 </tr>
 <tr id="tags" data-name="tags" data-type="map" data-optional="true">
   <td><a href="#tags" class="prop-name-link"><span class="prop-name">tags</span><span class="anchor-icon">#</span></a></td>
@@ -371,7 +470,7 @@
   <td><span class="no-value">—</span></td>
   <td><span class="no-value">—</span></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>Tags to apply to the hosted zone</td>
+  <td>Tags to apply to the disk</td>
 </tr>
     </tbody>
 </table>
@@ -389,40 +488,8 @@
         </tr>
     </thead>
     <tbody>
-<tr id="hostedZoneId" data-name="hostedzoneid" data-type="string" data-optional="true">
-  <td><a href="#hostedZoneId" class="prop-name-link"><span class="prop-name">hostedZoneId</span><span class="anchor-icon">#</span></a></td>
-  <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The hosted zone ID (without /hostedzone/ prefix)</td>
-</tr>
-<tr id="nameServers" data-name="nameservers" data-type="list" data-optional="true">
-  <td><a href="#nameServers" class="prop-name-link"><span class="prop-name">nameServers</span><span class="anchor-icon">#</span></a></td>
-  <td><span class="prop-type">list</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The name servers for the hosted zone</td>
-</tr>
-<tr id="resourceRecordSetCount" data-name="resourcerecordsetcount" data-type="integer" data-optional="true">
-  <td><a href="#resourceRecordSetCount" class="prop-name-link"><span class="prop-name">resourceRecordSetCount</span><span class="anchor-icon">#</span></a></td>
-  <td><span class="prop-type">integer</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The number of resource record sets in the hosted zone</td>
-</tr>
-<tr id="callerReference" data-name="callerreference" data-type="string" data-optional="true">
-  <td><a href="#callerReference" class="prop-name-link"><span class="prop-name">callerReference</span><span class="anchor-icon">#</span></a></td>
-  <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>A unique string that identifies the request to create the zone</td>
-</tr>
-<tr id="arn" data-name="arn" data-type="string" data-optional="true">
-  <td><a href="#arn" class="prop-name-link"><span class="prop-name">arn</span><span class="anchor-icon">#</span></a>
+<tr id="id" data-name="id" data-type="string" data-optional="true">
+  <td><a href="#id" class="prop-name-link"><span class="prop-name">id</span><span class="anchor-icon">#</span></a>
     <div class="prop-badges">
       <span class="badge badge-importable">importable</span>
     </div></td>
@@ -430,13 +497,53 @@
   <td><span class="no-value">—</span></td>
   <td><span class="no-value">—</span></td>
   <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
-  <td>The Amazon Resource Name (ARN) of the hosted zone</td>
+  <td>The Azure resource ID of the disk</td>
+</tr>
+<tr id="provisioningState" data-name="provisioningstate" data-type="string" data-optional="true">
+  <td><a href="#provisioningState" class="prop-name-link"><span class="prop-name">provisioningState</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The provisioning state of the disk</td>
+</tr>
+<tr id="diskState" data-name="diskstate" data-type="string" data-optional="true">
+  <td><a href="#diskState" class="prop-name-link"><span class="prop-name">diskState</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The disk state (Unattached, Attached, Reserved, etc.)</td>
+</tr>
+<tr id="uniqueId" data-name="uniqueid" data-type="string" data-optional="true">
+  <td><a href="#uniqueId" class="prop-name-link"><span class="prop-name">uniqueId</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The unique identifier for the disk</td>
+</tr>
+<tr id="timeCreated" data-name="timecreated" data-type="string" data-optional="true">
+  <td><a href="#timeCreated" class="prop-name-link"><span class="prop-name">timeCreated</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The time the disk was created</td>
+</tr>
+<tr id="managedBy" data-name="managedby" data-type="string" data-optional="true">
+  <td><a href="#managedBy" class="prop-name-link"><span class="prop-name">managedBy</span><span class="anchor-icon">#</span></a></td>
+  <td><span class="prop-type">string</span></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="no-value">—</span></td>
+  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
+  <td>The ID of the VM this disk is attached to</td>
 </tr>
     </tbody>
 </table>
 <nav class="resource-nav">
-<a href="ElasticIp.html" class="prev">ElasticIp</a>
-<a href="InternetGateway.html" class="next">InternetGateway</a>
+<a href="LoadBalancer.html" class="prev">LoadBalancer</a>
+<a href="NatGateway.html" class="next">NatGateway</a>
 </nav>
         <footer class="meta">
             <p><a href="index.html">← Back to Index</a></p>
