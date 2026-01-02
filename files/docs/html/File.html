@@ -12,6 +12,9 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://docs.kitelang.cloud/files/File.html">
 
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 
@@ -60,6 +63,10 @@
 }
 </script>
 <body>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
     <div class="layout">
         <aside class="sidebar-left">
             <div class="sidebar-header">
@@ -69,7 +76,10 @@
                 <span class="version">v0.1.0</span>
             </div>
             <div class="search-wrapper">
-                <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
             </div>
             <nav class="nav-tree" aria-label="Resources navigation">
             <div class="nav-category" data-domain="general">
@@ -80,7 +90,7 @@
                     <span class="category-arrow" aria-hidden="true">▾</span>
                 </div>
                 <ul class="category-items">
-                <li class="nav-item active" data-name="file">
+                <li class="nav-item active" data-name="file" data-desc="">
                     <a href="File.html" aria-current="page">File</a>
                 </li>
                 </ul>
@@ -202,7 +212,7 @@
 <span class="nav-placeholder"></span>
 </nav>
                 <footer class="resource-footer">
-                    <p>Generated on <time datetime="2026-01-03T01:29:48.332097">January 3, 2026</time></p>
+                    <p>Generated on <time datetime="2026-01-03T01:46:44.326464">January 3, 2026</time></p>
                 </footer>
             </article>
         </main>

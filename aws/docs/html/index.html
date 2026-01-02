@@ -12,6 +12,9 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://docs.kitelang.cloud/aws/index.html">
 
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 
@@ -31,6 +34,10 @@
     <meta name="twitter:description" content="Complete documentation for Aws provider resources. Learn how to configure and manage 16 infrastructure resources with Kite.">
 </head>
 <body>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
     <div class="layout">
         <aside class="sidebar-left">
             <div class="sidebar-header">
@@ -40,7 +47,10 @@
                 <span class="version">v0.1.0</span>
             </div>
             <div class="search-wrapper">
-                <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
             </div>
             <nav class="nav-tree" aria-label="Resources navigation">
             <div class="nav-category collapsed" data-domain="networking">
@@ -51,25 +61,25 @@
                     <span class="category-arrow" aria-hidden="true">▾</span>
                 </div>
                 <ul class="category-items">
-                <li class="nav-item" data-name="elasticip">
+                <li class="nav-item" data-name="elasticip" data-desc="">
                     <a href="ElasticIp.html">ElasticIp</a>
                 </li>
-                <li class="nav-item" data-name="internetgateway">
+                <li class="nav-item" data-name="internetgateway" data-desc="">
                     <a href="InternetGateway.html">InternetGateway</a>
                 </li>
-                <li class="nav-item" data-name="natgateway">
+                <li class="nav-item" data-name="natgateway" data-desc="">
                     <a href="NatGateway.html">NatGateway</a>
                 </li>
-                <li class="nav-item" data-name="routetable">
+                <li class="nav-item" data-name="routetable" data-desc="">
                     <a href="RouteTable.html">RouteTable</a>
                 </li>
-                <li class="nav-item" data-name="securitygroup">
+                <li class="nav-item" data-name="securitygroup" data-desc="">
                     <a href="SecurityGroup.html">SecurityGroup</a>
                 </li>
-                <li class="nav-item" data-name="subnet">
+                <li class="nav-item" data-name="subnet" data-desc="">
                     <a href="Subnet.html">Subnet</a>
                 </li>
-                <li class="nav-item" data-name="vpc">
+                <li class="nav-item" data-name="vpc" data-desc="">
                     <a href="Vpc.html">Vpc</a>
                 </li>
                 </ul>
@@ -82,7 +92,7 @@
                     <span class="category-arrow" aria-hidden="true">▾</span>
                 </div>
                 <ul class="category-items">
-                <li class="nav-item" data-name="ec2instance">
+                <li class="nav-item" data-name="ec2instance" data-desc="">
                     <a href="Ec2Instance.html">Ec2Instance</a>
                 </li>
                 </ul>
@@ -95,13 +105,13 @@
                     <span class="category-arrow" aria-hidden="true">▾</span>
                 </div>
                 <ul class="category-items">
-                <li class="nav-item" data-name="ebsvolume">
+                <li class="nav-item" data-name="ebsvolume" data-desc="">
                     <a href="EbsVolume.html">EbsVolume</a>
                 </li>
-                <li class="nav-item" data-name="s3bucket">
+                <li class="nav-item" data-name="s3bucket" data-desc="">
                     <a href="S3Bucket.html">S3Bucket</a>
                 </li>
-                <li class="nav-item" data-name="s3bucketpolicy">
+                <li class="nav-item" data-name="s3bucketpolicy" data-desc="">
                     <a href="S3BucketPolicy.html">S3BucketPolicy</a>
                 </li>
                 </ul>
@@ -114,10 +124,10 @@
                     <span class="category-arrow" aria-hidden="true">▾</span>
                 </div>
                 <ul class="category-items">
-                <li class="nav-item" data-name="hostedzone">
+                <li class="nav-item" data-name="hostedzone" data-desc="">
                     <a href="HostedZone.html">HostedZone</a>
                 </li>
-                <li class="nav-item" data-name="recordset">
+                <li class="nav-item" data-name="recordset" data-desc="">
                     <a href="RecordSet.html">RecordSet</a>
                 </li>
                 </ul>
@@ -130,37 +140,61 @@
                     <span class="category-arrow" aria-hidden="true">▾</span>
                 </div>
                 <ul class="category-items">
-                <li class="nav-item" data-name="listener">
+                <li class="nav-item" data-name="listener" data-desc="">
                     <a href="Listener.html">Listener</a>
                 </li>
-                <li class="nav-item" data-name="loadbalancer">
+                <li class="nav-item" data-name="loadbalancer" data-desc="">
                     <a href="LoadBalancer.html">LoadBalancer</a>
                 </li>
-                <li class="nav-item" data-name="targetgroup">
+                <li class="nav-item" data-name="targetgroup" data-desc="">
                     <a href="TargetGroup.html">TargetGroup</a>
                 </li>
                 </ul>
             </div>
             </nav>
         </aside>
-        <main class="content">
-            <article class="resource-content">
-                <h1>Aws Provider Documentation</h1>
-                <p class="welcome-text">Infrastructure as code resources for Aws. Select a resource from the navigation to view its documentation.</p>
+                    <main class="content">
+                        <article class="resource-content">
+                            <h1>Aws Provider Documentation</h1>
+                            <p class="welcome-text">Infrastructure as code resources for Aws. Select a resource from the navigation to view its documentation.</p>
 
-                <div class="quick-stats">
-                    <div class="stat-card">
-                        <span class="stat-value">16</span>
-                        <span class="stat-label">Resources</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-value">5</span>
-                        <span class="stat-label">Categories</span>
-                    </div>
-                </div>
+                            <div class="quick-stats">
+                                <div class="stat-card">
+                                    <span class="stat-value">16</span>
+                                    <span class="stat-label">Resources</span>
+                                </div>
+                                <div class="stat-card">
+                                    <span class="stat-value">5</span>
+                                    <span class="stat-label">Categories</span>
+                                </div>
+                            </div>
 
-                <h2 id="categories">Categories</h2>
-                <div class="category-grid">
+                            <h2 id="quick-start">Quick Start</h2>
+                            <div class="quick-start-section">
+                                <h3>Installation</h3>
+                                <p>Install the Aws provider:</p>
+                                <div class="code-wrapper">
+                                    <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                                    <pre class="code-block"><code><span class="kw">kite</span> <span class="name">providers</span> <span class="str">install</span> aws@0.1.0</code></pre>
+                                </div>
+
+                                <h3>Import in your .kite file</h3>
+                                <div class="code-wrapper">
+                                    <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                                    <pre class="code-block"><code><span class="kw">import</span> <span class="name">*</span> <span class="kw">from</span> <span class="str">"aws"</span></code></pre>
+                                </div>
+
+                                <h3>Define a resource</h3>
+                                <div class="code-wrapper">
+                                    <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">EbsVolume</span> <span class="name">my_resource</span> <span class="brace">{</span>
+    <span class="comment">// Configure properties here</span>
+<span class="brace">}</span></code></pre>
+                                </div>
+                            </div>
+
+                            <h2 id="categories">Categories</h2>
+                            <div class="category-grid">
                 <a href="ElasticIp.html" class="category-card">
                     <span class="card-icon">🌐</span>
                     <span class="card-name">Networking</span>
@@ -277,6 +311,7 @@
         <aside class="sidebar-right">
             <div class="toc-header">On this page</div>
             <nav class="toc">
+                <a href="#quick-start">Quick Start</a>
                 <a href="#categories">Categories</a>
                 <a href="#all-resources">All Resources</a>
             </nav>

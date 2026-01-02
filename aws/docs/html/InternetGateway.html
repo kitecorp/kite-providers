@@ -12,6 +12,9 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://docs.kitelang.cloud/aws/InternetGateway.html">
 
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 
@@ -60,6 +63,10 @@
 }
 </script>
 <body>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
     <div class="layout">
         <aside class="sidebar-left">
             <div class="sidebar-header">
@@ -69,7 +76,10 @@
                 <span class="version">v0.1.0</span>
             </div>
             <div class="search-wrapper">
-                <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
             </div>
             <nav class="nav-tree" aria-label="Resources navigation">
             <div class="nav-category" data-domain="networking">
@@ -80,25 +90,25 @@
                     <span class="category-arrow" aria-hidden="true">▾</span>
                 </div>
                 <ul class="category-items">
-                <li class="nav-item" data-name="elasticip">
+                <li class="nav-item" data-name="elasticip" data-desc="">
                     <a href="ElasticIp.html">ElasticIp</a>
                 </li>
-                <li class="nav-item active" data-name="internetgateway">
+                <li class="nav-item active" data-name="internetgateway" data-desc="">
                     <a href="InternetGateway.html" aria-current="page">InternetGateway</a>
                 </li>
-                <li class="nav-item" data-name="natgateway">
+                <li class="nav-item" data-name="natgateway" data-desc="">
                     <a href="NatGateway.html">NatGateway</a>
                 </li>
-                <li class="nav-item" data-name="routetable">
+                <li class="nav-item" data-name="routetable" data-desc="">
                     <a href="RouteTable.html">RouteTable</a>
                 </li>
-                <li class="nav-item" data-name="securitygroup">
+                <li class="nav-item" data-name="securitygroup" data-desc="">
                     <a href="SecurityGroup.html">SecurityGroup</a>
                 </li>
-                <li class="nav-item" data-name="subnet">
+                <li class="nav-item" data-name="subnet" data-desc="">
                     <a href="Subnet.html">Subnet</a>
                 </li>
-                <li class="nav-item" data-name="vpc">
+                <li class="nav-item" data-name="vpc" data-desc="">
                     <a href="Vpc.html">Vpc</a>
                 </li>
                 </ul>
@@ -111,7 +121,7 @@
                     <span class="category-arrow" aria-hidden="true">▾</span>
                 </div>
                 <ul class="category-items">
-                <li class="nav-item" data-name="ec2instance">
+                <li class="nav-item" data-name="ec2instance" data-desc="">
                     <a href="Ec2Instance.html">Ec2Instance</a>
                 </li>
                 </ul>
@@ -124,13 +134,13 @@
                     <span class="category-arrow" aria-hidden="true">▾</span>
                 </div>
                 <ul class="category-items">
-                <li class="nav-item" data-name="ebsvolume">
+                <li class="nav-item" data-name="ebsvolume" data-desc="">
                     <a href="EbsVolume.html">EbsVolume</a>
                 </li>
-                <li class="nav-item" data-name="s3bucket">
+                <li class="nav-item" data-name="s3bucket" data-desc="">
                     <a href="S3Bucket.html">S3Bucket</a>
                 </li>
-                <li class="nav-item" data-name="s3bucketpolicy">
+                <li class="nav-item" data-name="s3bucketpolicy" data-desc="">
                     <a href="S3BucketPolicy.html">S3BucketPolicy</a>
                 </li>
                 </ul>
@@ -143,10 +153,10 @@
                     <span class="category-arrow" aria-hidden="true">▾</span>
                 </div>
                 <ul class="category-items">
-                <li class="nav-item" data-name="hostedzone">
+                <li class="nav-item" data-name="hostedzone" data-desc="">
                     <a href="HostedZone.html">HostedZone</a>
                 </li>
-                <li class="nav-item" data-name="recordset">
+                <li class="nav-item" data-name="recordset" data-desc="">
                     <a href="RecordSet.html">RecordSet</a>
                 </li>
                 </ul>
@@ -159,13 +169,13 @@
                     <span class="category-arrow" aria-hidden="true">▾</span>
                 </div>
                 <ul class="category-items">
-                <li class="nav-item" data-name="listener">
+                <li class="nav-item" data-name="listener" data-desc="">
                     <a href="Listener.html">Listener</a>
                 </li>
-                <li class="nav-item" data-name="loadbalancer">
+                <li class="nav-item" data-name="loadbalancer" data-desc="">
                     <a href="LoadBalancer.html">LoadBalancer</a>
                 </li>
-                <li class="nav-item" data-name="targetgroup">
+                <li class="nav-item" data-name="targetgroup" data-desc="">
                     <a href="TargetGroup.html">TargetGroup</a>
                 </li>
                 </ul>
@@ -285,7 +295,7 @@
 <a href="Listener.html" class="nav-next" rel="next">Listener →</a>
 </nav>
                 <footer class="resource-footer">
-                    <p>Generated on <time datetime="2026-01-03T01:31:24.534112">January 3, 2026</time></p>
+                    <p>Generated on <time datetime="2026-01-03T01:46:43.784542">January 3, 2026</time></p>
                 </footer>
             </article>
         </main>
