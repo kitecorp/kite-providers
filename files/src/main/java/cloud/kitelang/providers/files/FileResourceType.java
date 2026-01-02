@@ -80,12 +80,15 @@ public class FileResourceType extends ResourceTypeHandler<FileResource> {
             // Compute checksum
             resource.setChecksum(computeChecksum(content));
 
-            // Read permissions (POSIX only)
-            try {
-                var perms = Files.getPosixFilePermissions(path);
-                resource.setPermissions(permissionsToOctal(perms));
-            } catch (UnsupportedOperationException e) {
-                // Non-POSIX system, skip
+            // Read permissions (POSIX only) - only if user specified permissions
+            // If permissions was not set in source, don't track it
+            if (resource.getPermissions() != null) {
+                try {
+                    var perms = Files.getPosixFilePermissions(path);
+                    resource.setPermissions(permissionsToOctal(perms));
+                } catch (UnsupportedOperationException e) {
+                    // Non-POSIX system, skip
+                }
             }
 
             return resource;
