@@ -348,27 +348,27 @@
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
 <div class="code-block"><code><span class="comment">// Vpc</span>
 <span class="kw">schema</span> <span class="type">Vpc</span> <span class="brace">{</span>
-    <span class="type">string</span>    <span class="prop">cidrBlock</span>                    <span class="comment">// The IPv4 CIDR block for the VPC (e.g., 10.0.0.0/16)</span>
-    <span class="type">string</span>    <span class="prop">ipv6CidrBlock</span>                <span class="comment">// The IPv6 CIDR block for the VPC. If specified, AWS associates an IPv6 CIDR block</span>
+    <span class="type">string</span> <span class="prop">cidrBlock</span>                    <span class="comment">// The IPv4 CIDR block for the VPC (e.g., 10.0.0.0/16)</span>
+    <span class="type">string</span> <span class="prop">ipv6CidrBlock</span>                <span class="comment">// The IPv6 CIDR block for the VPC. If specified, AWS associates an IPv6 CIDR block</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"default"</span>, <span class="str">"dedicated"</span><span class="brace">])</span>
-    <span class="type">string</span>    <span class="prop">instanceTenancy</span> <span class="eq">=</span> <span class="str">&quot;default&quot;</span>  <span class="comment">// Tenancy option for instances</span>
-    <span class="type">boolean</span>   <span class="prop">enableDnsSupport</span> <span class="eq">=</span> <span class="bool">true</span>      <span class="comment">// Enable DNS support in the VPC</span>
-    <span class="type">boolean</span>   <span class="prop">enableDnsHostnames</span> <span class="eq">=</span> <span class="bool">false</span>   <span class="comment">// Enable DNS hostnames in the VPC</span>
-    <span class="type">map</span>       <span class="prop">tags</span>                         <span class="comment">// Tags to apply to the VPC</span>
+    <span class="type">string</span> <span class="prop">instanceTenancy</span> <span class="eq">=</span> <span class="str">&quot;default&quot;</span>  <span class="comment">// Tenancy option for instances</span>
+    <span class="type">boolean</span> <span class="prop">enableDnsSupport</span> <span class="eq">=</span> <span class="bool">true</span>      <span class="comment">// Enable DNS support in the VPC</span>
+    <span class="type">boolean</span> <span class="prop">enableDnsHostnames</span> <span class="eq">=</span> <span class="bool">false</span>   <span class="comment">// Enable DNS hostnames in the VPC</span>
+    <span class="type">map</span> <span class="prop">tags</span>                         <span class="comment">// Tags to apply to the VPC</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">vpcId</span>                        <span class="comment">// The VPC ID assigned by AWS</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>                        <span class="comment">// The VPC ID assigned by AWS</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">state</span>                        <span class="comment">// The current state of the VPC (pending, available)</span>
+    <span class="type">string</span> <span class="prop">state</span>                        <span class="comment">// The current state of the VPC (pending, available)</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">mainRouteTableId</span>             <span class="comment">// The ID of the main route table</span>
+    <span class="type">string</span> <span class="prop">mainRouteTableId</span>             <span class="comment">// The ID of the main route table</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">defaultNetworkAclId</span>          <span class="comment">// The ID of the default network ACL</span>
+    <span class="type">string</span> <span class="prop">defaultNetworkAclId</span>          <span class="comment">// The ID of the default network ACL</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">defaultSecurityGroupId</span>       <span class="comment">// The ID of the default security group</span>
+    <span class="type">string</span> <span class="prop">defaultSecurityGroupId</span>       <span class="comment">// The ID of the default security group</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">ownerId</span>                      <span class="comment">// The AWS account ID that owns the VPC</span>
+    <span class="type">string</span> <span class="prop">ownerId</span>                      <span class="comment">// The AWS account ID that owns the VPC</span>
     <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
-    <span class="type">string</span>    <span class="prop">arn</span>                          <span class="comment">// The Amazon Resource Name (ARN) of the VPC</span>
+    <span class="type">string</span> <span class="prop">arn</span>                          <span class="comment">// The Amazon Resource Name (ARN) of the VPC</span>
 <span class="brace">}</span></code></div>
 </div>
 </div>

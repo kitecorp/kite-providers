@@ -128,6 +128,32 @@
     .bool { color: #fb923c; }
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
+    .decorator { color: #fb923c; }
+
+    .schema-section {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .schema-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        cursor: pointer;
+        user-select: none;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: color 0.15s;
+    }
+    .schema-header:hover { color: var(--kite-primary); }
+    .schema-toggle {
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+    }
+    .schema-section:not(.collapsed) .schema-toggle { transform: rotate(90deg); }
+    .schema-section.collapsed .schema-content { display: none; }
+    .schema-content { margin-top: 0.5rem; }
 
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
@@ -192,26 +218,27 @@
     }
     .meta p { margin: 0.25rem 0; }
 
-    .domain-group { margin-bottom: 1.5rem; }
+    .domain-group { margin-bottom: 2rem; }
     .domain-header {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.75rem 1rem;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
+        padding: 0.5rem 0;
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 0.75rem;
         cursor: pointer;
         user-select: none;
-        font-size: 1rem;
-        transition: border-color 0.15s;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        transition: color 0.15s;
     }
-    .domain-header:hover { border-color: var(--kite-primary); }
+    .domain-header:hover { color: var(--kite-primary); }
     .domain-icon { font-size: 1.25rem; }
-    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); }
+    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); font-size: 0.875rem; }
     .domain-group.collapsed .collapse-icon { transform: rotate(-90deg); }
     .domain-group.collapsed .resource-list { display: none; }
+    .resource-list { padding-left: 0.5rem; }
 
     .breadcrumbs {
         display: flex;
@@ -315,7 +342,7 @@
         </ul>
     </div>
         <footer class="meta">
-            <p>Generated on 2025-12-31 19:31</p>
+            <p>Generated on 2026-01-02 01:33</p>
             <p>Powered by <a href="https://kitelang.cloud">Kite</a></p>
         </footer>
     </div>

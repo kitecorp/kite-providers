@@ -1,10 +1,10 @@
 // File
 schema File {
-    string    path
-    string    content
-    string    permissions
+    string path
+    string content
+    string permissions
     @cloud
-    string    checksum
+    string checksum
     @cloud
-    string    lastModified
+    string lastModified
 }

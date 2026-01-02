@@ -349,27 +349,27 @@
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
 <div class="code-block"><code><span class="comment">// Subnet</span>
 <span class="kw">schema</span> <span class="type">Subnet</span> <span class="brace">{</span>
-    <span class="type">string</span>    <span class="prop">vpcId</span>                                <span class="comment">// The VPC ID where the subnet will be created</span>
-    <span class="type">string</span>    <span class="prop">cidrBlock</span>                            <span class="comment">// The IPv4 CIDR block for the subnet (e.g., 10.0.1.0/24)</span>
-    <span class="type">string</span>    <span class="prop">ipv6CidrBlock</span>                        <span class="comment">// The IPv6 CIDR block for the subnet</span>
-    <span class="type">string</span>    <span class="prop">availabilityZone</span>                     <span class="comment">// The Availability Zone for the subnet (e.g., us-east-1a)</span>
-    <span class="type">boolean</span>   <span class="prop">mapPublicIpOnLaunch</span> <span class="eq">=</span> <span class="bool">false</span>          <span class="comment">// Auto-assign public IPv4 addresses to instances</span>
-    <span class="type">boolean</span>   <span class="prop">assignIpv6AddressOnCreation</span> <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Assign IPv6 addresses to instances</span>
-    <span class="type">map</span>       <span class="prop">tags</span>                                 <span class="comment">// Tags to apply to the subnet</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>                                <span class="comment">// The VPC ID where the subnet will be created</span>
+    <span class="type">string</span> <span class="prop">cidrBlock</span>                            <span class="comment">// The IPv4 CIDR block for the subnet (e.g., 10.0.1.0/24)</span>
+    <span class="type">string</span> <span class="prop">ipv6CidrBlock</span>                        <span class="comment">// The IPv6 CIDR block for the subnet</span>
+    <span class="type">string</span> <span class="prop">availabilityZone</span>                     <span class="comment">// The Availability Zone for the subnet (e.g., us-east-1a)</span>
+    <span class="type">boolean</span> <span class="prop">mapPublicIpOnLaunch</span> <span class="eq">=</span> <span class="bool">false</span>          <span class="comment">// Auto-assign public IPv4 addresses to instances</span>
+    <span class="type">boolean</span> <span class="prop">assignIpv6AddressOnCreation</span> <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Assign IPv6 addresses to instances</span>
+    <span class="type">map</span> <span class="prop">tags</span>                                 <span class="comment">// Tags to apply to the subnet</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">subnetId</span>                             <span class="comment">// The subnet ID assigned by AWS</span>
+    <span class="type">string</span> <span class="prop">subnetId</span>                             <span class="comment">// The subnet ID assigned by AWS</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">state</span>                                <span class="comment">// The current state of the subnet (pending, available)</span>
+    <span class="type">string</span> <span class="prop">state</span>                                <span class="comment">// The current state of the subnet (pending, available)</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">availabilityZoneId</span>                   <span class="comment">// The Availability Zone ID</span>
+    <span class="type">string</span> <span class="prop">availabilityZoneId</span>                   <span class="comment">// The Availability Zone ID</span>
     <span class="decorator">@cloud</span>
-    <span class="type">integer</span>   <span class="prop">availableIpAddressCount</span>              <span class="comment">// The number of available IPv4 addresses</span>
+    <span class="type">integer</span> <span class="prop">availableIpAddressCount</span>              <span class="comment">// The number of available IPv4 addresses</span>
     <span class="decorator">@cloud</span>
-    <span class="type">boolean</span>   <span class="prop">defaultForAz</span>                         <span class="comment">// Whether this is the default subnet for the AZ</span>
+    <span class="type">boolean</span> <span class="prop">defaultForAz</span>                         <span class="comment">// Whether this is the default subnet for the AZ</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">ownerId</span>                              <span class="comment">// The AWS account ID that owns the subnet</span>
+    <span class="type">string</span> <span class="prop">ownerId</span>                              <span class="comment">// The AWS account ID that owns the subnet</span>
     <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
-    <span class="type">string</span>    <span class="prop">arn</span>                                  <span class="comment">// The Amazon Resource Name (ARN) of the subnet</span>
+    <span class="type">string</span> <span class="prop">arn</span>                                  <span class="comment">// The Amazon Resource Name (ARN) of the subnet</span>
 <span class="brace">}</span></code></div>
 </div>
 </div>

@@ -21,9 +21,9 @@ resource File example {
 
 _These properties are set by the cloud provider after resource creation._
 
-| Name | Type | Default | Valid Values | Required | Description |
-|------|------|---------|--------------|----------|-------------|
-| `checksum` | `string` | — | — | No | *☁️ cloud-managed*  |
-| `lastModified` | `string` | — | — | No | *☁️ cloud-managed*  |
+| Name | Type | Description |
+|------|------|-------------|
+| `checksum` | `string` |  |
+| `lastModified` | `string` |  |
 
 [← Back to Index](README.md)

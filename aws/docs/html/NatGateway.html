@@ -346,21 +346,21 @@
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
 <div class="code-block"><code><span class="comment">// NatGateway</span>
 <span class="kw">schema</span> <span class="type">NatGateway</span> <span class="brace">{</span>
-    <span class="type">string</span>    <span class="prop">subnetId</span>                     <span class="comment">// The subnet ID where the NAT gateway will be created</span>
-    <span class="type">string</span>    <span class="prop">allocationId</span>                 <span class="comment">// The allocation ID of the Elastic IP for public NAT gateway</span>
+    <span class="type">string</span> <span class="prop">subnetId</span>                     <span class="comment">// The subnet ID where the NAT gateway will be created</span>
+    <span class="type">string</span> <span class="prop">allocationId</span>                 <span class="comment">// The allocation ID of the Elastic IP for public NAT gateway</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"public"</span>, <span class="str">"private"</span><span class="brace">])</span>
-    <span class="type">string</span>    <span class="prop">connectivityType</span> <span class="eq">=</span> <span class="str">&quot;public&quot;</span>  <span class="comment">// The connectivity type for the NAT gateway</span>
-    <span class="type">map</span>       <span class="prop">tags</span>                         <span class="comment">// Tags to apply to the NAT gateway</span>
+    <span class="type">string</span> <span class="prop">connectivityType</span> <span class="eq">=</span> <span class="str">&quot;public&quot;</span>  <span class="comment">// The connectivity type for the NAT gateway</span>
+    <span class="type">map</span> <span class="prop">tags</span>                         <span class="comment">// Tags to apply to the NAT gateway</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">natGatewayId</span>                 <span class="comment">// The NAT gateway ID assigned by AWS</span>
+    <span class="type">string</span> <span class="prop">natGatewayId</span>                 <span class="comment">// The NAT gateway ID assigned by AWS</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">state</span>                        <span class="comment">// The current state of the NAT gateway</span>
+    <span class="type">string</span> <span class="prop">state</span>                        <span class="comment">// The current state of the NAT gateway</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">vpcId</span>                        <span class="comment">// The VPC ID that contains the NAT gateway</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>                        <span class="comment">// The VPC ID that contains the NAT gateway</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">publicIp</span>                     <span class="comment">// The public IP address associated with the NAT gateway</span>
+    <span class="type">string</span> <span class="prop">publicIp</span>                     <span class="comment">// The public IP address associated with the NAT gateway</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">privateIp</span>                    <span class="comment">// The private IP address of the NAT gateway</span>
+    <span class="type">string</span> <span class="prop">privateIp</span>                    <span class="comment">// The private IP address of the NAT gateway</span>
 <span class="brace">}</span></code></div>
 </div>
 </div>

@@ -1,18 +1,18 @@
 // NatGateway
 schema NatGateway {
-    string    subnetId                     // The subnet ID where the NAT gateway will be created
-    string    allocationId                 // The allocation ID of the Elastic IP for public NAT gateway
+    string subnetId                     // The subnet ID where the NAT gateway will be created
+    string allocationId                 // The allocation ID of the Elastic IP for public NAT gateway
     @allowed(["public", "private"])
-    string    connectivityType = "public"  // The connectivity type for the NAT gateway
-    map       tags                         // Tags to apply to the NAT gateway
+    string connectivityType = "public"  // The connectivity type for the NAT gateway
+    map tags                         // Tags to apply to the NAT gateway
     @cloud
-    string    natGatewayId                 // The NAT gateway ID assigned by AWS
+    string natGatewayId                 // The NAT gateway ID assigned by AWS
     @cloud
-    string    state                        // The current state of the NAT gateway
+    string state                        // The current state of the NAT gateway
     @cloud
-    string    vpcId                        // The VPC ID that contains the NAT gateway
+    string vpcId                        // The VPC ID that contains the NAT gateway
     @cloud
-    string    publicIp                     // The public IP address associated with the NAT gateway
+    string publicIp                     // The public IP address associated with the NAT gateway
     @cloud
-    string    privateIp                    // The private IP address of the NAT gateway
+    string privateIp                    // The private IP address of the NAT gateway
 }

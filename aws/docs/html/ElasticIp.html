@@ -347,22 +347,22 @@
 <div class="code-block"><code><span class="comment">// ElasticIp</span>
 <span class="kw">schema</span> <span class="type">ElasticIp</span> <span class="brace">{</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"vpc"</span>, <span class="str">"standard"</span><span class="brace">])</span>
-    <span class="type">string</span>    <span class="prop">domain</span> <span class="eq">=</span> <span class="str">&quot;vpc&quot;</span>      <span class="comment">// The domain for the Elastic IP</span>
-    <span class="type">string</span>    <span class="prop">networkBorderGroup</span>  <span class="comment">// The ID of the network border group for Local/Wavelength Zones</span>
-    <span class="type">string</span>    <span class="prop">publicIpv4Pool</span>      <span class="comment">// The ID of an address pool for BYOIP</span>
-    <span class="type">map</span>       <span class="prop">tags</span>                <span class="comment">// Tags to apply to the Elastic IP</span>
+    <span class="type">string</span> <span class="prop">domain</span> <span class="eq">=</span> <span class="str">&quot;vpc&quot;</span>      <span class="comment">// The domain for the Elastic IP</span>
+    <span class="type">string</span> <span class="prop">networkBorderGroup</span>  <span class="comment">// The ID of the network border group for Local/Wavelength Zones</span>
+    <span class="type">string</span> <span class="prop">publicIpv4Pool</span>      <span class="comment">// The ID of an address pool for BYOIP</span>
+    <span class="type">map</span> <span class="prop">tags</span>                <span class="comment">// Tags to apply to the Elastic IP</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">allocationId</span>        <span class="comment">// The allocation ID for the Elastic IP</span>
+    <span class="type">string</span> <span class="prop">allocationId</span>        <span class="comment">// The allocation ID for the Elastic IP</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">publicIp</span>            <span class="comment">// The Elastic IP address</span>
+    <span class="type">string</span> <span class="prop">publicIp</span>            <span class="comment">// The Elastic IP address</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">instanceId</span>          <span class="comment">// The ID of the associated instance (if any)</span>
+    <span class="type">string</span> <span class="prop">instanceId</span>          <span class="comment">// The ID of the associated instance (if any)</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">associationId</span>       <span class="comment">// The association ID (if associated)</span>
+    <span class="type">string</span> <span class="prop">associationId</span>       <span class="comment">// The association ID (if associated)</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">networkInterfaceId</span>  <span class="comment">// The ID of the network interface (if associated)</span>
+    <span class="type">string</span> <span class="prop">networkInterfaceId</span>  <span class="comment">// The ID of the network interface (if associated)</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">privateIpAddress</span>    <span class="comment">// The private IP address associated with the Elastic IP</span>
+    <span class="type">string</span> <span class="prop">privateIpAddress</span>    <span class="comment">// The private IP address associated with the Elastic IP</span>
 <span class="brace">}</span></code></div>
 </div>
 </div>

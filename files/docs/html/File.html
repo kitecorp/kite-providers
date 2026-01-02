@@ -128,6 +128,32 @@
     .bool { color: #fb923c; }
     .brace { color: #94a3b8; }
     .comment { color: #64748b; font-style: italic; }
+    .decorator { color: #fb923c; }
+
+    .schema-section {
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .schema-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        cursor: pointer;
+        user-select: none;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: color 0.15s;
+    }
+    .schema-header:hover { color: var(--kite-primary); }
+    .schema-toggle {
+        font-size: 0.75rem;
+        transition: transform 0.2s;
+    }
+    .schema-section:not(.collapsed) .schema-toggle { transform: rotate(90deg); }
+    .schema-section.collapsed .schema-content { display: none; }
+    .schema-content { margin-top: 0.5rem; }
 
     table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
     th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
@@ -192,26 +218,27 @@
     }
     .meta p { margin: 0.25rem 0; }
 
-    .domain-group { margin-bottom: 1.5rem; }
+    .domain-group { margin-bottom: 2rem; }
     .domain-header {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.75rem 1rem;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
+        padding: 0.5rem 0;
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 0.75rem;
         cursor: pointer;
         user-select: none;
-        font-size: 1rem;
-        transition: border-color 0.15s;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        transition: color 0.15s;
     }
-    .domain-header:hover { border-color: var(--kite-primary); }
+    .domain-header:hover { color: var(--kite-primary); }
     .domain-icon { font-size: 1.25rem; }
-    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); }
+    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); font-size: 0.875rem; }
     .domain-group.collapsed .collapse-icon { transform: rotate(-90deg); }
     .domain-group.collapsed .resource-list { display: none; }
+    .resource-list { padding-left: 0.5rem; }
 
     .breadcrumbs {
         display: flex;
@@ -309,6 +336,26 @@
     <span class="prop">permissions</span> <span class="eq">=</span> <span class="str">"example-value"</span>
 <span class="brace">}</span></code></div>
 </div>
+<div class="schema-section collapsed">
+<div class="schema-header" onclick="toggleSchema(this)">
+<span class="schema-toggle">▶</span> Schema
+</div>
+<div class="schema-content">
+<div class="code-wrapper">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<div class="code-block"><code><span class="comment">// File</span>
+<span class="kw">schema</span> <span class="type">File</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">path</span>
+    <span class="type">string</span> <span class="prop">content</span>
+    <span class="type">string</span> <span class="prop">permissions</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">checksum</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">lastModified</span>
+<span class="brace">}</span></code></div>
+</div>
+</div>
+</div>
 <h2>Properties</h2>
 <table class="sortable">
     <thead>
@@ -355,9 +402,6 @@
         <tr>
             <th data-sort="name" class="sortable-header">Name <span class="sort-icon">↕</span></th>
             <th data-sort="type" class="sortable-header">Type <span class="sort-icon">↕</span></th>
-            <th>Default</th>
-            <th>Valid Values</th>
-            <th data-sort="optional" class="sortable-header">Optional <span class="sort-icon">↕</span></th>
             <th>Description</th>
         </tr>
     </thead>
@@ -365,17 +409,11 @@
 <tr id="checksum" data-name="checksum" data-type="string" data-optional="true">
   <td><a href="#checksum" class="prop-name-link"><span class="prop-name">checksum</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td></td>
 </tr>
 <tr id="lastModified" data-name="lastmodified" data-type="string" data-optional="true">
   <td><a href="#lastModified" class="prop-name-link"><span class="prop-name">lastModified</span><span class="anchor-icon">#</span></a></td>
   <td><span class="prop-type">string</span></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="no-value">—</span></td>
-  <td class="optional-cell"><span class="badge badge-optional">Yes</span></td>
   <td></td>
 </tr>
     </tbody>
@@ -399,6 +437,11 @@
                     btn.classList.remove('copied');
                 }, 2000);
             });
+        }
+
+        function toggleSchema(header) {
+            const section = header.parentElement;
+            section.classList.toggle('collapsed');
         }
 
         document.querySelectorAll('.sortable-header').forEach(header => {

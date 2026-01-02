@@ -356,32 +356,32 @@
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
 <div class="code-block"><code><span class="comment">// S3Bucket</span>
 <span class="kw">schema</span> <span class="type">S3Bucket</span> <span class="brace">{</span>
-    <span class="type">string</span>    <span class="prop">bucket</span>                        <span class="comment">// Bucket name (globally unique, DNS-compliant)</span>
+    <span class="type">string</span> <span class="prop">bucket</span>                        <span class="comment">// Bucket name (globally unique, DNS-compliant)</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"private"</span>, <span class="str">"public-read"</span>, <span class="str">"public-read-write"</span>, <span class="str">"authenticated-read"</span><span class="brace">])</span>
-    <span class="type">string</span>    <span class="prop">acl</span> <span class="eq">=</span> <span class="str">&quot;private&quot;</span>               <span class="comment">// Canned ACL for the bucket</span>
-    <span class="type">boolean</span>   <span class="prop">versioning</span> <span class="eq">=</span> <span class="bool">false</span>            <span class="comment">// Enable versioning for the bucket</span>
-    <span class="type">string</span>    <span class="prop">region</span>                        <span class="comment">// AWS region for the bucket</span>
+    <span class="type">string</span> <span class="prop">acl</span> <span class="eq">=</span> <span class="str">&quot;private&quot;</span>               <span class="comment">// Canned ACL for the bucket</span>
+    <span class="type">boolean</span> <span class="prop">versioning</span> <span class="eq">=</span> <span class="bool">false</span>            <span class="comment">// Enable versioning for the bucket</span>
+    <span class="type">string</span> <span class="prop">region</span>                        <span class="comment">// AWS region for the bucket</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"AES256"</span>, <span class="str">"aws:kms"</span><span class="brace">])</span>
-    <span class="type">string</span>    <span class="prop">serverSideEncryption</span>          <span class="comment">// Server-side encryption algorithm</span>
-    <span class="type">string</span>    <span class="prop">kmsKeyId</span>                      <span class="comment">// KMS key ID for encryption (when using aws:kms)</span>
-    <span class="type">boolean</span>   <span class="prop">blockPublicAccess</span> <span class="eq">=</span> <span class="bool">true</span>      <span class="comment">// Block all public access</span>
-    <span class="type">string</span>    <span class="prop">websiteIndexDocument</span>          <span class="comment">// Index document for static website hosting</span>
-    <span class="type">string</span>    <span class="prop">websiteErrorDocument</span>          <span class="comment">// Error document for static website hosting</span>
-    <span class="type">string</span>    <span class="prop">websiteRedirectAllRequestsTo</span>  <span class="comment">// Redirect all requests to another host</span>
-    <span class="type">list</span>      <span class="prop">corsRules</span>                     <span class="comment">// CORS configuration rules</span>
-    <span class="type">list</span>      <span class="prop">lifecycleRules</span>                <span class="comment">// Lifecycle rules for object management</span>
+    <span class="type">string</span> <span class="prop">serverSideEncryption</span>          <span class="comment">// Server-side encryption algorithm</span>
+    <span class="type">string</span> <span class="prop">kmsKeyId</span>                      <span class="comment">// KMS key ID for encryption (when using aws:kms)</span>
+    <span class="type">boolean</span> <span class="prop">blockPublicAccess</span> <span class="eq">=</span> <span class="bool">true</span>      <span class="comment">// Block all public access</span>
+    <span class="type">string</span> <span class="prop">websiteIndexDocument</span>          <span class="comment">// Index document for static website hosting</span>
+    <span class="type">string</span> <span class="prop">websiteErrorDocument</span>          <span class="comment">// Error document for static website hosting</span>
+    <span class="type">string</span> <span class="prop">websiteRedirectAllRequestsTo</span>  <span class="comment">// Redirect all requests to another host</span>
+    <span class="type">list</span> <span class="prop">corsRules</span>                     <span class="comment">// CORS configuration rules</span>
+    <span class="type">list</span> <span class="prop">lifecycleRules</span>                <span class="comment">// Lifecycle rules for object management</span>
     <span class="type">loggingconfig</span> <span class="prop">logging</span>                       <span class="comment">// Access logging configuration</span>
-    <span class="type">map</span>       <span class="prop">tags</span>                          <span class="comment">// Tags to apply to the bucket</span>
+    <span class="type">map</span> <span class="prop">tags</span>                          <span class="comment">// Tags to apply to the bucket</span>
     <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
-    <span class="type">string</span>    <span class="prop">arn</span>                           <span class="comment">// The ARN of the bucket</span>
+    <span class="type">string</span> <span class="prop">arn</span>                           <span class="comment">// The ARN of the bucket</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">domainName</span>                    <span class="comment">// The domain name of the bucket</span>
+    <span class="type">string</span> <span class="prop">domainName</span>                    <span class="comment">// The domain name of the bucket</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">regionalDomainName</span>            <span class="comment">// The regional domain name of the bucket</span>
+    <span class="type">string</span> <span class="prop">regionalDomainName</span>            <span class="comment">// The regional domain name of the bucket</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">websiteEndpoint</span>               <span class="comment">// Website endpoint (if hosting enabled)</span>
+    <span class="type">string</span> <span class="prop">websiteEndpoint</span>               <span class="comment">// Website endpoint (if hosting enabled)</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">creationDate</span>                  <span class="comment">// The creation date of the bucket</span>
+    <span class="type">string</span> <span class="prop">creationDate</span>                  <span class="comment">// The creation date of the bucket</span>
 <span class="brace">}</span></code></div>
 </div>
 </div>

@@ -357,41 +357,41 @@
 <button class="copy-btn" onclick="copyCode(this)">Copy</button>
 <div class="code-block"><code><span class="comment">// Ec2Instance</span>
 <span class="kw">schema</span> <span class="type">Ec2Instance</span> <span class="brace">{</span>
-    <span class="type">string</span>    <span class="prop">ami</span>                                   <span class="comment">// The AMI ID to use for the instance</span>
-    <span class="type">string</span>    <span class="prop">instanceType</span>                          <span class="comment">// The instance type (e.g., t3.micro, m5.large)</span>
-    <span class="type">string</span>    <span class="prop">subnetId</span>                              <span class="comment">// The subnet ID to launch the instance in</span>
-    <span class="type">list</span>      <span class="prop">securityGroupIds</span>                      <span class="comment">// List of security group IDs to attach</span>
-    <span class="type">string</span>    <span class="prop">keyName</span>                               <span class="comment">// The name of the key pair for SSH access</span>
-    <span class="type">boolean</span>   <span class="prop">associatePublicIpAddress</span> <span class="eq">=</span> <span class="bool">false</span>      <span class="comment">// Whether to associate a public IP address</span>
-    <span class="type">string</span>    <span class="prop">iamInstanceProfile</span>                    <span class="comment">// The IAM instance profile name or ARN</span>
-    <span class="type">string</span>    <span class="prop">userData</span>                              <span class="comment">// User data script for instance initialization (base64 encoded)</span>
-    <span class="type">string</span>    <span class="prop">availabilityZone</span>                      <span class="comment">// The availability zone to launch in</span>
-    <span class="type">boolean</span>   <span class="prop">monitoring</span> <span class="eq">=</span> <span class="bool">false</span>                    <span class="comment">// Enable detailed monitoring</span>
+    <span class="type">string</span> <span class="prop">ami</span>                                   <span class="comment">// The AMI ID to use for the instance</span>
+    <span class="type">string</span> <span class="prop">instanceType</span>                          <span class="comment">// The instance type (e.g., t3.micro, m5.large)</span>
+    <span class="type">string</span> <span class="prop">subnetId</span>                              <span class="comment">// The subnet ID to launch the instance in</span>
+    <span class="type">list</span> <span class="prop">securityGroupIds</span>                      <span class="comment">// List of security group IDs to attach</span>
+    <span class="type">string</span> <span class="prop">keyName</span>                               <span class="comment">// The name of the key pair for SSH access</span>
+    <span class="type">boolean</span> <span class="prop">associatePublicIpAddress</span> <span class="eq">=</span> <span class="bool">false</span>      <span class="comment">// Whether to associate a public IP address</span>
+    <span class="type">string</span> <span class="prop">iamInstanceProfile</span>                    <span class="comment">// The IAM instance profile name or ARN</span>
+    <span class="type">string</span> <span class="prop">userData</span>                              <span class="comment">// User data script for instance initialization (base64 encoded)</span>
+    <span class="type">string</span> <span class="prop">availabilityZone</span>                      <span class="comment">// The availability zone to launch in</span>
+    <span class="type">boolean</span> <span class="prop">monitoring</span> <span class="eq">=</span> <span class="bool">false</span>                    <span class="comment">// Enable detailed monitoring</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"default"</span>, <span class="str">"dedicated"</span>, <span class="str">"host"</span><span class="brace">])</span>
-    <span class="type">string</span>    <span class="prop">tenancy</span> <span class="eq">=</span> <span class="str">&quot;default&quot;</span>                   <span class="comment">// Instance tenancy option</span>
-    <span class="type">integer</span>   <span class="prop">rootVolumeSize</span>                        <span class="comment">// Root volume size in GiB</span>
+    <span class="type">string</span> <span class="prop">tenancy</span> <span class="eq">=</span> <span class="str">&quot;default&quot;</span>                   <span class="comment">// Instance tenancy option</span>
+    <span class="type">integer</span> <span class="prop">rootVolumeSize</span>                        <span class="comment">// Root volume size in GiB</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"gp2"</span>, <span class="str">"gp3"</span>, <span class="str">"io1"</span>, <span class="str">"io2"</span>, <span class="str">"st1"</span>, <span class="str">"sc1"</span><span class="brace">])</span>
-    <span class="type">string</span>    <span class="prop">rootVolumeType</span> <span class="eq">=</span> <span class="str">&quot;gp3&quot;</span>                <span class="comment">// Root volume type</span>
-    <span class="type">boolean</span>   <span class="prop">deleteRootVolumeOnTermination</span> <span class="eq">=</span> <span class="bool">true</span>  <span class="comment">// Delete root volume on termination</span>
-    <span class="type">map</span>       <span class="prop">tags</span>                                  <span class="comment">// Tags to apply to the instance</span>
+    <span class="type">string</span> <span class="prop">rootVolumeType</span> <span class="eq">=</span> <span class="str">&quot;gp3&quot;</span>                <span class="comment">// Root volume type</span>
+    <span class="type">boolean</span> <span class="prop">deleteRootVolumeOnTermination</span> <span class="eq">=</span> <span class="bool">true</span>  <span class="comment">// Delete root volume on termination</span>
+    <span class="type">map</span> <span class="prop">tags</span>                                  <span class="comment">// Tags to apply to the instance</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">instanceId</span>                            <span class="comment">// The instance ID assigned by AWS</span>
+    <span class="type">string</span> <span class="prop">instanceId</span>                            <span class="comment">// The instance ID assigned by AWS</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">state</span>                                 <span class="comment">// Instance state: pending, running, stopping, stopped, terminated</span>
+    <span class="type">string</span> <span class="prop">state</span>                                 <span class="comment">// Instance state: pending, running, stopping, stopped, terminated</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">publicIp</span>                              <span class="comment">// The public IP address (if assigned)</span>
+    <span class="type">string</span> <span class="prop">publicIp</span>                              <span class="comment">// The public IP address (if assigned)</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">privateIp</span>                             <span class="comment">// The private IP address</span>
+    <span class="type">string</span> <span class="prop">privateIp</span>                             <span class="comment">// The private IP address</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">publicDnsName</span>                         <span class="comment">// The public DNS name</span>
+    <span class="type">string</span> <span class="prop">publicDnsName</span>                         <span class="comment">// The public DNS name</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">privateDnsName</span>                        <span class="comment">// The private DNS name</span>
+    <span class="type">string</span> <span class="prop">privateDnsName</span>                        <span class="comment">// The private DNS name</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">vpcId</span>                                 <span class="comment">// The VPC ID the instance is in</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>                                 <span class="comment">// The VPC ID the instance is in</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">architecture</span>                          <span class="comment">// The architecture: x86_64 or arm64</span>
+    <span class="type">string</span> <span class="prop">architecture</span>                          <span class="comment">// The architecture: x86_64 or arm64</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span>    <span class="prop">rootDeviceName</span>                        <span class="comment">// The root device name</span>
+    <span class="type">string</span> <span class="prop">rootDeviceName</span>                        <span class="comment">// The root device name</span>
 <span class="brace">}</span></code></div>
 </div>
 </div>
