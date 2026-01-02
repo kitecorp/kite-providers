@@ -6,105 +6,314 @@
     <title>Aws Provider Documentation</title>
     <style>
     :root {
-        --kite-primary: #0ea5e9;
-        --kite-primary-dark: #0284c7;
-        --kite-success: #22c55e;
-        --kite-warning: #eab308;
+        --kite-primary: #7c3aed;
+        --kite-primary-light: #a78bfa;
+        --kite-primary-dark: #5b21b6;
+        --kite-accent: #06b6d4;
+        --kite-success: #10b981;
+        --kite-warning: #f59e0b;
         --kite-error: #ef4444;
-        --kite-info: #06b6d4;
-        --kite-special: #a855f7;
 
-        --bg-primary: #ffffff;
-        --bg-secondary: #f8fafc;
-        --bg-code: #1e293b;
-        --text-primary: #0f172a;
+        --bg-body: #f8fafc;
+        --bg-sidebar: #ffffff;
+        --bg-content: #ffffff;
+        --bg-code: #1e1e2e;
+        --bg-hover: #f1f5f9;
+
+        --text-primary: #1e293b;
         --text-secondary: #64748b;
+        --text-muted: #94a3b8;
         --text-code: #e2e8f0;
-        --border: #e2e8f0;
+
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+        --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+
+        --sidebar-width: 280px;
+        --toc-width: 220px;
     }
 
     @media (prefers-color-scheme: dark) {
         :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
+            --bg-body: #0f172a;
+            --bg-sidebar: #1e293b;
+            --bg-content: #1e293b;
             --bg-code: #0f172a;
+            --bg-hover: #334155;
+
             --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
-            --text-code: #e2e8f0;
-            --border: #334155;
+            --text-muted: #64748b;
+
+            --border-color: #334155;
         }
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: var(--bg-primary);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        background: var(--bg-body);
         color: var(--text-primary);
-        margin: 0;
-        padding: 0;
         line-height: 1.6;
     }
 
-    .container { max-width: 960px; margin: 0 auto; padding: 2rem; }
+    .layout {
+        display: grid;
+        grid-template-columns: var(--sidebar-width) 1fr var(--toc-width);
+        min-height: 100vh;
+    }
 
-    header { margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--kite-primary); }
+    /* Left Sidebar */
+    .sidebar-left {
+        background: var(--bg-sidebar);
+        border-right: 1px solid var(--border-color);
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+    }
 
-    h1 { color: var(--kite-primary); margin: 0 0 0.5rem 0; font-size: 2rem; }
-    h2 { color: var(--text-primary); margin-top: 2rem; font-size: 1.25rem; }
+    .sidebar-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
 
-    .version { color: var(--text-secondary); margin: 0; }
+    .sidebar-header h1 {
+        font-size: 1.25rem;
+        color: var(--kite-primary);
+        margin-bottom: 0.25rem;
+    }
 
-    a { color: var(--kite-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    .version {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        background: var(--bg-hover);
+        padding: 0.125rem 0.5rem;
+        border-radius: 9999px;
+    }
 
-    .search-section { margin-bottom: 1.5rem; }
+    .search-wrapper {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
     .search-input {
         width: 100%%;
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        font-size: 1rem;
-        background: var(--bg-secondary);
+        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        background: var(--bg-body);
         color: var(--text-primary);
     }
+
     .search-input:focus {
         outline: none;
         border-color: var(--kite-primary);
-        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
     }
 
-    .resource-list { list-style: none; padding: 0; margin: 0; }
-    .resource-list li {
-        padding: 1rem;
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
+    .nav-tree {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem 0;
+    }
+
+    .nav-category {
         margin-bottom: 0.5rem;
-        background: var(--bg-secondary);
+    }
+
+    .category-header {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        transition: border-color 0.15s;
+        gap: 0.5rem;
+        padding: 0.5rem 1.5rem;
+        cursor: pointer;
+        font-weight: 500;
+        color: var(--text-primary);
+        transition: background 0.15s;
     }
-    .resource-list li:hover { border-color: var(--kite-primary); }
-    .resource-list a { font-weight: 600; font-size: 1rem; }
-    .property-count { color: var(--text-secondary); font-size: 0.875rem; }
-    .property-breakdown { color: var(--text-secondary); font-size: 0.75rem; margin-left: auto; }
 
-    .badge {
-        display: inline-flex;
-        align-items: center;
+    .category-header:hover {
+        background: var(--bg-hover);
+    }
+
+    .category-icon { font-size: 1rem; }
+    .category-name { flex: 1; font-size: 0.875rem; }
+    .category-count {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        background: var(--bg-hover);
         padding: 0.125rem 0.5rem;
         border-radius: 9999px;
+    }
+    .category-arrow {
         font-size: 0.75rem;
+        color: var(--text-muted);
+        transition: transform 0.2s;
+    }
+
+    .nav-category.collapsed .category-arrow {
+        transform: rotate(-90deg);
+    }
+
+    .nav-category.collapsed .category-items {
+        display: none;
+    }
+
+    .category-items {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .nav-item {
+        padding: 0;
+    }
+
+    .nav-item a {
+        display: block;
+        padding: 0.375rem 1.5rem 0.375rem 3rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: all 0.15s;
+        border-left: 2px solid transparent;
+    }
+
+    .nav-item a:hover {
+        background: var(--bg-hover);
+        color: var(--text-primary);
+    }
+
+    .nav-item.active a {
+        background: rgba(124, 58, 237, 0.1);
+        color: var(--kite-primary);
+        border-left-color: var(--kite-primary);
         font-weight: 500;
     }
-    .badge-count { background: rgba(14, 165, 233, 0.1); color: var(--kite-primary); }
-    .badge-required { background: rgba(239, 68, 68, 0.1); color: var(--kite-error); }
-    .badge-optional { background: rgba(34, 197, 94, 0.1); color: var(--kite-success); }
-    .badge-cloud { background: rgba(6, 182, 212, 0.1); color: var(--kite-info); }
-    .badge-deprecated { background: rgba(234, 179, 8, 0.1); color: var(--kite-warning); }
-    .badge-importable { background: rgba(168, 85, 247, 0.1); color: var(--kite-special); }
+
+    /* Main Content */
+    .content {
+        background: var(--bg-content);
+        padding: 2rem 3rem;
+        min-width: 0;
+    }
+
+    .resource-content {
+        display: none;
+        max-width: 100%;
+    }
+
+    .resource-content.active {
+        display: block;
+    }
+
+    .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+    }
+
+    .breadcrumbs a {
+        color: var(--text-secondary);
+        text-decoration: none;
+    }
+
+    .breadcrumbs a:hover {
+        color: var(--kite-primary);
+    }
+
+    .breadcrumbs .sep { color: var(--text-muted); }
+    .breadcrumbs .current { color: var(--text-primary); font-weight: 500; }
+
+    h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
+
+    h2 {
+        font-size: 1.25rem;
+        margin: 2rem 0 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+
+    .resource-desc, .cloud-desc {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+
+    .welcome-text {
+        font-size: 1.125rem;
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    .quick-stats {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: var(--bg-hover);
+        padding: 1.5rem 2rem;
+        border-radius: 0.5rem;
+        text-align: center;
+    }
+
+    .stat-value {
+        display: block;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--kite-primary);
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .category-card {
+        background: var(--bg-hover);
+        padding: 1.25rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: all 0.15s;
+        border: 1px solid transparent;
+    }
+
+    .category-card:hover {
+        border-color: var(--kite-primary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .card-icon { font-size: 1.5rem; display: block; margin-bottom: 0.5rem; }
+    .card-name { font-weight: 600; display: block; margin-bottom: 0.25rem; }
+    .card-count { font-size: 0.75rem; color: var(--text-muted); }
+
+    /* Code blocks */
+    .code-wrapper {
+        position: relative;
+        margin: 1rem 0;
+    }
 
     .code-block {
         background: var(--bg-code);
@@ -114,9 +323,32 @@
         font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
         font-size: 0.875rem;
         line-height: 1.7;
-        white-space: pre;
+        color: var(--text-code);
     }
-    .code-block code { color: var(--text-code); white-space: pre; display: block; }
+
+    .code-block code {
+        white-space: pre;
+        display: block;
+    }
+
+    .copy-btn {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        padding: 0.375rem 0.75rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 0.25rem;
+        color: var(--text-code);
+        font-size: 0.75rem;
+        cursor: pointer;
+        opacity: 0;
+        transition: all 0.15s;
+    }
+
+    .code-wrapper:hover .copy-btn { opacity: 1; }
+    .copy-btn:hover { background: rgba(255, 255, 255, 0.2); }
+    .copy-btn.copied { background: var(--kite-success); color: white; }
 
     .kw { color: #c084fc; }
     .type { color: #38bdf8; }
@@ -130,357 +362,3165 @@
     .comment { color: #64748b; font-style: italic; }
     .decorator { color: #fb923c; }
 
+    /* Schema section */
     .schema-section {
-        margin-top: 1rem;
-        margin-bottom: 1.5rem;
+        margin: 1.5rem 0;
     }
-    .schema-header {
+
+    .schema-toggle {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.5rem 0;
         cursor: pointer;
-        user-select: none;
-        color: var(--text-secondary);
         font-size: 0.875rem;
         font-weight: 500;
-        transition: color 0.15s;
+        color: var(--text-secondary);
+        padding: 0.5rem 0;
+        user-select: none;
     }
-    .schema-header:hover { color: var(--kite-primary); }
-    .schema-toggle {
+
+    .schema-toggle:hover { color: var(--kite-primary); }
+
+    .toggle-icon {
         font-size: 0.75rem;
         transition: transform 0.2s;
     }
-    .schema-section:not(.collapsed) .schema-toggle { transform: rotate(90deg); }
-    .schema-section.collapsed .schema-content { display: none; }
-    .schema-content { margin-top: 0.5rem; }
 
-    table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
+    .schema-section.expanded .toggle-icon {
+        transform: rotate(90deg);
+    }
+
+    .schema-content {
+        display: none;
+    }
+
+    .schema-section.expanded .schema-content {
+        display: block;
+    }
+
+    /* Tables */
+    .table-wrapper {
+        overflow-x: auto;
+        margin: 1rem 0;
+    }
+
+    table {
+        width: 100%%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+    }
+
+    th, td {
+        text-align: left;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
     th {
-        background: var(--bg-secondary);
+        background: var(--bg-hover);
         font-weight: 600;
         color: var(--text-secondary);
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
     }
-    td { vertical-align: top; }
-    .optional-cell { text-align: center; }
 
-    .sortable-header { cursor: pointer; user-select: none; transition: color 0.15s; }
-    .sortable-header:hover { color: var(--kite-primary); }
-    .sort-icon { opacity: 0.4; margin-left: 0.25rem; font-size: 0.875rem; }
-    .sortable-header.asc .sort-icon::after { content: '↑'; }
-    .sortable-header.desc .sort-icon::after { content: '↓'; }
-    .sortable-header.asc .sort-icon,
-    .sortable-header.desc .sort-icon { opacity: 1; color: var(--kite-primary); }
+    tr:hover { background: var(--bg-hover); }
 
-    .prop-name { font-family: 'SF Mono', monospace; font-weight: 500; color: var(--kite-primary); }
+    .prop-name {
+        color: var(--kite-primary);
+        font-weight: 500;
+    }
+
+    .prop-type {
+        color: var(--kite-accent);
+        background: rgba(6, 182, 212, 0.1);
+        padding: 0.125rem 0.375rem;
+        border-radius: 0.25rem;
+    }
+
     .default-value {
-        font-family: 'SF Mono', monospace;
-        font-size: 0.875rem;
-        background: rgba(34, 197, 94, 0.1);
+        background: rgba(16, 185, 129, 0.1);
         color: var(--kite-success);
         padding: 0.125rem 0.375rem;
         border-radius: 0.25rem;
     }
-    .valid-values { display: flex; flex-wrap: wrap; gap: 0.25rem; }
-    .valid-value {
-        font-family: 'SF Mono', monospace;
+
+    .valid-values-label {
         font-size: 0.75rem;
-        background: rgba(14, 165, 233, 0.1);
+        color: var(--text-muted);
+    }
+
+    .valid-value {
+        background: rgba(124, 58, 237, 0.1);
         color: var(--kite-primary);
         padding: 0.125rem 0.375rem;
         border-radius: 0.25rem;
+        font-size: 0.75rem;
     }
-    .no-value { color: var(--text-secondary); }
-    .prop-type {
-        font-family: 'SF Mono', monospace;
-        font-size: 0.875rem;
-        color: var(--kite-special);
-        background: rgba(168, 85, 247, 0.1);
-        padding: 0.125rem 0.375rem;
-        border-radius: 0.25rem;
+
+    .no-value { color: var(--text-muted); }
+
+    .badge {
+        display: inline-block;
+        padding: 0.125rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
     }
-    .prop-badges { display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.25rem; }
 
-    .nav { margin-bottom: 1.5rem; }
-    .nav a { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--text-secondary); font-size: 0.875rem; }
-    .nav a:hover { color: var(--kite-primary); }
+    .badge-required { background: rgba(239, 68, 68, 0.1); color: var(--kite-error); }
+    .badge-optional { background: rgba(16, 185, 129, 0.1); color: var(--kite-success); }
+    .badge-deprecated { background: rgba(245, 158, 11, 0.1); color: var(--kite-warning); margin-left: 0.5rem; }
 
-    .meta {
+    .resource-footer {
         margin-top: 3rem;
         padding-top: 1rem;
-        border-top: 1px solid var(--border);
-        color: var(--text-secondary);
-        font-size: 0.875rem;
+        border-top: 1px solid var(--border-color);
+        color: var(--text-muted);
+        font-size: 0.75rem;
     }
-    .meta p { margin: 0.25rem 0; }
 
-    .domain-group { margin-bottom: 2rem; }
-    .domain-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 0;
-        border-bottom: 2px solid var(--border);
-        margin-bottom: 0.75rem;
-        cursor: pointer;
-        user-select: none;
-        font-size: 1.125rem;
+    /* Right Sidebar: TOC */
+    .sidebar-right {
+        background: var(--bg-sidebar);
+        border-left: 1px solid var(--border-color);
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 1.5rem;
+    }
+
+    .toc-header {
+        font-size: 0.75rem;
         font-weight: 600;
-        color: var(--text-primary);
-        transition: color 0.15s;
-    }
-    .domain-header:hover { color: var(--kite-primary); }
-    .domain-icon { font-size: 1.25rem; }
-    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); font-size: 0.875rem; }
-    .domain-group.collapsed .collapse-icon { transform: rotate(-90deg); }
-    .domain-group.collapsed .resource-list { display: none; }
-    .resource-list { padding-left: 0.5rem; }
-
-    .breadcrumbs {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.875rem;
-        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
         margin-bottom: 1rem;
     }
-    .breadcrumbs a { color: var(--text-secondary); }
-    .breadcrumbs a:hover { color: var(--kite-primary); }
-    .breadcrumbs .separator { color: var(--text-secondary); }
-    .breadcrumbs .current { color: var(--text-primary); font-weight: 500; }
 
-    thead th { position: sticky; top: 0; z-index: 10; }
-
-    .code-wrapper { position: relative; }
-    .copy-btn {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        padding: 0.375rem 0.75rem;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 0.375rem;
-        color: var(--text-code);
-        font-size: 0.75rem;
-        cursor: pointer;
-        opacity: 0;
-        transition: opacity 0.15s, background 0.15s;
-    }
-    .code-wrapper:hover .copy-btn { opacity: 1; }
-    .copy-btn:hover { background: rgba(255, 255, 255, 0.2); }
-    .copy-btn.copied { background: var(--kite-success); color: white; }
-
-    .prop-name-link { color: var(--kite-primary); text-decoration: none; }
-    .prop-name-link:hover { text-decoration: underline; }
-    .anchor-icon { opacity: 0; margin-left: 0.25rem; color: var(--text-secondary); transition: opacity 0.15s; }
-    tr:hover .anchor-icon { opacity: 1; }
-
-    .resource-nav {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 2rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border);
-    }
-    .resource-nav a {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
+    .toc {
         font-size: 0.875rem;
-        transition: border-color 0.15s;
     }
-    .resource-nav a:hover { border-color: var(--kite-primary); text-decoration: none; }
-    .resource-nav .prev::before { content: '←'; }
-    .resource-nav .next::after { content: '→'; }
-    .resource-nav .placeholder { visibility: hidden; }
 
-    @media print {
-        body { background: white; color: black; }
-        .container { max-width: 100%%; padding: 0; }
-        .nav, .copy-btn, .resource-nav, .search-section { display: none; }
-        .code-block { background: #f5f5f5; color: black; border: 1px solid #ddd; }
-        a { color: black; text-decoration: underline; }
-        thead th { position: static; }
-        .domain-group.collapsed .resource-list { display: block; }
+    .toc a {
+        display: block;
+        padding: 0.375rem 0;
+        color: var(--text-secondary);
+        text-decoration: none;
+        border-left: 2px solid transparent;
+        padding-left: 0.75rem;
+        margin-left: -0.75rem;
+        transition: all 0.15s;
+    }
+
+    .toc a:hover {
+        color: var(--kite-primary);
+    }
+
+    .toc a.active {
+        color: var(--kite-primary);
+        border-left-color: var(--kite-primary);
+    }
+
+    .toc a.toc-h3 {
+        padding-left: 1.5rem;
+        font-size: 0.8125rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .sidebar-right { display: none; }
+        .layout { grid-template-columns: var(--sidebar-width) 1fr; }
+    }
+
+    @media (max-width: 768px) {
+        .sidebar-left {
+            position: fixed;
+            left: -100%%;
+            width: 100%%;
+            max-width: 300px;
+            z-index: 100;
+            transition: left 0.3s;
+        }
+
+        .sidebar-left.open { left: 0; }
+
+        .layout { grid-template-columns: 1fr; }
+
+        .content { padding: 1.5rem; }
     }
 </style>
 
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🪁 Aws Provider</h1>
-            <p class="version">Version <strong>0.1.0</strong></p>
-        </header>
+    <div class="layout">
+        <!-- Left Sidebar: Navigation -->
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <h1>🪁 Aws</h1>
+                <span class="version">v0.1.0</span>
+            </div>
+            <div class="search-wrapper">
+                <input type="text" id="search" placeholder="Search resources..." class="search-input">
+            </div>
+            <nav class="nav-tree">
+            <div class="nav-category" data-domain="networking">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <span class="category-icon">🌐</span>
+                    <span class="category-name">Networking</span>
+                    <span class="category-count">7</span>
+                    <span class="category-arrow">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="elasticip" data-domain="networking">
+                    <a href="#ElasticIp" onclick="showResource('ElasticIp'); return false;">ElasticIp</a>
+                </li>
+                <li class="nav-item" data-name="internetgateway" data-domain="networking">
+                    <a href="#InternetGateway" onclick="showResource('InternetGateway'); return false;">InternetGateway</a>
+                </li>
+                <li class="nav-item" data-name="natgateway" data-domain="networking">
+                    <a href="#NatGateway" onclick="showResource('NatGateway'); return false;">NatGateway</a>
+                </li>
+                <li class="nav-item" data-name="routetable" data-domain="networking">
+                    <a href="#RouteTable" onclick="showResource('RouteTable'); return false;">RouteTable</a>
+                </li>
+                <li class="nav-item" data-name="securitygroup" data-domain="networking">
+                    <a href="#SecurityGroup" onclick="showResource('SecurityGroup'); return false;">SecurityGroup</a>
+                </li>
+                <li class="nav-item" data-name="subnet" data-domain="networking">
+                    <a href="#Subnet" onclick="showResource('Subnet'); return false;">Subnet</a>
+                </li>
+                <li class="nav-item" data-name="vpc" data-domain="networking">
+                    <a href="#Vpc" onclick="showResource('Vpc'); return false;">Vpc</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category" data-domain="compute">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <span class="category-icon">💻</span>
+                    <span class="category-name">Compute</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="ec2instance" data-domain="compute">
+                    <a href="#Ec2Instance" onclick="showResource('Ec2Instance'); return false;">Ec2Instance</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category" data-domain="storage">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <span class="category-icon">💾</span>
+                    <span class="category-name">Storage</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="ebsvolume" data-domain="storage">
+                    <a href="#EbsVolume" onclick="showResource('EbsVolume'); return false;">EbsVolume</a>
+                </li>
+                <li class="nav-item" data-name="s3bucket" data-domain="storage">
+                    <a href="#S3Bucket" onclick="showResource('S3Bucket'); return false;">S3Bucket</a>
+                </li>
+                <li class="nav-item" data-name="s3bucketpolicy" data-domain="storage">
+                    <a href="#S3BucketPolicy" onclick="showResource('S3BucketPolicy'); return false;">S3BucketPolicy</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category" data-domain="dns">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <span class="category-icon">📍</span>
+                    <span class="category-name">Dns</span>
+                    <span class="category-count">2</span>
+                    <span class="category-arrow">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="hostedzone" data-domain="dns">
+                    <a href="#HostedZone" onclick="showResource('HostedZone'); return false;">HostedZone</a>
+                </li>
+                <li class="nav-item" data-name="recordset" data-domain="dns">
+                    <a href="#RecordSet" onclick="showResource('RecordSet'); return false;">RecordSet</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category" data-domain="loadbalancing">
+                <div class="category-header" onclick="toggleCategory(this)">
+                    <span class="category-icon">⚖️</span>
+                    <span class="category-name">Loadbalancing</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="listener" data-domain="loadbalancing">
+                    <a href="#Listener" onclick="showResource('Listener'); return false;">Listener</a>
+                </li>
+                <li class="nav-item" data-name="loadbalancer" data-domain="loadbalancing">
+                    <a href="#LoadBalancer" onclick="showResource('LoadBalancer'); return false;">LoadBalancer</a>
+                </li>
+                <li class="nav-item" data-name="targetgroup" data-domain="loadbalancing">
+                    <a href="#TargetGroup" onclick="showResource('TargetGroup'); return false;">TargetGroup</a>
+                </li>
+                </ul>
+            </div>
+            </nav>
+        </aside>
 
-        <section class="search-section">
-            <input type="text" id="search" placeholder="Search resources..." class="search-input">
-        </section>
+        <!-- Main Content Area -->
+        <main class="content">
+            <div id="welcome" class="resource-content active">
+                <h1>Welcome to Aws Provider</h1>
+                <p class="welcome-text">Select a resource from the navigation to view its documentation.</p>
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <span class="stat-value">16</span>
+                        <span class="stat-label">Resources</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value">5</span>
+                        <span class="stat-label">Categories</span>
+                    </div>
+                </div>
+                <h2>Categories</h2>
+                <div class="category-grid">
+                <div class="category-card" onclick="scrollToCategory('networking')">
+                    <span class="card-icon">🌐</span>
+                    <span class="card-name">Networking</span>
+                    <span class="card-count">7 resources</span>
+                </div>
+                <div class="category-card" onclick="scrollToCategory('compute')">
+                    <span class="card-icon">💻</span>
+                    <span class="card-name">Compute</span>
+                    <span class="card-count">1 resources</span>
+                </div>
+                <div class="category-card" onclick="scrollToCategory('storage')">
+                    <span class="card-icon">💾</span>
+                    <span class="card-name">Storage</span>
+                    <span class="card-count">3 resources</span>
+                </div>
+                <div class="category-card" onclick="scrollToCategory('dns')">
+                    <span class="card-icon">📍</span>
+                    <span class="card-name">Dns</span>
+                    <span class="card-count">2 resources</span>
+                </div>
+                <div class="category-card" onclick="scrollToCategory('loadbalancing')">
+                    <span class="card-icon">⚖️</span>
+                    <span class="card-name">Loadbalancing</span>
+                    <span class="card-count">3 resources</span>
+                </div>
+                </div>
+            </div>
+            <div id="resource-EbsVolume" class="resource-content" data-resource="EbsVolume">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">💾 Storage</span>
+                    <span class="sep">›</span>
+                    <span class="current">EbsVolume</span>
+                </div>
 
-        <h2>Resources <span class="badge badge-count">16</span></h2>
-    <div class="domain-group" data-domain="networking">
-        <h3 class="domain-header" onclick="toggleDomain(this)">
-            <span class="domain-icon">🌐</span>
-            Networking
-            <span class="badge badge-count">7</span>
-            <span class="collapse-icon">▼</span>
-        </h3>
-        <ul class="resource-list">
-        <li data-name="elasticip" data-domain="networking">
-            <a href="ElasticIp.html">ElasticIp</a>
-            <span class="property-count">10 properties</span>
-            <span class="property-breakdown">(4 user, 6 cloud)</span>
-        </li>
-        <li data-name="internetgateway" data-domain="networking">
-            <a href="InternetGateway.html">InternetGateway</a>
-            <span class="property-count">5 properties</span>
-            <span class="property-breakdown">(2 user, 3 cloud)</span>
-        </li>
-        <li data-name="natgateway" data-domain="networking">
-            <a href="NatGateway.html">NatGateway</a>
-            <span class="property-count">9 properties</span>
-            <span class="property-breakdown">(4 user, 5 cloud)</span>
-        </li>
-        <li data-name="routetable" data-domain="networking">
-            <a href="RouteTable.html">RouteTable</a>
-            <span class="property-count">7 properties</span>
-            <span class="property-breakdown">(3 user, 4 cloud)</span>
-        </li>
-        <li data-name="securitygroup" data-domain="networking">
-            <a href="SecurityGroup.html">SecurityGroup</a>
-            <span class="property-count">9 properties</span>
-            <span class="property-breakdown">(6 user, 3 cloud)</span>
-        </li>
-        <li data-name="subnet" data-domain="networking">
-            <a href="Subnet.html">Subnet</a>
-            <span class="property-count">14 properties</span>
-            <span class="property-breakdown">(7 user, 7 cloud)</span>
-        </li>
-        <li data-name="vpc" data-domain="networking">
-            <a href="Vpc.html">Vpc</a>
-            <span class="property-count">13 properties</span>
-            <span class="property-breakdown">(6 user, 7 cloud)</span>
-        </li>
-        </ul>
+                <h1 id="EbsVolume-title">EbsVolume</h1>
+                <h2 id="EbsVolume-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">EbsVolume</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">availabilityZone</span>   <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">size</span>               <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">volumeType</span>         <span class="eq">=</span> <span class="str">"gp3"</span>
+    <span class="prop">iops</span>               <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">throughput</span>         <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">encrypted</span>          <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">kmsKeyId</span>           <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">snapshotId</span>         <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">multiAttachEnabled</span> <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">tags</span>               <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// EbsVolume</span>
+<span class="kw">schema</span> <span class="type">EbsVolume</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">availabilityZone</span>            <span class="comment">// The Availability Zone in which to create the volume</span>
+    <span class="type">integer</span> <span class="prop">size</span>                        <span class="comment">// The size of the volume in GiBs</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"gp2"</span>, <span class="str">"gp3"</span>, <span class="str">"io1"</span>, <span class="str">"io2"</span>, <span class="str">"st1"</span>, <span class="str">"sc1"</span>, <span class="str">"standard"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">volumeType</span> <span class="eq">=</span> <span class="str">&quot;gp3&quot;</span>          <span class="comment">// The volume type</span>
+    <span class="type">integer</span> <span class="prop">iops</span>                        <span class="comment">// The number of I/O operations per second (IOPS)</span>
+    <span class="type">integer</span> <span class="prop">throughput</span>                  <span class="comment">// The throughput in MiB/s. Only valid for gp3 volumes</span>
+    <span class="type">boolean</span> <span class="prop">encrypted</span> <span class="eq">=</span> <span class="bool">false</span>           <span class="comment">// Whether the volume should be encrypted</span>
+    <span class="type">string</span> <span class="prop">kmsKeyId</span>                    <span class="comment">// The ARN of the KMS key to use for encryption</span>
+    <span class="type">string</span> <span class="prop">snapshotId</span>                  <span class="comment">// The snapshot ID to create the volume from</span>
+    <span class="type">boolean</span> <span class="prop">multiAttachEnabled</span> <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Enable Multi-Attach for io1/io2 volumes</span>
+    <span class="type">map</span> <span class="prop">tags</span>                        <span class="comment">// Tags to apply to the volume</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">volumeId</span>                    <span class="comment">// The volume ID assigned by AWS</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">arn</span>                         <span class="comment">// The Amazon Resource Name (ARN) of the volume</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">state</span>                       <span class="comment">// The current state of the volume</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">createTime</span>                  <span class="comment">// The time the volume was created</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">attachments</span>                 <span class="comment">// Information about the volume attachments</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="EbsVolume-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">availabilityZone</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The Availability Zone in which to create the volume</td>
+</tr>
+<tr>
+  <td><code class="prop-name">size</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The size of the volume in GiBs</td>
+</tr>
+<tr>
+  <td><code class="prop-name">volumeType</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">gp3</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The volume type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">gp2</code> <code class="valid-value">gp3</code> <code class="valid-value">io1</code> <code class="valid-value">io2</code> <code class="valid-value">st1</code> <code class="valid-value">sc1</code> <code class="valid-value">standard</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">iops</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The number of I/O operations per second (IOPS)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">throughput</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The throughput in MiB/s. Only valid for gp3 volumes</td>
+</tr>
+<tr>
+  <td><code class="prop-name">encrypted</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Whether the volume should be encrypted</td>
+</tr>
+<tr>
+  <td><code class="prop-name">kmsKeyId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The ARN of the KMS key to use for encryption</td>
+</tr>
+<tr>
+  <td><code class="prop-name">snapshotId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The snapshot ID to create the volume from</td>
+</tr>
+<tr>
+  <td><code class="prop-name">multiAttachEnabled</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable Multi-Attach for io1/io2 volumes</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the volume</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="EbsVolume-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">volumeId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The volume ID assigned by AWS</td>
+</tr>
+<tr>
+  <td><code class="prop-name">arn</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Amazon Resource Name (ARN) of the volume</td>
+</tr>
+<tr>
+  <td><code class="prop-name">state</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The current state of the volume</td>
+</tr>
+<tr>
+  <td><code class="prop-name">createTime</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The time the volume was created</td>
+</tr>
+<tr>
+  <td><code class="prop-name">attachments</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>Information about the volume attachments</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-Ec2Instance" class="resource-content" data-resource="Ec2Instance">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">💻 Compute</span>
+                    <span class="sep">›</span>
+                    <span class="current">Ec2Instance</span>
+                </div>
+
+                <h1 id="Ec2Instance-title">Ec2Instance</h1>
+                <h2 id="Ec2Instance-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">Ec2Instance</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">ami</span>                           <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">instanceType</span>                  <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">subnetId</span>                      <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">securityGroupIds</span>              <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">keyName</span>                       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">associatePublicIpAddress</span>      <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">iamInstanceProfile</span>            <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">userData</span>                      <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">availabilityZone</span>              <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">monitoring</span>                    <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">tenancy</span>                       <span class="eq">=</span> <span class="str">"default"</span>
+    <span class="prop">rootVolumeSize</span>                <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">rootVolumeType</span>                <span class="eq">=</span> <span class="str">"gp3"</span>
+    <span class="prop">deleteRootVolumeOnTermination</span> <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">tags</span>                          <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Ec2Instance</span>
+<span class="kw">schema</span> <span class="type">Ec2Instance</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">ami</span>                                   <span class="comment">// The AMI ID to use for the instance</span>
+    <span class="type">string</span> <span class="prop">instanceType</span>                          <span class="comment">// The instance type (e.g., t3.micro, m5.large)</span>
+    <span class="type">string</span> <span class="prop">subnetId</span>                              <span class="comment">// The subnet ID to launch the instance in</span>
+    <span class="type">list</span> <span class="prop">securityGroupIds</span>                      <span class="comment">// List of security group IDs to attach</span>
+    <span class="type">string</span> <span class="prop">keyName</span>                               <span class="comment">// The name of the key pair for SSH access</span>
+    <span class="type">boolean</span> <span class="prop">associatePublicIpAddress</span> <span class="eq">=</span> <span class="bool">false</span>      <span class="comment">// Whether to associate a public IP address</span>
+    <span class="type">string</span> <span class="prop">iamInstanceProfile</span>                    <span class="comment">// The IAM instance profile name or ARN</span>
+    <span class="type">string</span> <span class="prop">userData</span>                              <span class="comment">// User data script for instance initialization (base64 encoded)</span>
+    <span class="type">string</span> <span class="prop">availabilityZone</span>                      <span class="comment">// The availability zone to launch in</span>
+    <span class="type">boolean</span> <span class="prop">monitoring</span> <span class="eq">=</span> <span class="bool">false</span>                    <span class="comment">// Enable detailed monitoring</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"default"</span>, <span class="str">"dedicated"</span>, <span class="str">"host"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">tenancy</span> <span class="eq">=</span> <span class="str">&quot;default&quot;</span>                   <span class="comment">// Instance tenancy option</span>
+    <span class="type">integer</span> <span class="prop">rootVolumeSize</span>                        <span class="comment">// Root volume size in GiB</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"gp2"</span>, <span class="str">"gp3"</span>, <span class="str">"io1"</span>, <span class="str">"io2"</span>, <span class="str">"st1"</span>, <span class="str">"sc1"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">rootVolumeType</span> <span class="eq">=</span> <span class="str">&quot;gp3&quot;</span>                <span class="comment">// Root volume type</span>
+    <span class="type">boolean</span> <span class="prop">deleteRootVolumeOnTermination</span> <span class="eq">=</span> <span class="bool">true</span>  <span class="comment">// Delete root volume on termination</span>
+    <span class="type">map</span> <span class="prop">tags</span>                                  <span class="comment">// Tags to apply to the instance</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">instanceId</span>                            <span class="comment">// The instance ID assigned by AWS</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">state</span>                                 <span class="comment">// Instance state: pending, running, stopping, stopped, terminated</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">publicIp</span>                              <span class="comment">// The public IP address (if assigned)</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">privateIp</span>                             <span class="comment">// The private IP address</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">publicDnsName</span>                         <span class="comment">// The public DNS name</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">privateDnsName</span>                        <span class="comment">// The private DNS name</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>                                 <span class="comment">// The VPC ID the instance is in</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">architecture</span>                          <span class="comment">// The architecture: x86_64 or arm64</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">rootDeviceName</span>                        <span class="comment">// The root device name</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="Ec2Instance-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">ami</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The AMI ID to use for the instance</td>
+</tr>
+<tr>
+  <td><code class="prop-name">instanceType</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The instance type (e.g., t3.micro, m5.large)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">subnetId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The subnet ID to launch the instance in</td>
+</tr>
+<tr>
+  <td><code class="prop-name">securityGroupIds</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>List of security group IDs to attach</td>
+</tr>
+<tr>
+  <td><code class="prop-name">keyName</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the key pair for SSH access</td>
+</tr>
+<tr>
+  <td><code class="prop-name">associatePublicIpAddress</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Whether to associate a public IP address</td>
+</tr>
+<tr>
+  <td><code class="prop-name">iamInstanceProfile</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The IAM instance profile name or ARN</td>
+</tr>
+<tr>
+  <td><code class="prop-name">userData</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>User data script for instance initialization (base64 encoded)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">availabilityZone</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The availability zone to launch in</td>
+</tr>
+<tr>
+  <td><code class="prop-name">monitoring</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable detailed monitoring</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tenancy</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">default</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Instance tenancy option<br><span class="valid-values-label">Valid values: </span><code class="valid-value">default</code> <code class="valid-value">dedicated</code> <code class="valid-value">host</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">rootVolumeSize</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Root volume size in GiB</td>
+</tr>
+<tr>
+  <td><code class="prop-name">rootVolumeType</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">gp3</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Root volume type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">gp2</code> <code class="valid-value">gp3</code> <code class="valid-value">io1</code> <code class="valid-value">io2</code> <code class="valid-value">st1</code> <code class="valid-value">sc1</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">deleteRootVolumeOnTermination</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">true</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Delete root volume on termination</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the instance</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="Ec2Instance-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">instanceId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The instance ID assigned by AWS</td>
+</tr>
+<tr>
+  <td><code class="prop-name">state</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>Instance state: pending, running, stopping, stopped, terminated</td>
+</tr>
+<tr>
+  <td><code class="prop-name">publicIp</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The public IP address (if assigned)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">privateIp</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The private IP address</td>
+</tr>
+<tr>
+  <td><code class="prop-name">publicDnsName</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The public DNS name</td>
+</tr>
+<tr>
+  <td><code class="prop-name">privateDnsName</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The private DNS name</td>
+</tr>
+<tr>
+  <td><code class="prop-name">vpcId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The VPC ID the instance is in</td>
+</tr>
+<tr>
+  <td><code class="prop-name">architecture</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The architecture: x86_64 or arm64</td>
+</tr>
+<tr>
+  <td><code class="prop-name">rootDeviceName</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The root device name</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-ElasticIp" class="resource-content" data-resource="ElasticIp">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">🌐 Networking</span>
+                    <span class="sep">›</span>
+                    <span class="current">ElasticIp</span>
+                </div>
+
+                <h1 id="ElasticIp-title">ElasticIp</h1>
+                <h2 id="ElasticIp-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">ElasticIp</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">domain</span>             <span class="eq">=</span> <span class="str">"vpc"</span>
+    <span class="prop">networkBorderGroup</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">publicIpv4Pool</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">tags</span>               <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// ElasticIp</span>
+<span class="kw">schema</span> <span class="type">ElasticIp</span> <span class="brace">{</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"vpc"</span>, <span class="str">"standard"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">domain</span> <span class="eq">=</span> <span class="str">&quot;vpc&quot;</span>      <span class="comment">// The domain for the Elastic IP</span>
+    <span class="type">string</span> <span class="prop">networkBorderGroup</span>  <span class="comment">// The ID of the network border group for Local/Wavelength Zones</span>
+    <span class="type">string</span> <span class="prop">publicIpv4Pool</span>      <span class="comment">// The ID of an address pool for BYOIP</span>
+    <span class="type">map</span> <span class="prop">tags</span>                <span class="comment">// Tags to apply to the Elastic IP</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">allocationId</span>        <span class="comment">// The allocation ID for the Elastic IP</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">publicIp</span>            <span class="comment">// The Elastic IP address</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">instanceId</span>          <span class="comment">// The ID of the associated instance (if any)</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">associationId</span>       <span class="comment">// The association ID (if associated)</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">networkInterfaceId</span>  <span class="comment">// The ID of the network interface (if associated)</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">privateIpAddress</span>    <span class="comment">// The private IP address associated with the Elastic IP</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="ElasticIp-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">domain</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">vpc</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The domain for the Elastic IP<br><span class="valid-values-label">Valid values: </span><code class="valid-value">vpc</code> <code class="valid-value">standard</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">networkBorderGroup</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The ID of the network border group for Local/Wavelength Zones</td>
+</tr>
+<tr>
+  <td><code class="prop-name">publicIpv4Pool</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The ID of an address pool for BYOIP</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the Elastic IP</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="ElasticIp-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">allocationId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The allocation ID for the Elastic IP</td>
+</tr>
+<tr>
+  <td><code class="prop-name">publicIp</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Elastic IP address</td>
+</tr>
+<tr>
+  <td><code class="prop-name">instanceId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The ID of the associated instance (if any)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">associationId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The association ID (if associated)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">networkInterfaceId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The ID of the network interface (if associated)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">privateIpAddress</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The private IP address associated with the Elastic IP</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-HostedZone" class="resource-content" data-resource="HostedZone">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">📍 Dns</span>
+                    <span class="sep">›</span>
+                    <span class="current">HostedZone</span>
+                </div>
+
+                <h1 id="HostedZone-title">HostedZone</h1>
+                <h2 id="HostedZone-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">HostedZone</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">comment</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">privateZone</span> <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">vpcId</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">vpcRegion</span>   <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">tags</span>        <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// HostedZone</span>
+<span class="kw">schema</span> <span class="type">HostedZone</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">name</span>                    <span class="comment">// The domain name for the hosted zone (e.g., 'example.com')</span>
+    <span class="type">string</span> <span class="prop">comment</span>                 <span class="comment">// A comment for the hosted zone</span>
+    <span class="type">boolean</span> <span class="prop">privateZone</span> <span class="eq">=</span> <span class="bool">false</span>     <span class="comment">// Whether this is a private hosted zone</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>                   <span class="comment">// VPC ID to associate with private hosted zone</span>
+    <span class="type">string</span> <span class="prop">vpcRegion</span>               <span class="comment">// VPC region for private hosted zone</span>
+    <span class="type">map</span> <span class="prop">tags</span>                    <span class="comment">// Tags to apply to the hosted zone</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">hostedZoneId</span>            <span class="comment">// The hosted zone ID (without /hostedzone/ prefix)</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">list</span> <span class="prop">nameServers</span>             <span class="comment">// The name servers for the hosted zone</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">integer</span> <span class="prop">resourceRecordSetCount</span>  <span class="comment">// The number of resource record sets in the hosted zone</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">callerReference</span>         <span class="comment">// A unique string that identifies the request to create the zone</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">arn</span>                     <span class="comment">// The Amazon Resource Name (ARN) of the hosted zone</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="HostedZone-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">name</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The domain name for the hosted zone (e.g., 'example.com')</td>
+</tr>
+<tr>
+  <td><code class="prop-name">comment</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>A comment for the hosted zone</td>
+</tr>
+<tr>
+  <td><code class="prop-name">privateZone</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Whether this is a private hosted zone</td>
+</tr>
+<tr>
+  <td><code class="prop-name">vpcId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>VPC ID to associate with private hosted zone</td>
+</tr>
+<tr>
+  <td><code class="prop-name">vpcRegion</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>VPC region for private hosted zone</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the hosted zone</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="HostedZone-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">hostedZoneId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The hosted zone ID (without /hostedzone/ prefix)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">nameServers</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td>The name servers for the hosted zone</td>
+</tr>
+<tr>
+  <td><code class="prop-name">resourceRecordSetCount</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td>The number of resource record sets in the hosted zone</td>
+</tr>
+<tr>
+  <td><code class="prop-name">callerReference</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>A unique string that identifies the request to create the zone</td>
+</tr>
+<tr>
+  <td><code class="prop-name">arn</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Amazon Resource Name (ARN) of the hosted zone</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-InternetGateway" class="resource-content" data-resource="InternetGateway">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">🌐 Networking</span>
+                    <span class="sep">›</span>
+                    <span class="current">InternetGateway</span>
+                </div>
+
+                <h1 id="InternetGateway-title">InternetGateway</h1>
+                <h2 id="InternetGateway-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">InternetGateway</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">vpcId</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">tags</span>  <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// InternetGateway</span>
+<span class="kw">schema</span> <span class="type">InternetGateway</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>              <span class="comment">// The VPC ID to attach the internet gateway to</span>
+    <span class="type">map</span> <span class="prop">tags</span>               <span class="comment">// Tags to apply to the internet gateway</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">internetGatewayId</span>  <span class="comment">// The internet gateway ID assigned by AWS</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">ownerId</span>            <span class="comment">// The AWS account ID that owns the internet gateway</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">attachmentState</span>    <span class="comment">// Attachment state (available, attaching, detaching)</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="InternetGateway-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">vpcId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The VPC ID to attach the internet gateway to</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the internet gateway</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="InternetGateway-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">internetGatewayId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The internet gateway ID assigned by AWS</td>
+</tr>
+<tr>
+  <td><code class="prop-name">ownerId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The AWS account ID that owns the internet gateway</td>
+</tr>
+<tr>
+  <td><code class="prop-name">attachmentState</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>Attachment state (available, attaching, detaching)</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-Listener" class="resource-content" data-resource="Listener">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">⚖️ Loadbalancing</span>
+                    <span class="sep">›</span>
+                    <span class="current">Listener</span>
+                </div>
+
+                <h1 id="Listener-title">Listener</h1>
+                <h2 id="Listener-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">Listener</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">loadBalancerArn</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">port</span>                  <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">protocol</span>              <span class="eq">=</span> <span class="str">"HTTP"</span>
+    <span class="prop">certificateArn</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">sslPolicy</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">alpnPolicy</span>            <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">defaultTargetGroupArn</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">defaultActionType</span>     <span class="eq">=</span> <span class="str">"forward"</span>
+    <span class="prop">redirectConfig</span>        <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">fixedResponseConfig</span>   <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">tags</span>                  <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Listener</span>
+<span class="kw">schema</span> <span class="type">Listener</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">loadBalancerArn</span>                <span class="comment">// The ARN of the load balancer</span>
+    <span class="type">integer</span> <span class="prop">port</span>                           <span class="comment">// The port on which the listener listens</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"HTTP"</span>, <span class="str">"HTTPS"</span>, <span class="str">"TCP"</span>, <span class="str">"TLS"</span>, <span class="str">"UDP"</span>, <span class="str">"TCP_UDP"</span>, <span class="str">"GENEVE"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">protocol</span>                       <span class="comment">// The protocol for the listener</span>
+    <span class="type">string</span> <span class="prop">certificateArn</span>                 <span class="comment">// The ARN of the default SSL server certificate (HTTPS/TLS only)</span>
+    <span class="type">string</span> <span class="prop">sslPolicy</span>                      <span class="comment">// The SSL policy for HTTPS/TLS listeners</span>
+    <span class="type">string</span> <span class="prop">alpnPolicy</span>                     <span class="comment">// The ALPN policy for TLS listeners (NLB only)</span>
+    <span class="type">string</span> <span class="prop">defaultTargetGroupArn</span>          <span class="comment">// The ARN of the default target group for forward action</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"forward"</span>, <span class="str">"redirect"</span>, <span class="str">"fixed-response"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">defaultActionType</span> <span class="eq">=</span> <span class="str">&quot;forward&quot;</span>  <span class="comment">// The default action type</span>
+    <span class="type">redirectconfig</span> <span class="prop">redirectConfig</span>                 <span class="comment">// Redirect configuration when defaultActionType is 'redirect'</span>
+    <span class="type">fixedresponseconfig</span> <span class="prop">fixedResponseConfig</span>            <span class="comment">// Fixed response configuration when defaultActionType is 'fixed-response'</span>
+    <span class="type">map</span> <span class="prop">tags</span>                           <span class="comment">// Tags to apply to the listener</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">arn</span>                            <span class="comment">// The ARN of the listener</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="Listener-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">loadBalancerArn</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The ARN of the load balancer</td>
+</tr>
+<tr>
+  <td><code class="prop-name">port</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The port on which the listener listens</td>
+</tr>
+<tr>
+  <td><code class="prop-name">protocol</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The protocol for the listener<br><span class="valid-values-label">Valid values: </span><code class="valid-value">HTTP</code> <code class="valid-value">HTTPS</code> <code class="valid-value">TCP</code> <code class="valid-value">TLS</code> <code class="valid-value">UDP</code> <code class="valid-value">TCP_UDP</code> <code class="valid-value">GENEVE</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">certificateArn</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The ARN of the default SSL server certificate (HTTPS/TLS only)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">sslPolicy</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The SSL policy for HTTPS/TLS listeners</td>
+</tr>
+<tr>
+  <td><code class="prop-name">alpnPolicy</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The ALPN policy for TLS listeners (NLB only)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">defaultTargetGroupArn</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The ARN of the default target group for forward action</td>
+</tr>
+<tr>
+  <td><code class="prop-name">defaultActionType</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">forward</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The default action type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">forward</code> <code class="valid-value">redirect</code> <code class="valid-value">fixed-response</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">redirectConfig</code></td>
+  <td><code class="prop-type">redirectconfig</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Redirect configuration when defaultActionType is 'redirect'</td>
+</tr>
+<tr>
+  <td><code class="prop-name">fixedResponseConfig</code></td>
+  <td><code class="prop-type">fixedresponseconfig</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Fixed response configuration when defaultActionType is 'fixed-response'</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the listener</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="Listener-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">arn</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The ARN of the listener</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-LoadBalancer" class="resource-content" data-resource="LoadBalancer">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">⚖️ Loadbalancing</span>
+                    <span class="sep">›</span>
+                    <span class="current">LoadBalancer</span>
+                </div>
+
+                <h1 id="LoadBalancer-title">LoadBalancer</h1>
+                <h2 id="LoadBalancer-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">LoadBalancer</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                   <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">type</span>                   <span class="eq">=</span> <span class="str">"application"</span>
+    <span class="prop">scheme</span>                 <span class="eq">=</span> <span class="str">"internet-facing"</span>
+    <span class="prop">subnets</span>                <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">securityGroups</span>         <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">ipAddressType</span>          <span class="eq">=</span> <span class="str">"ipv4"</span>
+    <span class="prop">deletionProtection</span>     <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">crossZoneLoadBalancing</span> <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">enableHttp2</span>            <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">idleTimeout</span>            <span class="eq">=</span> <span class="num">60</span>
+    <span class="prop">accessLogsEnabled</span>      <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">accessLogsBucket</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">accessLogsPrefix</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">tags</span>                   <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// LoadBalancer</span>
+<span class="kw">schema</span> <span class="type">LoadBalancer</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">name</span>                        <span class="comment">// The name of the load balancer. Must be unique within your AWS account</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"application"</span>, <span class="str">"network"</span>, <span class="str">"gateway"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">type</span> <span class="eq">=</span> <span class="str">&quot;application&quot;</span>        <span class="comment">// The type of load balancer</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"internet-facing"</span>, <span class="str">"internal"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">scheme</span> <span class="eq">=</span> <span class="str">&quot;internet-facing&quot;</span>  <span class="comment">// The scheme for the load balancer</span>
+    <span class="type">list</span> <span class="prop">subnets</span>                     <span class="comment">// The subnet IDs. At least two in different Availability Zones</span>
+    <span class="type">list</span> <span class="prop">securityGroups</span>              <span class="comment">// The security group IDs. Required for ALB, not applicable for NLB</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"ipv4"</span>, <span class="str">"dualstack"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">ipAddressType</span> <span class="eq">=</span> <span class="str">&quot;ipv4&quot;</span>      <span class="comment">// The IP address type</span>
+    <span class="type">boolean</span> <span class="prop">deletionProtection</span> <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Enable deletion protection</span>
+    <span class="type">boolean</span> <span class="prop">crossZoneLoadBalancing</span>      <span class="comment">// Enable cross-zone load balancing</span>
+    <span class="type">boolean</span> <span class="prop">enableHttp2</span> <span class="eq">=</span> <span class="bool">true</span>          <span class="comment">// Enable HTTP/2 support (ALB only)</span>
+    <span class="type">integer</span> <span class="prop">idleTimeout</span> <span class="eq">=</span> <span class="num">60</span>            <span class="comment">// Idle timeout in seconds (ALB only)</span>
+    <span class="type">boolean</span> <span class="prop">accessLogsEnabled</span> <span class="eq">=</span> <span class="bool">false</span>   <span class="comment">// Enable access logs</span>
+    <span class="type">string</span> <span class="prop">accessLogsBucket</span>            <span class="comment">// S3 bucket for access logs</span>
+    <span class="type">string</span> <span class="prop">accessLogsPrefix</span>            <span class="comment">// S3 bucket prefix for access logs</span>
+    <span class="type">map</span> <span class="prop">tags</span>                        <span class="comment">// Tags to apply to the load balancer</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">arn</span>                         <span class="comment">// The Amazon Resource Name (ARN) of the load balancer</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">dnsName</span>                     <span class="comment">// The DNS name of the load balancer</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">canonicalHostedZoneId</span>       <span class="comment">// The canonical hosted zone ID of the load balancer</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>                       <span class="comment">// The VPC ID of the load balancer</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">state</span>                       <span class="comment">// The current state of the load balancer</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">list</span> <span class="prop">availabilityZones</span>           <span class="comment">// The Availability Zones for the load balancer</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="LoadBalancer-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">name</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the load balancer. Must be unique within your AWS account</td>
+</tr>
+<tr>
+  <td><code class="prop-name">type</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">application</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The type of load balancer<br><span class="valid-values-label">Valid values: </span><code class="valid-value">application</code> <code class="valid-value">network</code> <code class="valid-value">gateway</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">scheme</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">internet-facing</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The scheme for the load balancer<br><span class="valid-values-label">Valid values: </span><code class="valid-value">internet-facing</code> <code class="valid-value">internal</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">subnets</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The subnet IDs. At least two in different Availability Zones</td>
+</tr>
+<tr>
+  <td><code class="prop-name">securityGroups</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The security group IDs. Required for ALB, not applicable for NLB</td>
+</tr>
+<tr>
+  <td><code class="prop-name">ipAddressType</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">ipv4</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The IP address type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">ipv4</code> <code class="valid-value">dualstack</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">deletionProtection</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable deletion protection</td>
+</tr>
+<tr>
+  <td><code class="prop-name">crossZoneLoadBalancing</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable cross-zone load balancing</td>
+</tr>
+<tr>
+  <td><code class="prop-name">enableHttp2</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">true</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable HTTP/2 support (ALB only)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">idleTimeout</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><code class="default-value">60</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Idle timeout in seconds (ALB only)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">accessLogsEnabled</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable access logs</td>
+</tr>
+<tr>
+  <td><code class="prop-name">accessLogsBucket</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>S3 bucket for access logs</td>
+</tr>
+<tr>
+  <td><code class="prop-name">accessLogsPrefix</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>S3 bucket prefix for access logs</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the load balancer</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="LoadBalancer-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">arn</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Amazon Resource Name (ARN) of the load balancer</td>
+</tr>
+<tr>
+  <td><code class="prop-name">dnsName</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The DNS name of the load balancer</td>
+</tr>
+<tr>
+  <td><code class="prop-name">canonicalHostedZoneId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The canonical hosted zone ID of the load balancer</td>
+</tr>
+<tr>
+  <td><code class="prop-name">vpcId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The VPC ID of the load balancer</td>
+</tr>
+<tr>
+  <td><code class="prop-name">state</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The current state of the load balancer</td>
+</tr>
+<tr>
+  <td><code class="prop-name">availabilityZones</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td>The Availability Zones for the load balancer</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-NatGateway" class="resource-content" data-resource="NatGateway">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">🌐 Networking</span>
+                    <span class="sep">›</span>
+                    <span class="current">NatGateway</span>
+                </div>
+
+                <h1 id="NatGateway-title">NatGateway</h1>
+                <h2 id="NatGateway-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">NatGateway</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">subnetId</span>         <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">allocationId</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">connectivityType</span> <span class="eq">=</span> <span class="str">"public"</span>
+    <span class="prop">tags</span>             <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// NatGateway</span>
+<span class="kw">schema</span> <span class="type">NatGateway</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">subnetId</span>                     <span class="comment">// The subnet ID where the NAT gateway will be created</span>
+    <span class="type">string</span> <span class="prop">allocationId</span>                 <span class="comment">// The allocation ID of the Elastic IP for public NAT gateway</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"public"</span>, <span class="str">"private"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">connectivityType</span> <span class="eq">=</span> <span class="str">&quot;public&quot;</span>  <span class="comment">// The connectivity type for the NAT gateway</span>
+    <span class="type">map</span> <span class="prop">tags</span>                         <span class="comment">// Tags to apply to the NAT gateway</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">natGatewayId</span>                 <span class="comment">// The NAT gateway ID assigned by AWS</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">state</span>                        <span class="comment">// The current state of the NAT gateway</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>                        <span class="comment">// The VPC ID that contains the NAT gateway</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">publicIp</span>                     <span class="comment">// The public IP address associated with the NAT gateway</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">privateIp</span>                    <span class="comment">// The private IP address of the NAT gateway</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="NatGateway-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">subnetId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The subnet ID where the NAT gateway will be created</td>
+</tr>
+<tr>
+  <td><code class="prop-name">allocationId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The allocation ID of the Elastic IP for public NAT gateway</td>
+</tr>
+<tr>
+  <td><code class="prop-name">connectivityType</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">public</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The connectivity type for the NAT gateway<br><span class="valid-values-label">Valid values: </span><code class="valid-value">public</code> <code class="valid-value">private</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the NAT gateway</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="NatGateway-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">natGatewayId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The NAT gateway ID assigned by AWS</td>
+</tr>
+<tr>
+  <td><code class="prop-name">state</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The current state of the NAT gateway</td>
+</tr>
+<tr>
+  <td><code class="prop-name">vpcId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The VPC ID that contains the NAT gateway</td>
+</tr>
+<tr>
+  <td><code class="prop-name">publicIp</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The public IP address associated with the NAT gateway</td>
+</tr>
+<tr>
+  <td><code class="prop-name">privateIp</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The private IP address of the NAT gateway</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-RecordSet" class="resource-content" data-resource="RecordSet">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">📍 Dns</span>
+                    <span class="sep">›</span>
+                    <span class="current">RecordSet</span>
+                </div>
+
+                <h1 id="RecordSet-title">RecordSet</h1>
+                <h2 id="RecordSet-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">RecordSet</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">hostedZoneId</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">name</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">type</span>             <span class="eq">=</span> <span class="str">"A"</span>
+    <span class="prop">ttl</span>              <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">records</span>          <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">aliasTarget</span>      <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">weight</span>           <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">setIdentifier</span>    <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">failover</span>         <span class="eq">=</span> <span class="str">"PRIMARY"</span>
+    <span class="prop">geoLocation</span>      <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">healthCheckId</span>    <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">multiValueAnswer</span> <span class="eq">=</span> <span class="bool">true</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// RecordSet</span>
+<span class="kw">schema</span> <span class="type">RecordSet</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">hostedZoneId</span>      <span class="comment">// The ID of the hosted zone</span>
+    <span class="type">string</span> <span class="prop">name</span>              <span class="comment">// The name of the record (fully qualified domain name)</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"A"</span>, <span class="str">"AAAA"</span>, <span class="str">"CNAME"</span>, <span class="str">"MX"</span>, <span class="str">"TXT"</span>, <span class="str">"NS"</span>, <span class="str">"SOA"</span>, <span class="str">"SRV"</span>, <span class="str">"CAA"</span>, <span class="str">"PTR"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">type</span>              <span class="comment">// The DNS record type</span>
+    <span class="type">integer</span> <span class="prop">ttl</span>               <span class="comment">// The TTL (time to live) in seconds</span>
+    <span class="type">list</span> <span class="prop">records</span>           <span class="comment">// The record values</span>
+    <span class="type">aliastarget</span> <span class="prop">aliasTarget</span>       <span class="comment">// Alias target for AWS resources (ELB, CloudFront, S3, etc.)</span>
+    <span class="type">integer</span> <span class="prop">weight</span>            <span class="comment">// Weighted routing weight (0-255)</span>
+    <span class="type">string</span> <span class="prop">setIdentifier</span>     <span class="comment">// Set identifier for routing policies</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"PRIMARY"</span>, <span class="str">"SECONDARY"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">failover</span>          <span class="comment">// Failover routing type</span>
+    <span class="type">geolocation</span> <span class="prop">geoLocation</span>       <span class="comment">// Geolocation routing configuration</span>
+    <span class="type">string</span> <span class="prop">healthCheckId</span>     <span class="comment">// Health check ID to associate with the record</span>
+    <span class="type">boolean</span> <span class="prop">multiValueAnswer</span>  <span class="comment">// Whether this is a multivalue answer record</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="RecordSet-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">hostedZoneId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The ID of the hosted zone</td>
+</tr>
+<tr>
+  <td><code class="prop-name">name</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the record (fully qualified domain name)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">type</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The DNS record type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">A</code> <code class="valid-value">AAAA</code> <code class="valid-value">CNAME</code> <code class="valid-value">MX</code> <code class="valid-value">TXT</code> <code class="valid-value">NS</code> <code class="valid-value">SOA</code> <code class="valid-value">SRV</code> <code class="valid-value">CAA</code> <code class="valid-value">PTR</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">ttl</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The TTL (time to live) in seconds</td>
+</tr>
+<tr>
+  <td><code class="prop-name">records</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The record values</td>
+</tr>
+<tr>
+  <td><code class="prop-name">aliasTarget</code></td>
+  <td><code class="prop-type">aliastarget</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Alias target for AWS resources (ELB, CloudFront, S3, etc.)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">weight</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Weighted routing weight (0-255)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">setIdentifier</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Set identifier for routing policies</td>
+</tr>
+<tr>
+  <td><code class="prop-name">failover</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Failover routing type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">PRIMARY</code> <code class="valid-value">SECONDARY</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">geoLocation</code></td>
+  <td><code class="prop-type">geolocation</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Geolocation routing configuration</td>
+</tr>
+<tr>
+  <td><code class="prop-name">healthCheckId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Health check ID to associate with the record</td>
+</tr>
+<tr>
+  <td><code class="prop-name">multiValueAnswer</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Whether this is a multivalue answer record</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-RouteTable" class="resource-content" data-resource="RouteTable">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">🌐 Networking</span>
+                    <span class="sep">›</span>
+                    <span class="current">RouteTable</span>
+                </div>
+
+                <h1 id="RouteTable-title">RouteTable</h1>
+                <h2 id="RouteTable-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">RouteTable</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">vpcId</span>  <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">routes</span> <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">tags</span>   <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// RouteTable</span>
+<span class="kw">schema</span> <span class="type">RouteTable</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>                <span class="comment">// The VPC ID where the route table will be created</span>
+    <span class="type">list</span> <span class="prop">routes</span>               <span class="comment">// Routes in this route table</span>
+    <span class="type">map</span> <span class="prop">tags</span>                 <span class="comment">// Tags to apply to the route table</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">routeTableId</span>         <span class="comment">// The route table ID assigned by AWS</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">ownerId</span>              <span class="comment">// The AWS account ID that owns the route table</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">boolean</span> <span class="prop">main</span>                 <span class="comment">// Whether this is the main route table for the VPC</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">list</span> <span class="prop">associatedSubnetIds</span>  <span class="comment">// List of subnet IDs associated with this route table</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="RouteTable-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">vpcId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The VPC ID where the route table will be created</td>
+</tr>
+<tr>
+  <td><code class="prop-name">routes</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Routes in this route table</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the route table</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="RouteTable-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">routeTableId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The route table ID assigned by AWS</td>
+</tr>
+<tr>
+  <td><code class="prop-name">ownerId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The AWS account ID that owns the route table</td>
+</tr>
+<tr>
+  <td><code class="prop-name">main</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td>Whether this is the main route table for the VPC</td>
+</tr>
+<tr>
+  <td><code class="prop-name">associatedSubnetIds</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td>List of subnet IDs associated with this route table</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-S3Bucket" class="resource-content" data-resource="S3Bucket">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">💾 Storage</span>
+                    <span class="sep">›</span>
+                    <span class="current">S3Bucket</span>
+                </div>
+
+                <h1 id="S3Bucket-title">S3Bucket</h1>
+                <h2 id="S3Bucket-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">S3Bucket</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">bucket</span>                       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">acl</span>                          <span class="eq">=</span> <span class="str">"private"</span>
+    <span class="prop">versioning</span>                   <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">region</span>                       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">serverSideEncryption</span>         <span class="eq">=</span> <span class="str">"AES256"</span>
+    <span class="prop">kmsKeyId</span>                     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">blockPublicAccess</span>            <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">websiteIndexDocument</span>         <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">websiteErrorDocument</span>         <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">websiteRedirectAllRequestsTo</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">corsRules</span>                    <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">lifecycleRules</span>               <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">logging</span>                      <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">tags</span>                         <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// S3Bucket</span>
+<span class="kw">schema</span> <span class="type">S3Bucket</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">bucket</span>                        <span class="comment">// Bucket name (globally unique, DNS-compliant)</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"private"</span>, <span class="str">"public-read"</span>, <span class="str">"public-read-write"</span>, <span class="str">"authenticated-read"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">acl</span> <span class="eq">=</span> <span class="str">&quot;private&quot;</span>               <span class="comment">// Canned ACL for the bucket</span>
+    <span class="type">boolean</span> <span class="prop">versioning</span> <span class="eq">=</span> <span class="bool">false</span>            <span class="comment">// Enable versioning for the bucket</span>
+    <span class="type">string</span> <span class="prop">region</span>                        <span class="comment">// AWS region for the bucket</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"AES256"</span>, <span class="str">"aws:kms"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">serverSideEncryption</span>          <span class="comment">// Server-side encryption algorithm</span>
+    <span class="type">string</span> <span class="prop">kmsKeyId</span>                      <span class="comment">// KMS key ID for encryption (when using aws:kms)</span>
+    <span class="type">boolean</span> <span class="prop">blockPublicAccess</span> <span class="eq">=</span> <span class="bool">true</span>      <span class="comment">// Block all public access</span>
+    <span class="type">string</span> <span class="prop">websiteIndexDocument</span>          <span class="comment">// Index document for static website hosting</span>
+    <span class="type">string</span> <span class="prop">websiteErrorDocument</span>          <span class="comment">// Error document for static website hosting</span>
+    <span class="type">string</span> <span class="prop">websiteRedirectAllRequestsTo</span>  <span class="comment">// Redirect all requests to another host</span>
+    <span class="type">list</span> <span class="prop">corsRules</span>                     <span class="comment">// CORS configuration rules</span>
+    <span class="type">list</span> <span class="prop">lifecycleRules</span>                <span class="comment">// Lifecycle rules for object management</span>
+    <span class="type">loggingconfig</span> <span class="prop">logging</span>                       <span class="comment">// Access logging configuration</span>
+    <span class="type">map</span> <span class="prop">tags</span>                          <span class="comment">// Tags to apply to the bucket</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">arn</span>                           <span class="comment">// The ARN of the bucket</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">domainName</span>                    <span class="comment">// The domain name of the bucket</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">regionalDomainName</span>            <span class="comment">// The regional domain name of the bucket</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">websiteEndpoint</span>               <span class="comment">// Website endpoint (if hosting enabled)</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">creationDate</span>                  <span class="comment">// The creation date of the bucket</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="S3Bucket-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">bucket</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Bucket name (globally unique, DNS-compliant)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">acl</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">private</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Canned ACL for the bucket<br><span class="valid-values-label">Valid values: </span><code class="valid-value">private</code> <code class="valid-value">public-read</code> <code class="valid-value">public-read-write</code> <code class="valid-value">authenticated-read</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">versioning</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable versioning for the bucket</td>
+</tr>
+<tr>
+  <td><code class="prop-name">region</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>AWS region for the bucket</td>
+</tr>
+<tr>
+  <td><code class="prop-name">serverSideEncryption</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Server-side encryption algorithm<br><span class="valid-values-label">Valid values: </span><code class="valid-value">AES256</code> <code class="valid-value">aws:kms</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">kmsKeyId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>KMS key ID for encryption (when using aws:kms)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">blockPublicAccess</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">true</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Block all public access</td>
+</tr>
+<tr>
+  <td><code class="prop-name">websiteIndexDocument</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Index document for static website hosting</td>
+</tr>
+<tr>
+  <td><code class="prop-name">websiteErrorDocument</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Error document for static website hosting</td>
+</tr>
+<tr>
+  <td><code class="prop-name">websiteRedirectAllRequestsTo</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Redirect all requests to another host</td>
+</tr>
+<tr>
+  <td><code class="prop-name">corsRules</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>CORS configuration rules</td>
+</tr>
+<tr>
+  <td><code class="prop-name">lifecycleRules</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Lifecycle rules for object management</td>
+</tr>
+<tr>
+  <td><code class="prop-name">logging</code></td>
+  <td><code class="prop-type">loggingconfig</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Access logging configuration</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the bucket</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="S3Bucket-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">arn</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The ARN of the bucket</td>
+</tr>
+<tr>
+  <td><code class="prop-name">domainName</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The domain name of the bucket</td>
+</tr>
+<tr>
+  <td><code class="prop-name">regionalDomainName</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The regional domain name of the bucket</td>
+</tr>
+<tr>
+  <td><code class="prop-name">websiteEndpoint</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>Website endpoint (if hosting enabled)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">creationDate</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The creation date of the bucket</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-S3BucketPolicy" class="resource-content" data-resource="S3BucketPolicy">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">💾 Storage</span>
+                    <span class="sep">›</span>
+                    <span class="current">S3BucketPolicy</span>
+                </div>
+
+                <h1 id="S3BucketPolicy-title">S3BucketPolicy</h1>
+                <h2 id="S3BucketPolicy-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">S3BucketPolicy</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">bucket</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">policy</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// S3BucketPolicy</span>
+<span class="kw">schema</span> <span class="type">S3BucketPolicy</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">bucket</span>  <span class="comment">// The name of the bucket to apply the policy to</span>
+    <span class="type">string</span> <span class="prop">policy</span>  <span class="comment">// The bucket policy as a JSON string (IAM policy document)</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="S3BucketPolicy-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">bucket</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the bucket to apply the policy to</td>
+</tr>
+<tr>
+  <td><code class="prop-name">policy</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The bucket policy as a JSON string (IAM policy document)</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-SecurityGroup" class="resource-content" data-resource="SecurityGroup">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">🌐 Networking</span>
+                    <span class="sep">›</span>
+                    <span class="current">SecurityGroup</span>
+                </div>
+
+                <h1 id="SecurityGroup-title">SecurityGroup</h1>
+                <h2 id="SecurityGroup-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">SecurityGroup</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">description</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">vpcId</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">ingress</span>     <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">egress</span>      <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">tags</span>        <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// SecurityGroup</span>
+<span class="kw">schema</span> <span class="type">SecurityGroup</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">name</span>             <span class="comment">// Name of the security group</span>
+    <span class="type">string</span> <span class="prop">description</span>      <span class="comment">// Description of the security group (required by AWS)</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>            <span class="comment">// VPC ID where the security group will be created</span>
+    <span class="type">list</span> <span class="prop">ingress</span>          <span class="comment">// Inbound rules allowing traffic into resources</span>
+    <span class="type">list</span> <span class="prop">egress</span>           <span class="comment">// Outbound rules allowing traffic from resources</span>
+    <span class="type">map</span> <span class="prop">tags</span>             <span class="comment">// Tags to apply to the security group</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">securityGroupId</span>  <span class="comment">// The security group ID assigned by AWS</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">ownerId</span>          <span class="comment">// The AWS account ID that owns the security group</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">arn</span>              <span class="comment">// The Amazon Resource Name (ARN)</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="SecurityGroup-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">name</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Name of the security group</td>
+</tr>
+<tr>
+  <td><code class="prop-name">description</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Description of the security group (required by AWS)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">vpcId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>VPC ID where the security group will be created</td>
+</tr>
+<tr>
+  <td><code class="prop-name">ingress</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Inbound rules allowing traffic into resources</td>
+</tr>
+<tr>
+  <td><code class="prop-name">egress</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Outbound rules allowing traffic from resources</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the security group</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="SecurityGroup-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">securityGroupId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The security group ID assigned by AWS</td>
+</tr>
+<tr>
+  <td><code class="prop-name">ownerId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The AWS account ID that owns the security group</td>
+</tr>
+<tr>
+  <td><code class="prop-name">arn</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Amazon Resource Name (ARN)</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-Subnet" class="resource-content" data-resource="Subnet">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">🌐 Networking</span>
+                    <span class="sep">›</span>
+                    <span class="current">Subnet</span>
+                </div>
+
+                <h1 id="Subnet-title">Subnet</h1>
+                <h2 id="Subnet-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">Subnet</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">vpcId</span>                       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">cidrBlock</span>                   <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">ipv6CidrBlock</span>               <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">availabilityZone</span>            <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">mapPublicIpOnLaunch</span>         <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">assignIpv6AddressOnCreation</span> <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">tags</span>                        <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Subnet</span>
+<span class="kw">schema</span> <span class="type">Subnet</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>                                <span class="comment">// The VPC ID where the subnet will be created</span>
+    <span class="type">string</span> <span class="prop">cidrBlock</span>                            <span class="comment">// The IPv4 CIDR block for the subnet (e.g., 10.0.1.0/24)</span>
+    <span class="type">string</span> <span class="prop">ipv6CidrBlock</span>                        <span class="comment">// The IPv6 CIDR block for the subnet</span>
+    <span class="type">string</span> <span class="prop">availabilityZone</span>                     <span class="comment">// The Availability Zone for the subnet (e.g., us-east-1a)</span>
+    <span class="type">boolean</span> <span class="prop">mapPublicIpOnLaunch</span> <span class="eq">=</span> <span class="bool">false</span>          <span class="comment">// Auto-assign public IPv4 addresses to instances</span>
+    <span class="type">boolean</span> <span class="prop">assignIpv6AddressOnCreation</span> <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Assign IPv6 addresses to instances</span>
+    <span class="type">map</span> <span class="prop">tags</span>                                 <span class="comment">// Tags to apply to the subnet</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">subnetId</span>                             <span class="comment">// The subnet ID assigned by AWS</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">state</span>                                <span class="comment">// The current state of the subnet (pending, available)</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">availabilityZoneId</span>                   <span class="comment">// The Availability Zone ID</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">integer</span> <span class="prop">availableIpAddressCount</span>              <span class="comment">// The number of available IPv4 addresses</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">boolean</span> <span class="prop">defaultForAz</span>                         <span class="comment">// Whether this is the default subnet for the AZ</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">ownerId</span>                              <span class="comment">// The AWS account ID that owns the subnet</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">arn</span>                                  <span class="comment">// The Amazon Resource Name (ARN) of the subnet</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="Subnet-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">vpcId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The VPC ID where the subnet will be created</td>
+</tr>
+<tr>
+  <td><code class="prop-name">cidrBlock</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The IPv4 CIDR block for the subnet (e.g., 10.0.1.0/24)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">ipv6CidrBlock</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The IPv6 CIDR block for the subnet</td>
+</tr>
+<tr>
+  <td><code class="prop-name">availabilityZone</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The Availability Zone for the subnet (e.g., us-east-1a)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">mapPublicIpOnLaunch</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Auto-assign public IPv4 addresses to instances</td>
+</tr>
+<tr>
+  <td><code class="prop-name">assignIpv6AddressOnCreation</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Assign IPv6 addresses to instances</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the subnet</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="Subnet-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">subnetId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The subnet ID assigned by AWS</td>
+</tr>
+<tr>
+  <td><code class="prop-name">state</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The current state of the subnet (pending, available)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">availabilityZoneId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Availability Zone ID</td>
+</tr>
+<tr>
+  <td><code class="prop-name">availableIpAddressCount</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td>The number of available IPv4 addresses</td>
+</tr>
+<tr>
+  <td><code class="prop-name">defaultForAz</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td>Whether this is the default subnet for the AZ</td>
+</tr>
+<tr>
+  <td><code class="prop-name">ownerId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The AWS account ID that owns the subnet</td>
+</tr>
+<tr>
+  <td><code class="prop-name">arn</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Amazon Resource Name (ARN) of the subnet</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-TargetGroup" class="resource-content" data-resource="TargetGroup">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">⚖️ Loadbalancing</span>
+                    <span class="sep">›</span>
+                    <span class="current">TargetGroup</span>
+                </div>
+
+                <h1 id="TargetGroup-title">TargetGroup</h1>
+                <h2 id="TargetGroup-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">TargetGroup</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">port</span>                <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">protocol</span>            <span class="eq">=</span> <span class="str">"HTTP"</span>
+    <span class="prop">protocolVersion</span>     <span class="eq">=</span> <span class="str">"HTTP1"</span>
+    <span class="prop">vpcId</span>               <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">targetType</span>          <span class="eq">=</span> <span class="str">"instance"</span>
+    <span class="prop">ipAddressType</span>       <span class="eq">=</span> <span class="str">"ipv4"</span>
+    <span class="prop">healthCheck</span>         <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">deregistrationDelay</span> <span class="eq">=</span> <span class="num">300</span>
+    <span class="prop">slowStart</span>           <span class="eq">=</span> <span class="num">0</span>
+    <span class="prop">stickiness</span>          <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">targets</span>             <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">tags</span>                <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// TargetGroup</span>
+<span class="kw">schema</span> <span class="type">TargetGroup</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">name</span>                       <span class="comment">// The name of the target group</span>
+    <span class="type">integer</span> <span class="prop">port</span>                       <span class="comment">// The port on which targets receive traffic</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"HTTP"</span>, <span class="str">"HTTPS"</span>, <span class="str">"TCP"</span>, <span class="str">"TLS"</span>, <span class="str">"UDP"</span>, <span class="str">"TCP_UDP"</span>, <span class="str">"GENEVE"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">protocol</span> <span class="eq">=</span> <span class="str">&quot;HTTP&quot;</span>          <span class="comment">// The protocol for routing traffic</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"HTTP1"</span>, <span class="str">"HTTP2"</span>, <span class="str">"GRPC"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">protocolVersion</span> <span class="eq">=</span> <span class="str">&quot;HTTP1&quot;</span>  <span class="comment">// The protocol version (ALB only)</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>                      <span class="comment">// The VPC ID for the target group</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"instance"</span>, <span class="str">"ip"</span>, <span class="str">"lambda"</span>, <span class="str">"alb"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">targetType</span> <span class="eq">=</span> <span class="str">&quot;instance&quot;</span>    <span class="comment">// The target type</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"ipv4"</span>, <span class="str">"ipv6"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">ipAddressType</span> <span class="eq">=</span> <span class="str">&quot;ipv4&quot;</span>     <span class="comment">// The IP address type</span>
+    <span class="type">healthcheck</span> <span class="prop">healthCheck</span>                <span class="comment">// Health check configuration</span>
+    <span class="type">integer</span> <span class="prop">deregistrationDelay</span> <span class="eq">=</span> <span class="num">300</span>  <span class="comment">// Deregistration delay in seconds</span>
+    <span class="type">integer</span> <span class="prop">slowStart</span> <span class="eq">=</span> <span class="num">0</span>              <span class="comment">// Slow start duration in seconds (ALB only)</span>
+    <span class="type">stickiness</span> <span class="prop">stickiness</span>                 <span class="comment">// Stickiness configuration</span>
+    <span class="type">list</span> <span class="prop">targets</span>                    <span class="comment">// Target IDs to register (instance IDs or IP addresses)</span>
+    <span class="type">map</span> <span class="prop">tags</span>                       <span class="comment">// Tags to apply to the target group</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">arn</span>                        <span class="comment">// The Amazon Resource Name (ARN) of the target group</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">list</span> <span class="prop">loadBalancerArns</span>           <span class="comment">// The load balancer ARNs attached to this target group</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="TargetGroup-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">name</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the target group</td>
+</tr>
+<tr>
+  <td><code class="prop-name">port</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The port on which targets receive traffic</td>
+</tr>
+<tr>
+  <td><code class="prop-name">protocol</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">HTTP</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The protocol for routing traffic<br><span class="valid-values-label">Valid values: </span><code class="valid-value">HTTP</code> <code class="valid-value">HTTPS</code> <code class="valid-value">TCP</code> <code class="valid-value">TLS</code> <code class="valid-value">UDP</code> <code class="valid-value">TCP_UDP</code> <code class="valid-value">GENEVE</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">protocolVersion</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">HTTP1</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The protocol version (ALB only)<br><span class="valid-values-label">Valid values: </span><code class="valid-value">HTTP1</code> <code class="valid-value">HTTP2</code> <code class="valid-value">GRPC</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">vpcId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The VPC ID for the target group</td>
+</tr>
+<tr>
+  <td><code class="prop-name">targetType</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">instance</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The target type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">instance</code> <code class="valid-value">ip</code> <code class="valid-value">lambda</code> <code class="valid-value">alb</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">ipAddressType</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">ipv4</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The IP address type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">ipv4</code> <code class="valid-value">ipv6</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">healthCheck</code></td>
+  <td><code class="prop-type">healthcheck</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Health check configuration</td>
+</tr>
+<tr>
+  <td><code class="prop-name">deregistrationDelay</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><code class="default-value">300</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Deregistration delay in seconds</td>
+</tr>
+<tr>
+  <td><code class="prop-name">slowStart</code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><code class="default-value">0</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Slow start duration in seconds (ALB only)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">stickiness</code></td>
+  <td><code class="prop-type">stickiness</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Stickiness configuration</td>
+</tr>
+<tr>
+  <td><code class="prop-name">targets</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Target IDs to register (instance IDs or IP addresses)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the target group</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="TargetGroup-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">arn</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Amazon Resource Name (ARN) of the target group</td>
+</tr>
+<tr>
+  <td><code class="prop-name">loadBalancerArns</code></td>
+  <td><code class="prop-type">list</code></td>
+  <td>The load balancer ARNs attached to this target group</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+            <div id="resource-Vpc" class="resource-content" data-resource="Vpc">
+                <div class="breadcrumbs">
+                    <a href="#" onclick="showWelcome(); return false;">Home</a>
+                    <span class="sep">›</span>
+                    <span class="domain">🌐 Networking</span>
+                    <span class="sep">›</span>
+                    <span class="current">Vpc</span>
+                </div>
+
+                <h1 id="Vpc-title">Vpc</h1>
+                <h2 id="Vpc-example">Example</h2>
+                <div class="code-wrapper">
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">Vpc</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">cidrBlock</span>          <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">ipv6CidrBlock</span>      <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">instanceTenancy</span>    <span class="eq">=</span> <span class="str">"default"</span>
+    <span class="prop">enableDnsSupport</span>   <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">enableDnsHostnames</span> <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">tags</span>               <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                </div>
+                <div class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)">
+                        <span class="toggle-icon">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Vpc</span>
+<span class="kw">schema</span> <span class="type">Vpc</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">cidrBlock</span>                    <span class="comment">// The IPv4 CIDR block for the VPC (e.g., 10.0.0.0/16)</span>
+    <span class="type">string</span> <span class="prop">ipv6CidrBlock</span>                <span class="comment">// The IPv6 CIDR block for the VPC. If specified, AWS associates an IPv6 CIDR block</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"default"</span>, <span class="str">"dedicated"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">instanceTenancy</span> <span class="eq">=</span> <span class="str">&quot;default&quot;</span>  <span class="comment">// Tenancy option for instances</span>
+    <span class="type">boolean</span> <span class="prop">enableDnsSupport</span> <span class="eq">=</span> <span class="bool">true</span>      <span class="comment">// Enable DNS support in the VPC</span>
+    <span class="type">boolean</span> <span class="prop">enableDnsHostnames</span> <span class="eq">=</span> <span class="bool">false</span>   <span class="comment">// Enable DNS hostnames in the VPC</span>
+    <span class="type">map</span> <span class="prop">tags</span>                         <span class="comment">// Tags to apply to the VPC</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>                        <span class="comment">// The VPC ID assigned by AWS</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">state</span>                        <span class="comment">// The current state of the VPC (pending, available)</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">mainRouteTableId</span>             <span class="comment">// The ID of the main route table</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">defaultNetworkAclId</span>          <span class="comment">// The ID of the default network ACL</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">defaultSecurityGroupId</span>       <span class="comment">// The ID of the default security group</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">ownerId</span>                      <span class="comment">// The AWS account ID that owns the VPC</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">arn</span>                          <span class="comment">// The Amazon Resource Name (ARN) of the VPC</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </div>
+<h2 id="Vpc-properties">Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Default</th>
+            <th>Required</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">cidrBlock</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The IPv4 CIDR block for the VPC (e.g., 10.0.0.0/16)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">ipv6CidrBlock</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The IPv6 CIDR block for the VPC. If specified, AWS associates an IPv6 CIDR block</td>
+</tr>
+<tr>
+  <td><code class="prop-name">instanceTenancy</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">default</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tenancy option for instances<br><span class="valid-values-label">Valid values: </span><code class="valid-value">default</code> <code class="valid-value">dedicated</code></td>
+</tr>
+<tr>
+  <td><code class="prop-name">enableDnsSupport</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">true</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable DNS support in the VPC</td>
+</tr>
+<tr>
+  <td><code class="prop-name">enableDnsHostnames</code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable DNS hostnames in the VPC</td>
+</tr>
+<tr>
+  <td><code class="prop-name">tags</code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the VPC</td>
+</tr>
+    </tbody>
+</table>
+</div>
+<h2 id="Vpc-cloud">Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr>
+  <td><code class="prop-name">vpcId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The VPC ID assigned by AWS</td>
+</tr>
+<tr>
+  <td><code class="prop-name">state</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The current state of the VPC (pending, available)</td>
+</tr>
+<tr>
+  <td><code class="prop-name">mainRouteTableId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The ID of the main route table</td>
+</tr>
+<tr>
+  <td><code class="prop-name">defaultNetworkAclId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The ID of the default network ACL</td>
+</tr>
+<tr>
+  <td><code class="prop-name">defaultSecurityGroupId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The ID of the default security group</td>
+</tr>
+<tr>
+  <td><code class="prop-name">ownerId</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The AWS account ID that owns the VPC</td>
+</tr>
+<tr>
+  <td><code class="prop-name">arn</code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Amazon Resource Name (ARN) of the VPC</td>
+</tr>
+    </tbody>
+</table>
+</div>
+                <footer class="resource-footer">
+                    <p>Generated on 2026-01-03 01:07</p>
+                </footer>
+            </div>
+        </main>
+
+        <!-- Right Sidebar: Table of Contents -->
+        <aside class="sidebar-right">
+            <div class="toc-header">On this page</div>
+            <nav id="toc" class="toc">
+                <!-- Populated dynamically -->
+            </nav>
+        </aside>
     </div>
-    <div class="domain-group" data-domain="compute">
-        <h3 class="domain-header" onclick="toggleDomain(this)">
-            <span class="domain-icon">💻</span>
-            Compute
-            <span class="badge badge-count">1</span>
-            <span class="collapse-icon">▼</span>
-        </h3>
-        <ul class="resource-list">
-        <li data-name="ec2instance" data-domain="compute">
-            <a href="Ec2Instance.html">Ec2Instance</a>
-            <span class="property-count">24 properties</span>
-            <span class="property-breakdown">(15 user, 9 cloud)</span>
-        </li>
-        </ul>
-    </div>
-    <div class="domain-group" data-domain="storage">
-        <h3 class="domain-header" onclick="toggleDomain(this)">
-            <span class="domain-icon">💾</span>
-            Storage
-            <span class="badge badge-count">3</span>
-            <span class="collapse-icon">▼</span>
-        </h3>
-        <ul class="resource-list">
-        <li data-name="ebsvolume" data-domain="storage">
-            <a href="EbsVolume.html">EbsVolume</a>
-            <span class="property-count">15 properties</span>
-            <span class="property-breakdown">(10 user, 5 cloud)</span>
-        </li>
-        <li data-name="s3bucket" data-domain="storage">
-            <a href="S3Bucket.html">S3Bucket</a>
-            <span class="property-count">19 properties</span>
-            <span class="property-breakdown">(14 user, 5 cloud)</span>
-        </li>
-        <li data-name="s3bucketpolicy" data-domain="storage">
-            <a href="S3BucketPolicy.html">S3BucketPolicy</a>
-            <span class="property-count">2 properties</span>
-            <span class="property-breakdown">(2 user, 0 cloud)</span>
-        </li>
-        </ul>
-    </div>
-    <div class="domain-group" data-domain="dns">
-        <h3 class="domain-header" onclick="toggleDomain(this)">
-            <span class="domain-icon">📍</span>
-            Dns
-            <span class="badge badge-count">2</span>
-            <span class="collapse-icon">▼</span>
-        </h3>
-        <ul class="resource-list">
-        <li data-name="hostedzone" data-domain="dns">
-            <a href="HostedZone.html">HostedZone</a>
-            <span class="property-count">11 properties</span>
-            <span class="property-breakdown">(6 user, 5 cloud)</span>
-        </li>
-        <li data-name="recordset" data-domain="dns">
-            <a href="RecordSet.html">RecordSet</a>
-            <span class="property-count">12 properties</span>
-            <span class="property-breakdown">(12 user, 0 cloud)</span>
-        </li>
-        </ul>
-    </div>
-    <div class="domain-group" data-domain="loadbalancing">
-        <h3 class="domain-header" onclick="toggleDomain(this)">
-            <span class="domain-icon">⚖️</span>
-            Loadbalancing
-            <span class="badge badge-count">3</span>
-            <span class="collapse-icon">▼</span>
-        </h3>
-        <ul class="resource-list">
-        <li data-name="listener" data-domain="loadbalancing">
-            <a href="Listener.html">Listener</a>
-            <span class="property-count">12 properties</span>
-            <span class="property-breakdown">(11 user, 1 cloud)</span>
-        </li>
-        <li data-name="loadbalancer" data-domain="loadbalancing">
-            <a href="LoadBalancer.html">LoadBalancer</a>
-            <span class="property-count">20 properties</span>
-            <span class="property-breakdown">(14 user, 6 cloud)</span>
-        </li>
-        <li data-name="targetgroup" data-domain="loadbalancing">
-            <a href="TargetGroup.html">TargetGroup</a>
-            <span class="property-count">15 properties</span>
-            <span class="property-breakdown">(13 user, 2 cloud)</span>
-        </li>
-        </ul>
-    </div>
-        <footer class="meta">
-            <p>Generated on 2026-01-02 01:33</p>
-            <p>Powered by <a href="https://kitelang.cloud">Kite</a></p>
-        </footer>
-    </div>
+
     <script>
-        function toggleDomain(header) {
-            const group = header.parentElement;
-            group.classList.toggle('collapsed');
+        let currentResource = null;
+
+function showResource(name) {
+    // Hide all resources
+    document.querySelectorAll('.resource-content').forEach(el => {
+        el.classList.remove('active');
+    });
+
+    // Show selected resource
+    const resource = document.getElementById('resource-' + name);
+    if (resource) {
+        resource.classList.add('active');
+        currentResource = name;
+
+        // Update nav active state
+        document.querySelectorAll('.nav-item').forEach(el => {
+            el.classList.remove('active');
+        });
+        const navItem = document.querySelector(`.nav-item[data-name="${name.toLowerCase()}"]`);
+        if (navItem) {
+            navItem.classList.add('active');
+            // Expand parent category if collapsed
+            const category = navItem.closest('.nav-category');
+            if (category && category.classList.contains('collapsed')) {
+                category.classList.remove('collapsed');
+            }
         }
 
-        document.getElementById('search').addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase();
-            document.querySelectorAll('.domain-group').forEach(group => {
-                let hasVisible = false;
-                group.querySelectorAll('li').forEach(li => {
-                    const name = li.dataset.name;
-                    const visible = name.includes(query);
-                    li.style.display = visible ? '' : 'none';
-                    if (visible) hasVisible = true;
-                });
-                group.style.display = hasVisible ? '' : 'none';
-                if (query && hasVisible) group.classList.remove('collapsed');
-            });
+        // Update URL hash
+        history.pushState(null, '', '#' + name);
+
+        // Update TOC
+        updateTOC(resource);
+
+        // Scroll to top of content
+        resource.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function showWelcome() {
+    document.querySelectorAll('.resource-content').forEach(el => {
+        el.classList.remove('active');
+    });
+    document.getElementById('welcome').classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(el => {
+        el.classList.remove('active');
+    });
+    history.pushState(null, '', window.location.pathname);
+    updateTOC(null);
+}
+
+function toggleCategory(header) {
+    const category = header.parentElement;
+    category.classList.toggle('collapsed');
+}
+
+function scrollToCategory(domain) {
+    const category = document.querySelector(`.nav-category[data-domain="${domain}"]`);
+    if (category) {
+        category.classList.remove('collapsed');
+        category.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function toggleSchema(header) {
+    const section = header.parentElement;
+    section.classList.toggle('expanded');
+}
+
+function copyCode(btn) {
+    const code = btn.parentElement.querySelector('code').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
+        }, 2000);
+    });
+}
+
+function updateTOC(container) {
+    const toc = document.getElementById('toc');
+    toc.innerHTML = '';
+
+    if (!container || container.id === 'welcome') {
+        return;
+    }
+
+    const headings = container.querySelectorAll('h2, h3');
+    headings.forEach(heading => {
+        if (!heading.id) return;
+
+        const link = document.createElement('a');
+        link.href = '#' + heading.id;
+        link.textContent = heading.textContent.replace(/[▶▾]\s*/g, '');
+        link.className = 'toc-' + heading.tagName.toLowerCase();
+
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
+
+        toc.appendChild(link);
+    });
+}
+
+// Search functionality
+document.getElementById('search').addEventListener('input', function(e) {
+    const query = e.target.value.toLowerCase();
+
+    document.querySelectorAll('.nav-category').forEach(category => {
+        let hasVisible = false;
+
+        category.querySelectorAll('.nav-item').forEach(item => {
+            const name = item.dataset.name;
+            const visible = name.includes(query);
+            item.style.display = visible ? '' : 'none';
+            if (visible) hasVisible = true;
+        });
+
+        category.style.display = hasVisible ? '' : 'none';
+
+        if (query && hasVisible) {
+            category.classList.remove('collapsed');
+        }
+    });
+});
+
+// Handle initial hash
+window.addEventListener('DOMContentLoaded', () => {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+        showResource(hash);
+    }
+});
+
+// Handle back/forward navigation
+window.addEventListener('popstate', () => {
+    const hash = window.location.hash.slice(1);
+    if (hash) {
+        showResource(hash);
+    } else {
+        showWelcome();
+    }
+});
+
     </script>
 </body>
 </html>
