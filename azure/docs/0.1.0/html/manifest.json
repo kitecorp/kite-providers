@@ -1,0 +1,1368 @@
+{
+  "provider": "azure",
+  "version": "0.1.0",
+  "generatedAt": "2026-01-03T03:19:38.730606",
+  "resources": {
+    "BlobContainer": {
+      "domain": "storage",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "storageAccountName": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "publicAccess": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "None"
+        },
+        "metadata": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "immutableStorageWithVersioning": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "defaultEncryptionScope": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "denyEncryptionScopeOverride": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "etag": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "lastModifiedTime": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "leaseStatus": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "leaseState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "hasImmutabilityPolicy": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "hasLegalHold": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "DnsRecordSet": {
+      "domain": "dns",
+      "properties": {
+        "zoneName": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "type": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "ttl": {
+          "type": "integer",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "aRecords": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "aaaaRecords": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "cnameRecord": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "mxRecords": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "txtRecords": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "nsRecords": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "srvRecords": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "caaRecords": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "ptrRecords": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "targetResourceId": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "metadata": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "fqdn": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "provisioningState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "etag": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "DnsZone": {
+      "domain": "dns",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "zoneType": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "Public"
+        },
+        "registrationVirtualNetworkIds": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resolutionVirtualNetworkIds": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "tags": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "nameServers": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "numberOfRecordSets": {
+          "type": "integer",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "maxNumberOfRecordSets": {
+          "type": "integer",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "etag": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "LoadBalancer": {
+      "domain": "loadbalancing",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "location": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "sku": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "Standard"
+        },
+        "tier": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "Regional"
+        },
+        "frontendIpConfigurations": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "backendAddressPools": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "healthProbes": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "loadBalancingRules": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "inboundNatRules": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "outboundRules": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "tags": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "provisioningState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "ManagedDisk": {
+      "domain": "storage",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "location": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "size": {
+          "type": "integer",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "sku": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "StandardSSD_LRS"
+        },
+        "tier": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "diskIops": {
+          "type": "integer",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "diskMbps": {
+          "type": "integer",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "osType": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "sourceResourceId": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "sourceUri": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "storageAccountId": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "zone": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "burstingEnabled": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "false"
+        },
+        "networkAccessPolicy": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "AllowAll"
+        },
+        "diskAccessId": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "tags": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "provisioningState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "diskState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "uniqueId": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "timeCreated": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "managedBy": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "NatGateway": {
+      "domain": "networking",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "location": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "idleTimeoutInMinutes": {
+          "type": "integer",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "4"
+        },
+        "publicIpAddressIds": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "publicIpPrefixIds": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "skuName": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "Standard"
+        },
+        "tags": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "provisioningState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "resourceGuid": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "subnetIds": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "NetworkSecurityGroup": {
+      "domain": "networking",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "location": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "securityRules": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "tags": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "provisioningState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "resourceGuid": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "networkInterfaceIds": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "subnetIds": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "PublicIpAddress": {
+      "domain": "networking",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "location": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "sku": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "Basic"
+        },
+        "allocationMethod": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "Dynamic"
+        },
+        "ipVersion": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "IPv4"
+        },
+        "idleTimeoutInMinutes": {
+          "type": "integer",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "4"
+        },
+        "domainNameLabel": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "zones": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "tags": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "ipAddress": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "provisioningState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "resourceGuid": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "fqdn": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "ResourceGroup": {
+      "domain": "core",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "location": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "tags": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "provisioningState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "RouteTable": {
+      "domain": "networking",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "location": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "disableBgpRoutePropagation": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "false"
+        },
+        "routes": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "tags": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "provisioningState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "associatedSubnetIds": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "StorageAccount": {
+      "domain": "storage",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "location": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "sku": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "Standard_LRS"
+        },
+        "kind": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "StorageV2"
+        },
+        "accessTier": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "Hot"
+        },
+        "enableHttpsTrafficOnly": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "true"
+        },
+        "minimumTlsVersion": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "TLS1_2"
+        },
+        "allowBlobPublicAccess": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "false"
+        },
+        "allowSharedKeyAccess": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "true"
+        },
+        "enableHierarchicalNamespace": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "false"
+        },
+        "infrastructureEncryptionEnabled": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "false"
+        },
+        "largeFileSharesEnabled": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "false"
+        },
+        "networkRules": {
+          "type": "networkrules",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "tags": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "primaryBlobEndpoint": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "primaryFileEndpoint": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "primaryQueueEndpoint": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "primaryTableEndpoint": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "primaryAccessKey": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "primaryConnectionString": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "provisioningState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "Subnet": {
+      "domain": "networking",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "vnetName": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "addressPrefix": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "networkSecurityGroupId": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "routeTableId": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "privateEndpointNetworkPolicies": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "true"
+        },
+        "privateLinkServiceNetworkPolicies": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "true"
+        },
+        "serviceEndpoints": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "provisioningState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "purpose": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "VirtualMachine": {
+      "domain": "compute",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "location": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "size": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "adminUsername": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "adminPassword": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "sshPublicKey": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "imagePublisher": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "imageOffer": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "imageSku": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "imageVersion": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "latest"
+        },
+        "subnetId": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "publicIpAddressId": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "networkSecurityGroupId": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "osDiskSizeGb": {
+          "type": "integer",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "osDiskType": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "Premium_LRS"
+        },
+        "osDiskCaching": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "ReadWrite"
+        },
+        "computerName": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "customData": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "zones": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "tags": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "vmId": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "provisioningState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "powerState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "privateIp": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "publicIp": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "networkInterfaceId": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "osDiskName": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    },
+    "Vnet": {
+      "domain": "networking",
+      "properties": {
+        "name": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "resourceGroup": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "location": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "addressSpaces": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "dnsServers": {
+          "type": "list",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "enableDdosProtection": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "false"
+        },
+        "enableVmProtection": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false,
+          "default": "false"
+        },
+        "tags": {
+          "type": "map",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "id": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "provisioningState": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "resourceGuid": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "hasSubnets": {
+          "type": "boolean",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    }
+  }
+}

@@ -1031,6 +1031,99 @@
         color: var(--text-muted);
     }
 
+    /* Changelog styles */
+    .changelog-meta {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+
+    .changelog-section {
+        margin-bottom: 2rem;
+    }
+
+    .changelog-section h2 {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .changelog-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .changelog-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .changelog-list.added li::before {
+        content: "+ ";
+        color: #22c55e;
+        font-weight: bold;
+    }
+
+    .changelog-list.removed li::before {
+        content: "- ";
+        color: #ef4444;
+        font-weight: bold;
+    }
+
+    .resource-changes {
+        background: var(--bg-secondary);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .resource-changes h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1rem;
+    }
+
+    .prop-change {
+        margin: 0.25rem 0;
+        font-size: 0.875rem;
+    }
+
+    .prop-change.added {
+        color: #22c55e;
+    }
+
+    .prop-change.removed {
+        color: #ef4444;
+    }
+
+    .prop-change code {
+        background: var(--bg-hover);
+        padding: 0.125rem 0.25rem;
+        border-radius: 0.25rem;
+    }
+
+    .no-changes {
+        color: var(--text-muted);
+        font-style: italic;
+    }
+
+    .loading {
+        color: var(--text-muted);
+    }
+
+    .whats-new-link {
+        display: block;
+        padding: 0.5rem 0.75rem;
+        margin: 0.5rem 0;
+        background: rgba(124, 58, 237, 0.1);
+        border-radius: 0.375rem;
+        color: var(--kite-primary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: all 0.15s;
+    }
+
+    .whats-new-link:hover {
+        background: rgba(124, 58, 237, 0.2);
+    }
+
     /* Print styles */
     @media print {
         .sidebar-left, .sidebar-right, .copy-btn, .resource-nav { display: none; }
