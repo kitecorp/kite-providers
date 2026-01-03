@@ -15,6 +15,10 @@
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
 
+    <!-- Preload critical resources -->
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="preload" href="scripts.js" as="script">
+
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 
@@ -40,35 +44,91 @@
     <meta name="twitter:description" content="Documentation for HostedZone resource in Aws provider. Learn about properties, examples, and configuration.">
 </head>
 <script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "TechArticle",
-    "headline": "HostedZone Resource Documentation",
-    "description": "",
-    "author": {
-        "@type": "Organization",
-        "name": "Kite"
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "HostedZone Resource Documentation",
+        "description": "",
+        "author": {
+            "@type": "Organization",
+            "name": "Kite"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Kite",
+            "url": "https://kitelang.cloud"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://docs.kitelang.cloud/aws/HostedZone.html"
+        },
+        "about": {
+            "@type": "SoftwareSourceCode",
+            "name": "HostedZone",
+            "programmingLanguage": "Kite",
+            "codeRepository": "https://github.com/kitelang/kite"
+        },
+        "articleSection": "Dns",
+        "keywords": ["kite", "aws", "hostedzone", "infrastructure as code", "cloud"]
     },
-    "publisher": {
-        "@type": "Organization",
-        "name": "Kite",
-        "url": "https://kitelang.cloud"
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Aws Provider",
+                "item": "https://docs.kitelang.cloud/aws/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Dns",
+                "item": "https://docs.kitelang.cloud/aws/HostedZone.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "HostedZone"
+            }
+        ]
     },
-    "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": "https://docs.kitelang.cloud/aws/HostedZone.html"
-    },
-    "about": {
-        "@type": "SoftwareSourceCode",
-        "name": "HostedZone",
-        "programmingLanguage": "Kite",
-        "codeRepository": "https://github.com/kitelang/kite"
-    },
-    "articleSection": "Dns",
-    "keywords": ["kite", "aws", "hostedzone", "infrastructure as code", "cloud"]
-}
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is HostedZone in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "HostedZone is a dns resource in the Aws provider. Use it to manage your cloud infrastructure."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I import HostedZone in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Use: import HostedZone from \"aws/dns/HostedZone.kite\""
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What properties does HostedZone have?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "HostedZone has 6 configurable properties. See the Properties section for details."
+                }
+            }
+        ]
+    }
+]
 </script>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
         <span class="hamburger-icon"></span>
     </button>
@@ -188,7 +248,7 @@
             </div>
             </nav>
         </aside>
-        <main class="content">
+        <main id="main-content" class="content">
             <article class="resource-content" itemscope itemtype="https://schema.org/TechArticle">
                 <nav class="breadcrumbs" aria-label="Breadcrumb">
                     <a href="index.html">Home</a>
@@ -353,12 +413,19 @@
 </table>
 </div>
 </section>
+<section id="related" class="related-section">
+<h2>Related Resources</h2>
+<p class="related-desc">Other resources in the Dns category:</p>
+<div class="related-grid">
+<a href="RecordSet.html" class="related-card"><span class="related-icon">📍</span><span class="related-name">RecordSet</span></a>
+</div>
+</section>
 <nav class="resource-nav" aria-label="Resource navigation">
 <a href="ElasticIp.html" class="nav-prev" rel="prev">← ElasticIp</a>
 <a href="InternetGateway.html" class="nav-next" rel="next">InternetGateway →</a>
 </nav>
                 <footer class="resource-footer">
-                    <p>Generated on <time datetime="2026-01-03T02:06:09.025652">January 3, 2026</time></p>
+                    <p>Generated on <time datetime="2026-01-03T02:13:38.05163">January 3, 2026</time></p>
                 </footer>
             </article>
         </main>
@@ -370,6 +437,7 @@
                 <a href="#schema" class="toc-h3">Schema Definition</a>
 <a href="#properties">Properties</a>
 <a href="#cloud-properties">Cloud Properties</a>
+<a href="#related">Related Resources</a>
             </nav>
         </aside>
     </div>

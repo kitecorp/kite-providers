@@ -15,6 +15,10 @@
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
 
+    <!-- Preload critical resources -->
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="preload" href="scripts.js" as="script">
+
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles.css">
 
@@ -39,7 +43,49 @@
     <meta name="twitter:title" content="Files Provider Documentation | Kite">
     <meta name="twitter:description" content="Complete documentation for Files provider resources. Learn how to configure and manage 1 infrastructure resources with Kite.">
 </head>
+<script type="application/ld+json">
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Kite Files Provider",
+        "applicationCategory": "DeveloperApplication",
+        "applicationSubCategory": "Infrastructure as Code",
+        "operatingSystem": "Cross-platform",
+        "softwareVersion": "0.1.0",
+        "description": "Infrastructure as code provider for Files. Manage 1 cloud resources with Kite.",
+        "author": {
+            "@type": "Organization",
+            "name": "Kite",
+            "url": "https://kitelang.cloud"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "1 infrastructure resources",
+            "1 resource categories",
+            "Declarative configuration",
+            "Multi-cloud support"
+        ]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Kite Files Provider Documentation",
+        "url": "https://docs.kitelang.cloud/files/",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://docs.kitelang.cloud/files/index.html?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+]
+</script>
 <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
         <span class="hamburger-icon"></span>
     </button>
@@ -74,7 +120,7 @@
             </div>
             </nav>
         </aside>
-                    <main class="content">
+                    <main id="main-content" class="content">
                         <article class="resource-content">
                             <h1>Files Provider Documentation</h1>
                             <p class="welcome-text">Infrastructure as code resources for Files. Select a resource from the navigation to view its documentation.</p>

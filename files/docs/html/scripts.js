@@ -143,6 +143,19 @@ document.querySelectorAll('section[id], h2[id]').forEach(section => {
     observer.observe(section);
 });
 
+// Add anchor links to headings with IDs
+document.querySelectorAll('h2[id], section[id] > h2').forEach(heading => {
+    const id = heading.id || heading.parentElement.id;
+    if (id) {
+        const anchor = document.createElement('a');
+        anchor.className = 'anchor-link';
+        anchor.href = '#' + id;
+        anchor.textContent = '#';
+        anchor.setAttribute('aria-label', 'Link to this section');
+        heading.insertBefore(anchor, heading.firstChild);
+    }
+});
+
 // Smooth scroll for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
