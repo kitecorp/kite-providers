@@ -583,7 +583,29 @@
 
     tr:hover { background: var(--bg-hover); }
 
-    .prop-name { color: var(--text-primary); font-weight: 500; }
+    .prop-name {
+        color: var(--text-primary);
+        font-weight: 500;
+        cursor: pointer;
+        position: relative;
+        transition: color 0.15s;
+    }
+
+    .prop-name:hover {
+        color: var(--kite-primary);
+    }
+
+    .prop-name .link-icon {
+        opacity: 0;
+        margin-left: 0.25rem;
+        color: var(--text-muted);
+        font-size: 0.75em;
+        transition: opacity 0.15s;
+    }
+
+    .prop-name:hover .link-icon {
+        opacity: 1;
+    }
 
     .prop-type {
         color: var(--kite-accent);

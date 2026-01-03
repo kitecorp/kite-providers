@@ -281,3 +281,13 @@ function showExample(btn, type) {
     document.getElementById('example-' + type)?.classList.add('active');
     btn.classList.add('active');
 }
+
+// Copy property deep link
+function copyPropLink(propName) {
+    const url = window.location.origin + window.location.pathname + '#prop-' + propName;
+    navigator.clipboard.writeText(url).then(() => {
+        showToast('Link copied: #prop-' + propName);
+        // Update URL without reload
+        history.pushState(null, '', '#prop-' + propName);
+    });
+}
