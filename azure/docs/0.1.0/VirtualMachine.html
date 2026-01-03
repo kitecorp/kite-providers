@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VirtualMachine | Azure Provider | Kite</title>
+    <meta name="description" content="Documentation for VirtualMachine resource.">
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../scripts.js" defer></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo">🪁 Azure Provider</a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+            </div>
+            <div class="sidebar-search">
+                <input type="text" placeholder="Search..." oninput="filterNav(this.value)">
+            </div>
+            <div class="sidebar-content">
+                <div id="resource-nav" class="nav-section"></div>
+            </div>
+        </nav>
+        <main id="main-content" class="content">
+            <article class="resource-content">
+                <nav class="breadcrumbs">
+                    <a href="../index.html">Home</a>
+                    <span class="sep">›</span>
+                    <span>Compute</span>
+                    <span class="sep">›</span>
+                    <span class="current">VirtualMachine</span>
+                </nav>
+                <header>
+                    <h1>VirtualMachine</h1>
+                    <p class="resource-desc">Documentation for VirtualMachine resource.</p>
+                </header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">VirtualMachine</span> <span class="kw">from</span> <span class="str">"azure/compute/VirtualMachine.kite"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Example</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre class="code-block"><code><span class="kw">resource</span> <span class="type">VirtualMachine</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                   <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">resourceGroup</span>          <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">location</span>               <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">size</span>                   <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">adminUsername</span>          <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">adminPassword</span>          <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">sshPublicKey</span>           <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">imagePublisher</span>         <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">imageOffer</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">imageSku</span>               <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">imageVersion</span>           <span class="eq">=</span> <span class="str">"latest"</span>
+    <span class="prop">subnetId</span>               <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">publicIpAddressId</span>      <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">networkSecurityGroupId</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">osDiskSizeGb</span>           <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">osDiskType</span>             <span class="eq">=</span> <span class="str">"Premium_LRS"</span>
+    <span class="prop">osDiskCaching</span>          <span class="eq">=</span> <span class="str">"ReadWrite"</span>
+    <span class="prop">computerName</span>           <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">customData</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">zones</span>                  <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">tags</span>                   <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-name">
+  <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the virtual machine</td>
+</tr>
+<tr id="prop-resourceGroup">
+  <td><code class="prop-name" onclick="copyPropLink('resourceGroup')" title="Click to copy link">resourceGroup<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The Azure resource group name</td>
+</tr>
+<tr id="prop-location">
+  <td><code class="prop-name" onclick="copyPropLink('location')" title="Click to copy link">location<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The Azure region/location</td>
+</tr>
+<tr id="prop-size">
+  <td><code class="prop-name" onclick="copyPropLink('size')" title="Click to copy link">size<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The VM size (e.g., Standard_B2s, Standard_D2s_v3)</td>
+</tr>
+<tr id="prop-adminUsername">
+  <td><code class="prop-name" onclick="copyPropLink('adminUsername')" title="Click to copy link">adminUsername<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The admin username for the VM</td>
+</tr>
+<tr id="prop-adminPassword">
+  <td><code class="prop-name" onclick="copyPropLink('adminPassword')" title="Click to copy link">adminPassword<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The admin password (for Windows or password auth)</td>
+</tr>
+<tr id="prop-sshPublicKey">
+  <td><code class="prop-name" onclick="copyPropLink('sshPublicKey')" title="Click to copy link">sshPublicKey<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The SSH public key for Linux VMs</td>
+</tr>
+<tr id="prop-imagePublisher">
+  <td><code class="prop-name" onclick="copyPropLink('imagePublisher')" title="Click to copy link">imagePublisher<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The image publisher (e.g., Canonical, MicrosoftWindowsServer)</td>
+</tr>
+<tr id="prop-imageOffer">
+  <td><code class="prop-name" onclick="copyPropLink('imageOffer')" title="Click to copy link">imageOffer<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The image offer (e.g., 0001-com-ubuntu-server-jammy, WindowsServer)</td>
+</tr>
+<tr id="prop-imageSku">
+  <td><code class="prop-name" onclick="copyPropLink('imageSku')" title="Click to copy link">imageSku<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The image SKU (e.g., 22_04-lts-gen2, 2022-datacenter-azure-edition)</td>
+</tr>
+<tr id="prop-imageVersion">
+  <td><code class="prop-name" onclick="copyPropLink('imageVersion')" title="Click to copy link">imageVersion<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">latest</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The image version</td>
+</tr>
+<tr id="prop-subnetId">
+  <td><code class="prop-name" onclick="copyPropLink('subnetId')" title="Click to copy link">subnetId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The subnet ID to attach the VM to</td>
+</tr>
+<tr id="prop-publicIpAddressId">
+  <td><code class="prop-name" onclick="copyPropLink('publicIpAddressId')" title="Click to copy link">publicIpAddressId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The public IP address ID to associate</td>
+</tr>
+<tr id="prop-networkSecurityGroupId">
+  <td><code class="prop-name" onclick="copyPropLink('networkSecurityGroupId')" title="Click to copy link">networkSecurityGroupId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The network security group ID for the NIC</td>
+</tr>
+<tr id="prop-osDiskSizeGb">
+  <td><code class="prop-name" onclick="copyPropLink('osDiskSizeGb')" title="Click to copy link">osDiskSizeGb<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The OS disk size in GB</td>
+</tr>
+<tr id="prop-osDiskType">
+  <td><code class="prop-name" onclick="copyPropLink('osDiskType')" title="Click to copy link">osDiskType<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">Premium_LRS</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The OS disk type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">Standard_LRS</code> <code class="valid-value">StandardSSD_LRS</code> <code class="valid-value">Premium_LRS</code> <code class="valid-value">UltraSSD_LRS</code></td>
+</tr>
+<tr id="prop-osDiskCaching">
+  <td><code class="prop-name" onclick="copyPropLink('osDiskCaching')" title="Click to copy link">osDiskCaching<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">ReadWrite</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The OS disk caching<br><span class="valid-values-label">Valid values: </span><code class="valid-value">None</code> <code class="valid-value">ReadOnly</code> <code class="valid-value">ReadWrite</code></td>
+</tr>
+<tr id="prop-computerName">
+  <td><code class="prop-name" onclick="copyPropLink('computerName')" title="Click to copy link">computerName<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The computer name (hostname). Defaults to VM name</td>
+</tr>
+<tr id="prop-customData">
+  <td><code class="prop-name" onclick="copyPropLink('customData')" title="Click to copy link">customData<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Custom data for cloud-init (Linux) or CustomScriptExtension (Windows)</td>
+</tr>
+<tr id="prop-zones">
+  <td><code class="prop-name" onclick="copyPropLink('zones')" title="Click to copy link">zones<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Availability zones for the VM</td>
+</tr>
+<tr id="prop-tags">
+  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the VM and its resources</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="cloud-properties">
+<h2>Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-id">
+  <td><code class="prop-name" onclick="copyPropLink('id')" title="Click to copy link">id<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Azure resource ID of the VM</td>
+</tr>
+<tr id="prop-vmId">
+  <td><code class="prop-name" onclick="copyPropLink('vmId')" title="Click to copy link">vmId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The VM unique ID</td>
+</tr>
+<tr id="prop-provisioningState">
+  <td><code class="prop-name" onclick="copyPropLink('provisioningState')" title="Click to copy link">provisioningState<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The provisioning state</td>
+</tr>
+<tr id="prop-powerState">
+  <td><code class="prop-name" onclick="copyPropLink('powerState')" title="Click to copy link">powerState<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The power state (running, deallocated, etc.)</td>
+</tr>
+<tr id="prop-privateIp">
+  <td><code class="prop-name" onclick="copyPropLink('privateIp')" title="Click to copy link">privateIp<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The private IP address</td>
+</tr>
+<tr id="prop-publicIp">
+  <td><code class="prop-name" onclick="copyPropLink('publicIp')" title="Click to copy link">publicIp<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The public IP address (if assigned)</td>
+</tr>
+<tr id="prop-networkInterfaceId">
+  <td><code class="prop-name" onclick="copyPropLink('networkInterfaceId')" title="Click to copy link">networkInterfaceId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The network interface ID</td>
+</tr>
+<tr id="prop-osDiskName">
+  <td><code class="prop-name" onclick="copyPropLink('osDiskName')" title="Click to copy link">osDiskName<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The OS disk name</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+            </article>
+        </main>
+    </div>
+    <script>
+        // Load sidebar navigation from manifest
+        fetch('manifest.json')
+            .then(r => r.json())
+            .then(data => {
+                const byDomain = {};
+                data.resources.forEach(r => {
+                    const d = r.domain || 'general';
+                    if (!byDomain[d]) byDomain[d] = [];
+                    byDomain[d].push(r);
+                });
+                let html = '';
+                for (const [domain, items] of Object.entries(byDomain)) {
+                    html += `<div class="nav-group"><div class="nav-group-header">${domain}</div>`;
+                    items.forEach(r => {
+                        const active = r.name === 'VirtualMachine' ? ' active' : '';
+                        html += `<a href="${r.name}.html" class="nav-item${active}">${r.name}</a>`;
+                    });
+                    html += '</div>';
+                }
+                document.getElementById('resource-nav').innerHTML = html;
+            });
+        function filterNav(q) {
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.style.display = el.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

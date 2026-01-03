@@ -1,0 +1,38 @@
+// Ec2Instance
+schema Ec2Instance {
+    string ami                                   // The AMI ID to use for the instance
+    string instanceType                          // The instance type (e.g., t3.micro, m5.large)
+    string subnetId                              // The subnet ID to launch the instance in
+    list securityGroupIds                      // List of security group IDs to attach
+    string keyName                               // The name of the key pair for SSH access
+    boolean associatePublicIpAddress = false      // Whether to associate a public IP address
+    string iamInstanceProfile                    // The IAM instance profile name or ARN
+    string userData                              // User data script for instance initialization (base64 encoded)
+    string availabilityZone                      // The availability zone to launch in
+    boolean monitoring = false                    // Enable detailed monitoring
+    @allowed(["default", "dedicated", "host"])
+    string tenancy = "default"                   // Instance tenancy option
+    integer rootVolumeSize                        // Root volume size in GiB
+    @allowed(["gp2", "gp3", "io1", "io2", "st1", "sc1"])
+    string rootVolumeType = "gp3"                // Root volume type
+    boolean deleteRootVolumeOnTermination = true  // Delete root volume on termination
+    map tags                                  // Tags to apply to the instance
+    @cloud
+    string instanceId                            // The instance ID assigned by AWS
+    @cloud
+    string state                                 // Instance state: pending, running, stopping, stopped, terminated
+    @cloud
+    string publicIp                              // The public IP address (if assigned)
+    @cloud
+    string privateIp                             // The private IP address
+    @cloud
+    string publicDnsName                         // The public DNS name
+    @cloud
+    string privateDnsName                        // The private DNS name
+    @cloud
+    string vpcId                                 // The VPC ID the instance is in
+    @cloud
+    string architecture                          // The architecture: x86_64 or arm64
+    @cloud
+    string rootDeviceName                        // The root device name
+}

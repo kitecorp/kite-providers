@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternetGateway | Aws Provider | Kite</title>
+    <meta name="description" content="Documentation for InternetGateway resource in Aws provider. Learn about properties, examples, and configuration.">
+    <meta name="keywords" content="kite, infrastructure as code, aws, cloud, terraform alternative, IaC">
+    <meta name="author" content="Kite">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://docs.kitelang.cloud/aws/InternetGateway.html">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="../../styles.css" as="style">
+    <link rel="preload" href="../../scripts.js" as="script">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../../styles.css">
+
+    <!-- Scripts -->
+    <script src="../../scripts.js" defer></script>
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Aws Provider Resources" href="../../feed.xml">
+
+    <!-- OpenSearch -->
+    <link rel="search" type="application/opensearchdescription+xml" title="Kite Aws Docs" href="../../opensearch.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="InternetGateway | Aws Provider | Kite">
+    <meta property="og:description" content="Documentation for InternetGateway resource in Aws provider. Learn about properties, examples, and configuration.">
+    <meta property="og:url" content="https://docs.kitelang.cloud/aws/InternetGateway.html">
+    <meta property="og:site_name" content="Kite Documentation">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="InternetGateway | Aws Provider | Kite">
+    <meta name="twitter:description" content="Documentation for InternetGateway resource in Aws provider. Learn about properties, examples, and configuration.">
+</head>
+<script type="application/ld+json">
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "InternetGateway Resource Documentation",
+        "description": "",
+        "author": {
+            "@type": "Organization",
+            "name": "Kite"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Kite",
+            "url": "https://kitelang.cloud"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://docs.kitelang.cloud/aws/InternetGateway.html"
+        },
+        "about": {
+            "@type": "SoftwareSourceCode",
+            "name": "InternetGateway",
+            "programmingLanguage": "Kite",
+            "codeRepository": "https://github.com/kitelang/kite"
+        },
+        "articleSection": "Networking",
+        "keywords": ["kite", "aws", "internetgateway", "infrastructure as code", "cloud"]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Aws Provider",
+                "item": "https://docs.kitelang.cloud/aws/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Networking",
+                "item": "https://docs.kitelang.cloud/aws/ElasticIp.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "InternetGateway"
+            }
+        ]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is InternetGateway in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "InternetGateway is a networking resource in the Aws provider. Use it to manage your cloud infrastructure."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I import InternetGateway in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Use: import InternetGateway from \"aws/networking/InternetGateway.kite\""
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What properties does InternetGateway have?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "InternetGateway has 2 configurable properties. See the Properties section for details."
+                }
+            }
+        ]
+    }
+]
+</script>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div class="layout">
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <div class="header-top">
+                    <a href="../../index.html" class="logo-link">
+                        <h1>🪁 Aws</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
+                <div class="version-selector">
+                    <select id="version-select" onchange="switchVersion(this.value)" aria-label="Select version">
+                        <option value="0.1.1" selected>v0.1.1</option>
+                    </select>
+                </div>
+                <a href="../../changelog.html" class="whats-new-link">✨ What's New</a>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
+            </div>
+            <div id="recently-viewed" class="recently-viewed" style="display: none;">
+                <div class="recently-header">Recently Viewed</div>
+                <ul class="recently-list"></ul>
+            </div>
+            <nav class="nav-tree" aria-label="Resources navigation">
+            <div class="nav-category" data-domain="networking">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="true">
+                    <span class="category-icon" aria-hidden="true">🌐</span>
+                    <span class="category-name">Networking</span>
+                    <span class="category-count">7</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="elasticip" data-desc="">
+                    <a href="ElasticIp.html">ElasticIp</a>
+                </li>
+                <li class="nav-item active" data-name="internetgateway" data-desc="">
+                    <a href="InternetGateway.html" aria-current="page">InternetGateway</a>
+                </li>
+                <li class="nav-item" data-name="natgateway" data-desc="">
+                    <a href="NatGateway.html">NatGateway</a>
+                </li>
+                <li class="nav-item" data-name="routetable" data-desc="">
+                    <a href="RouteTable.html">RouteTable</a>
+                </li>
+                <li class="nav-item" data-name="securitygroup" data-desc="">
+                    <a href="SecurityGroup.html">SecurityGroup</a>
+                </li>
+                <li class="nav-item" data-name="subnet" data-desc="">
+                    <a href="Subnet.html">Subnet</a>
+                </li>
+                <li class="nav-item" data-name="vpc" data-desc="">
+                    <a href="Vpc.html">Vpc</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="compute">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💻</span>
+                    <span class="category-name">Compute</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="ec2instance" data-desc="">
+                    <a href="Ec2Instance.html">Ec2Instance</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="storage">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💾</span>
+                    <span class="category-name">Storage</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="ebsvolume" data-desc="">
+                    <a href="EbsVolume.html">EbsVolume</a>
+                </li>
+                <li class="nav-item" data-name="s3bucket" data-desc="">
+                    <a href="S3Bucket.html">S3Bucket</a>
+                </li>
+                <li class="nav-item" data-name="s3bucketpolicy" data-desc="">
+                    <a href="S3BucketPolicy.html">S3BucketPolicy</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="dns">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">📍</span>
+                    <span class="category-name">Dns</span>
+                    <span class="category-count">2</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="hostedzone" data-desc="">
+                    <a href="HostedZone.html">HostedZone</a>
+                </li>
+                <li class="nav-item" data-name="recordset" data-desc="">
+                    <a href="RecordSet.html">RecordSet</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="loadbalancing">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">⚖️</span>
+                    <span class="category-name">Loadbalancing</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="listener" data-desc="">
+                    <a href="Listener.html">Listener</a>
+                </li>
+                <li class="nav-item" data-name="loadbalancer" data-desc="">
+                    <a href="LoadBalancer.html">LoadBalancer</a>
+                </li>
+                <li class="nav-item" data-name="targetgroup" data-desc="">
+                    <a href="TargetGroup.html">TargetGroup</a>
+                </li>
+                </ul>
+            </div>
+            </nav>
+        </aside>
+        <main id="main-content" class="content">
+            <article class="resource-content" itemscope itemtype="https://schema.org/TechArticle">
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <a href="../../index.html">Home</a>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="domain">🌐 Networking</span>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="current" aria-current="page">InternetGateway</span>
+                </nav>
+
+                <header>
+                    <h1 itemprop="name">InternetGateway</h1>
+</header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">InternetGateway</span> <span class="kw">from</span> <span class="str">"aws/networking/InternetGateway.kite"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Examples</h2>
+                    <div class="example-tabs">
+                        <button class="example-tab active" onclick="showExample(this, 'basic')">Basic</button>
+                        <button class="example-tab" onclick="showExample(this, 'references')">With References</button>
+                        <button class="example-tab" onclick="showExample(this, 'complete')">Complete</button>
+                    </div>
+                    <div class="example-content active" id="example-basic">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code itemprop="text"><span class="kw">resource</span> <span class="type">InternetGateway</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">vpcId</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">tags</span>  <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-references">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Example with resource references</span>
+
+<span class="kw">resource</span> <span class="type">ElasticIp</span> <span class="name">my_elasticip</span> <span class="brace">{</span>
+    <span class="comment">// ... configuration</span>
+<span class="brace">}</span>
+
+<span class="kw">resource</span> <span class="type">NatGateway</span> <span class="name">my_natgateway</span> <span class="brace">{</span>
+    <span class="comment">// ... configuration</span>
+<span class="brace">}</span>
+
+<span class="kw">resource</span> <span class="type">InternetGateway</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">vpcId</span> <span class="eq">=</span> <span class="name">my_elasticip</span>.<span class="prop">id</span>
+    <span class="prop">tags</span> <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-complete">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Complete example with all properties</span>
+<span class="kw">resource</span> <span class="type">InternetGateway</span> <span class="name">complete_example</span> <span class="brace">{</span>
+    <span class="prop">vpcId</span> <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The VPC ID to attach the internet gat...</span>
+    <span class="prop">tags</span>  <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>  <span class="comment">// Tags to apply to the internet gateway</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section id="schema" class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)" role="button" aria-expanded="false">
+                        <span class="toggle-icon" aria-hidden="true">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// InternetGateway</span>
+<span class="kw">schema</span> <span class="type">InternetGateway</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">vpcId</span>              <span class="comment">// The VPC ID to attach the internet gateway to</span>
+    <span class="type">map</span> <span class="prop">tags</span>               <span class="comment">// Tags to apply to the internet gateway</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">internetGatewayId</span>  <span class="comment">// The internet gateway ID assigned by AWS</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">ownerId</span>            <span class="comment">// The AWS account ID that owns the internet gateway</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">attachmentState</span>    <span class="comment">// Attachment state (available, attaching, detaching)</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-vpcId">
+  <td><code class="prop-name" onclick="copyPropLink('vpcId')" title="Click to copy link">vpcId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The VPC ID to attach the internet gateway to</td>
+</tr>
+<tr id="prop-tags">
+  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the internet gateway</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="cloud-properties">
+<h2>Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-internetGatewayId">
+  <td><code class="prop-name" onclick="copyPropLink('internetGatewayId')" title="Click to copy link">internetGatewayId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The internet gateway ID assigned by AWS</td>
+</tr>
+<tr id="prop-ownerId">
+  <td><code class="prop-name" onclick="copyPropLink('ownerId')" title="Click to copy link">ownerId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The AWS account ID that owns the internet gateway</td>
+</tr>
+<tr id="prop-attachmentState">
+  <td><code class="prop-name" onclick="copyPropLink('attachmentState')" title="Click to copy link">attachmentState<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>Attachment state (available, attaching, detaching)</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="related" class="related-section">
+<h2>Related Resources</h2>
+<p class="related-desc">Other resources in the Networking category:</p>
+<div class="related-grid">
+<a href="ElasticIp.html" class="related-card"><span class="related-icon">🌐</span><span class="related-name">ElasticIp</span></a>
+<a href="NatGateway.html" class="related-card"><span class="related-icon">🌐</span><span class="related-name">NatGateway</span></a>
+<a href="RouteTable.html" class="related-card"><span class="related-icon">🌐</span><span class="related-name">RouteTable</span></a>
+<a href="SecurityGroup.html" class="related-card"><span class="related-icon">🌐</span><span class="related-name">SecurityGroup</span></a>
+<a href="Subnet.html" class="related-card"><span class="related-icon">🌐</span><span class="related-name">Subnet</span></a>
+</div>
+</section>
+<nav class="resource-nav" aria-label="Resource navigation">
+<a href="ElasticIp.html" class="nav-prev" rel="prev" title="Previous in Networking">← ElasticIp</a>
+<span class="nav-category-label">Networking</span>
+<a href="NatGateway.html" class="nav-next" rel="next" title="Next in Networking">NatGateway →</a>
+</nav>
+                <footer class="resource-footer">
+                    <div class="footer-actions">
+                        <div class="share-buttons">
+                            <span class="share-label">Share:</span>
+                            <a href="https://twitter.com/intent/tweet?text=InternetGateway%20-%20Kite%20Aws%20Provider&url=https://docs.kitelang.cloud/aws/InternetGateway.html" target="_blank" rel="noopener" class="share-btn share-twitter" title="Share on Twitter">
+                                <span>𝕏</span>
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://docs.kitelang.cloud/aws/InternetGateway.html" target="_blank" rel="noopener" class="share-btn share-linkedin" title="Share on LinkedIn">
+                                <span>in</span>
+                            </a>
+                        </div>
+                        <a href="https://github.com/kitecorp/kite-providers/issues/new?title=Docs:%20InternetGateway%20-%20&body=**Resource:** InternetGateway%0A**Provider:** aws%0A**Page:** https://docs.kitelang.cloud/aws/InternetGateway.html%0A%0A**Issue:**%0A" target="_blank" rel="noopener" class="report-issue">
+                            Report an issue
+                        </a>
+                    </div>
+                    <p class="footer-date">Generated on <time datetime="2026-01-04T01:11:16.775587">January 4, 2026</time></p>
+                </footer>
+            </article>
+        </main>
+        <aside class="sidebar-right">
+            <div class="toc-header">On this page</div>
+            <nav class="toc" aria-label="Table of contents">
+                <a href="#import">Import</a>
+                <a href="#example">Example</a>
+                <a href="#schema" class="toc-h3">Schema Definition</a>
+<a href="#properties">Properties</a>
+<a href="#cloud-properties">Cloud Properties</a>
+<a href="#related">Related Resources</a>
+            </nav>
+        </aside>
+    </div>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+</body>
+</html>

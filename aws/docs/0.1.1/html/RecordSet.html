@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RecordSet | Aws Provider | Kite</title>
+    <meta name="description" content="Documentation for RecordSet resource in Aws provider. Learn about properties, examples, and configuration.">
+    <meta name="keywords" content="kite, infrastructure as code, aws, cloud, terraform alternative, IaC">
+    <meta name="author" content="Kite">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://docs.kitelang.cloud/aws/RecordSet.html">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="../../styles.css" as="style">
+    <link rel="preload" href="../../scripts.js" as="script">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../../styles.css">
+
+    <!-- Scripts -->
+    <script src="../../scripts.js" defer></script>
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Aws Provider Resources" href="../../feed.xml">
+
+    <!-- OpenSearch -->
+    <link rel="search" type="application/opensearchdescription+xml" title="Kite Aws Docs" href="../../opensearch.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="RecordSet | Aws Provider | Kite">
+    <meta property="og:description" content="Documentation for RecordSet resource in Aws provider. Learn about properties, examples, and configuration.">
+    <meta property="og:url" content="https://docs.kitelang.cloud/aws/RecordSet.html">
+    <meta property="og:site_name" content="Kite Documentation">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="RecordSet | Aws Provider | Kite">
+    <meta name="twitter:description" content="Documentation for RecordSet resource in Aws provider. Learn about properties, examples, and configuration.">
+</head>
+<script type="application/ld+json">
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "RecordSet Resource Documentation",
+        "description": "",
+        "author": {
+            "@type": "Organization",
+            "name": "Kite"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Kite",
+            "url": "https://kitelang.cloud"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://docs.kitelang.cloud/aws/RecordSet.html"
+        },
+        "about": {
+            "@type": "SoftwareSourceCode",
+            "name": "RecordSet",
+            "programmingLanguage": "Kite",
+            "codeRepository": "https://github.com/kitelang/kite"
+        },
+        "articleSection": "Dns",
+        "keywords": ["kite", "aws", "recordset", "infrastructure as code", "cloud"]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Aws Provider",
+                "item": "https://docs.kitelang.cloud/aws/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Dns",
+                "item": "https://docs.kitelang.cloud/aws/HostedZone.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "RecordSet"
+            }
+        ]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is RecordSet in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "RecordSet is a dns resource in the Aws provider. Use it to manage your cloud infrastructure."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I import RecordSet in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Use: import RecordSet from \"aws/dns/RecordSet.kite\""
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What properties does RecordSet have?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "RecordSet has 12 configurable properties. See the Properties section for details."
+                }
+            }
+        ]
+    }
+]
+</script>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div class="layout">
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <div class="header-top">
+                    <a href="../../index.html" class="logo-link">
+                        <h1>🪁 Aws</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
+                <div class="version-selector">
+                    <select id="version-select" onchange="switchVersion(this.value)" aria-label="Select version">
+                        <option value="0.1.1" selected>v0.1.1</option>
+                    </select>
+                </div>
+                <a href="../../changelog.html" class="whats-new-link">✨ What's New</a>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
+            </div>
+            <div id="recently-viewed" class="recently-viewed" style="display: none;">
+                <div class="recently-header">Recently Viewed</div>
+                <ul class="recently-list"></ul>
+            </div>
+            <nav class="nav-tree" aria-label="Resources navigation">
+            <div class="nav-category collapsed" data-domain="networking">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">🌐</span>
+                    <span class="category-name">Networking</span>
+                    <span class="category-count">7</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="elasticip" data-desc="">
+                    <a href="ElasticIp.html">ElasticIp</a>
+                </li>
+                <li class="nav-item" data-name="internetgateway" data-desc="">
+                    <a href="InternetGateway.html">InternetGateway</a>
+                </li>
+                <li class="nav-item" data-name="natgateway" data-desc="">
+                    <a href="NatGateway.html">NatGateway</a>
+                </li>
+                <li class="nav-item" data-name="routetable" data-desc="">
+                    <a href="RouteTable.html">RouteTable</a>
+                </li>
+                <li class="nav-item" data-name="securitygroup" data-desc="">
+                    <a href="SecurityGroup.html">SecurityGroup</a>
+                </li>
+                <li class="nav-item" data-name="subnet" data-desc="">
+                    <a href="Subnet.html">Subnet</a>
+                </li>
+                <li class="nav-item" data-name="vpc" data-desc="">
+                    <a href="Vpc.html">Vpc</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="compute">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💻</span>
+                    <span class="category-name">Compute</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="ec2instance" data-desc="">
+                    <a href="Ec2Instance.html">Ec2Instance</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="storage">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💾</span>
+                    <span class="category-name">Storage</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="ebsvolume" data-desc="">
+                    <a href="EbsVolume.html">EbsVolume</a>
+                </li>
+                <li class="nav-item" data-name="s3bucket" data-desc="">
+                    <a href="S3Bucket.html">S3Bucket</a>
+                </li>
+                <li class="nav-item" data-name="s3bucketpolicy" data-desc="">
+                    <a href="S3BucketPolicy.html">S3BucketPolicy</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category" data-domain="dns">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="true">
+                    <span class="category-icon" aria-hidden="true">📍</span>
+                    <span class="category-name">Dns</span>
+                    <span class="category-count">2</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="hostedzone" data-desc="">
+                    <a href="HostedZone.html">HostedZone</a>
+                </li>
+                <li class="nav-item active" data-name="recordset" data-desc="">
+                    <a href="RecordSet.html" aria-current="page">RecordSet</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="loadbalancing">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">⚖️</span>
+                    <span class="category-name">Loadbalancing</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="listener" data-desc="">
+                    <a href="Listener.html">Listener</a>
+                </li>
+                <li class="nav-item" data-name="loadbalancer" data-desc="">
+                    <a href="LoadBalancer.html">LoadBalancer</a>
+                </li>
+                <li class="nav-item" data-name="targetgroup" data-desc="">
+                    <a href="TargetGroup.html">TargetGroup</a>
+                </li>
+                </ul>
+            </div>
+            </nav>
+        </aside>
+        <main id="main-content" class="content">
+            <article class="resource-content" itemscope itemtype="https://schema.org/TechArticle">
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <a href="../../index.html">Home</a>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="domain">📍 Dns</span>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="current" aria-current="page">RecordSet</span>
+                </nav>
+
+                <header>
+                    <h1 itemprop="name">RecordSet</h1>
+</header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">RecordSet</span> <span class="kw">from</span> <span class="str">"aws/dns/RecordSet.kite"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Examples</h2>
+                    <div class="example-tabs">
+                        <button class="example-tab active" onclick="showExample(this, 'basic')">Basic</button>
+                        <button class="example-tab" onclick="showExample(this, 'references')">With References</button>
+                        <button class="example-tab" onclick="showExample(this, 'complete')">Complete</button>
+                    </div>
+                    <div class="example-content active" id="example-basic">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code itemprop="text"><span class="kw">resource</span> <span class="type">RecordSet</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">hostedZoneId</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">name</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">type</span>             <span class="eq">=</span> <span class="str">"A"</span>
+    <span class="prop">ttl</span>              <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">records</span>          <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">aliasTarget</span>      <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">weight</span>           <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">setIdentifier</span>    <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">failover</span>         <span class="eq">=</span> <span class="str">"PRIMARY"</span>
+    <span class="prop">geoLocation</span>      <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">healthCheckId</span>    <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">multiValueAnswer</span> <span class="eq">=</span> <span class="bool">true</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-references">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Example with resource references</span>
+
+<span class="kw">resource</span> <span class="type">HostedZone</span> <span class="name">my_hostedzone</span> <span class="brace">{</span>
+    <span class="comment">// ... configuration</span>
+<span class="brace">}</span>
+
+<span class="kw">resource</span> <span class="type">RecordSet</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">hostedZoneId</span> <span class="eq">=</span> <span class="name">my_hostedzone</span>.<span class="prop">id</span>
+    <span class="prop">name</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">type</span> <span class="eq">=</span> <span class="str">"A"</span>
+    <span class="prop">ttl</span> <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">records</span> <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">aliasTarget</span> <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">weight</span> <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">setIdentifier</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">failover</span> <span class="eq">=</span> <span class="str">"PRIMARY"</span>
+    <span class="prop">geoLocation</span> <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">healthCheckId</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">multiValueAnswer</span> <span class="eq">=</span> <span class="bool">true</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-complete">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Complete example with all properties</span>
+<span class="kw">resource</span> <span class="type">RecordSet</span> <span class="name">complete_example</span> <span class="brace">{</span>
+    <span class="prop">hostedZoneId</span>     <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The ID of the hosted zone</span>
+    <span class="prop">name</span>             <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The name of the record (fully qualifi...</span>
+    <span class="prop">type</span>             <span class="eq">=</span> <span class="str">"A"</span>  <span class="comment">// The DNS record type</span>
+    <span class="prop">ttl</span>              <span class="eq">=</span> <span class="num">42</span>  <span class="comment">// The TTL (time to live) in seconds</span>
+    <span class="prop">records</span>          <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>  <span class="comment">// The record values</span>
+    <span class="prop">aliasTarget</span>      <span class="eq">=</span> <span class="str">"..."</span>  <span class="comment">// Alias target for AWS resources (ELB, ...</span>
+    <span class="prop">weight</span>           <span class="eq">=</span> <span class="num">42</span>  <span class="comment">// Weighted routing weight (0-255)</span>
+    <span class="prop">setIdentifier</span>    <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// Set identifier for routing policies</span>
+    <span class="prop">failover</span>         <span class="eq">=</span> <span class="str">"PRIMARY"</span>  <span class="comment">// Failover routing type</span>
+    <span class="prop">geoLocation</span>      <span class="eq">=</span> <span class="str">"..."</span>  <span class="comment">// Geolocation routing configuration</span>
+    <span class="prop">healthCheckId</span>    <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// Health check ID to associate with the...</span>
+    <span class="prop">multiValueAnswer</span> <span class="eq">=</span> <span class="bool">true</span>  <span class="comment">// Whether this is a multivalue answer r...</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section id="schema" class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)" role="button" aria-expanded="false">
+                        <span class="toggle-icon" aria-hidden="true">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// RecordSet</span>
+<span class="kw">schema</span> <span class="type">RecordSet</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">hostedZoneId</span>      <span class="comment">// The ID of the hosted zone</span>
+    <span class="type">string</span> <span class="prop">name</span>              <span class="comment">// The name of the record (fully qualified domain name)</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"A"</span>, <span class="str">"AAAA"</span>, <span class="str">"CNAME"</span>, <span class="str">"MX"</span>, <span class="str">"TXT"</span>, <span class="str">"NS"</span>, <span class="str">"SOA"</span>, <span class="str">"SRV"</span>, <span class="str">"CAA"</span>, <span class="str">"PTR"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">type</span>              <span class="comment">// The DNS record type</span>
+    <span class="type">integer</span> <span class="prop">ttl</span>               <span class="comment">// The TTL (time to live) in seconds</span>
+    <span class="type">list</span> <span class="prop">records</span>           <span class="comment">// The record values</span>
+    <span class="type">aliastarget</span> <span class="prop">aliasTarget</span>       <span class="comment">// Alias target for AWS resources (ELB, CloudFront, S3, etc.)</span>
+    <span class="type">integer</span> <span class="prop">weight</span>            <span class="comment">// Weighted routing weight (0-255)</span>
+    <span class="type">string</span> <span class="prop">setIdentifier</span>     <span class="comment">// Set identifier for routing policies</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"PRIMARY"</span>, <span class="str">"SECONDARY"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">failover</span>          <span class="comment">// Failover routing type</span>
+    <span class="type">geolocation</span> <span class="prop">geoLocation</span>       <span class="comment">// Geolocation routing configuration</span>
+    <span class="type">string</span> <span class="prop">healthCheckId</span>     <span class="comment">// Health check ID to associate with the record</span>
+    <span class="type">boolean</span> <span class="prop">multiValueAnswer</span>  <span class="comment">// Whether this is a multivalue answer record</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-hostedZoneId">
+  <td><code class="prop-name" onclick="copyPropLink('hostedZoneId')" title="Click to copy link">hostedZoneId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The ID of the hosted zone</td>
+</tr>
+<tr id="prop-name">
+  <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the record (fully qualified domain name)</td>
+</tr>
+<tr id="prop-type">
+  <td><code class="prop-name" onclick="copyPropLink('type')" title="Click to copy link">type<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The DNS record type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">A</code> <code class="valid-value">AAAA</code> <code class="valid-value">CNAME</code> <code class="valid-value">MX</code> <code class="valid-value">TXT</code> <code class="valid-value">NS</code> <code class="valid-value">SOA</code> <code class="valid-value">SRV</code> <code class="valid-value">CAA</code> <code class="valid-value">PTR</code></td>
+</tr>
+<tr id="prop-ttl">
+  <td><code class="prop-name" onclick="copyPropLink('ttl')" title="Click to copy link">ttl<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The TTL (time to live) in seconds</td>
+</tr>
+<tr id="prop-records">
+  <td><code class="prop-name" onclick="copyPropLink('records')" title="Click to copy link">records<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The record values</td>
+</tr>
+<tr id="prop-aliasTarget">
+  <td><code class="prop-name" onclick="copyPropLink('aliasTarget')" title="Click to copy link">aliasTarget<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">aliastarget</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Alias target for AWS resources (ELB, CloudFront, S3, etc.)</td>
+</tr>
+<tr id="prop-weight">
+  <td><code class="prop-name" onclick="copyPropLink('weight')" title="Click to copy link">weight<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Weighted routing weight (0-255)</td>
+</tr>
+<tr id="prop-setIdentifier">
+  <td><code class="prop-name" onclick="copyPropLink('setIdentifier')" title="Click to copy link">setIdentifier<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Set identifier for routing policies</td>
+</tr>
+<tr id="prop-failover">
+  <td><code class="prop-name" onclick="copyPropLink('failover')" title="Click to copy link">failover<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Failover routing type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">PRIMARY</code> <code class="valid-value">SECONDARY</code></td>
+</tr>
+<tr id="prop-geoLocation">
+  <td><code class="prop-name" onclick="copyPropLink('geoLocation')" title="Click to copy link">geoLocation<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">geolocation</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Geolocation routing configuration</td>
+</tr>
+<tr id="prop-healthCheckId">
+  <td><code class="prop-name" onclick="copyPropLink('healthCheckId')" title="Click to copy link">healthCheckId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Health check ID to associate with the record</td>
+</tr>
+<tr id="prop-multiValueAnswer">
+  <td><code class="prop-name" onclick="copyPropLink('multiValueAnswer')" title="Click to copy link">multiValueAnswer<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Whether this is a multivalue answer record</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="related" class="related-section">
+<h2>Related Resources</h2>
+<p class="related-desc">Other resources in the Dns category:</p>
+<div class="related-grid">
+<a href="HostedZone.html" class="related-card"><span class="related-icon">📍</span><span class="related-name">HostedZone</span></a>
+</div>
+</section>
+<nav class="resource-nav" aria-label="Resource navigation">
+<a href="HostedZone.html" class="nav-prev" rel="prev" title="Previous in Dns">← HostedZone</a>
+<span class="nav-category-label">Dns</span>
+<span class="nav-placeholder"></span>
+</nav>
+                <footer class="resource-footer">
+                    <div class="footer-actions">
+                        <div class="share-buttons">
+                            <span class="share-label">Share:</span>
+                            <a href="https://twitter.com/intent/tweet?text=RecordSet%20-%20Kite%20Aws%20Provider&url=https://docs.kitelang.cloud/aws/RecordSet.html" target="_blank" rel="noopener" class="share-btn share-twitter" title="Share on Twitter">
+                                <span>𝕏</span>
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://docs.kitelang.cloud/aws/RecordSet.html" target="_blank" rel="noopener" class="share-btn share-linkedin" title="Share on LinkedIn">
+                                <span>in</span>
+                            </a>
+                        </div>
+                        <a href="https://github.com/kitecorp/kite-providers/issues/new?title=Docs:%20RecordSet%20-%20&body=**Resource:** RecordSet%0A**Provider:** aws%0A**Page:** https://docs.kitelang.cloud/aws/RecordSet.html%0A%0A**Issue:**%0A" target="_blank" rel="noopener" class="report-issue">
+                            Report an issue
+                        </a>
+                    </div>
+                    <p class="footer-date">Generated on <time datetime="2026-01-04T01:11:16.788156">January 4, 2026</time></p>
+                </footer>
+            </article>
+        </main>
+        <aside class="sidebar-right">
+            <div class="toc-header">On this page</div>
+            <nav class="toc" aria-label="Table of contents">
+                <a href="#import">Import</a>
+                <a href="#example">Example</a>
+                <a href="#schema" class="toc-h3">Schema Definition</a>
+<a href="#properties">Properties</a>
+<a href="#related">Related Resources</a>
+            </nav>
+        </aside>
+    </div>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+</body>
+</html>

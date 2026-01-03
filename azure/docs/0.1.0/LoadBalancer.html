@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LoadBalancer | Azure Provider | Kite</title>
+    <meta name="description" content="Documentation for LoadBalancer resource.">
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../scripts.js" defer></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo">🪁 Azure Provider</a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+            </div>
+            <div class="sidebar-search">
+                <input type="text" placeholder="Search..." oninput="filterNav(this.value)">
+            </div>
+            <div class="sidebar-content">
+                <div id="resource-nav" class="nav-section"></div>
+            </div>
+        </nav>
+        <main id="main-content" class="content">
+            <article class="resource-content">
+                <nav class="breadcrumbs">
+                    <a href="../index.html">Home</a>
+                    <span class="sep">›</span>
+                    <span>Loadbalancing</span>
+                    <span class="sep">›</span>
+                    <span class="current">LoadBalancer</span>
+                </nav>
+                <header>
+                    <h1>LoadBalancer</h1>
+                    <p class="resource-desc">Documentation for LoadBalancer resource.</p>
+                </header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">LoadBalancer</span> <span class="kw">from</span> <span class="str">"azure/loadbalancing/LoadBalancer.kite"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Example</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre class="code-block"><code><span class="kw">resource</span> <span class="type">LoadBalancer</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">resourceGroup</span>            <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">location</span>                 <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">sku</span>                      <span class="eq">=</span> <span class="str">"Standard"</span>
+    <span class="prop">tier</span>                     <span class="eq">=</span> <span class="str">"Regional"</span>
+    <span class="prop">frontendIpConfigurations</span> <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">backendAddressPools</span>      <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">healthProbes</span>             <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">loadBalancingRules</span>       <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">inboundNatRules</span>          <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">outboundRules</span>            <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">tags</span>                     <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-name">
+  <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the load balancer</td>
+</tr>
+<tr id="prop-resourceGroup">
+  <td><code class="prop-name" onclick="copyPropLink('resourceGroup')" title="Click to copy link">resourceGroup<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The resource group name</td>
+</tr>
+<tr id="prop-location">
+  <td><code class="prop-name" onclick="copyPropLink('location')" title="Click to copy link">location<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The Azure region</td>
+</tr>
+<tr id="prop-sku">
+  <td><code class="prop-name" onclick="copyPropLink('sku')" title="Click to copy link">sku<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">Standard</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The SKU of the load balancer<br><span class="valid-values-label">Valid values: </span><code class="valid-value">Basic</code> <code class="valid-value">Standard</code></td>
+</tr>
+<tr id="prop-tier">
+  <td><code class="prop-name" onclick="copyPropLink('tier')" title="Click to copy link">tier<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">Regional</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The SKU tier<br><span class="valid-values-label">Valid values: </span><code class="valid-value">Regional</code> <code class="valid-value">Global</code></td>
+</tr>
+<tr id="prop-frontendIpConfigurations">
+  <td><code class="prop-name" onclick="copyPropLink('frontendIpConfigurations')" title="Click to copy link">frontendIpConfigurations<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Frontend IP configurations. At least one is required</td>
+</tr>
+<tr id="prop-backendAddressPools">
+  <td><code class="prop-name" onclick="copyPropLink('backendAddressPools')" title="Click to copy link">backendAddressPools<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Backend address pools</td>
+</tr>
+<tr id="prop-healthProbes">
+  <td><code class="prop-name" onclick="copyPropLink('healthProbes')" title="Click to copy link">healthProbes<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Health probes for backend health monitoring</td>
+</tr>
+<tr id="prop-loadBalancingRules">
+  <td><code class="prop-name" onclick="copyPropLink('loadBalancingRules')" title="Click to copy link">loadBalancingRules<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Load balancing rules</td>
+</tr>
+<tr id="prop-inboundNatRules">
+  <td><code class="prop-name" onclick="copyPropLink('inboundNatRules')" title="Click to copy link">inboundNatRules<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Inbound NAT rules for port forwarding</td>
+</tr>
+<tr id="prop-outboundRules">
+  <td><code class="prop-name" onclick="copyPropLink('outboundRules')" title="Click to copy link">outboundRules<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Outbound rules (Standard SKU only)</td>
+</tr>
+<tr id="prop-tags">
+  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the load balancer</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="cloud-properties">
+<h2>Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-id">
+  <td><code class="prop-name" onclick="copyPropLink('id')" title="Click to copy link">id<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The resource ID of the load balancer</td>
+</tr>
+<tr id="prop-provisioningState">
+  <td><code class="prop-name" onclick="copyPropLink('provisioningState')" title="Click to copy link">provisioningState<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>Provisioning state of the load balancer</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+            </article>
+        </main>
+    </div>
+    <script>
+        // Load sidebar navigation from manifest
+        fetch('manifest.json')
+            .then(r => r.json())
+            .then(data => {
+                const byDomain = {};
+                data.resources.forEach(r => {
+                    const d = r.domain || 'general';
+                    if (!byDomain[d]) byDomain[d] = [];
+                    byDomain[d].push(r);
+                });
+                let html = '';
+                for (const [domain, items] of Object.entries(byDomain)) {
+                    html += `<div class="nav-group"><div class="nav-group-header">${domain}</div>`;
+                    items.forEach(r => {
+                        const active = r.name === 'LoadBalancer' ? ' active' : '';
+                        html += `<a href="${r.name}.html" class="nav-item${active}">${r.name}</a>`;
+                    });
+                    html += '</div>';
+                }
+                document.getElementById('resource-nav').innerHTML = html;
+            });
+        function filterNav(q) {
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.style.display = el.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

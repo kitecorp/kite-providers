@@ -1,0 +1,8 @@
+# Kite Files Provider Documentation
+# https://kitelang.cloud/providers/files/
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://kitelang.cloud/providers/files/sitemap.xml

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's New - Grpc-example Provider | Kite</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+            <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <div class="header-top">
+                    <a href="index.html" class="logo-link">
+                        <h1>🪁 Grpc-example</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
+                <div class="version-selector">
+                    <select id="version-select" onchange="switchVersion(this.value)" aria-label="Select version">
+                        <option value="0.1.0" selected>v0.1.0</option>
+                    </select>
+                </div>
+                <a href="changelog.html" class="whats-new-link">✨ What's New</a>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
+            </div>
+            <div id="recently-viewed" class="recently-viewed" style="display: none;">
+                <div class="recently-header">Recently Viewed</div>
+                <ul class="recently-list"></ul>
+            </div>
+            <nav class="nav-tree" aria-label="Resources navigation">
+            <div class="nav-category collapsed" data-domain="general">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">📄</span>
+                    <span class="category-name">General</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="file" data-desc="">
+                    <a href="File.html">File</a>
+                </li>
+                </ul>
+            </div>
+            </nav>
+        </aside>
+
+    <main id="main-content" class="content">
+        <article class="resource-content">
+            <h1>What's New in v0.1.0</h1>
+            <div id="changelog-content">
+                <p class="loading">Loading changelog...</p>
+            </div>
+        </article>
+    </main>
+    <script src="scripts.js"></script>
+    <script>
+        fetch('changelog.json')
+            .then(r => r.ok ? r.json() : null)
+            .catch(() => null)
+            .then(data => {
+                const container = document.getElementById('changelog-content');
+                if (!data) {
+                    container.innerHTML = '<p class="no-changes">This is the first version. No previous version to compare.</p>';
+                    return;
+                }
+
+                let html = '<p class="changelog-meta">Changes from <strong>v' + data.fromVersion + '</strong> to <strong>v' + data.toVersion + '</strong></p>';
+
+                // Added resources
+                if (data.addedResources && data.addedResources.length > 0) {
+                    html += '<section class="changelog-section"><h2>✨ New Resources</h2><ul class="changelog-list added">';
+                    data.addedResources.forEach(r => {
+                        html += '<li><a href="' + r + '.html">' + r + '</a></li>';
+                    });
+                    html += '</ul></section>';
+                }
+
+                // Removed resources
+                if (data.removedResources && data.removedResources.length > 0) {
+                    html += '<section class="changelog-section"><h2>🗑️ Removed Resources</h2><ul class="changelog-list removed">';
+                    data.removedResources.forEach(r => {
+                        html += '<li>' + r + '</li>';
+                    });
+                    html += '</ul></section>';
+                }
+
+                // Changed resources
+                if (data.changedResources && Object.keys(data.changedResources).length > 0) {
+                    html += '<section class="changelog-section"><h2>🔄 Changed Resources</h2>';
+                    for (const [resource, changes] of Object.entries(data.changedResources)) {
+                        html += '<div class="resource-changes"><h3><a href="' + resource + '.html">' + resource + '</a></h3>';
+                        if (changes.addedProperties && changes.addedProperties.length > 0) {
+                            html += '<p class="prop-change added">Added: <code>' + changes.addedProperties.join('</code>, <code>') + '</code></p>';
+                        }
+                        if (changes.removedProperties && changes.removedProperties.length > 0) {
+                            html += '<p class="prop-change removed">Removed: <code>' + changes.removedProperties.join('</code>, <code>') + '</code></p>';
+                        }
+                        html += '</div>';
+                    }
+                    html += '</section>';
+                }
+
+                if (!data.addedResources?.length && !data.removedResources?.length && !Object.keys(data.changedResources || {}).length) {
+                    html += '<p class="no-changes">No changes detected in this version.</p>';
+                }
+
+                container.innerHTML = html;
+            });
+    </script>
+</body>
+</html>

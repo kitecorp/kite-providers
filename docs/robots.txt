@@ -1,0 +1,7 @@
+# Kite Provider Documentation
+# https://kitelang.cloud/providers/aws
+
+User-agent: *
+Allow: /
+
+Sitemap: https://kitelang.cloud/providers/aws/sitemap.xml

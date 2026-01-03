@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ManagedDisk | Azure Provider | Kite</title>
+    <meta name="description" content="Documentation for ManagedDisk resource.">
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../scripts.js" defer></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo">🪁 Azure Provider</a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+            </div>
+            <div class="sidebar-search">
+                <input type="text" placeholder="Search..." oninput="filterNav(this.value)">
+            </div>
+            <div class="sidebar-content">
+                <div id="resource-nav" class="nav-section"></div>
+            </div>
+        </nav>
+        <main id="main-content" class="content">
+            <article class="resource-content">
+                <nav class="breadcrumbs">
+                    <a href="../index.html">Home</a>
+                    <span class="sep">›</span>
+                    <span>Storage</span>
+                    <span class="sep">›</span>
+                    <span class="current">ManagedDisk</span>
+                </nav>
+                <header>
+                    <h1>ManagedDisk</h1>
+                    <p class="resource-desc">Documentation for ManagedDisk resource.</p>
+                </header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">ManagedDisk</span> <span class="kw">from</span> <span class="str">"azure/storage/ManagedDisk.kite"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Example</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre class="code-block"><code><span class="kw">resource</span> <span class="type">ManagedDisk</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">resourceGroup</span>       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">location</span>            <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">size</span>                <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">sku</span>                 <span class="eq">=</span> <span class="str">"StandardSSD_LRS"</span>
+    <span class="prop">tier</span>                <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">diskIops</span>            <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">diskMbps</span>            <span class="eq">=</span> <span class="num">42</span>
+    <span class="prop">osType</span>              <span class="eq">=</span> <span class="str">"Linux"</span>
+    <span class="prop">sourceResourceId</span>    <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">sourceUri</span>           <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">storageAccountId</span>    <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">zone</span>                <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">burstingEnabled</span>     <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">networkAccessPolicy</span> <span class="eq">=</span> <span class="str">"AllowAll"</span>
+    <span class="prop">diskAccessId</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">tags</span>                <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-name">
+  <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the managed disk</td>
+</tr>
+<tr id="prop-resourceGroup">
+  <td><code class="prop-name" onclick="copyPropLink('resourceGroup')" title="Click to copy link">resourceGroup<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The Azure resource group name</td>
+</tr>
+<tr id="prop-location">
+  <td><code class="prop-name" onclick="copyPropLink('location')" title="Click to copy link">location<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The Azure region/location (e.g., eastus, westeurope)</td>
+</tr>
+<tr id="prop-size">
+  <td><code class="prop-name" onclick="copyPropLink('size')" title="Click to copy link">size<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The size of the disk in GB</td>
+</tr>
+<tr id="prop-sku">
+  <td><code class="prop-name" onclick="copyPropLink('sku')" title="Click to copy link">sku<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">StandardSSD_LRS</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The disk SKU (storage type)<br><span class="valid-values-label">Valid values: </span><code class="valid-value">Standard_LRS</code> <code class="valid-value">Premium_LRS</code> <code class="valid-value">StandardSSD_LRS</code> <code class="valid-value">UltraSSD_LRS</code> <code class="valid-value">Premium_ZRS</code> <code class="valid-value">StandardSSD_ZRS</code></td>
+</tr>
+<tr id="prop-tier">
+  <td><code class="prop-name" onclick="copyPropLink('tier')" title="Click to copy link">tier<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The disk tier for Premium and Ultra disks (e.g., P30, P40, P50)</td>
+</tr>
+<tr id="prop-diskIops">
+  <td><code class="prop-name" onclick="copyPropLink('diskIops')" title="Click to copy link">diskIops<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The IOPS read/write budget for Ultra disks (100 - 160,000)</td>
+</tr>
+<tr id="prop-diskMbps">
+  <td><code class="prop-name" onclick="copyPropLink('diskMbps')" title="Click to copy link">diskMbps<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The throughput in MB/s for Ultra disks (1 - 2,000)</td>
+</tr>
+<tr id="prop-osType">
+  <td><code class="prop-name" onclick="copyPropLink('osType')" title="Click to copy link">osType<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The operating system type if this is an OS disk<br><span class="valid-values-label">Valid values: </span><code class="valid-value">Linux</code> <code class="valid-value">Windows</code></td>
+</tr>
+<tr id="prop-sourceResourceId">
+  <td><code class="prop-name" onclick="copyPropLink('sourceResourceId')" title="Click to copy link">sourceResourceId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The source resource ID to create the disk from (snapshot, image, or disk)</td>
+</tr>
+<tr id="prop-sourceUri">
+  <td><code class="prop-name" onclick="copyPropLink('sourceUri')" title="Click to copy link">sourceUri<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The source URI for importing a VHD from a storage account</td>
+</tr>
+<tr id="prop-storageAccountId">
+  <td><code class="prop-name" onclick="copyPropLink('storageAccountId')" title="Click to copy link">storageAccountId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The storage account ID where sourceUri is located</td>
+</tr>
+<tr id="prop-zone">
+  <td><code class="prop-name" onclick="copyPropLink('zone')" title="Click to copy link">zone<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The availability zone for the disk (1, 2, or 3)</td>
+</tr>
+<tr id="prop-burstingEnabled">
+  <td><code class="prop-name" onclick="copyPropLink('burstingEnabled')" title="Click to copy link">burstingEnabled<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable bursting for Premium SSD disks &gt; 512 GB</td>
+</tr>
+<tr id="prop-networkAccessPolicy">
+  <td><code class="prop-name" onclick="copyPropLink('networkAccessPolicy')" title="Click to copy link">networkAccessPolicy<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">AllowAll</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Network access policy for the disk<br><span class="valid-values-label">Valid values: </span><code class="valid-value">AllowAll</code> <code class="valid-value">AllowPrivate</code> <code class="valid-value">DenyAll</code></td>
+</tr>
+<tr id="prop-diskAccessId">
+  <td><code class="prop-name" onclick="copyPropLink('diskAccessId')" title="Click to copy link">diskAccessId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The disk access ID for private endpoint connections</td>
+</tr>
+<tr id="prop-tags">
+  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the disk</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="cloud-properties">
+<h2>Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-id">
+  <td><code class="prop-name" onclick="copyPropLink('id')" title="Click to copy link">id<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Azure resource ID of the disk</td>
+</tr>
+<tr id="prop-provisioningState">
+  <td><code class="prop-name" onclick="copyPropLink('provisioningState')" title="Click to copy link">provisioningState<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The provisioning state of the disk</td>
+</tr>
+<tr id="prop-diskState">
+  <td><code class="prop-name" onclick="copyPropLink('diskState')" title="Click to copy link">diskState<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The disk state (Unattached, Attached, Reserved, etc.)</td>
+</tr>
+<tr id="prop-uniqueId">
+  <td><code class="prop-name" onclick="copyPropLink('uniqueId')" title="Click to copy link">uniqueId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The unique identifier for the disk</td>
+</tr>
+<tr id="prop-timeCreated">
+  <td><code class="prop-name" onclick="copyPropLink('timeCreated')" title="Click to copy link">timeCreated<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The time the disk was created</td>
+</tr>
+<tr id="prop-managedBy">
+  <td><code class="prop-name" onclick="copyPropLink('managedBy')" title="Click to copy link">managedBy<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The ID of the VM this disk is attached to</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="related">
+<h2>Related Resources</h2>
+<div class="related-grid">
+<a href="BlobContainer.html" class="related-card"><span class="related-name">BlobContainer</span></a>
+<a href="StorageAccount.html" class="related-card"><span class="related-name">StorageAccount</span></a>
+</div>
+</section>
+            </article>
+        </main>
+    </div>
+    <script>
+        // Load sidebar navigation from manifest
+        fetch('manifest.json')
+            .then(r => r.json())
+            .then(data => {
+                const byDomain = {};
+                data.resources.forEach(r => {
+                    const d = r.domain || 'general';
+                    if (!byDomain[d]) byDomain[d] = [];
+                    byDomain[d].push(r);
+                });
+                let html = '';
+                for (const [domain, items] of Object.entries(byDomain)) {
+                    html += `<div class="nav-group"><div class="nav-group-header">${domain}</div>`;
+                    items.forEach(r => {
+                        const active = r.name === 'ManagedDisk' ? ' active' : '';
+                        html += `<a href="${r.name}.html" class="nav-item${active}">${r.name}</a>`;
+                    });
+                    html += '</div>';
+                }
+                document.getElementById('resource-nav').innerHTML = html;
+            });
+        function filterNav(q) {
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.style.display = el.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

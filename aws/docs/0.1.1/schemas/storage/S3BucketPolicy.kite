@@ -1,0 +1,5 @@
+// S3BucketPolicy
+schema S3BucketPolicy {
+    string bucket  // The name of the bucket to apply the policy to
+    string policy  // The bucket policy as a JSON string (IAM policy document)
+}

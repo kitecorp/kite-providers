@@ -1,0 +1,9 @@
+{
+    "providers": [
+        {
+            "name": "aws",
+            "latestVersion": "0.1.1",
+            "resourceCount": 16
+        }
+    ]
+}

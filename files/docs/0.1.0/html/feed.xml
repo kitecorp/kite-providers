@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Files Provider Resources | Kite</title>
+        <description>Infrastructure as code resources for Files provider. Stay updated with the latest resource documentation.</description>
+        <link>https://kitelang.cloud/providers/files/</link>
+        <atom:link href="https://kitelang.cloud/providers/files/feed.xml" rel="self" type="application/rss+xml"/>
+        <language>en-us</language>
+        <lastBuildDate>2026-01-03T16:43:25.324347</lastBuildDate>
+        <generator>Kite Documentation Generator</generator>
+    <item>
+        <title>File</title>
+        <description>Documentation for File resource.</description>
+        <link>https://kitelang.cloud/providers/files/File.html</link>
+        <guid isPermaLink="true">https://kitelang.cloud/providers/files/File.html</guid>
+        <category>General</category>
+    </item>
+    </channel>
+</rss>

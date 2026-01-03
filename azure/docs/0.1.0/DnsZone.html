@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DnsZone | Azure Provider | Kite</title>
+    <meta name="description" content="Documentation for DnsZone resource.">
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../scripts.js" defer></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo">🪁 Azure Provider</a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+            </div>
+            <div class="sidebar-search">
+                <input type="text" placeholder="Search..." oninput="filterNav(this.value)">
+            </div>
+            <div class="sidebar-content">
+                <div id="resource-nav" class="nav-section"></div>
+            </div>
+        </nav>
+        <main id="main-content" class="content">
+            <article class="resource-content">
+                <nav class="breadcrumbs">
+                    <a href="../index.html">Home</a>
+                    <span class="sep">›</span>
+                    <span>Dns</span>
+                    <span class="sep">›</span>
+                    <span class="current">DnsZone</span>
+                </nav>
+                <header>
+                    <h1>DnsZone</h1>
+                    <p class="resource-desc">Documentation for DnsZone resource.</p>
+                </header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">DnsZone</span> <span class="kw">from</span> <span class="str">"azure/dns/DnsZone.kite"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Example</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre class="code-block"><code><span class="kw">resource</span> <span class="type">DnsZone</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                          <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">resourceGroup</span>                 <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">zoneType</span>                      <span class="eq">=</span> <span class="str">"Public"</span>
+    <span class="prop">registrationVirtualNetworkIds</span> <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">resolutionVirtualNetworkIds</span>   <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">tags</span>                          <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-name">
+  <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The domain name for the DNS zone. Must be a fully qualified domain name (e.g., example.com)</td>
+</tr>
+<tr id="prop-resourceGroup">
+  <td><code class="prop-name" onclick="copyPropLink('resourceGroup')" title="Click to copy link">resourceGroup<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The resource group name</td>
+</tr>
+<tr id="prop-zoneType">
+  <td><code class="prop-name" onclick="copyPropLink('zoneType')" title="Click to copy link">zoneType<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">Public</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The type of DNS zone<br><span class="valid-values-label">Valid values: </span><code class="valid-value">Public</code> <code class="valid-value">Private</code></td>
+</tr>
+<tr id="prop-registrationVirtualNetworkIds">
+  <td><code class="prop-name" onclick="copyPropLink('registrationVirtualNetworkIds')" title="Click to copy link">registrationVirtualNetworkIds<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Virtual network IDs for auto-registration (private zones only). VMs in these networks will have their DNS records auto-registered</td>
+</tr>
+<tr id="prop-resolutionVirtualNetworkIds">
+  <td><code class="prop-name" onclick="copyPropLink('resolutionVirtualNetworkIds')" title="Click to copy link">resolutionVirtualNetworkIds<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Virtual network IDs for resolution (private zones only). VMs in these networks can resolve records in this zone</td>
+</tr>
+<tr id="prop-tags">
+  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the DNS zone</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="cloud-properties">
+<h2>Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-id">
+  <td><code class="prop-name" onclick="copyPropLink('id')" title="Click to copy link">id<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The resource ID of the DNS zone</td>
+</tr>
+<tr id="prop-nameServers">
+  <td><code class="prop-name" onclick="copyPropLink('nameServers')" title="Click to copy link">nameServers<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td>The name servers for the DNS zone</td>
+</tr>
+<tr id="prop-numberOfRecordSets">
+  <td><code class="prop-name" onclick="copyPropLink('numberOfRecordSets')" title="Click to copy link">numberOfRecordSets<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td>The number of record sets in the DNS zone</td>
+</tr>
+<tr id="prop-maxNumberOfRecordSets">
+  <td><code class="prop-name" onclick="copyPropLink('maxNumberOfRecordSets')" title="Click to copy link">maxNumberOfRecordSets<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td>The maximum number of record sets allowed</td>
+</tr>
+<tr id="prop-etag">
+  <td><code class="prop-name" onclick="copyPropLink('etag')" title="Click to copy link">etag<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The ETag of the DNS zone</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="related">
+<h2>Related Resources</h2>
+<div class="related-grid">
+<a href="DnsRecordSet.html" class="related-card"><span class="related-name">DnsRecordSet</span></a>
+</div>
+</section>
+            </article>
+        </main>
+    </div>
+    <script>
+        // Load sidebar navigation from manifest
+        fetch('manifest.json')
+            .then(r => r.json())
+            .then(data => {
+                const byDomain = {};
+                data.resources.forEach(r => {
+                    const d = r.domain || 'general';
+                    if (!byDomain[d]) byDomain[d] = [];
+                    byDomain[d].push(r);
+                });
+                let html = '';
+                for (const [domain, items] of Object.entries(byDomain)) {
+                    html += `<div class="nav-group"><div class="nav-group-header">${domain}</div>`;
+                    items.forEach(r => {
+                        const active = r.name === 'DnsZone' ? ' active' : '';
+                        html += `<a href="${r.name}.html" class="nav-item${active}">${r.name}</a>`;
+                    });
+                    html += '</div>';
+                }
+                document.getElementById('resource-nav').innerHTML = html;
+            });
+        function filterNav(q) {
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.style.display = el.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

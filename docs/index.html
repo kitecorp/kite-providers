@@ -1,0 +1,118 @@
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Kite Providers Documentation</title>
+                <meta name="description" content="Documentation for Kite infrastructure as code providers - AWS, Azure, GCP and more.">
+                <link rel="stylesheet" href="styles.css">
+                <script src="scripts.js" defer></script>
+                <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+            </head>
+            <body>
+                <div class="layout">
+                    <nav class="sidebar">
+                        <div class="sidebar-header">
+                            <a href="index.html" class="logo">🪁 Kite Providers</a>
+                            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+                        </div>
+                        <div class="sidebar-search">
+                            <input type="text" id="provider-search" placeholder="Search providers..." oninput="filterProviders(this.value)">
+                        </div>
+                        <div class="sidebar-content">
+                            <div id="provider-list" class="nav-section">
+                                <div class="loading">Loading providers...</div>
+                            </div>
+                        </div>
+                    </nav>
+                    <main class="content">
+                        <div class="content-header">
+                            <h1>Kite Provider Documentation</h1>
+                        </div>
+                        <div class="content-body">
+                            <p class="lead">Infrastructure as code providers for managing cloud resources.</p>
+
+                            <div id="provider-cards" class="provider-cards">
+                                <div class="loading">Loading providers...</div>
+                            </div>
+
+                            <section class="getting-started">
+                                <h2>Getting Started</h2>
+                                <p>Select a provider from the sidebar or cards above to view its resources and documentation.</p>
+
+                                <h3>Example</h3>
+                                <pre class="code-block"><code>// Configure a provider
+provider "aws" {
+    region = "us-east-1"
+}
+
+// Create a resource
+resource Vpc main {
+    cidrBlock = "10.0.0.0/16"
+    tags = { Name: "main-vpc" }
+}</code></pre>
+                            </section>
+                        </div>
+                    </main>
+                </div>
+                <script>
+                    // Load providers on page load
+                    document.addEventListener('DOMContentLoaded', loadProviders);
+
+                    async function loadProviders() {
+                        try {
+                            const response = await fetch('providers.json');
+                            const data = await response.json();
+                            renderProviderList(data.providers);
+                            renderProviderCards(data.providers);
+                        } catch (e) {
+                            document.getElementById('provider-list').innerHTML = '<div class="error">Failed to load providers</div>';
+                            document.getElementById('provider-cards').innerHTML = '<div class="error">Failed to load providers</div>';
+                        }
+                    }
+
+                    function renderProviderList(providers) {
+                        const list = document.getElementById('provider-list');
+                        list.innerHTML = providers.map(p => `
+                            <a href="${p.name}/index.html" class="nav-item" data-provider="${p.name}">
+                                <span class="provider-icon">${getProviderIcon(p.name)}</span>
+                                <span class="provider-name">${capitalize(p.name)}</span>
+                                <span class="provider-version">${p.latestVersion}</span>
+                            </a>
+                        `).join('');
+                    }
+
+                    function renderProviderCards(providers) {
+                        const cards = document.getElementById('provider-cards');
+                        cards.innerHTML = providers.map(p => `
+                            <a href="${p.name}/index.html" class="provider-card">
+                                <div class="card-icon">${getProviderIcon(p.name)}</div>
+                                <div class="card-content">
+                                    <h3>${capitalize(p.name)} Provider</h3>
+                                    <p>${p.resourceCount} resources</p>
+                                    <span class="card-version">v${p.latestVersion}</span>
+                                </div>
+                            </a>
+                        `).join('');
+                    }
+
+                    function getProviderIcon(name) {
+                        const icons = { aws: '☁️', azure: '🔷', gcp: '🌐', files: '📁' };
+                        return icons[name.toLowerCase()] || '📦';
+                    }
+
+                    function capitalize(s) {
+                        return s.charAt(0).toUpperCase() + s.slice(1);
+                    }
+
+                    function filterProviders(query) {
+                        const items = document.querySelectorAll('#provider-list .nav-item');
+                        const q = query.toLowerCase();
+                        items.forEach(item => {
+                            const name = item.dataset.provider.toLowerCase();
+                            item.style.display = name.includes(q) ? '' : 'none';
+                        });
+                    }
+                </script>
+            </body>
+            </html>

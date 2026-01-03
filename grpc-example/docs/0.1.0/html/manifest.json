@@ -1,0 +1,42 @@
+{
+  "provider": "grpc-example",
+  "version": "0.1.0",
+  "generatedAt": "2026-01-03T16:43:30.813235",
+  "resources": {
+    "File": {
+      "domain": "general",
+      "properties": {
+        "path": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "content": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "permissions": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "checksum": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "lastModified": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    }
+  }
+}

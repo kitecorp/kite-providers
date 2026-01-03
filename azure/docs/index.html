@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Provider - Kite Documentation</title>
+    <meta name="description" content="Documentation for the Kite Azure provider.">
+    <link rel="stylesheet" href="styles.css">
+    <script src="scripts.js" defer></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="logo">🪁 Azure Provider</a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+            </div>
+            <div class="sidebar-controls">
+                <select id="version-select" class="version-select" onchange="changeVersion(this.value)">
+                    <option>Loading...</option>
+                </select>
+            </div>
+            <div class="sidebar-search">
+                <input type="text" id="search-input" placeholder="Search resources..." oninput="filterResources(this.value)">
+            </div>
+            <div class="sidebar-content">
+                <div id="resource-nav" class="nav-section">
+                    <div class="loading">Loading resources...</div>
+                </div>
+            </div>
+        </nav>
+        <main id="main-content" class="content">
+            <div class="index-header">
+                <h1>Azure Provider</h1>
+                <p class="version-badge" id="current-version"></p>
+            </div>
+            <div class="index-content">
+                <p class="lead">Infrastructure as code resources for Azure.</p>
+                <div id="resource-grid" class="resource-grid">
+                    <div class="loading">Loading resources...</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        let currentVersion = null;
+        let versions = [];
+        let resources = [];
+
+        async function init() {
+            // Load versions
+            try {
+                const res = await fetch('versions.json');
+                const data = await res.json();
+                versions = data.versions || [];
+                currentVersion = data.latest || versions[0];
+
+                const select = document.getElementById('version-select');
+                select.innerHTML = versions.map(v =>
+                    `<option value="${v}" ${v === currentVersion ? 'selected' : ''}>${v}${v === data.latest ? ' (latest)' : ''}</option>`
+                ).join('');
+
+                document.getElementById('current-version').textContent = 'v' + currentVersion;
+                await loadResources(currentVersion);
+            } catch (e) {
+                console.error('Failed to load versions', e);
+            }
+        }
+
+        async function loadResources(version) {
+            try {
+                const res = await fetch(version + '/manifest.json');
+                const data = await res.json();
+                resources = data.resources || [];
+                renderNavigation(resources, version);
+                renderGrid(resources, version);
+            } catch (e) {
+                document.getElementById('resource-nav').innerHTML = '<div class="error">Failed to load resources</div>';
+            }
+        }
+
+        function renderNavigation(resources, version) {
+            const byDomain = groupByDomain(resources);
+            let html = '';
+            for (const [domain, items] of Object.entries(byDomain)) {
+                html += `<div class="nav-group">
+                    <div class="nav-group-header">${getDomainIcon(domain)} ${capitalize(domain)}</div>
+                    ${items.map(r => `<a href="${version}/${r.name}.html" class="nav-item">${r.name}</a>`).join('')}
+                </div>`;
+            }
+            document.getElementById('resource-nav').innerHTML = html;
+        }
+
+        function renderGrid(resources, version) {
+            const byDomain = groupByDomain(resources);
+            let html = '';
+            for (const [domain, items] of Object.entries(byDomain)) {
+                html += `<div class="domain-section">
+                    <h2>${getDomainIcon(domain)} ${capitalize(domain)}</h2>
+                    <div class="resource-cards">
+                        ${items.map(r => `
+                            <a href="${version}/${r.name}.html" class="resource-card">
+                                <h3>${r.name}</h3>
+                                <p>${r.propertyCount || 0} properties</p>
+                            </a>
+                        `).join('')}
+                    </div>
+                </div>`;
+            }
+            document.getElementById('resource-grid').innerHTML = html;
+        }
+
+        function changeVersion(version) {
+            currentVersion = version;
+            document.getElementById('current-version').textContent = 'v' + version;
+            loadResources(version);
+        }
+
+        function filterResources(query) {
+            const q = query.toLowerCase();
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.style.display = item.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+            document.querySelectorAll('.resource-card').forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function groupByDomain(resources) {
+            const groups = {};
+            resources.forEach(r => {
+                const domain = r.domain || 'general';
+                if (!groups[domain]) groups[domain] = [];
+                groups[domain].push(r);
+            });
+            return groups;
+        }
+
+        function getDomainIcon(domain) {
+            const icons = {networking:'🌐',compute:'💻',storage:'💾',database:'🗄️',dns:'📍',loadbalancing:'⚖️',security:'🔒',core:'⚙️'};
+            return icons[domain] || '📦';
+        }
+
+        function capitalize(s) {
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+
+        init();
+    </script>
+</body>
+</html>

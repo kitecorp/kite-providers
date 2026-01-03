@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File | Grpc-example Provider | Kite</title>
+    <meta name="description" content="Documentation for File resource in Grpc-example provider. Learn about properties, examples, and configuration.">
+    <meta name="keywords" content="kite, infrastructure as code, grpc-example, cloud, terraform alternative, IaC">
+    <meta name="author" content="Kite">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://kitelang.cloud/providers/grpc-example/File.html">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="preload" href="scripts.js" as="script">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Scripts -->
+    <script src="scripts.js" defer></script>
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Grpc-example Provider Resources" href="feed.xml">
+
+    <!-- OpenSearch -->
+    <link rel="search" type="application/opensearchdescription+xml" title="Kite Grpc-example Docs" href="opensearch.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="File | Grpc-example Provider | Kite">
+    <meta property="og:description" content="Documentation for File resource in Grpc-example provider. Learn about properties, examples, and configuration.">
+    <meta property="og:url" content="https://kitelang.cloud/providers/grpc-example/File.html">
+    <meta property="og:site_name" content="Kite Documentation">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="File | Grpc-example Provider | Kite">
+    <meta name="twitter:description" content="Documentation for File resource in Grpc-example provider. Learn about properties, examples, and configuration.">
+</head>
+<script type="application/ld+json">
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "File Resource Documentation",
+        "description": "",
+        "author": {
+            "@type": "Organization",
+            "name": "Kite"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Kite",
+            "url": "https://kitelang.cloud"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://kitelang.cloud/providers/grpc-example/File.html"
+        },
+        "about": {
+            "@type": "SoftwareSourceCode",
+            "name": "File",
+            "programmingLanguage": "Kite",
+            "codeRepository": "https://github.com/kitelang/kite"
+        },
+        "articleSection": "General",
+        "keywords": ["kite", "grpc-example", "file", "infrastructure as code", "cloud"]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Grpc-example Provider",
+                "item": "https://kitelang.cloud/providers/grpc-example/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "General",
+                "item": "https://kitelang.cloud/providers/grpc-example/File.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "File"
+            }
+        ]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is File in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "File is a general resource in the Grpc-example provider. Use it to manage your cloud infrastructure."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I import File in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Use: import File from \"grpc-example/general/File.kite\""
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What properties does File have?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "File has 3 configurable properties. See the Properties section for details."
+                }
+            }
+        ]
+    }
+]
+</script>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div class="layout">
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <div class="header-top">
+                    <a href="index.html" class="logo-link">
+                        <h1>🪁 Grpc-example</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
+                <div class="version-selector">
+                    <select id="version-select" onchange="switchVersion(this.value)" aria-label="Select version">
+                        <option value="0.1.0" selected>v0.1.0</option>
+                    </select>
+                </div>
+                <a href="changelog.html" class="whats-new-link">✨ What's New</a>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
+            </div>
+            <div id="recently-viewed" class="recently-viewed" style="display: none;">
+                <div class="recently-header">Recently Viewed</div>
+                <ul class="recently-list"></ul>
+            </div>
+            <nav class="nav-tree" aria-label="Resources navigation">
+            <div class="nav-category" data-domain="general">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="true">
+                    <span class="category-icon" aria-hidden="true">📄</span>
+                    <span class="category-name">General</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item active" data-name="file" data-desc="">
+                    <a href="File.html" aria-current="page">File</a>
+                </li>
+                </ul>
+            </div>
+            </nav>
+        </aside>
+        <main id="main-content" class="content">
+            <article class="resource-content" itemscope itemtype="https://schema.org/TechArticle">
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <a href="index.html">Home</a>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="domain">📄 General</span>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="current" aria-current="page">File</span>
+                </nav>
+
+                <header>
+                    <h1 itemprop="name">File</h1>
+</header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">File</span> <span class="kw">from</span> <span class="str">"grpc-example/general/File.kite"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Examples</h2>
+                    <div class="example-tabs">
+                        <button class="example-tab active" onclick="showExample(this, 'basic')">Basic</button>
+                        <button class="example-tab" onclick="showExample(this, 'references')">With References</button>
+                        <button class="example-tab" onclick="showExample(this, 'complete')">Complete</button>
+                    </div>
+                    <div class="example-content active" id="example-basic">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code itemprop="text"><span class="kw">resource</span> <span class="type">File</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">path</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">content</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">permissions</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-references">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Example with resource references</span>
+
+<span class="kw">resource</span> <span class="type">File</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">path</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">content</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">permissions</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-complete">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Complete example with all properties</span>
+<span class="kw">resource</span> <span class="type">File</span> <span class="name">complete_example</span> <span class="brace">{</span>
+    <span class="prop">path</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">content</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">permissions</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section id="schema" class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)" role="button" aria-expanded="false">
+                        <span class="toggle-icon" aria-hidden="true">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// File</span>
+<span class="kw">schema</span> <span class="type">File</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">path</span>
+    <span class="type">string</span> <span class="prop">content</span>
+    <span class="type">string</span> <span class="prop">permissions</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">checksum</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">lastModified</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-path">
+  <td><code class="prop-name" onclick="copyPropLink('path')" title="Click to copy link">path<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td></td>
+</tr>
+<tr id="prop-content">
+  <td><code class="prop-name" onclick="copyPropLink('content')" title="Click to copy link">content<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td></td>
+</tr>
+<tr id="prop-permissions">
+  <td><code class="prop-name" onclick="copyPropLink('permissions')" title="Click to copy link">permissions<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td></td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="cloud-properties">
+<h2>Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-checksum">
+  <td><code class="prop-name" onclick="copyPropLink('checksum')" title="Click to copy link">checksum<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td></td>
+</tr>
+<tr id="prop-lastModified">
+  <td><code class="prop-name" onclick="copyPropLink('lastModified')" title="Click to copy link">lastModified<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td></td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<nav class="resource-nav" aria-label="Resource navigation">
+<span class="nav-placeholder"></span>
+<span class="nav-category-label">General</span>
+<span class="nav-placeholder"></span>
+</nav>
+                <footer class="resource-footer">
+                    <div class="footer-actions">
+                        <div class="share-buttons">
+                            <span class="share-label">Share:</span>
+                            <a href="https://twitter.com/intent/tweet?text=File%20-%20Kite%20Grpc-example%20Provider&url=https://kitelang.cloud/providers/grpc-example/File.html" target="_blank" rel="noopener" class="share-btn share-twitter" title="Share on Twitter">
+                                <span>𝕏</span>
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://kitelang.cloud/providers/grpc-example/File.html" target="_blank" rel="noopener" class="share-btn share-linkedin" title="Share on LinkedIn">
+                                <span>in</span>
+                            </a>
+                        </div>
+                        <a href="https://github.com/kitecorp/kite-providers/issues/new?title=Docs:%20File%20-%20&body=**Resource:** File%0A**Provider:** grpc-example%0A**Page:** https://kitelang.cloud/providers/grpc-example/File.html%0A%0A**Issue:**%0A" target="_blank" rel="noopener" class="report-issue">
+                            Report an issue
+                        </a>
+                    </div>
+                    <p class="footer-date">Generated on <time datetime="2026-01-03T16:43:30.792782">January 3, 2026</time></p>
+                </footer>
+            </article>
+        </main>
+        <aside class="sidebar-right">
+            <div class="toc-header">On this page</div>
+            <nav class="toc" aria-label="Table of contents">
+                <a href="#import">Import</a>
+                <a href="#example">Example</a>
+                <a href="#schema" class="toc-h3">Schema Definition</a>
+<a href="#properties">Properties</a>
+<a href="#cloud-properties">Cloud Properties</a>
+            </nav>
+        </aside>
+    </div>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+</body>
+</html>

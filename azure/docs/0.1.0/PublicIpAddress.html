@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PublicIpAddress | Azure Provider | Kite</title>
+    <meta name="description" content="Documentation for PublicIpAddress resource.">
+    <link rel="stylesheet" href="../styles.css">
+    <script src="../scripts.js" defer></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo">🪁 Azure Provider</a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+            </div>
+            <div class="sidebar-search">
+                <input type="text" placeholder="Search..." oninput="filterNav(this.value)">
+            </div>
+            <div class="sidebar-content">
+                <div id="resource-nav" class="nav-section"></div>
+            </div>
+        </nav>
+        <main id="main-content" class="content">
+            <article class="resource-content">
+                <nav class="breadcrumbs">
+                    <a href="../index.html">Home</a>
+                    <span class="sep">›</span>
+                    <span>Networking</span>
+                    <span class="sep">›</span>
+                    <span class="current">PublicIpAddress</span>
+                </nav>
+                <header>
+                    <h1>PublicIpAddress</h1>
+                    <p class="resource-desc">Documentation for PublicIpAddress resource.</p>
+                </header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">PublicIpAddress</span> <span class="kw">from</span> <span class="str">"azure/networking/PublicIpAddress.kite"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Example</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                        <pre class="code-block"><code><span class="kw">resource</span> <span class="type">PublicIpAddress</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                 <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">resourceGroup</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">location</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">sku</span>                  <span class="eq">=</span> <span class="str">"Basic"</span>
+    <span class="prop">allocationMethod</span>     <span class="eq">=</span> <span class="str">"Dynamic"</span>
+    <span class="prop">ipVersion</span>            <span class="eq">=</span> <span class="str">"IPv4"</span>
+    <span class="prop">idleTimeoutInMinutes</span> <span class="eq">=</span> <span class="num">4</span>
+    <span class="prop">domainNameLabel</span>      <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">zones</span>                <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+    <span class="prop">tags</span>                 <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-name">
+  <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the public IP address</td>
+</tr>
+<tr id="prop-resourceGroup">
+  <td><code class="prop-name" onclick="copyPropLink('resourceGroup')" title="Click to copy link">resourceGroup<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The Azure resource group name</td>
+</tr>
+<tr id="prop-location">
+  <td><code class="prop-name" onclick="copyPropLink('location')" title="Click to copy link">location<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The Azure region/location</td>
+</tr>
+<tr id="prop-sku">
+  <td><code class="prop-name" onclick="copyPropLink('sku')" title="Click to copy link">sku<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">Basic</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The SKU. Standard is required for zone redundancy and NAT Gateway<br><span class="valid-values-label">Valid values: </span><code class="valid-value">Basic</code> <code class="valid-value">Standard</code></td>
+</tr>
+<tr id="prop-allocationMethod">
+  <td><code class="prop-name" onclick="copyPropLink('allocationMethod')" title="Click to copy link">allocationMethod<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">Dynamic</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The allocation method. Standard SKU requires Static<br><span class="valid-values-label">Valid values: </span><code class="valid-value">Static</code> <code class="valid-value">Dynamic</code></td>
+</tr>
+<tr id="prop-ipVersion">
+  <td><code class="prop-name" onclick="copyPropLink('ipVersion')" title="Click to copy link">ipVersion<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">IPv4</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The IP version<br><span class="valid-values-label">Valid values: </span><code class="valid-value">IPv4</code> <code class="valid-value">IPv6</code></td>
+</tr>
+<tr id="prop-idleTimeoutInMinutes">
+  <td><code class="prop-name" onclick="copyPropLink('idleTimeoutInMinutes')" title="Click to copy link">idleTimeoutInMinutes<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">integer</code></td>
+  <td><code class="default-value">4</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The idle timeout in minutes. Range: 4-30</td>
+</tr>
+<tr id="prop-domainNameLabel">
+  <td><code class="prop-name" onclick="copyPropLink('domainNameLabel')" title="Click to copy link">domainNameLabel<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The domain name label for DNS. Creates: {label}.{region}.cloudapp.azure.com</td>
+</tr>
+<tr id="prop-zones">
+  <td><code class="prop-name" onclick="copyPropLink('zones')" title="Click to copy link">zones<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The availability zones for the IP. Only for Standard SKU</td>
+</tr>
+<tr id="prop-tags">
+  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the public IP address</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="cloud-properties">
+<h2>Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-id">
+  <td><code class="prop-name" onclick="copyPropLink('id')" title="Click to copy link">id<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Azure resource ID of the public IP</td>
+</tr>
+<tr id="prop-ipAddress">
+  <td><code class="prop-name" onclick="copyPropLink('ipAddress')" title="Click to copy link">ipAddress<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The assigned IP address</td>
+</tr>
+<tr id="prop-provisioningState">
+  <td><code class="prop-name" onclick="copyPropLink('provisioningState')" title="Click to copy link">provisioningState<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The provisioning state of the public IP</td>
+</tr>
+<tr id="prop-resourceGuid">
+  <td><code class="prop-name" onclick="copyPropLink('resourceGuid')" title="Click to copy link">resourceGuid<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The resource GUID</td>
+</tr>
+<tr id="prop-fqdn">
+  <td><code class="prop-name" onclick="copyPropLink('fqdn')" title="Click to copy link">fqdn<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The FQDN of the DNS record</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="related">
+<h2>Related Resources</h2>
+<div class="related-grid">
+<a href="NatGateway.html" class="related-card"><span class="related-name">NatGateway</span></a>
+<a href="NetworkSecurityGroup.html" class="related-card"><span class="related-name">NetworkSecurityGroup</span></a>
+<a href="RouteTable.html" class="related-card"><span class="related-name">RouteTable</span></a>
+<a href="Subnet.html" class="related-card"><span class="related-name">Subnet</span></a>
+<a href="Vnet.html" class="related-card"><span class="related-name">Vnet</span></a>
+</div>
+</section>
+            </article>
+        </main>
+    </div>
+    <script>
+        // Load sidebar navigation from manifest
+        fetch('manifest.json')
+            .then(r => r.json())
+            .then(data => {
+                const byDomain = {};
+                data.resources.forEach(r => {
+                    const d = r.domain || 'general';
+                    if (!byDomain[d]) byDomain[d] = [];
+                    byDomain[d].push(r);
+                });
+                let html = '';
+                for (const [domain, items] of Object.entries(byDomain)) {
+                    html += `<div class="nav-group"><div class="nav-group-header">${domain}</div>`;
+                    items.forEach(r => {
+                        const active = r.name === 'PublicIpAddress' ? ' active' : '';
+                        html += `<a href="${r.name}.html" class="nav-item${active}">${r.name}</a>`;
+                    });
+                    html += '</div>';
+                }
+                document.getElementById('resource-nav').innerHTML = html;
+            });
+        function filterNav(q) {
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.style.display = el.textContent.toLowerCase().includes(q.toLowerCase()) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>
