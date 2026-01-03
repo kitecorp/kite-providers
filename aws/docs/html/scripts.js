@@ -259,3 +259,13 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+// Example tabs switching
+function showExample(btn, type) {
+    // Hide all example content
+    document.querySelectorAll('.example-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.example-tab').forEach(t => t.classList.remove('active'));
+    // Show selected
+    document.getElementById('example-' + type)?.classList.add('active');
+    btn.classList.add('active');
+}
