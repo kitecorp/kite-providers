@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Aws Provider Resources | Kite</title>
+        <description>Infrastructure as code resources for Aws provider. Stay updated with the latest resource documentation.</description>
+        <link>https://docs.kitelang.cloud/aws/</link>
+        <atom:link href="https://docs.kitelang.cloud/aws/feed.xml" rel="self" type="application/rss+xml"/>
+        <language>en-us</language>
+        <lastBuildDate>2026-01-03T15:14:34.336025</lastBuildDate>
+        <generator>Kite Documentation Generator</generator>
+    <item>
+        <title>EbsVolume</title>
+        <description>Documentation for EbsVolume resource.</description>
+        <link>https://docs.kitelang.cloud/aws/EbsVolume.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/EbsVolume.html</guid>
+        <category>Storage</category>
+    </item>
+    <item>
+        <title>Ec2Instance</title>
+        <description>Documentation for Ec2Instance resource.</description>
+        <link>https://docs.kitelang.cloud/aws/Ec2Instance.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/Ec2Instance.html</guid>
+        <category>Compute</category>
+    </item>
+    <item>
+        <title>ElasticIp</title>
+        <description>Documentation for ElasticIp resource.</description>
+        <link>https://docs.kitelang.cloud/aws/ElasticIp.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/ElasticIp.html</guid>
+        <category>Networking</category>
+    </item>
+    <item>
+        <title>HostedZone</title>
+        <description>Documentation for HostedZone resource.</description>
+        <link>https://docs.kitelang.cloud/aws/HostedZone.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/HostedZone.html</guid>
+        <category>Dns</category>
+    </item>
+    <item>
+        <title>InternetGateway</title>
+        <description>Documentation for InternetGateway resource.</description>
+        <link>https://docs.kitelang.cloud/aws/InternetGateway.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/InternetGateway.html</guid>
+        <category>Networking</category>
+    </item>
+    <item>
+        <title>Listener</title>
+        <description>Documentation for Listener resource.</description>
+        <link>https://docs.kitelang.cloud/aws/Listener.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/Listener.html</guid>
+        <category>Loadbalancing</category>
+    </item>
+    <item>
+        <title>LoadBalancer</title>
+        <description>Documentation for LoadBalancer resource.</description>
+        <link>https://docs.kitelang.cloud/aws/LoadBalancer.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/LoadBalancer.html</guid>
+        <category>Loadbalancing</category>
+    </item>
+    <item>
+        <title>NatGateway</title>
+        <description>Documentation for NatGateway resource.</description>
+        <link>https://docs.kitelang.cloud/aws/NatGateway.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/NatGateway.html</guid>
+        <category>Networking</category>
+    </item>
+    <item>
+        <title>RecordSet</title>
+        <description>Documentation for RecordSet resource.</description>
+        <link>https://docs.kitelang.cloud/aws/RecordSet.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/RecordSet.html</guid>
+        <category>Dns</category>
+    </item>
+    <item>
+        <title>RouteTable</title>
+        <description>Documentation for RouteTable resource.</description>
+        <link>https://docs.kitelang.cloud/aws/RouteTable.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/RouteTable.html</guid>
+        <category>Networking</category>
+    </item>
+    <item>
+        <title>S3Bucket</title>
+        <description>Documentation for S3Bucket resource.</description>
+        <link>https://docs.kitelang.cloud/aws/S3Bucket.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/S3Bucket.html</guid>
+        <category>Storage</category>
+    </item>
+    <item>
+        <title>S3BucketPolicy</title>
+        <description>Documentation for S3BucketPolicy resource.</description>
+        <link>https://docs.kitelang.cloud/aws/S3BucketPolicy.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/S3BucketPolicy.html</guid>
+        <category>Storage</category>
+    </item>
+    <item>
+        <title>SecurityGroup</title>
+        <description>Documentation for SecurityGroup resource.</description>
+        <link>https://docs.kitelang.cloud/aws/SecurityGroup.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/SecurityGroup.html</guid>
+        <category>Networking</category>
+    </item>
+    <item>
+        <title>Subnet</title>
+        <description>Documentation for Subnet resource.</description>
+        <link>https://docs.kitelang.cloud/aws/Subnet.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/Subnet.html</guid>
+        <category>Networking</category>
+    </item>
+    <item>
+        <title>TargetGroup</title>
+        <description>Documentation for TargetGroup resource.</description>
+        <link>https://docs.kitelang.cloud/aws/TargetGroup.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/TargetGroup.html</guid>
+        <category>Loadbalancing</category>
+    </item>
+    <item>
+        <title>Vpc</title>
+        <description>Documentation for Vpc resource.</description>
+        <link>https://docs.kitelang.cloud/aws/Vpc.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/aws/Vpc.html</guid>
+        <category>Networking</category>
+    </item>
+    </channel>
+</rss>

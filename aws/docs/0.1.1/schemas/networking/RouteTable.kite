@@ -1,0 +1,14 @@
+// RouteTable
+schema RouteTable {
+    string vpcId                // The VPC ID where the route table will be created
+    list routes               // Routes in this route table
+    map tags                 // Tags to apply to the route table
+    @cloud
+    string routeTableId         // The route table ID assigned by AWS
+    @cloud
+    string ownerId              // The AWS account ID that owns the route table
+    @cloud
+    boolean main                 // Whether this is the main route table for the VPC
+    @cloud
+    list associatedSubnetIds  // List of subnet IDs associated with this route table
+}
