@@ -380,6 +380,12 @@
                 </section>
 <section id="properties">
 <h2>Properties</h2>
+<div class="property-tabs">
+<button class="property-tab active" onclick="showPropertyTab(this, 'user')">User Properties</button>
+<button class="property-tab" onclick="showPropertyTab(this, 'cloud')">Cloud Properties</button>
+</div>
+<div class="property-content active" id="props-user">
+<p class="props-desc">Properties you configure when defining the resource.</p>
 <div class="table-wrapper">
 <table>
     <thead>
@@ -444,9 +450,8 @@
     </tbody>
 </table>
 </div>
-</section>
-<section id="cloud-properties">
-<h2>Cloud Properties</h2>
+</div>
+<div class="property-content" id="props-cloud">
 <p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
 <div class="table-wrapper">
 <table>
@@ -496,6 +501,7 @@
     </tbody>
 </table>
 </div>
+</div>
 </section>
 <section id="related" class="related-section">
 <h2>Related Resources</h2>
@@ -528,7 +534,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-04T01:11:16.799454">January 4, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-04T01:47:59.711924">January 4, 2026</time></p>
                 </footer>
             </article>
         </main>
@@ -539,7 +545,6 @@
                 <a href="#example">Example</a>
                 <a href="#schema" class="toc-h3">Schema Definition</a>
 <a href="#properties">Properties</a>
-<a href="#cloud-properties">Cloud Properties</a>
 <a href="#related">Related Resources</a>
             </nav>
         </aside>

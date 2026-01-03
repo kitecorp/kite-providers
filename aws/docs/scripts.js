@@ -282,6 +282,16 @@ function showExample(btn, type) {
     btn.classList.add('active');
 }
 
+// Property tabs switching
+function showPropertyTab(btn, type) {
+    // Hide all property content
+    document.querySelectorAll('.property-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.property-tab').forEach(t => t.classList.remove('active'));
+    // Show selected
+    document.getElementById('props-' + type)?.classList.add('active');
+    btn.classList.add('active');
+}
+
 // Copy property deep link
 function copyPropLink(propName) {
     const url = window.location.origin + window.location.pathname + '#prop-' + propName;
