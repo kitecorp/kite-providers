@@ -40,14 +40,25 @@ function showToast(message, duration = 2000) {
     }
 }
 
-// Recently viewed resources (localStorage)
+// Recently viewed resources (localStorage) - scoped per provider
+function getProviderName() {
+    // Extract provider from path: /aws/Vpc.html -> aws
+    const match = window.location.pathname.match(/\/([^/]+)\/[^/]+\.html$/);
+    return match ? match[1] : 'default';
+}
+
+function getRecentKey() {
+    return 'kite-recent-' + getProviderName();
+}
+
 function addToRecentlyViewed(name) {
     if (!name || name === 'index') return;
-    let recent = JSON.parse(localStorage.getItem('kite-recent') || '[]');
+    const key = getRecentKey();
+    let recent = JSON.parse(localStorage.getItem(key) || '[]');
     recent = recent.filter(r => r !== name);
     recent.unshift(name);
     recent = recent.slice(0, 5);
-    localStorage.setItem('kite-recent', JSON.stringify(recent));
+    localStorage.setItem(key, JSON.stringify(recent));
 }
 
 function renderRecentlyViewed() {
@@ -55,7 +66,8 @@ function renderRecentlyViewed() {
     const list = container?.querySelector('.recently-list');
     if (!container || !list) return;
 
-    const recent = JSON.parse(localStorage.getItem('kite-recent') || '[]');
+    const key = getRecentKey();
+    const recent = JSON.parse(localStorage.getItem(key) || '[]');
     if (recent.length === 0) {
         container.style.display = 'none';
         return;
