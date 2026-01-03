@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StorageAccount | Azure Provider | Kite</title>
+    <meta name="description" content="Documentation for StorageAccount resource in Azure provider. Learn about properties, examples, and configuration.">
+    <meta name="keywords" content="kite, infrastructure as code, azure, cloud, terraform alternative, IaC">
+    <meta name="author" content="Kite">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://docs.kitelang.cloud/azure/StorageAccount.html">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="preload" href="scripts.js" as="script">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Scripts -->
+    <script src="scripts.js" defer></script>
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Azure Provider Resources" href="feed.xml">
+
+    <!-- OpenSearch -->
+    <link rel="search" type="application/opensearchdescription+xml" title="Kite Azure Docs" href="opensearch.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="StorageAccount | Azure Provider | Kite">
+    <meta property="og:description" content="Documentation for StorageAccount resource in Azure provider. Learn about properties, examples, and configuration.">
+    <meta property="og:url" content="https://docs.kitelang.cloud/azure/StorageAccount.html">
+    <meta property="og:site_name" content="Kite Documentation">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="StorageAccount | Azure Provider | Kite">
+    <meta name="twitter:description" content="Documentation for StorageAccount resource in Azure provider. Learn about properties, examples, and configuration.">
+</head>
+<script type="application/ld+json">
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "StorageAccount Resource Documentation",
+        "description": "",
+        "author": {
+            "@type": "Organization",
+            "name": "Kite"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Kite",
+            "url": "https://kitelang.cloud"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://docs.kitelang.cloud/azure/StorageAccount.html"
+        },
+        "about": {
+            "@type": "SoftwareSourceCode",
+            "name": "StorageAccount",
+            "programmingLanguage": "Kite",
+            "codeRepository": "https://github.com/kitelang/kite"
+        },
+        "articleSection": "Storage",
+        "keywords": ["kite", "azure", "storageaccount", "infrastructure as code", "cloud"]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Azure Provider",
+                "item": "https://docs.kitelang.cloud/azure/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Storage",
+                "item": "https://docs.kitelang.cloud/azure/BlobContainer.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "StorageAccount"
+            }
+        ]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is StorageAccount in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "StorageAccount is a storage resource in the Azure provider. Use it to manage your cloud infrastructure."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I import StorageAccount in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Use: import StorageAccount from \"azure/storage/StorageAccount.kite\""
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What properties does StorageAccount have?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "StorageAccount has 15 configurable properties. See the Properties section for details."
+                }
+            }
+        ]
+    }
+]
+</script>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div class="layout">
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <div class="header-top">
+                    <a href="index.html" class="logo-link">
+                        <h1>🪁 Azure</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
+                <div class="version-selector">
+                    <select id="version-select" onchange="switchVersion(this.value)" aria-label="Select version">
+                        <option value="0.1.0" selected>v0.1.0</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
+            </div>
+            <div id="recently-viewed" class="recently-viewed" style="display: none;">
+                <div class="recently-header">Recently Viewed</div>
+                <ul class="recently-list"></ul>
+            </div>
+            <nav class="nav-tree" aria-label="Resources navigation">
+            <div class="nav-category collapsed" data-domain="networking">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">🌐</span>
+                    <span class="category-name">Networking</span>
+                    <span class="category-count">6</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="natgateway" data-desc="">
+                    <a href="NatGateway.html">NatGateway</a>
+                </li>
+                <li class="nav-item" data-name="networksecuritygroup" data-desc="">
+                    <a href="NetworkSecurityGroup.html">NetworkSecurityGroup</a>
+                </li>
+                <li class="nav-item" data-name="publicipaddress" data-desc="">
+                    <a href="PublicIpAddress.html">PublicIpAddress</a>
+                </li>
+                <li class="nav-item" data-name="routetable" data-desc="">
+                    <a href="RouteTable.html">RouteTable</a>
+                </li>
+                <li class="nav-item" data-name="subnet" data-desc="">
+                    <a href="Subnet.html">Subnet</a>
+                </li>
+                <li class="nav-item" data-name="vnet" data-desc="">
+                    <a href="Vnet.html">Vnet</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="compute">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💻</span>
+                    <span class="category-name">Compute</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="virtualmachine" data-desc="">
+                    <a href="VirtualMachine.html">VirtualMachine</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category" data-domain="storage">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="true">
+                    <span class="category-icon" aria-hidden="true">💾</span>
+                    <span class="category-name">Storage</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="blobcontainer" data-desc="">
+                    <a href="BlobContainer.html">BlobContainer</a>
+                </li>
+                <li class="nav-item" data-name="manageddisk" data-desc="">
+                    <a href="ManagedDisk.html">ManagedDisk</a>
+                </li>
+                <li class="nav-item active" data-name="storageaccount" data-desc="">
+                    <a href="StorageAccount.html" aria-current="page">StorageAccount</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="dns">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">📍</span>
+                    <span class="category-name">Dns</span>
+                    <span class="category-count">2</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="dnsrecordset" data-desc="">
+                    <a href="DnsRecordSet.html">DnsRecordSet</a>
+                </li>
+                <li class="nav-item" data-name="dnszone" data-desc="">
+                    <a href="DnsZone.html">DnsZone</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="loadbalancing">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">⚖️</span>
+                    <span class="category-name">Loadbalancing</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="loadbalancer" data-desc="">
+                    <a href="LoadBalancer.html">LoadBalancer</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="core">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">⚙️</span>
+                    <span class="category-name">Core</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="resourcegroup" data-desc="">
+                    <a href="ResourceGroup.html">ResourceGroup</a>
+                </li>
+                </ul>
+            </div>
+            </nav>
+        </aside>
+        <main id="main-content" class="content">
+            <article class="resource-content" itemscope itemtype="https://schema.org/TechArticle">
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <a href="index.html">Home</a>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="domain">💾 Storage</span>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="current" aria-current="page">StorageAccount</span>
+                </nav>
+
+                <header>
+                    <h1 itemprop="name">StorageAccount</h1>
+</header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">StorageAccount</span> <span class="kw">from</span> <span class="str">"azure/storage/StorageAccount.kite"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Examples</h2>
+                    <div class="example-tabs">
+                        <button class="example-tab active" onclick="showExample(this, 'basic')">Basic</button>
+                        <button class="example-tab" onclick="showExample(this, 'references')">With References</button>
+                        <button class="example-tab" onclick="showExample(this, 'complete')">Complete</button>
+                    </div>
+                    <div class="example-content active" id="example-basic">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code itemprop="text"><span class="kw">resource</span> <span class="type">StorageAccount</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                            <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">resourceGroup</span>                   <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">location</span>                        <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">sku</span>                             <span class="eq">=</span> <span class="str">"Standard_LRS"</span>
+    <span class="prop">kind</span>                            <span class="eq">=</span> <span class="str">"StorageV2"</span>
+    <span class="prop">accessTier</span>                      <span class="eq">=</span> <span class="str">"Hot"</span>
+    <span class="prop">enableHttpsTrafficOnly</span>          <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">minimumTlsVersion</span>               <span class="eq">=</span> <span class="str">"TLS1_2"</span>
+    <span class="prop">allowBlobPublicAccess</span>           <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">allowSharedKeyAccess</span>            <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">enableHierarchicalNamespace</span>     <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">infrastructureEncryptionEnabled</span> <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">largeFileSharesEnabled</span>          <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">networkRules</span>                    <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">tags</span>                            <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-references">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Example with resource references</span>
+
+<span class="kw">resource</span> <span class="type">BlobContainer</span> <span class="name">my_blobcontainer</span> <span class="brace">{</span>
+    <span class="comment">// ... configuration</span>
+<span class="brace">}</span>
+
+<span class="kw">resource</span> <span class="type">ManagedDisk</span> <span class="name">my_manageddisk</span> <span class="brace">{</span>
+    <span class="comment">// ... configuration</span>
+<span class="brace">}</span>
+
+<span class="kw">resource</span> <span class="type">StorageAccount</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span> <span class="eq">=</span> <span class="name">my_blobcontainer</span>.<span class="prop">id</span>
+    <span class="prop">resourceGroup</span> <span class="eq">=</span> <span class="name">my_manageddisk</span>.<span class="prop">id</span>
+    <span class="prop">location</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">sku</span> <span class="eq">=</span> <span class="str">"Standard_LRS"</span>
+    <span class="prop">kind</span> <span class="eq">=</span> <span class="str">"StorageV2"</span>
+    <span class="prop">accessTier</span> <span class="eq">=</span> <span class="str">"Hot"</span>
+    <span class="prop">enableHttpsTrafficOnly</span> <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">minimumTlsVersion</span> <span class="eq">=</span> <span class="str">"TLS1_2"</span>
+    <span class="prop">allowBlobPublicAccess</span> <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">allowSharedKeyAccess</span> <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">enableHierarchicalNamespace</span> <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">infrastructureEncryptionEnabled</span> <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">largeFileSharesEnabled</span> <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">networkRules</span> <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">tags</span> <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-complete">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Complete example with all properties</span>
+<span class="kw">resource</span> <span class="type">StorageAccount</span> <span class="name">complete_example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                            <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The name of the storage account (3-24...</span>
+    <span class="prop">resourceGroup</span>                   <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The resource group name</span>
+    <span class="prop">location</span>                        <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The Azure region for the storage account</span>
+    <span class="prop">sku</span>                             <span class="eq">=</span> <span class="str">"Standard_LRS"</span>  <span class="comment">// The SKU (pricing tier and replication)</span>
+    <span class="prop">kind</span>                            <span class="eq">=</span> <span class="str">"StorageV2"</span>  <span class="comment">// The kind of storage account</span>
+    <span class="prop">accessTier</span>                      <span class="eq">=</span> <span class="str">"Hot"</span>  <span class="comment">// The access tier for blob storage</span>
+    <span class="prop">enableHttpsTrafficOnly</span>          <span class="eq">=</span> <span class="bool">true</span>  <span class="comment">// Enable HTTPS traffic only</span>
+    <span class="prop">minimumTlsVersion</span>               <span class="eq">=</span> <span class="str">"TLS1_2"</span>  <span class="comment">// Minimum TLS version</span>
+    <span class="prop">allowBlobPublicAccess</span>           <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Allow blob public access</span>
+    <span class="prop">allowSharedKeyAccess</span>            <span class="eq">=</span> <span class="bool">true</span>  <span class="comment">// Allow shared key access</span>
+    <span class="prop">enableHierarchicalNamespace</span>     <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Enable hierarchical namespace (Data L...</span>
+    <span class="prop">infrastructureEncryptionEnabled</span> <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Enable infrastructure encryption</span>
+    <span class="prop">largeFileSharesEnabled</span>          <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Enable large file shares (100 TiB cap...</span>
+    <span class="prop">networkRules</span>                    <span class="eq">=</span> <span class="str">"..."</span>  <span class="comment">// Network rules for firewall configuration</span>
+    <span class="prop">tags</span>                            <span class="eq">=</span> <span class="brace">{</span> <span class="prop">key</span> <span class="eq">=</span> <span class="str">"value"</span> <span class="brace">}</span>  <span class="comment">// Tags to apply to the storage account</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section id="schema" class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)" role="button" aria-expanded="false">
+                        <span class="toggle-icon" aria-hidden="true">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// StorageAccount</span>
+<span class="kw">schema</span> <span class="type">StorageAccount</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">name</span>                                     <span class="comment">// The name of the storage account (3-24 chars, lowercase letters and numbers, globally unique)</span>
+    <span class="type">string</span> <span class="prop">resourceGroup</span>                            <span class="comment">// The resource group name</span>
+    <span class="type">string</span> <span class="prop">location</span>                                 <span class="comment">// The Azure region for the storage account</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"Standard_LRS"</span>, <span class="str">"Standard_GRS"</span>, <span class="str">"Standard_RAGRS"</span>, <span class="str">"Standard_ZRS"</span>, <span class="str">"Premium_LRS"</span>, <span class="str">"Premium_ZRS"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">sku</span> <span class="eq">=</span> <span class="str">&quot;Standard_LRS&quot;</span>                     <span class="comment">// The SKU (pricing tier and replication)</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"Storage"</span>, <span class="str">"StorageV2"</span>, <span class="str">"BlobStorage"</span>, <span class="str">"BlockBlobStorage"</span>, <span class="str">"FileStorage"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">kind</span> <span class="eq">=</span> <span class="str">&quot;StorageV2&quot;</span>                       <span class="comment">// The kind of storage account</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"Hot"</span>, <span class="str">"Cool"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">accessTier</span> <span class="eq">=</span> <span class="str">&quot;Hot&quot;</span>                       <span class="comment">// The access tier for blob storage</span>
+    <span class="type">boolean</span> <span class="prop">enableHttpsTrafficOnly</span> <span class="eq">=</span> <span class="bool">true</span>            <span class="comment">// Enable HTTPS traffic only</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"TLS1_0"</span>, <span class="str">"TLS1_1"</span>, <span class="str">"TLS1_2"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">minimumTlsVersion</span> <span class="eq">=</span> <span class="str">&quot;TLS1_2&quot;</span>             <span class="comment">// Minimum TLS version</span>
+    <span class="type">boolean</span> <span class="prop">allowBlobPublicAccess</span> <span class="eq">=</span> <span class="bool">false</span>            <span class="comment">// Allow blob public access</span>
+    <span class="type">boolean</span> <span class="prop">allowSharedKeyAccess</span> <span class="eq">=</span> <span class="bool">true</span>              <span class="comment">// Allow shared key access</span>
+    <span class="type">boolean</span> <span class="prop">enableHierarchicalNamespace</span> <span class="eq">=</span> <span class="bool">false</span>      <span class="comment">// Enable hierarchical namespace (Data Lake Storage Gen2)</span>
+    <span class="type">boolean</span> <span class="prop">infrastructureEncryptionEnabled</span> <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Enable infrastructure encryption</span>
+    <span class="type">boolean</span> <span class="prop">largeFileSharesEnabled</span> <span class="eq">=</span> <span class="bool">false</span>           <span class="comment">// Enable large file shares (100 TiB capacity)</span>
+    <span class="type">networkrules</span> <span class="prop">networkRules</span>                             <span class="comment">// Network rules for firewall configuration</span>
+    <span class="type">map</span> <span class="prop">tags</span>                                     <span class="comment">// Tags to apply to the storage account</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">id</span>                                       <span class="comment">// The resource ID of the storage account</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">primaryBlobEndpoint</span>                      <span class="comment">// The primary blob endpoint</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">primaryFileEndpoint</span>                      <span class="comment">// The primary file endpoint</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">primaryQueueEndpoint</span>                     <span class="comment">// The primary queue endpoint</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">primaryTableEndpoint</span>                     <span class="comment">// The primary table endpoint</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">primaryAccessKey</span>                         <span class="comment">// The primary access key</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">primaryConnectionString</span>                  <span class="comment">// The primary connection string</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">provisioningState</span>                        <span class="comment">// The provisioning state</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-name">
+  <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the storage account (3-24 chars, lowercase letters and numbers, globally unique)</td>
+</tr>
+<tr id="prop-resourceGroup">
+  <td><code class="prop-name" onclick="copyPropLink('resourceGroup')" title="Click to copy link">resourceGroup<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The resource group name</td>
+</tr>
+<tr id="prop-location">
+  <td><code class="prop-name" onclick="copyPropLink('location')" title="Click to copy link">location<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The Azure region for the storage account</td>
+</tr>
+<tr id="prop-sku">
+  <td><code class="prop-name" onclick="copyPropLink('sku')" title="Click to copy link">sku<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">Standard_LRS</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The SKU (pricing tier and replication)<br><span class="valid-values-label">Valid values: </span><code class="valid-value">Standard_LRS</code> <code class="valid-value">Standard_GRS</code> <code class="valid-value">Standard_RAGRS</code> <code class="valid-value">Standard_ZRS</code> <code class="valid-value">Premium_LRS</code> <code class="valid-value">Premium_ZRS</code></td>
+</tr>
+<tr id="prop-kind">
+  <td><code class="prop-name" onclick="copyPropLink('kind')" title="Click to copy link">kind<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">StorageV2</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The kind of storage account<br><span class="valid-values-label">Valid values: </span><code class="valid-value">Storage</code> <code class="valid-value">StorageV2</code> <code class="valid-value">BlobStorage</code> <code class="valid-value">BlockBlobStorage</code> <code class="valid-value">FileStorage</code></td>
+</tr>
+<tr id="prop-accessTier">
+  <td><code class="prop-name" onclick="copyPropLink('accessTier')" title="Click to copy link">accessTier<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">Hot</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The access tier for blob storage<br><span class="valid-values-label">Valid values: </span><code class="valid-value">Hot</code> <code class="valid-value">Cool</code></td>
+</tr>
+<tr id="prop-enableHttpsTrafficOnly">
+  <td><code class="prop-name" onclick="copyPropLink('enableHttpsTrafficOnly')" title="Click to copy link">enableHttpsTrafficOnly<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">true</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable HTTPS traffic only</td>
+</tr>
+<tr id="prop-minimumTlsVersion">
+  <td><code class="prop-name" onclick="copyPropLink('minimumTlsVersion')" title="Click to copy link">minimumTlsVersion<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><code class="default-value">TLS1_2</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Minimum TLS version<br><span class="valid-values-label">Valid values: </span><code class="valid-value">TLS1_0</code> <code class="valid-value">TLS1_1</code> <code class="valid-value">TLS1_2</code></td>
+</tr>
+<tr id="prop-allowBlobPublicAccess">
+  <td><code class="prop-name" onclick="copyPropLink('allowBlobPublicAccess')" title="Click to copy link">allowBlobPublicAccess<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Allow blob public access</td>
+</tr>
+<tr id="prop-allowSharedKeyAccess">
+  <td><code class="prop-name" onclick="copyPropLink('allowSharedKeyAccess')" title="Click to copy link">allowSharedKeyAccess<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">true</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Allow shared key access</td>
+</tr>
+<tr id="prop-enableHierarchicalNamespace">
+  <td><code class="prop-name" onclick="copyPropLink('enableHierarchicalNamespace')" title="Click to copy link">enableHierarchicalNamespace<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable hierarchical namespace (Data Lake Storage Gen2)</td>
+</tr>
+<tr id="prop-infrastructureEncryptionEnabled">
+  <td><code class="prop-name" onclick="copyPropLink('infrastructureEncryptionEnabled')" title="Click to copy link">infrastructureEncryptionEnabled<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable infrastructure encryption</td>
+</tr>
+<tr id="prop-largeFileSharesEnabled">
+  <td><code class="prop-name" onclick="copyPropLink('largeFileSharesEnabled')" title="Click to copy link">largeFileSharesEnabled<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">false</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable large file shares (100 TiB capacity)</td>
+</tr>
+<tr id="prop-networkRules">
+  <td><code class="prop-name" onclick="copyPropLink('networkRules')" title="Click to copy link">networkRules<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">networkrules</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Network rules for firewall configuration</td>
+</tr>
+<tr id="prop-tags">
+  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">map</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Tags to apply to the storage account</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="cloud-properties">
+<h2>Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-id">
+  <td><code class="prop-name" onclick="copyPropLink('id')" title="Click to copy link">id<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The resource ID of the storage account</td>
+</tr>
+<tr id="prop-primaryBlobEndpoint">
+  <td><code class="prop-name" onclick="copyPropLink('primaryBlobEndpoint')" title="Click to copy link">primaryBlobEndpoint<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The primary blob endpoint</td>
+</tr>
+<tr id="prop-primaryFileEndpoint">
+  <td><code class="prop-name" onclick="copyPropLink('primaryFileEndpoint')" title="Click to copy link">primaryFileEndpoint<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The primary file endpoint</td>
+</tr>
+<tr id="prop-primaryQueueEndpoint">
+  <td><code class="prop-name" onclick="copyPropLink('primaryQueueEndpoint')" title="Click to copy link">primaryQueueEndpoint<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The primary queue endpoint</td>
+</tr>
+<tr id="prop-primaryTableEndpoint">
+  <td><code class="prop-name" onclick="copyPropLink('primaryTableEndpoint')" title="Click to copy link">primaryTableEndpoint<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The primary table endpoint</td>
+</tr>
+<tr id="prop-primaryAccessKey">
+  <td><code class="prop-name" onclick="copyPropLink('primaryAccessKey')" title="Click to copy link">primaryAccessKey<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The primary access key</td>
+</tr>
+<tr id="prop-primaryConnectionString">
+  <td><code class="prop-name" onclick="copyPropLink('primaryConnectionString')" title="Click to copy link">primaryConnectionString<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The primary connection string</td>
+</tr>
+<tr id="prop-provisioningState">
+  <td><code class="prop-name" onclick="copyPropLink('provisioningState')" title="Click to copy link">provisioningState<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The provisioning state</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="related" class="related-section">
+<h2>Related Resources</h2>
+<p class="related-desc">Other resources in the Storage category:</p>
+<div class="related-grid">
+<a href="BlobContainer.html" class="related-card"><span class="related-icon">💾</span><span class="related-name">BlobContainer</span></a>
+<a href="ManagedDisk.html" class="related-card"><span class="related-icon">💾</span><span class="related-name">ManagedDisk</span></a>
+</div>
+</section>
+<nav class="resource-nav" aria-label="Resource navigation">
+<a href="ManagedDisk.html" class="nav-prev" rel="prev" title="Previous in Storage">← ManagedDisk</a>
+<span class="nav-category-label">Storage</span>
+<span class="nav-placeholder"></span>
+</nav>
+                <footer class="resource-footer">
+                    <div class="footer-actions">
+                        <div class="share-buttons">
+                            <span class="share-label">Share:</span>
+                            <a href="https://twitter.com/intent/tweet?text=StorageAccount%20-%20Kite%20Azure%20Provider&url=https://docs.kitelang.cloud/azure/StorageAccount.html" target="_blank" rel="noopener" class="share-btn share-twitter" title="Share on Twitter">
+                                <span>𝕏</span>
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://docs.kitelang.cloud/azure/StorageAccount.html" target="_blank" rel="noopener" class="share-btn share-linkedin" title="Share on LinkedIn">
+                                <span>in</span>
+                            </a>
+                        </div>
+                        <a href="https://github.com/kitecorp/kite-providers/issues/new?title=Docs:%20StorageAccount%20-%20&body=**Resource:** StorageAccount%0A**Provider:** azure%0A**Page:** https://docs.kitelang.cloud/azure/StorageAccount.html%0A%0A**Issue:**%0A" target="_blank" rel="noopener" class="report-issue">
+                            Report an issue
+                        </a>
+                    </div>
+                    <p class="footer-date">Generated on <time datetime="2026-01-03T03:08:46.842402">January 3, 2026</time></p>
+                </footer>
+            </article>
+        </main>
+        <aside class="sidebar-right">
+            <div class="toc-header">On this page</div>
+            <nav class="toc" aria-label="Table of contents">
+                <a href="#import">Import</a>
+                <a href="#example">Example</a>
+                <a href="#schema" class="toc-h3">Schema Definition</a>
+<a href="#properties">Properties</a>
+<a href="#cloud-properties">Cloud Properties</a>
+<a href="#related">Related Resources</a>
+            </nav>
+        </aside>
+    </div>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+</body>
+</html>

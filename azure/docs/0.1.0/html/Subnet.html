@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subnet | Azure Provider | Kite</title>
+    <meta name="description" content="Documentation for Subnet resource in Azure provider. Learn about properties, examples, and configuration.">
+    <meta name="keywords" content="kite, infrastructure as code, azure, cloud, terraform alternative, IaC">
+    <meta name="author" content="Kite">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://docs.kitelang.cloud/azure/Subnet.html">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="preload" href="scripts.js" as="script">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Scripts -->
+    <script src="scripts.js" defer></script>
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Azure Provider Resources" href="feed.xml">
+
+    <!-- OpenSearch -->
+    <link rel="search" type="application/opensearchdescription+xml" title="Kite Azure Docs" href="opensearch.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Subnet | Azure Provider | Kite">
+    <meta property="og:description" content="Documentation for Subnet resource in Azure provider. Learn about properties, examples, and configuration.">
+    <meta property="og:url" content="https://docs.kitelang.cloud/azure/Subnet.html">
+    <meta property="og:site_name" content="Kite Documentation">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Subnet | Azure Provider | Kite">
+    <meta name="twitter:description" content="Documentation for Subnet resource in Azure provider. Learn about properties, examples, and configuration.">
+</head>
+<script type="application/ld+json">
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Subnet Resource Documentation",
+        "description": "",
+        "author": {
+            "@type": "Organization",
+            "name": "Kite"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Kite",
+            "url": "https://kitelang.cloud"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://docs.kitelang.cloud/azure/Subnet.html"
+        },
+        "about": {
+            "@type": "SoftwareSourceCode",
+            "name": "Subnet",
+            "programmingLanguage": "Kite",
+            "codeRepository": "https://github.com/kitelang/kite"
+        },
+        "articleSection": "Networking",
+        "keywords": ["kite", "azure", "subnet", "infrastructure as code", "cloud"]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Azure Provider",
+                "item": "https://docs.kitelang.cloud/azure/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Networking",
+                "item": "https://docs.kitelang.cloud/azure/NatGateway.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Subnet"
+            }
+        ]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is Subnet in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Subnet is a networking resource in the Azure provider. Use it to manage your cloud infrastructure."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I import Subnet in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Use: import Subnet from \"azure/networking/Subnet.kite\""
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What properties does Subnet have?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Subnet has 9 configurable properties. See the Properties section for details."
+                }
+            }
+        ]
+    }
+]
+</script>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div class="layout">
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <div class="header-top">
+                    <a href="index.html" class="logo-link">
+                        <h1>🪁 Azure</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
+                <div class="version-selector">
+                    <select id="version-select" onchange="switchVersion(this.value)" aria-label="Select version">
+                        <option value="0.1.0" selected>v0.1.0</option>
+                    </select>
+                </div>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
+            </div>
+            <div id="recently-viewed" class="recently-viewed" style="display: none;">
+                <div class="recently-header">Recently Viewed</div>
+                <ul class="recently-list"></ul>
+            </div>
+            <nav class="nav-tree" aria-label="Resources navigation">
+            <div class="nav-category" data-domain="networking">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="true">
+                    <span class="category-icon" aria-hidden="true">🌐</span>
+                    <span class="category-name">Networking</span>
+                    <span class="category-count">6</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="natgateway" data-desc="">
+                    <a href="NatGateway.html">NatGateway</a>
+                </li>
+                <li class="nav-item" data-name="networksecuritygroup" data-desc="">
+                    <a href="NetworkSecurityGroup.html">NetworkSecurityGroup</a>
+                </li>
+                <li class="nav-item" data-name="publicipaddress" data-desc="">
+                    <a href="PublicIpAddress.html">PublicIpAddress</a>
+                </li>
+                <li class="nav-item" data-name="routetable" data-desc="">
+                    <a href="RouteTable.html">RouteTable</a>
+                </li>
+                <li class="nav-item active" data-name="subnet" data-desc="">
+                    <a href="Subnet.html" aria-current="page">Subnet</a>
+                </li>
+                <li class="nav-item" data-name="vnet" data-desc="">
+                    <a href="Vnet.html">Vnet</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="compute">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💻</span>
+                    <span class="category-name">Compute</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="virtualmachine" data-desc="">
+                    <a href="VirtualMachine.html">VirtualMachine</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="storage">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💾</span>
+                    <span class="category-name">Storage</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="blobcontainer" data-desc="">
+                    <a href="BlobContainer.html">BlobContainer</a>
+                </li>
+                <li class="nav-item" data-name="manageddisk" data-desc="">
+                    <a href="ManagedDisk.html">ManagedDisk</a>
+                </li>
+                <li class="nav-item" data-name="storageaccount" data-desc="">
+                    <a href="StorageAccount.html">StorageAccount</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="dns">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">📍</span>
+                    <span class="category-name">Dns</span>
+                    <span class="category-count">2</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="dnsrecordset" data-desc="">
+                    <a href="DnsRecordSet.html">DnsRecordSet</a>
+                </li>
+                <li class="nav-item" data-name="dnszone" data-desc="">
+                    <a href="DnsZone.html">DnsZone</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="loadbalancing">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">⚖️</span>
+                    <span class="category-name">Loadbalancing</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="loadbalancer" data-desc="">
+                    <a href="LoadBalancer.html">LoadBalancer</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="core">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">⚙️</span>
+                    <span class="category-name">Core</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="resourcegroup" data-desc="">
+                    <a href="ResourceGroup.html">ResourceGroup</a>
+                </li>
+                </ul>
+            </div>
+            </nav>
+        </aside>
+        <main id="main-content" class="content">
+            <article class="resource-content" itemscope itemtype="https://schema.org/TechArticle">
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <a href="index.html">Home</a>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="domain">🌐 Networking</span>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="current" aria-current="page">Subnet</span>
+                </nav>
+
+                <header>
+                    <h1 itemprop="name">Subnet</h1>
+</header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">Subnet</span> <span class="kw">from</span> <span class="str">"azure/networking/Subnet.kite"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Examples</h2>
+                    <div class="example-tabs">
+                        <button class="example-tab active" onclick="showExample(this, 'basic')">Basic</button>
+                        <button class="example-tab" onclick="showExample(this, 'references')">With References</button>
+                        <button class="example-tab" onclick="showExample(this, 'complete')">Complete</button>
+                    </div>
+                    <div class="example-content active" id="example-basic">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code itemprop="text"><span class="kw">resource</span> <span class="type">Subnet</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                              <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">resourceGroup</span>                     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">vnetName</span>                          <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">addressPrefix</span>                     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">networkSecurityGroupId</span>            <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">routeTableId</span>                      <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">privateEndpointNetworkPolicies</span>    <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">privateLinkServiceNetworkPolicies</span> <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">serviceEndpoints</span>                  <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-references">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Example with resource references</span>
+
+<span class="kw">resource</span> <span class="type">NatGateway</span> <span class="name">my_natgateway</span> <span class="brace">{</span>
+    <span class="comment">// ... configuration</span>
+<span class="brace">}</span>
+
+<span class="kw">resource</span> <span class="type">NetworkSecurityGroup</span> <span class="name">my_networksecuritygroup</span> <span class="brace">{</span>
+    <span class="comment">// ... configuration</span>
+<span class="brace">}</span>
+
+<span class="kw">resource</span> <span class="type">Subnet</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span> <span class="eq">=</span> <span class="name">my_natgateway</span>.<span class="prop">id</span>
+    <span class="prop">resourceGroup</span> <span class="eq">=</span> <span class="name">my_networksecuritygroup</span>.<span class="prop">id</span>
+    <span class="prop">vnetName</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">addressPrefix</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">networkSecurityGroupId</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">routeTableId</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">privateEndpointNetworkPolicies</span> <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">privateLinkServiceNetworkPolicies</span> <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">serviceEndpoints</span> <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-complete">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Complete example with all properties</span>
+<span class="kw">resource</span> <span class="type">Subnet</span> <span class="name">complete_example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                              <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The name of the subnet</span>
+    <span class="prop">resourceGroup</span>                     <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The Azure resource group name</span>
+    <span class="prop">vnetName</span>                          <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The name of the parent Virtual Network</span>
+    <span class="prop">addressPrefix</span>                     <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The address prefix for the subnet in ...</span>
+    <span class="prop">networkSecurityGroupId</span>            <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The ID of the Network Security Group ...</span>
+    <span class="prop">routeTableId</span>                      <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The ID of the Route Table to associate</span>
+    <span class="prop">privateEndpointNetworkPolicies</span>    <span class="eq">=</span> <span class="bool">true</span>  <span class="comment">// Enable private endpoint network policies</span>
+    <span class="prop">privateLinkServiceNetworkPolicies</span> <span class="eq">=</span> <span class="bool">true</span>  <span class="comment">// Enable private link service network p...</span>
+    <span class="prop">serviceEndpoints</span>                  <span class="eq">=</span> <span class="brace">[</span><span class="str">"item1"</span>, <span class="str">"item2"</span><span class="brace">]</span>  <span class="comment">// Service endpoints to enable (e.g., Mi...</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section id="schema" class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)" role="button" aria-expanded="false">
+                        <span class="toggle-icon" aria-hidden="true">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Subnet</span>
+<span class="kw">schema</span> <span class="type">Subnet</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">name</span>                                      <span class="comment">// The name of the subnet</span>
+    <span class="type">string</span> <span class="prop">resourceGroup</span>                             <span class="comment">// The Azure resource group name</span>
+    <span class="type">string</span> <span class="prop">vnetName</span>                                  <span class="comment">// The name of the parent Virtual Network</span>
+    <span class="type">string</span> <span class="prop">addressPrefix</span>                             <span class="comment">// The address prefix for the subnet in CIDR notation (e.g., 10.0.1.0/24)</span>
+    <span class="type">string</span> <span class="prop">networkSecurityGroupId</span>                    <span class="comment">// The ID of the Network Security Group to associate</span>
+    <span class="type">string</span> <span class="prop">routeTableId</span>                              <span class="comment">// The ID of the Route Table to associate</span>
+    <span class="type">boolean</span> <span class="prop">privateEndpointNetworkPolicies</span> <span class="eq">=</span> <span class="bool">true</span>     <span class="comment">// Enable private endpoint network policies</span>
+    <span class="type">boolean</span> <span class="prop">privateLinkServiceNetworkPolicies</span> <span class="eq">=</span> <span class="bool">true</span>  <span class="comment">// Enable private link service network policies</span>
+    <span class="type">list</span> <span class="prop">serviceEndpoints</span>                          <span class="comment">// Service endpoints to enable (e.g., Microsoft.Storage, Microsoft.Sql)</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">id</span>                                        <span class="comment">// The Azure resource ID of the subnet</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">provisioningState</span>                         <span class="comment">// The provisioning state of the subnet</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">purpose</span>                                   <span class="comment">// The purpose of the subnet (e.g., for private endpoints)</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-name">
+  <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the subnet</td>
+</tr>
+<tr id="prop-resourceGroup">
+  <td><code class="prop-name" onclick="copyPropLink('resourceGroup')" title="Click to copy link">resourceGroup<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The Azure resource group name</td>
+</tr>
+<tr id="prop-vnetName">
+  <td><code class="prop-name" onclick="copyPropLink('vnetName')" title="Click to copy link">vnetName<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The name of the parent Virtual Network</td>
+</tr>
+<tr id="prop-addressPrefix">
+  <td><code class="prop-name" onclick="copyPropLink('addressPrefix')" title="Click to copy link">addressPrefix<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The address prefix for the subnet in CIDR notation (e.g., 10.0.1.0/24)</td>
+</tr>
+<tr id="prop-networkSecurityGroupId">
+  <td><code class="prop-name" onclick="copyPropLink('networkSecurityGroupId')" title="Click to copy link">networkSecurityGroupId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The ID of the Network Security Group to associate</td>
+</tr>
+<tr id="prop-routeTableId">
+  <td><code class="prop-name" onclick="copyPropLink('routeTableId')" title="Click to copy link">routeTableId<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>The ID of the Route Table to associate</td>
+</tr>
+<tr id="prop-privateEndpointNetworkPolicies">
+  <td><code class="prop-name" onclick="copyPropLink('privateEndpointNetworkPolicies')" title="Click to copy link">privateEndpointNetworkPolicies<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">true</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable private endpoint network policies</td>
+</tr>
+<tr id="prop-privateLinkServiceNetworkPolicies">
+  <td><code class="prop-name" onclick="copyPropLink('privateLinkServiceNetworkPolicies')" title="Click to copy link">privateLinkServiceNetworkPolicies<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">boolean</code></td>
+  <td><code class="default-value">true</code></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Enable private link service network policies</td>
+</tr>
+<tr id="prop-serviceEndpoints">
+  <td><code class="prop-name" onclick="copyPropLink('serviceEndpoints')" title="Click to copy link">serviceEndpoints<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">list</code></td>
+  <td><span class="no-value">—</span></td>
+  <td><span class="badge badge-optional">No</span></td>
+  <td>Service endpoints to enable (e.g., Microsoft.Storage, Microsoft.Sql)</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="cloud-properties">
+<h2>Cloud Properties</h2>
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-id">
+  <td><code class="prop-name" onclick="copyPropLink('id')" title="Click to copy link">id<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The Azure resource ID of the subnet</td>
+</tr>
+<tr id="prop-provisioningState">
+  <td><code class="prop-name" onclick="copyPropLink('provisioningState')" title="Click to copy link">provisioningState<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The provisioning state of the subnet</td>
+</tr>
+<tr id="prop-purpose">
+  <td><code class="prop-name" onclick="copyPropLink('purpose')" title="Click to copy link">purpose<span class="link-icon">#</span></code></td>
+  <td><code class="prop-type">string</code></td>
+  <td>The purpose of the subnet (e.g., for private endpoints)</td>
+</tr>
+    </tbody>
+</table>
+</div>
+</section>
+<section id="related" class="related-section">
+<h2>Related Resources</h2>
+<p class="related-desc">Other resources in the Networking category:</p>
+<div class="related-grid">
+<a href="NatGateway.html" class="related-card"><span class="related-icon">🌐</span><span class="related-name">NatGateway</span></a>
+<a href="NetworkSecurityGroup.html" class="related-card"><span class="related-icon">🌐</span><span class="related-name">NetworkSecurityGroup</span></a>
+<a href="PublicIpAddress.html" class="related-card"><span class="related-icon">🌐</span><span class="related-name">PublicIpAddress</span></a>
+<a href="RouteTable.html" class="related-card"><span class="related-icon">🌐</span><span class="related-name">RouteTable</span></a>
+<a href="Vnet.html" class="related-card"><span class="related-icon">🌐</span><span class="related-name">Vnet</span></a>
+</div>
+</section>
+<nav class="resource-nav" aria-label="Resource navigation">
+<a href="RouteTable.html" class="nav-prev" rel="prev" title="Previous in Networking">← RouteTable</a>
+<span class="nav-category-label">Networking</span>
+<a href="Vnet.html" class="nav-next" rel="next" title="Next in Networking">Vnet →</a>
+</nav>
+                <footer class="resource-footer">
+                    <div class="footer-actions">
+                        <div class="share-buttons">
+                            <span class="share-label">Share:</span>
+                            <a href="https://twitter.com/intent/tweet?text=Subnet%20-%20Kite%20Azure%20Provider&url=https://docs.kitelang.cloud/azure/Subnet.html" target="_blank" rel="noopener" class="share-btn share-twitter" title="Share on Twitter">
+                                <span>𝕏</span>
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://docs.kitelang.cloud/azure/Subnet.html" target="_blank" rel="noopener" class="share-btn share-linkedin" title="Share on LinkedIn">
+                                <span>in</span>
+                            </a>
+                        </div>
+                        <a href="https://github.com/kitecorp/kite-providers/issues/new?title=Docs:%20Subnet%20-%20&body=**Resource:** Subnet%0A**Provider:** azure%0A**Page:** https://docs.kitelang.cloud/azure/Subnet.html%0A%0A**Issue:**%0A" target="_blank" rel="noopener" class="report-issue">
+                            Report an issue
+                        </a>
+                    </div>
+                    <p class="footer-date">Generated on <time datetime="2026-01-03T03:08:46.843915">January 3, 2026</time></p>
+                </footer>
+            </article>
+        </main>
+        <aside class="sidebar-right">
+            <div class="toc-header">On this page</div>
+            <nav class="toc" aria-label="Table of contents">
+                <a href="#import">Import</a>
+                <a href="#example">Example</a>
+                <a href="#schema" class="toc-h3">Schema Definition</a>
+<a href="#properties">Properties</a>
+<a href="#cloud-properties">Cloud Properties</a>
+<a href="#related">Related Resources</a>
+            </nav>
+        </aside>
+    </div>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+// RecordSet
+schema RecordSet {
+    string hostedZoneId      // The ID of the hosted zone
+    string name              // The name of the record (fully qualified domain name)
+    @allowed(["A", "AAAA", "CNAME", "MX", "TXT", "NS", "SOA", "SRV", "CAA", "PTR"])
+    string type              // The DNS record type
+    integer ttl               // The TTL (time to live) in seconds
+    list records           // The record values
+    aliastarget aliasTarget       // Alias target for AWS resources (ELB, CloudFront, S3, etc.)
+    integer weight            // Weighted routing weight (0-255)
+    string setIdentifier     // Set identifier for routing policies
+    @allowed(["PRIMARY", "SECONDARY"])
+    string failover          // Failover routing type
+    geolocation geoLocation       // Geolocation routing configuration
+    string healthCheckId     // Health check ID to associate with the record
+    boolean multiValueAnswer  // Whether this is a multivalue answer record
+}

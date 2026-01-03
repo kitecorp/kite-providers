@@ -1,0 +1,18 @@
+// Subnet
+schema Subnet {
+    string name                                      // The name of the subnet
+    string resourceGroup                             // The Azure resource group name
+    string vnetName                                  // The name of the parent Virtual Network
+    string addressPrefix                             // The address prefix for the subnet in CIDR notation (e.g., 10.0.1.0/24)
+    string networkSecurityGroupId                    // The ID of the Network Security Group to associate
+    string routeTableId                              // The ID of the Route Table to associate
+    boolean privateEndpointNetworkPolicies = true     // Enable private endpoint network policies
+    boolean privateLinkServiceNetworkPolicies = true  // Enable private link service network policies
+    list serviceEndpoints                          // Service endpoints to enable (e.g., Microsoft.Storage, Microsoft.Sql)
+    @cloud(importable)
+    string id                                        // The Azure resource ID of the subnet
+    @cloud
+    string provisioningState                         // The provisioning state of the subnet
+    @cloud
+    string purpose                                   // The purpose of the subnet (e.g., for private endpoints)
+}

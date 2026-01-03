@@ -1,0 +1,28 @@
+// DnsRecordSet
+schema DnsRecordSet {
+    string zoneName           // The name of the DNS zone
+    string resourceGroup      // The resource group name
+    string name               // The name of the record set. Use @ for the zone apex
+    @allowed(["A", "AAAA", "CNAME", "MX", "TXT", "NS", "SRV", "CAA", "PTR", "SOA"])
+    string type               // The DNS record type
+    integer ttl                // The TTL (time to live) in seconds. Required unless targetResourceId is specified
+    list aRecords           // A records (IPv4 addresses). Used when type = A
+    list aaaaRecords        // AAAA records (IPv6 addresses). Used when type = AAAA
+    string cnameRecord        // CNAME record (canonical name). Used when type = CNAME
+    list mxRecords          // MX records. Used when type = MX
+    list txtRecords         // TXT records. Used when type = TXT
+    list nsRecords          // NS records. Used when type = NS
+    list srvRecords         // SRV records. Used when type = SRV
+    list caaRecords         // CAA records. Used when type = CAA
+    list ptrRecords         // PTR records. Used when type = PTR
+    string targetResourceId   // Target resource ID for alias record. Points to an Azure resource (e.g., Public IP, Traffic Manager)
+    map metadata           // Metadata for the record set
+    @cloud(importable)
+    string id                 // The resource ID of the record set
+    @cloud
+    string fqdn               // The fully qualified domain name of the record set
+    @cloud
+    string provisioningState  // The provisioning state
+    @cloud
+    string etag               // The ETag of the record set
+}

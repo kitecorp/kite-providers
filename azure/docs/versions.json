@@ -1,0 +1,11 @@
+{
+    "provider": "azure",
+    "latest": "0.1.0",
+    "versions": [
+        {
+            "version": "0.1.0",
+            "path": "0.1.0",
+            "date": "2026-01-03"
+        }
+    ]
+}

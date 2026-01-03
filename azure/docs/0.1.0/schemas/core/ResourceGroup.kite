@@ -1,0 +1,10 @@
+// ResourceGroup
+schema ResourceGroup {
+    string name               // The name of the resource group. Must be unique within the subscription
+    string location           // The Azure region/location (e.g., eastus, westeurope)
+    map tags               // Tags to apply to the resource group
+    @cloud(importable)
+    string id                 // The Azure resource ID of the resource group
+    @cloud
+    string provisioningState  // The provisioning state of the resource group
+}
