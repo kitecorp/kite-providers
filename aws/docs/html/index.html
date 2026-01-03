@@ -3,484 +3,383 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aws Provider Documentation</title>
-    <style>
-    :root {
-        --kite-primary: #0ea5e9;
-        --kite-primary-dark: #0284c7;
-        --kite-success: #22c55e;
-        --kite-warning: #eab308;
-        --kite-error: #ef4444;
-        --kite-info: #06b6d4;
-        --kite-special: #a855f7;
+    <title>Aws Provider Documentation | Kite</title>
+    <meta name="description" content="Complete documentation for Aws provider resources. Learn how to configure and manage 16 infrastructure resources with Kite.">
+    <meta name="keywords" content="kite, infrastructure as code, aws, cloud, terraform alternative, IaC">
+    <meta name="author" content="Kite">
+    <meta name="robots" content="index, follow">
 
-        --bg-primary: #ffffff;
-        --bg-secondary: #f8fafc;
-        --bg-code: #1e293b;
-        --text-primary: #0f172a;
-        --text-secondary: #64748b;
-        --text-code: #e2e8f0;
-        --border: #e2e8f0;
-    }
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://docs.kitelang.cloud/aws/index.html">
 
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --bg-primary: #0f172a;
-            --bg-secondary: #1e293b;
-            --bg-code: #0f172a;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-code: #e2e8f0;
-            --border: #334155;
-        }
-    }
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
 
-    * { box-sizing: border-box; }
+    <!-- Preload critical resources -->
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="preload" href="scripts.js" as="script">
 
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        background: var(--bg-primary);
-        color: var(--text-primary);
-        margin: 0;
-        padding: 0;
-        line-height: 1.6;
-    }
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
 
-    .container { max-width: 960px; margin: 0 auto; padding: 2rem; }
+    <!-- Scripts -->
+    <script src="scripts.js" defer></script>
 
-    header { margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid var(--kite-primary); }
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Aws Provider Resources" href="feed.xml">
 
-    h1 { color: var(--kite-primary); margin: 0 0 0.5rem 0; font-size: 2rem; }
-    h2 { color: var(--text-primary); margin-top: 2rem; font-size: 1.25rem; }
+    <!-- OpenSearch -->
+    <link rel="search" type="application/opensearchdescription+xml" title="Kite Aws Docs" href="opensearch.xml">
 
-    .version { color: var(--text-secondary); margin: 0; }
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Aws Provider Documentation | Kite">
+    <meta property="og:description" content="Complete documentation for Aws provider resources. Learn how to configure and manage 16 infrastructure resources with Kite.">
+    <meta property="og:url" content="https://docs.kitelang.cloud/aws/index.html">
+    <meta property="og:site_name" content="Kite Documentation">
 
-    a { color: var(--kite-primary); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .search-section { margin-bottom: 1.5rem; }
-    .search-input {
-        width: 100%%;
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        font-size: 1rem;
-        background: var(--bg-secondary);
-        color: var(--text-primary);
-    }
-    .search-input:focus {
-        outline: none;
-        border-color: var(--kite-primary);
-        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-    }
-
-    .resource-list { list-style: none; padding: 0; margin: 0; }
-    .resource-list li {
-        padding: 1rem;
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        margin-bottom: 0.5rem;
-        background: var(--bg-secondary);
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        transition: border-color 0.15s;
-    }
-    .resource-list li:hover { border-color: var(--kite-primary); }
-    .resource-list a { font-weight: 600; font-size: 1rem; }
-    .property-count { color: var(--text-secondary); font-size: 0.875rem; }
-    .property-breakdown { color: var(--text-secondary); font-size: 0.75rem; margin-left: auto; }
-
-    .badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 0.125rem 0.5rem;
-        border-radius: 9999px;
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-    .badge-count { background: rgba(14, 165, 233, 0.1); color: var(--kite-primary); }
-    .badge-required { background: rgba(239, 68, 68, 0.1); color: var(--kite-error); }
-    .badge-optional { background: rgba(34, 197, 94, 0.1); color: var(--kite-success); }
-    .badge-cloud { background: rgba(6, 182, 212, 0.1); color: var(--kite-info); }
-    .badge-deprecated { background: rgba(234, 179, 8, 0.1); color: var(--kite-warning); }
-    .badge-importable { background: rgba(168, 85, 247, 0.1); color: var(--kite-special); }
-
-    .code-block {
-        background: var(--bg-code);
-        border-radius: 0.5rem;
-        padding: 1.25rem;
-        overflow-x: auto;
-        font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-        font-size: 0.875rem;
-        line-height: 1.7;
-        white-space: pre;
-    }
-    .code-block code { color: var(--text-code); white-space: pre; display: block; }
-
-    .kw { color: #c084fc; }
-    .type { color: #38bdf8; }
-    .name { color: #a5b4fc; }
-    .prop { color: #f8fafc; }
-    .eq { color: #64748b; }
-    .str { color: #86efac; }
-    .num { color: #fcd34d; }
-    .bool { color: #fb923c; }
-    .brace { color: #94a3b8; }
-    .comment { color: #64748b; font-style: italic; }
-    .decorator { color: #fb923c; }
-
-    .schema-section {
-        margin-top: 1rem;
-        margin-bottom: 1.5rem;
-    }
-    .schema-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 0;
-        cursor: pointer;
-        user-select: none;
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-        font-weight: 500;
-        transition: color 0.15s;
-    }
-    .schema-header:hover { color: var(--kite-primary); }
-    .schema-toggle {
-        font-size: 0.75rem;
-        transition: transform 0.2s;
-    }
-    .schema-section:not(.collapsed) .schema-toggle { transform: rotate(90deg); }
-    .schema-section.collapsed .schema-content { display: none; }
-    .schema-content { margin-top: 0.5rem; }
-
-    table { width: 100%%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { text-align: left; padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
-    th {
-        background: var(--bg-secondary);
-        font-weight: 600;
-        color: var(--text-secondary);
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    td { vertical-align: top; }
-    .optional-cell { text-align: center; }
-
-    .sortable-header { cursor: pointer; user-select: none; transition: color 0.15s; }
-    .sortable-header:hover { color: var(--kite-primary); }
-    .sort-icon { opacity: 0.4; margin-left: 0.25rem; font-size: 0.875rem; }
-    .sortable-header.asc .sort-icon::after { content: '↑'; }
-    .sortable-header.desc .sort-icon::after { content: '↓'; }
-    .sortable-header.asc .sort-icon,
-    .sortable-header.desc .sort-icon { opacity: 1; color: var(--kite-primary); }
-
-    .prop-name { font-family: 'SF Mono', monospace; font-weight: 500; color: var(--kite-primary); }
-    .default-value {
-        font-family: 'SF Mono', monospace;
-        font-size: 0.875rem;
-        background: rgba(34, 197, 94, 0.1);
-        color: var(--kite-success);
-        padding: 0.125rem 0.375rem;
-        border-radius: 0.25rem;
-    }
-    .valid-values { display: flex; flex-wrap: wrap; gap: 0.25rem; }
-    .valid-value {
-        font-family: 'SF Mono', monospace;
-        font-size: 0.75rem;
-        background: rgba(14, 165, 233, 0.1);
-        color: var(--kite-primary);
-        padding: 0.125rem 0.375rem;
-        border-radius: 0.25rem;
-    }
-    .no-value { color: var(--text-secondary); }
-    .prop-type {
-        font-family: 'SF Mono', monospace;
-        font-size: 0.875rem;
-        color: var(--kite-special);
-        background: rgba(168, 85, 247, 0.1);
-        padding: 0.125rem 0.375rem;
-        border-radius: 0.25rem;
-    }
-    .prop-badges { display: flex; gap: 0.25rem; flex-wrap: wrap; margin-top: 0.25rem; }
-
-    .nav { margin-bottom: 1.5rem; }
-    .nav a { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--text-secondary); font-size: 0.875rem; }
-    .nav a:hover { color: var(--kite-primary); }
-
-    .meta {
-        margin-top: 3rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border);
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-    }
-    .meta p { margin: 0.25rem 0; }
-
-    .domain-group { margin-bottom: 2rem; }
-    .domain-header {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 0;
-        border-bottom: 2px solid var(--border);
-        margin-bottom: 0.75rem;
-        cursor: pointer;
-        user-select: none;
-        font-size: 1.125rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        transition: color 0.15s;
-    }
-    .domain-header:hover { color: var(--kite-primary); }
-    .domain-icon { font-size: 1.25rem; }
-    .collapse-icon { margin-left: auto; transition: transform 0.2s; color: var(--text-secondary); font-size: 0.875rem; }
-    .domain-group.collapsed .collapse-icon { transform: rotate(-90deg); }
-    .domain-group.collapsed .resource-list { display: none; }
-    .resource-list { padding-left: 0.5rem; }
-
-    .breadcrumbs {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.875rem;
-        color: var(--text-secondary);
-        margin-bottom: 1rem;
-    }
-    .breadcrumbs a { color: var(--text-secondary); }
-    .breadcrumbs a:hover { color: var(--kite-primary); }
-    .breadcrumbs .separator { color: var(--text-secondary); }
-    .breadcrumbs .current { color: var(--text-primary); font-weight: 500; }
-
-    thead th { position: sticky; top: 0; z-index: 10; }
-
-    .code-wrapper { position: relative; }
-    .copy-btn {
-        position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
-        padding: 0.375rem 0.75rem;
-        background: rgba(255, 255, 255, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 0.375rem;
-        color: var(--text-code);
-        font-size: 0.75rem;
-        cursor: pointer;
-        opacity: 0;
-        transition: opacity 0.15s, background 0.15s;
-    }
-    .code-wrapper:hover .copy-btn { opacity: 1; }
-    .copy-btn:hover { background: rgba(255, 255, 255, 0.2); }
-    .copy-btn.copied { background: var(--kite-success); color: white; }
-
-    .prop-name-link { color: var(--kite-primary); text-decoration: none; }
-    .prop-name-link:hover { text-decoration: underline; }
-    .anchor-icon { opacity: 0; margin-left: 0.25rem; color: var(--text-secondary); transition: opacity 0.15s; }
-    tr:hover .anchor-icon { opacity: 1; }
-
-    .resource-nav {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 2rem;
-        padding-top: 1rem;
-        border-top: 1px solid var(--border);
-    }
-    .resource-nav a {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        background: var(--bg-secondary);
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        font-size: 0.875rem;
-        transition: border-color 0.15s;
-    }
-    .resource-nav a:hover { border-color: var(--kite-primary); text-decoration: none; }
-    .resource-nav .prev::before { content: '←'; }
-    .resource-nav .next::after { content: '→'; }
-    .resource-nav .placeholder { visibility: hidden; }
-
-    @media print {
-        body { background: white; color: black; }
-        .container { max-width: 100%%; padding: 0; }
-        .nav, .copy-btn, .resource-nav, .search-section { display: none; }
-        .code-block { background: #f5f5f5; color: black; border: 1px solid #ddd; }
-        a { color: black; text-decoration: underline; }
-        thead th { position: static; }
-        .domain-group.collapsed .resource-list { display: block; }
-    }
-</style>
-
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Aws Provider Documentation | Kite">
+    <meta name="twitter:description" content="Complete documentation for Aws provider resources. Learn how to configure and manage 16 infrastructure resources with Kite.">
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🪁 Aws Provider</h1>
-            <p class="version">Version <strong>0.1.0</strong></p>
-        </header>
-
-        <section class="search-section">
-            <input type="text" id="search" placeholder="Search resources..." class="search-input">
-        </section>
-
-        <h2>Resources <span class="badge badge-count">16</span></h2>
-    <div class="domain-group" data-domain="networking">
-        <h3 class="domain-header" onclick="toggleDomain(this)">
-            <span class="domain-icon">🌐</span>
-            Networking
-            <span class="badge badge-count">7</span>
-            <span class="collapse-icon">▼</span>
-        </h3>
-        <ul class="resource-list">
-        <li data-name="elasticip" data-domain="networking">
-            <a href="ElasticIp.html">ElasticIp</a>
-            <span class="property-count">10 properties</span>
-            <span class="property-breakdown">(4 user, 6 cloud)</span>
-        </li>
-        <li data-name="internetgateway" data-domain="networking">
-            <a href="InternetGateway.html">InternetGateway</a>
-            <span class="property-count">5 properties</span>
-            <span class="property-breakdown">(2 user, 3 cloud)</span>
-        </li>
-        <li data-name="natgateway" data-domain="networking">
-            <a href="NatGateway.html">NatGateway</a>
-            <span class="property-count">9 properties</span>
-            <span class="property-breakdown">(4 user, 5 cloud)</span>
-        </li>
-        <li data-name="routetable" data-domain="networking">
-            <a href="RouteTable.html">RouteTable</a>
-            <span class="property-count">7 properties</span>
-            <span class="property-breakdown">(3 user, 4 cloud)</span>
-        </li>
-        <li data-name="securitygroup" data-domain="networking">
-            <a href="SecurityGroup.html">SecurityGroup</a>
-            <span class="property-count">9 properties</span>
-            <span class="property-breakdown">(6 user, 3 cloud)</span>
-        </li>
-        <li data-name="subnet" data-domain="networking">
-            <a href="Subnet.html">Subnet</a>
-            <span class="property-count">14 properties</span>
-            <span class="property-breakdown">(7 user, 7 cloud)</span>
-        </li>
-        <li data-name="vpc" data-domain="networking">
-            <a href="Vpc.html">Vpc</a>
-            <span class="property-count">13 properties</span>
-            <span class="property-breakdown">(6 user, 7 cloud)</span>
-        </li>
-        </ul>
-    </div>
-    <div class="domain-group" data-domain="compute">
-        <h3 class="domain-header" onclick="toggleDomain(this)">
-            <span class="domain-icon">💻</span>
-            Compute
-            <span class="badge badge-count">1</span>
-            <span class="collapse-icon">▼</span>
-        </h3>
-        <ul class="resource-list">
-        <li data-name="ec2instance" data-domain="compute">
-            <a href="Ec2Instance.html">Ec2Instance</a>
-            <span class="property-count">24 properties</span>
-            <span class="property-breakdown">(15 user, 9 cloud)</span>
-        </li>
-        </ul>
-    </div>
-    <div class="domain-group" data-domain="storage">
-        <h3 class="domain-header" onclick="toggleDomain(this)">
-            <span class="domain-icon">💾</span>
-            Storage
-            <span class="badge badge-count">3</span>
-            <span class="collapse-icon">▼</span>
-        </h3>
-        <ul class="resource-list">
-        <li data-name="ebsvolume" data-domain="storage">
-            <a href="EbsVolume.html">EbsVolume</a>
-            <span class="property-count">15 properties</span>
-            <span class="property-breakdown">(10 user, 5 cloud)</span>
-        </li>
-        <li data-name="s3bucket" data-domain="storage">
-            <a href="S3Bucket.html">S3Bucket</a>
-            <span class="property-count">19 properties</span>
-            <span class="property-breakdown">(14 user, 5 cloud)</span>
-        </li>
-        <li data-name="s3bucketpolicy" data-domain="storage">
-            <a href="S3BucketPolicy.html">S3BucketPolicy</a>
-            <span class="property-count">2 properties</span>
-            <span class="property-breakdown">(2 user, 0 cloud)</span>
-        </li>
-        </ul>
-    </div>
-    <div class="domain-group" data-domain="dns">
-        <h3 class="domain-header" onclick="toggleDomain(this)">
-            <span class="domain-icon">📍</span>
-            Dns
-            <span class="badge badge-count">2</span>
-            <span class="collapse-icon">▼</span>
-        </h3>
-        <ul class="resource-list">
-        <li data-name="hostedzone" data-domain="dns">
-            <a href="HostedZone.html">HostedZone</a>
-            <span class="property-count">11 properties</span>
-            <span class="property-breakdown">(6 user, 5 cloud)</span>
-        </li>
-        <li data-name="recordset" data-domain="dns">
-            <a href="RecordSet.html">RecordSet</a>
-            <span class="property-count">12 properties</span>
-            <span class="property-breakdown">(12 user, 0 cloud)</span>
-        </li>
-        </ul>
-    </div>
-    <div class="domain-group" data-domain="loadbalancing">
-        <h3 class="domain-header" onclick="toggleDomain(this)">
-            <span class="domain-icon">⚖️</span>
-            Loadbalancing
-            <span class="badge badge-count">3</span>
-            <span class="collapse-icon">▼</span>
-        </h3>
-        <ul class="resource-list">
-        <li data-name="listener" data-domain="loadbalancing">
-            <a href="Listener.html">Listener</a>
-            <span class="property-count">12 properties</span>
-            <span class="property-breakdown">(11 user, 1 cloud)</span>
-        </li>
-        <li data-name="loadbalancer" data-domain="loadbalancing">
-            <a href="LoadBalancer.html">LoadBalancer</a>
-            <span class="property-count">20 properties</span>
-            <span class="property-breakdown">(14 user, 6 cloud)</span>
-        </li>
-        <li data-name="targetgroup" data-domain="loadbalancing">
-            <a href="TargetGroup.html">TargetGroup</a>
-            <span class="property-count">15 properties</span>
-            <span class="property-breakdown">(13 user, 2 cloud)</span>
-        </li>
-        </ul>
-    </div>
-        <footer class="meta">
-            <p>Generated on 2026-01-03 02:33</p>
-            <p>Powered by <a href="https://kitelang.cloud">Kite</a></p>
-        </footer>
-    </div>
-    <script>
-        function toggleDomain(header) {
-            const group = header.parentElement;
-            group.classList.toggle('collapsed');
+<script type="application/ld+json">
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Kite Aws Provider",
+        "applicationCategory": "DeveloperApplication",
+        "applicationSubCategory": "Infrastructure as Code",
+        "operatingSystem": "Cross-platform",
+        "softwareVersion": "0.1.0",
+        "description": "Infrastructure as code provider for Aws. Manage 16 cloud resources with Kite.",
+        "author": {
+            "@type": "Organization",
+            "name": "Kite",
+            "url": "https://kitelang.cloud"
+        },
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "featureList": [
+            "16 infrastructure resources",
+            "5 resource categories",
+            "Declarative configuration",
+            "Multi-cloud support"
+        ]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Kite Aws Provider Documentation",
+        "url": "https://docs.kitelang.cloud/aws/",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://docs.kitelang.cloud/aws/index.html?q={search_term_string}",
+            "query-input": "required name=search_term_string"
         }
+    }
+]
+</script>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div class="layout">
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <div class="header-top">
+                    <a href="index.html" class="logo-link">
+                        <h1>🪁 Aws</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
+                <span class="version">v0.1.0</span>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
+            </div>
+            <div id="recently-viewed" class="recently-viewed" style="display: none;">
+                <div class="recently-header">Recently Viewed</div>
+                <ul class="recently-list"></ul>
+            </div>
+            <nav class="nav-tree" aria-label="Resources navigation">
+            <div class="nav-category collapsed" data-domain="networking">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">🌐</span>
+                    <span class="category-name">Networking</span>
+                    <span class="category-count">7</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="elasticip" data-desc="">
+                    <a href="ElasticIp.html">ElasticIp</a>
+                </li>
+                <li class="nav-item" data-name="internetgateway" data-desc="">
+                    <a href="InternetGateway.html">InternetGateway</a>
+                </li>
+                <li class="nav-item" data-name="natgateway" data-desc="">
+                    <a href="NatGateway.html">NatGateway</a>
+                </li>
+                <li class="nav-item" data-name="routetable" data-desc="">
+                    <a href="RouteTable.html">RouteTable</a>
+                </li>
+                <li class="nav-item" data-name="securitygroup" data-desc="">
+                    <a href="SecurityGroup.html">SecurityGroup</a>
+                </li>
+                <li class="nav-item" data-name="subnet" data-desc="">
+                    <a href="Subnet.html">Subnet</a>
+                </li>
+                <li class="nav-item" data-name="vpc" data-desc="">
+                    <a href="Vpc.html">Vpc</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="compute">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💻</span>
+                    <span class="category-name">Compute</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="ec2instance" data-desc="">
+                    <a href="Ec2Instance.html">Ec2Instance</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="storage">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💾</span>
+                    <span class="category-name">Storage</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="ebsvolume" data-desc="">
+                    <a href="EbsVolume.html">EbsVolume</a>
+                </li>
+                <li class="nav-item" data-name="s3bucket" data-desc="">
+                    <a href="S3Bucket.html">S3Bucket</a>
+                </li>
+                <li class="nav-item" data-name="s3bucketpolicy" data-desc="">
+                    <a href="S3BucketPolicy.html">S3BucketPolicy</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="dns">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">📍</span>
+                    <span class="category-name">Dns</span>
+                    <span class="category-count">2</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="hostedzone" data-desc="">
+                    <a href="HostedZone.html">HostedZone</a>
+                </li>
+                <li class="nav-item" data-name="recordset" data-desc="">
+                    <a href="RecordSet.html">RecordSet</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="loadbalancing">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">⚖️</span>
+                    <span class="category-name">Loadbalancing</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="listener" data-desc="">
+                    <a href="Listener.html">Listener</a>
+                </li>
+                <li class="nav-item" data-name="loadbalancer" data-desc="">
+                    <a href="LoadBalancer.html">LoadBalancer</a>
+                </li>
+                <li class="nav-item" data-name="targetgroup" data-desc="">
+                    <a href="TargetGroup.html">TargetGroup</a>
+                </li>
+                </ul>
+            </div>
+            </nav>
+        </aside>
+                    <main id="main-content" class="content">
+                        <article class="resource-content">
+                            <h1>Aws Provider Documentation</h1>
+                            <p class="welcome-text">Infrastructure as code resources for Aws. Select a resource from the navigation to view its documentation.</p>
 
-        document.getElementById('search').addEventListener('input', function(e) {
-            const query = e.target.value.toLowerCase();
-            document.querySelectorAll('.domain-group').forEach(group => {
-                let hasVisible = false;
-                group.querySelectorAll('li').forEach(li => {
-                    const name = li.dataset.name;
-                    const visible = name.includes(query);
-                    li.style.display = visible ? '' : 'none';
-                    if (visible) hasVisible = true;
-                });
-                group.style.display = hasVisible ? '' : 'none';
-                if (query && hasVisible) group.classList.remove('collapsed');
-            });
-        });
-    </script>
+                            <div class="quick-stats">
+                                <div class="stat-card">
+                                    <span class="stat-value">16</span>
+                                    <span class="stat-label">Resources</span>
+                                </div>
+                                <div class="stat-card">
+                                    <span class="stat-value">5</span>
+                                    <span class="stat-label">Categories</span>
+                                </div>
+                            </div>
+
+                            <h2 id="quick-start">Quick Start</h2>
+                            <div class="quick-start-section">
+                                <h3>Installation</h3>
+                                <p>Install the Aws provider:</p>
+                                <div class="code-wrapper">
+                                    <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                                    <pre class="code-block"><code><span class="kw">kite</span> <span class="name">providers</span> <span class="str">install</span> aws@0.1.0</code></pre>
+                                </div>
+
+                                <h3>Import in your .kite file</h3>
+                                <div class="code-wrapper">
+                                    <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                                    <pre class="code-block"><code><span class="kw">import</span> <span class="name">*</span> <span class="kw">from</span> <span class="str">"aws"</span></code></pre>
+                                </div>
+
+                                <h3>Define a resource</h3>
+                                <div class="code-wrapper">
+                                    <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">EbsVolume</span> <span class="name">myResource</span> <span class="brace">{</span>
+    <span class="comment">// Configure properties here</span>
+<span class="brace">}</span></code></pre>
+                                </div>
+                            </div>
+
+                            <h2 id="categories">Categories</h2>
+                            <div class="category-grid">
+                <a href="ElasticIp.html" class="category-card">
+                    <span class="card-icon">🌐</span>
+                    <span class="card-name">Networking</span>
+                    <span class="card-count">7 resources</span>
+                </a>
+                <a href="Ec2Instance.html" class="category-card">
+                    <span class="card-icon">💻</span>
+                    <span class="card-name">Compute</span>
+                    <span class="card-count">1 resources</span>
+                </a>
+                <a href="EbsVolume.html" class="category-card">
+                    <span class="card-icon">💾</span>
+                    <span class="card-name">Storage</span>
+                    <span class="card-count">3 resources</span>
+                </a>
+                <a href="HostedZone.html" class="category-card">
+                    <span class="card-icon">📍</span>
+                    <span class="card-name">Dns</span>
+                    <span class="card-count">2 resources</span>
+                </a>
+                <a href="Listener.html" class="category-card">
+                    <span class="card-icon">⚖️</span>
+                    <span class="card-name">Loadbalancing</span>
+                    <span class="card-count">3 resources</span>
+                </a>
+                </div>
+
+                <h2 id="all-resources">All Resources</h2>
+                <div class="resource-grid">
+                <a href="EbsVolume.html" class="resource-card">
+                    <span class="resource-icon">💾</span>
+                    <span class="resource-name">EbsVolume</span>
+                    <span class="resource-props">15 properties</span>
+                </a>
+                <a href="Ec2Instance.html" class="resource-card">
+                    <span class="resource-icon">💻</span>
+                    <span class="resource-name">Ec2Instance</span>
+                    <span class="resource-props">24 properties</span>
+                </a>
+                <a href="ElasticIp.html" class="resource-card">
+                    <span class="resource-icon">🌐</span>
+                    <span class="resource-name">ElasticIp</span>
+                    <span class="resource-props">10 properties</span>
+                </a>
+                <a href="HostedZone.html" class="resource-card">
+                    <span class="resource-icon">📍</span>
+                    <span class="resource-name">HostedZone</span>
+                    <span class="resource-props">11 properties</span>
+                </a>
+                <a href="InternetGateway.html" class="resource-card">
+                    <span class="resource-icon">🌐</span>
+                    <span class="resource-name">InternetGateway</span>
+                    <span class="resource-props">5 properties</span>
+                </a>
+                <a href="Listener.html" class="resource-card">
+                    <span class="resource-icon">⚖️</span>
+                    <span class="resource-name">Listener</span>
+                    <span class="resource-props">12 properties</span>
+                </a>
+                <a href="LoadBalancer.html" class="resource-card">
+                    <span class="resource-icon">⚖️</span>
+                    <span class="resource-name">LoadBalancer</span>
+                    <span class="resource-props">20 properties</span>
+                </a>
+                <a href="NatGateway.html" class="resource-card">
+                    <span class="resource-icon">🌐</span>
+                    <span class="resource-name">NatGateway</span>
+                    <span class="resource-props">9 properties</span>
+                </a>
+                <a href="RecordSet.html" class="resource-card">
+                    <span class="resource-icon">📍</span>
+                    <span class="resource-name">RecordSet</span>
+                    <span class="resource-props">12 properties</span>
+                </a>
+                <a href="RouteTable.html" class="resource-card">
+                    <span class="resource-icon">🌐</span>
+                    <span class="resource-name">RouteTable</span>
+                    <span class="resource-props">7 properties</span>
+                </a>
+                <a href="S3Bucket.html" class="resource-card">
+                    <span class="resource-icon">💾</span>
+                    <span class="resource-name">S3Bucket</span>
+                    <span class="resource-props">19 properties</span>
+                </a>
+                <a href="S3BucketPolicy.html" class="resource-card">
+                    <span class="resource-icon">💾</span>
+                    <span class="resource-name">S3BucketPolicy</span>
+                    <span class="resource-props">2 properties</span>
+                </a>
+                <a href="SecurityGroup.html" class="resource-card">
+                    <span class="resource-icon">🌐</span>
+                    <span class="resource-name">SecurityGroup</span>
+                    <span class="resource-props">9 properties</span>
+                </a>
+                <a href="Subnet.html" class="resource-card">
+                    <span class="resource-icon">🌐</span>
+                    <span class="resource-name">Subnet</span>
+                    <span class="resource-props">14 properties</span>
+                </a>
+                <a href="TargetGroup.html" class="resource-card">
+                    <span class="resource-icon">⚖️</span>
+                    <span class="resource-name">TargetGroup</span>
+                    <span class="resource-props">15 properties</span>
+                </a>
+                <a href="Vpc.html" class="resource-card">
+                    <span class="resource-icon">🌐</span>
+                    <span class="resource-name">Vpc</span>
+                    <span class="resource-props">13 properties</span>
+                </a>
+                </div>
+            </article>
+        </main>
+
+        <aside class="sidebar-right">
+            <div class="toc-header">On this page</div>
+            <nav class="toc">
+                <a href="#quick-start">Quick Start</a>
+                <a href="#categories">Categories</a>
+                <a href="#all-resources">All Resources</a>
+            </nav>
+        </aside>
+    </div>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 </body>
 </html>
