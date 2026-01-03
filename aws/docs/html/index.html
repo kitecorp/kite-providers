@@ -93,9 +93,15 @@
     <div class="layout">
         <aside class="sidebar-left">
             <div class="sidebar-header">
-                <a href="index.html" class="logo-link">
-                    <h1>🪁 Aws</h1>
-                </a>
+                <div class="header-top">
+                    <a href="index.html" class="logo-link">
+                        <h1>🪁 Aws</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
                 <span class="version">v0.1.0</span>
             </div>
             <div class="search-wrapper">
@@ -103,6 +109,10 @@
                     <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
                     <kbd class="search-hint">/</kbd>
                 </div>
+            </div>
+            <div id="recently-viewed" class="recently-viewed" style="display: none;">
+                <div class="recently-header">Recently Viewed</div>
+                <ul class="recently-list"></ul>
             </div>
             <nav class="nav-tree" aria-label="Resources navigation">
             <div class="nav-category collapsed" data-domain="networking">
@@ -239,7 +249,7 @@
                                 <h3>Define a resource</h3>
                                 <div class="code-wrapper">
                                     <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
-                                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">EbsVolume</span> <span class="name">my_resource</span> <span class="brace">{</span>
+                                    <pre class="code-block"><code><span class="kw">resource</span> <span class="type">EbsVolume</span> <span class="name">myResource</span> <span class="brace">{</span>
     <span class="comment">// Configure properties here</span>
 <span class="brace">}</span></code></pre>
                                 </div>
@@ -369,5 +379,7 @@
             </nav>
         </aside>
     </div>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 </body>
 </html>

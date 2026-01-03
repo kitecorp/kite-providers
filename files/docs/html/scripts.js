@@ -1,3 +1,82 @@
+// Theme toggle (dark/light mode)
+function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    localStorage.setItem('kite-theme', newTheme);
+}
+
+// Initialize theme from localStorage or system preference
+(function initTheme() {
+    const saved = localStorage.getItem('kite-theme');
+    if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+})();
+
+// Back to top button
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Show/hide back to top button based on scroll position
+window.addEventListener('scroll', function() {
+    const btn = document.querySelector('.back-to-top');
+    if (btn) {
+        btn.classList.toggle('visible', window.scrollY > 300);
+    }
+});
+
+// Toast notification
+function showToast(message, duration = 2000) {
+    const toast = document.getElementById('toast');
+    if (toast) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), duration);
+    }
+}
+
+// Recently viewed resources (localStorage)
+function addToRecentlyViewed(name) {
+    if (!name || name === 'index') return;
+    let recent = JSON.parse(localStorage.getItem('kite-recent') || '[]');
+    recent = recent.filter(r => r !== name);
+    recent.unshift(name);
+    recent = recent.slice(0, 5);
+    localStorage.setItem('kite-recent', JSON.stringify(recent));
+}
+
+function renderRecentlyViewed() {
+    const container = document.getElementById('recently-viewed');
+    const list = container?.querySelector('.recently-list');
+    if (!container || !list) return;
+
+    const recent = JSON.parse(localStorage.getItem('kite-recent') || '[]');
+    if (recent.length === 0) {
+        container.style.display = 'none';
+        return;
+    }
+
+    container.style.display = 'block';
+    list.innerHTML = recent.map(name =>
+        `<li><a href="${name}.html">${name}</a></li>`
+    ).join('');
+}
+
+// Track current page view
+(function trackPageView() {
+    const path = window.location.pathname;
+    const match = path.match(/\/([^/]+)\.html$/);
+    if (match && match[1] !== 'index') {
+        addToRecentlyViewed(match[1]);
+    }
+    renderRecentlyViewed();
+})();
+
 // Mobile menu toggle
 function toggleMobileMenu() {
     const sidebar = document.querySelector('.sidebar-left');
@@ -25,6 +104,7 @@ function copyCode(btn) {
     navigator.clipboard.writeText(code).then(() => {
         btn.textContent = 'Copied!';
         btn.classList.add('copied');
+        showToast('Copied to clipboard!');
         setTimeout(() => {
             btn.textContent = 'Copy';
             btn.classList.remove('copied');
@@ -117,6 +197,18 @@ document.addEventListener('keydown', function(e) {
             }
         } else if (e.key === 'Enter') {
             // Already handled by link click
+        }
+    }
+
+    // j/k navigation between resources (like GitHub)
+    if ((e.key === 'j' || e.key === 'k') && document.activeElement.tagName !== 'INPUT') {
+        const prevLink = document.querySelector('.nav-prev');
+        const nextLink = document.querySelector('.nav-next');
+
+        if (e.key === 'j' && nextLink) {
+            window.location.href = nextLink.href;
+        } else if (e.key === 'k' && prevLink) {
+            window.location.href = prevLink.href;
         }
     }
 });

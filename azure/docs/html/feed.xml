@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Azure Provider Resources | Kite</title>
+        <description>Infrastructure as code resources for Azure provider. Stay updated with the latest resource documentation.</description>
+        <link>https://docs.kitelang.cloud/azure/</link>
+        <atom:link href="https://docs.kitelang.cloud/azure/feed.xml" rel="self" type="application/rss+xml"/>
+        <language>en-us</language>
+        <lastBuildDate>2026-01-03T02:22:24.276943</lastBuildDate>
+        <generator>Kite Documentation Generator</generator>
+    </channel>
+</rss>

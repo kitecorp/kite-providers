@@ -27,7 +27,7 @@
     }
 
     @media (prefers-color-scheme: dark) {
-        :root {
+        :root:not([data-theme="light"]) {
             --bg-body: #0f172a;
             --bg-sidebar: #1e293b;
             --bg-content: #1e293b;
@@ -40,6 +40,21 @@
 
             --border-color: #334155;
         }
+    }
+
+    /* Manual dark theme override */
+    :root[data-theme="dark"] {
+        --bg-body: #0f172a;
+        --bg-sidebar: #1e293b;
+        --bg-content: #1e293b;
+        --bg-code: #0f172a;
+        --bg-hover: #334155;
+
+        --text-primary: #f1f5f9;
+        --text-secondary: #94a3b8;
+        --text-muted: #64748b;
+
+        --border-color: #334155;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -153,6 +168,69 @@
         background: var(--bg-hover);
         padding: 0.125rem 0.5rem;
         border-radius: 9999px;
+    }
+
+    .header-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.25rem;
+    }
+
+    .theme-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.25rem;
+        padding: 0.25rem;
+        border-radius: 0.25rem;
+        transition: background 0.15s;
+    }
+
+    .theme-toggle:hover {
+        background: var(--bg-hover);
+    }
+
+    .theme-icon-dark { display: none; }
+    :root[data-theme="dark"] .theme-icon-light { display: none; }
+    :root[data-theme="dark"] .theme-icon-dark { display: inline; }
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) .theme-icon-light { display: none; }
+        :root:not([data-theme="light"]) .theme-icon-dark { display: inline; }
+    }
+
+    /* Recently viewed */
+    .recently-viewed {
+        padding: 0.75rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .recently-header {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+
+    .recently-list {
+        list-style: none;
+    }
+
+    .recently-list li {
+        margin-bottom: 0.25rem;
+    }
+
+    .recently-list a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: color 0.15s;
+    }
+
+    .recently-list a:hover {
+        color: var(--kite-primary);
     }
 
     .search-wrapper {
@@ -498,6 +576,9 @@
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
 
     tr:hover { background: var(--bg-hover); }
@@ -736,6 +817,62 @@
 
     .anchor-link:hover {
         color: var(--kite-primary);
+    }
+
+    /* Back to top button */
+    .back-to-top {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        width: 44px;
+        height: 44px;
+        background: var(--kite-primary);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        font-size: 1.25rem;
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-md);
+        z-index: 100;
+    }
+
+    .back-to-top.visible {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .back-to-top:hover {
+        background: var(--kite-primary-dark);
+        transform: translateY(-2px);
+    }
+
+    /* Toast notification */
+    .toast {
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: var(--bg-code);
+        color: var(--text-code);
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        box-shadow: var(--shadow-md);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 200;
+    }
+
+    .toast.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0);
     }
 
     /* Print styles */
