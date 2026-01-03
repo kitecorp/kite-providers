@@ -648,6 +648,13 @@
         color: var(--kite-primary);
     }
 
+    .nav-category-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
     .nav-placeholder { width: 120px; }
 
     .resource-footer {
