@@ -2,7 +2,7 @@
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
     <ShortName>Kite Grpc-example</ShortName>
     <Description>Search Grpc-example provider documentation for Kite infrastructure as code</Description>
-    <Tags>kite iac infrastructure cloud grpc-example terraform</Tags>
+    <Tags>kite iac infrastructure cloud grpc-example </Tags>
     <Contact>support@kitelang.cloud</Contact>
     <Url type="text/html" template="https://kitelang.cloud/providers/grpc-example/index.html?q={searchTerms}"/>
     <Image width="16" height="16" type="image/x-icon">data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;🪁&lt;/text&gt;&lt;/svg&gt;</Image>
