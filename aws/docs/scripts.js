@@ -381,12 +381,18 @@ data.versions
         });
 }
 
-function switchVersion(versionPath) {
-    // Replace current version in path with new version
-    const currentPath = window.location.pathname;
-    const newPath = currentPath.replace(/\/[^/]+\/html\//, '/' + versionPath + '/html/');
-    window.location.href = newPath;
+// switchVersion for resource pages - navigates to the new version's page
+// Note: Index page defines its own switchVersion that does dynamic loading
+if (!window.switchVersion) {
+    window.switchVersion = function(versionPath) {
+        const currentPath = window.location.pathname;
+        const newPath = currentPath.replace(/\/[^/]+\/html\//, '/' + versionPath + '/html/');
+        window.location.href = newPath;
+    };
 }
 
-// Load versions on page load
-loadVersions();
+// Load versions on page load (only for resource pages, not index)
+// Index page has its own version handling in inline script
+if (window.location.pathname.includes('/html/')) {
+    loadVersions();
+}
