@@ -12,6 +12,7 @@ repositories {
 
 kiteProvider {
     name = 'aws'
+    logoUrl = 'https://cdn.simpleicons.org/amazonaws/FF9900'
     // mainClass auto-detected from ProviderServer subclass
 }
 
