@@ -86,6 +86,26 @@ public class Ec2InstanceResource {
     @Property(description = "Tags to apply to the instance")
     private Map<String, String> tags;
 
+    @Property(description = "Whether the instance is optimized for Amazon EBS I/O")
+    private Boolean ebsOptimized = false;
+
+    @Property(description = "CPU credit option for burstable instances",
+              validValues = {"standard", "unlimited"})
+    private String cpuCredits;
+
+    @Property(description = "Whether instance hibernation is enabled")
+    private Boolean hibernation = false;
+
+    @Property(description = "The name of the placement group for cluster networking")
+    private String placementGroup;
+
+    @Property(description = "HTTP tokens requirement for instance metadata service (IMDSv2)",
+              validValues = {"optional", "required"})
+    private String metadataHttpTokens = "optional";
+
+    @Property(description = "HTTP PUT response hop limit for instance metadata requests (1-64)")
+    private Integer metadataHttpPutResponseHopLimit = 1;
+
     // --- Cloud-managed properties (read-only) ---
 
     @Cloud
