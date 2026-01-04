@@ -12,7 +12,7 @@ repositories {
 
 kiteProvider {
     name = 'aws'
-    logoUrl = 'https://cdn.simpleicons.org/amazonaws/FF9900'
+    logoUrl = 'https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg'
     // mainClass auto-detected from ProviderServer subclass
 }
 
