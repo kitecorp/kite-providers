@@ -17,6 +17,20 @@ function toggleTheme() {
     }
 })();
 
+// Embedded mode: hide theme button and listen for parent theme changes
+(function initEmbedded() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('embedded') === 'true') {
+        document.querySelector('.theme-toggle')?.remove();
+    }
+
+    window.addEventListener('message', (event) => {
+        if (event.data?.type === 'theme-change') {
+            document.documentElement.setAttribute('data-theme', event.data.theme);
+        }
+    });
+})();
+
 // Back to top button
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -112,8 +126,40 @@ function toggleSchema(header) {
 }
 
 function copyCode(btn) {
-    const code = btn.parentElement.querySelector('code').textContent;
-    navigator.clipboard.writeText(code).then(() => {
+    const codeEl = btn.parentElement.querySelector('code');
+    if (!codeEl) {
+        showToast('Error: Could not find code to copy');
+        return;
+    }
+    const code = codeEl.textContent;
+
+    // Try modern clipboard API first, fall back to execCommand
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            showToast('Copied to clipboard!');
+            setTimeout(() => {
+                btn.textContent = 'Copy';
+                btn.classList.remove('copied');
+            }, 2000);
+        }).catch(() => {
+            fallbackCopy(code, btn);
+        });
+    } else {
+        fallbackCopy(code, btn);
+    }
+}
+
+function fallbackCopy(text, btn) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand('copy');
         btn.textContent = 'Copied!';
         btn.classList.add('copied');
         showToast('Copied to clipboard!');
@@ -121,7 +167,10 @@ function copyCode(btn) {
             btn.textContent = 'Copy';
             btn.classList.remove('copied');
         }, 2000);
-    });
+    } catch (e) {
+        showToast('Copy failed - please copy manually');
+    }
+    document.body.removeChild(textarea);
 }
 
 // Fuzzy search with descriptions
@@ -132,26 +181,26 @@ document.getElementById('search')?.addEventListener('input', function(e) {
         let hasVisible = false;
 
         category.querySelectorAll('.nav-item').forEach(item => {
-            const name = item.dataset.name || '';
-            const desc = item.dataset.desc || '';
-            // Fuzzy match: check if all characters appear in order
-            const fuzzyMatch = (text, pattern) => {
-                if (!pattern) return true;
-                let pi = 0;
-                for (let i = 0; i < text.length && pi < pattern.length; i++) {
-                    if (text[i] === pattern[pi]) pi++;
-                }
-                return pi === pattern.length;
-            };
-            const visible = fuzzyMatch(name, query) || desc.includes(query);
-            item.style.display = visible ? '' : 'none';
-            if (visible) hasVisible = true;
+const name = item.dataset.name || '';
+const desc = item.dataset.desc || '';
+// Fuzzy match: check if all characters appear in order
+const fuzzyMatch = (text, pattern) => {
+    if (!pattern) return true;
+    let pi = 0;
+    for (let i = 0; i < text.length && pi < pattern.length; i++) {
+        if (text[i] === pattern[pi]) pi++;
+    }
+    return pi === pattern.length;
+};
+const visible = fuzzyMatch(name, query) || desc.includes(query);
+item.style.display = visible ? '' : 'none';
+if (visible) hasVisible = true;
         });
 
         category.style.display = hasVisible ? '' : 'none';
 
         if (query && hasVisible) {
-            category.classList.remove('collapsed');
+category.classList.remove('collapsed');
         }
     });
 });
@@ -171,44 +220,44 @@ document.addEventListener('keydown', function(e) {
     // Escape to close mobile menu or blur search
     if (e.key === 'Escape') {
         if (sidebar?.classList.contains('open')) {
-            toggleMobileMenu();
+toggleMobileMenu();
         } else if (document.activeElement === searchInput) {
-            searchInput.blur();
-            searchInput.value = '';
-            searchInput.dispatchEvent(new Event('input'));
+searchInput.blur();
+searchInput.value = '';
+searchInput.dispatchEvent(new Event('input'));
         }
     }
 
     // Arrow key navigation in search results
     if (searchInput && document.activeElement === searchInput) {
         const visibleItems = Array.from(document.querySelectorAll('.nav-item'))
-            .filter(item => item.style.display !== 'none');
+.filter(item => item.style.display !== 'none');
 
         if (e.key === 'ArrowDown' && visibleItems.length > 0) {
-            e.preventDefault();
-            visibleItems[0].querySelector('a')?.focus();
+e.preventDefault();
+visibleItems[0].querySelector('a')?.focus();
         }
     }
 
     // Navigate between visible items with arrow keys
     if (document.activeElement.closest('.nav-item')) {
         const visibleItems = Array.from(document.querySelectorAll('.nav-item'))
-            .filter(item => item.style.display !== 'none');
+.filter(item => item.style.display !== 'none');
         const currentItem = document.activeElement.closest('.nav-item');
         const currentIndex = visibleItems.indexOf(currentItem);
 
         if (e.key === 'ArrowDown' && currentIndex < visibleItems.length - 1) {
-            e.preventDefault();
-            visibleItems[currentIndex + 1].querySelector('a')?.focus();
+e.preventDefault();
+visibleItems[currentIndex + 1].querySelector('a')?.focus();
         } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            if (currentIndex > 0) {
-                visibleItems[currentIndex - 1].querySelector('a')?.focus();
-            } else {
-                searchInput?.focus();
-            }
+e.preventDefault();
+if (currentIndex > 0) {
+    visibleItems[currentIndex - 1].querySelector('a')?.focus();
+} else {
+    searchInput?.focus();
+}
         } else if (e.key === 'Enter') {
-            // Already handled by link click
+// Already handled by link click
         }
     }
 
@@ -218,9 +267,9 @@ document.addEventListener('keydown', function(e) {
         const nextLink = document.querySelector('.nav-next');
 
         if (e.key === 'j' && nextLink) {
-            window.location.href = nextLink.href;
+window.location.href = nextLink.href;
         } else if (e.key === 'k' && prevLink) {
-            window.location.href = prevLink.href;
+window.location.href = prevLink.href;
         }
     }
 });
@@ -235,10 +284,10 @@ const observer = new IntersectionObserver((entries) => {
         const id = entry.target.getAttribute('id');
         const tocLink = document.querySelector(`.toc a[href="#${id}"]`);
         if (tocLink) {
-            if (entry.isIntersecting) {
-                document.querySelectorAll('.toc a').forEach(a => a.classList.remove('active'));
-                tocLink.classList.add('active');
-            }
+if (entry.isIntersecting) {
+    document.querySelectorAll('.toc a').forEach(a => a.classList.remove('active'));
+    tocLink.classList.add('active');
+}
         }
     });
 }, observerOptions);
@@ -265,9 +314,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
-            e.preventDefault();
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            history.pushState(null, '', this.getAttribute('href'));
+e.preventDefault();
+target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+history.pushState(null, '', this.getAttribute('href'));
         }
     });
 });
@@ -279,6 +328,16 @@ function showExample(btn, type) {
     document.querySelectorAll('.example-tab').forEach(t => t.classList.remove('active'));
     // Show selected
     document.getElementById('example-' + type)?.classList.add('active');
+    btn.classList.add('active');
+}
+
+// Property tabs switching
+function showPropertyTab(btn, type) {
+    // Hide all property content
+    document.querySelectorAll('.property-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.property-tab').forEach(t => t.classList.remove('active'));
+    // Show selected
+    document.getElementById('props-' + type)?.classList.add('active');
     btn.classList.add('active');
 }
 
@@ -299,26 +358,26 @@ function loadVersions() {
         .then(res => res.ok ? res.json() : null)
         .catch(() => null)
         .then(data => {
-            if (!data || !data.versions) return;
+if (!data || !data.versions) return;
 
-            const select = document.getElementById('version-select');
-            if (!select) return;
+const select = document.getElementById('version-select');
+if (!select) return;
 
-            // Get current version from path
-            const pathMatch = window.location.pathname.match(/\/([^/]+)\/html\//);
-            const currentVersion = pathMatch ? pathMatch[1] : null;
+// Get current version from path
+const pathMatch = window.location.pathname.match(/\/([^/]+)\/html\//);
+const currentVersion = pathMatch ? pathMatch[1] : null;
 
-            // Clear and rebuild options
-            select.innerHTML = '';
-            data.versions
-                .sort((a, b) => b.version.localeCompare(a.version, undefined, {numeric: true}))
-                .forEach(v => {
-                    const opt = document.createElement('option');
-                    opt.value = v.path;
-                    opt.textContent = 'v' + v.version + (v.version === data.latest ? ' (latest)' : '');
-                    opt.selected = (v.path === currentVersion || v.version === currentVersion);
-                    select.appendChild(opt);
-                });
+// Clear and rebuild options
+select.innerHTML = '';
+data.versions
+    .sort((a, b) => b.version.localeCompare(a.version, undefined, {numeric: true}))
+    .forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.path;
+        opt.textContent = 'v' + v.version + (v.version === data.latest ? ' (latest)' : '');
+        opt.selected = (v.path === currentVersion || v.version === currentVersion);
+        select.appendChild(opt);
+    });
         });
 }
 
