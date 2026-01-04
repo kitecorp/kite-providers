@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3BucketPolicy | Aws Provider | Kite</title>
+    <meta name="description" content="Documentation for S3BucketPolicy resource in Aws provider.">
+    <meta name="keywords" content="kite, infrastructure as code, aws, cloud, terraform alternative, IaC">
+    <meta name="author" content="Kite">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://docs.kitelang.cloud/aws/S3BucketPolicy.html">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="../../styles.css" as="style">
+    <link rel="preload" href="../../scripts.js" as="script">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../../styles.css">
+
+    <!-- Scripts -->
+    <script src="../../scripts.js" defer></script>
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Aws Provider Resources" href="../../feed.xml">
+
+    <!-- OpenSearch -->
+    <link rel="search" type="application/opensearchdescription+xml" title="Kite Aws Docs" href="../../opensearch.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="S3BucketPolicy | Aws Provider | Kite">
+    <meta property="og:description" content="Documentation for S3BucketPolicy resource in Aws provider.">
+    <meta property="og:url" content="https://docs.kitelang.cloud/aws/S3BucketPolicy.html">
+    <meta property="og:site_name" content="Kite Documentation">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="S3BucketPolicy | Aws Provider | Kite">
+    <meta name="twitter:description" content="Documentation for S3BucketPolicy resource in Aws provider.">
+</head>
+<script type="application/ld+json">
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "S3BucketPolicy Resource Documentation",
+        "description": "",
+        "author": {
+            "@type": "Organization",
+            "name": "Kite"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Kite",
+            "url": "https://kitelang.cloud"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://docs.kitelang.cloud/aws/S3BucketPolicy.html"
+        },
+        "about": {
+            "@type": "SoftwareSourceCode",
+            "name": "S3BucketPolicy",
+            "programmingLanguage": "Kite",
+            "codeRepository": "https://github.com/kitelang/kite"
+        },
+        "articleSection": "Storage",
+        "keywords": ["kite", "aws", "s3bucketpolicy", "infrastructure as code", "cloud"]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Aws Provider",
+                "item": "https://docs.kitelang.cloud/aws/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Storage",
+                "item": "https://docs.kitelang.cloud/aws/EbsVolume.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "S3BucketPolicy"
+            }
+        ]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is S3BucketPolicy in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "S3BucketPolicy is a storage resource in the Aws provider. Use it to manage your cloud infrastructure."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I import S3BucketPolicy in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Use: import S3BucketPolicy from \"aws/storage/S3BucketPolicy.kite\""
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What properties does S3BucketPolicy have?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "S3BucketPolicy has 2 configurable properties. See the Properties section for details."
+                }
+            }
+        ]
+    }
+]
+</script>
+<body>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div class="layout">
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <div class="header-top">
+                    <a href="../../index.html" class="logo-link">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg" alt="aws logo" class="provider-logo"><h1>Aws</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
+                <div class="version-selector">
+                    <select id="version-select" onchange="switchVersion(this.value)" aria-label="Select version">
+                        <option value="0.1.3" selected>v0.1.3</option>
+                    </select>
+                </div>
+                <a href="../../changelog.html" class="whats-new-link">✨ What's New</a>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
+            </div>
+            <div id="recently-viewed" class="recently-viewed" style="display: none;">
+                <div class="recently-header">Recently Viewed</div>
+                <ul class="recently-list"></ul>
+            </div>
+            <nav class="nav-tree" aria-label="Resources navigation">
+            <div class="nav-category collapsed" data-domain="networking">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">🌐</span>
+                    <span class="category-name">Networking</span>
+                    <span class="category-count">7</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="elasticip" data-desc="">
+                    <a href="ElasticIp.html">ElasticIp</a>
+                </li>
+                <li class="nav-item" data-name="internetgateway" data-desc="">
+                    <a href="InternetGateway.html">InternetGateway</a>
+                </li>
+                <li class="nav-item" data-name="natgateway" data-desc="">
+                    <a href="NatGateway.html">NatGateway</a>
+                </li>
+                <li class="nav-item" data-name="routetable" data-desc="">
+                    <a href="RouteTable.html">RouteTable</a>
+                </li>
+                <li class="nav-item" data-name="securitygroup" data-desc="">
+                    <a href="SecurityGroup.html">SecurityGroup</a>
+                </li>
+                <li class="nav-item" data-name="subnet" data-desc="">
+                    <a href="Subnet.html">Subnet</a>
+                </li>
+                <li class="nav-item" data-name="vpc" data-desc="">
+                    <a href="Vpc.html">Vpc</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="compute">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💻</span>
+                    <span class="category-name">Compute</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="ec2instance" data-desc="">
+                    <a href="Ec2Instance.html">Ec2Instance</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category" data-domain="storage">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="true">
+                    <span class="category-icon" aria-hidden="true">💾</span>
+                    <span class="category-name">Storage</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="ebsvolume" data-desc="">
+                    <a href="EbsVolume.html">EbsVolume</a>
+                </li>
+                <li class="nav-item" data-name="s3bucket" data-desc="">
+                    <a href="S3Bucket.html">S3Bucket</a>
+                </li>
+                <li class="nav-item active" data-name="s3bucketpolicy" data-desc="">
+                    <a href="S3BucketPolicy.html" aria-current="page">S3BucketPolicy</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="dns">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">📍</span>
+                    <span class="category-name">Dns</span>
+                    <span class="category-count">2</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="hostedzone" data-desc="">
+                    <a href="HostedZone.html">HostedZone</a>
+                </li>
+                <li class="nav-item" data-name="recordset" data-desc="">
+                    <a href="RecordSet.html">RecordSet</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="loadbalancing">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">⚖️</span>
+                    <span class="category-name">Loadbalancing</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="listener" data-desc="">
+                    <a href="Listener.html">Listener</a>
+                </li>
+                <li class="nav-item" data-name="loadbalancer" data-desc="">
+                    <a href="LoadBalancer.html">LoadBalancer</a>
+                </li>
+                <li class="nav-item" data-name="targetgroup" data-desc="">
+                    <a href="TargetGroup.html">TargetGroup</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="general">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">📄</span>
+                    <span class="category-name">General</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="iaminstanceprofile" data-desc="">
+                    <a href="IamInstanceProfile.html">IamInstanceProfile</a>
+                </li>
+                <li class="nav-item" data-name="iampolicy" data-desc="">
+                    <a href="IamPolicy.html">IamPolicy</a>
+                </li>
+                <li class="nav-item" data-name="iamrole" data-desc="">
+                    <a href="IamRole.html">IamRole</a>
+                </li>
+                </ul>
+            </div>
+
+            </nav>
+        </aside>
+        <main id="main-content" class="content">
+            <article class="resource-content" itemscope itemtype="https://schema.org/TechArticle">
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <a href="../../index.html">Home</a>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="domain">💾 Storage</span>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="current" aria-current="page">S3BucketPolicy</span>
+                </nav>
+
+                <header>
+                    <h1 itemprop="name">S3BucketPolicy</h1>
+                    
+                </header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">S3BucketPolicy</span> <span class="kw">from</span> <span class="str">"aws/storage/S3BucketPolicy.kite"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Examples</h2>
+                    <div class="example-tabs">
+                        <button class="example-tab active" onclick="showExample(this, 'basic')">Basic</button>
+                        <button class="example-tab" onclick="showExample(this, 'references')">With References</button>
+                        <button class="example-tab" onclick="showExample(this, 'complete')">Complete</button>
+                    </div>
+                    <div class="example-content active" id="example-basic">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code itemprop="text"><span class="kw">resource</span> <span class="type">S3BucketPolicy</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">bucket</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">policy</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-references">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Example with resource references</span>
+
+<span class="kw">resource</span> <span class="type">EbsVolume</span> <span class="name">my_ebsvolume</span> <span class="brace">{</span>
+    <span class="comment">// ... configuration</span>
+<span class="brace">}</span>
+
+<span class="kw">resource</span> <span class="type">S3Bucket</span> <span class="name">my_s3bucket</span> <span class="brace">{</span>
+    <span class="comment">// ... configuration</span>
+<span class="brace">}</span>
+
+<span class="kw">resource</span> <span class="type">S3BucketPolicy</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">bucket</span> <span class="eq">=</span> <span class="name">my_ebsvolume</span>.<span class="prop">id</span>
+    <span class="prop">policy</span> <span class="eq">=</span> <span class="name">my_s3bucket</span>.<span class="prop">id</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-complete">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Complete example with all properties</span>
+<span class="kw">resource</span> <span class="type">S3BucketPolicy</span> <span class="name">complete_example</span> <span class="brace">{</span>
+    <span class="prop">bucket</span> <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The name of the bucket to apply the p...</span>
+    <span class="prop">policy</span> <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The bucket policy as a JSON string (I...</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section id="schema" class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)" role="button" aria-expanded="false">
+                        <span class="toggle-icon" aria-hidden="true">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// S3BucketPolicy</span>
+<span class="kw">schema</span> <span class="type">S3BucketPolicy</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">bucket</span>  <span class="comment">// The name of the bucket to apply the policy to</span>
+    <span class="type">string</span> <span class="prop">policy</span>  <span class="comment">// The bucket policy as a JSON string (IAM policy document)</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-bucket">
+    <td><code class="prop-name" onclick="copyPropLink('bucket')" title="Click to copy link">bucket<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The name of the bucket to apply the policy to</td>
+</tr>
+<tr id="prop-policy">
+    <td><code class="prop-name" onclick="copyPropLink('policy')" title="Click to copy link">policy<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The bucket policy as a JSON string (IAM policy document)</td>
+</tr>
+
+    </tbody>
+</table>
+</div>
+</section>
+<section id="related" class="related-section">
+<h2>Related Resources</h2>
+<p class="related-desc">Other resources in the Storage category:</p>
+<div class="related-grid">
+<a href="EbsVolume.html" class="related-card"><span class="related-icon">💾</span><span class="related-name">EbsVolume</span></a>
+<a href="S3Bucket.html" class="related-card"><span class="related-icon">💾</span><span class="related-name">S3Bucket</span></a>
+</div>
+</section>
+<nav class="resource-nav" aria-label="Resource navigation">
+<a href="S3Bucket.html" class="nav-prev" rel="prev" title="Previous in Storage">← S3Bucket</a>
+<span class="nav-category-label">Storage</span>
+<span class="nav-placeholder"></span>
+</nav>
+                <footer class="resource-footer">
+                    <div class="footer-actions">
+                        <div class="share-buttons">
+                            <span class="share-label">Share:</span>
+                            <a href="https://twitter.com/intent/tweet?text=S3BucketPolicy%20-%20Kite%20Aws%20Provider&url=https://docs.kitelang.cloud/aws/S3BucketPolicy.html" target="_blank" rel="noopener" class="share-btn share-twitter" title="Share on Twitter">
+                                <span>𝕏</span>
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://docs.kitelang.cloud/aws/S3BucketPolicy.html" target="_blank" rel="noopener" class="share-btn share-linkedin" title="Share on LinkedIn">
+                                <span>in</span>
+                            </a>
+                        </div>
+                        <a href="https://github.com/kitecorp/kite-providers/issues/new?title=Docs:%20S3BucketPolicy%20-%20&body=**Resource:** S3BucketPolicy%0A**Provider:** aws%0A**Page:** https://docs.kitelang.cloud/aws/S3BucketPolicy.html%0A%0A**Issue:**%0A" target="_blank" rel="noopener" class="report-issue">
+                            Report an issue
+                        </a>
+                    </div>
+                    <p class="footer-date">Generated on <time datetime="2026-01-04T05:02:48.515717">January 4, 2026</time></p>
+                </footer>
+            </article>
+        </main>
+        <aside class="sidebar-right">
+            <div class="toc-header">On this page</div>
+            <nav class="toc" aria-label="Table of contents">
+                <a href="#import">Import</a>
+                <a href="#example">Example</a>
+                <a href="#schema" class="toc-h3">Schema Definition</a>
+                <a href="#properties">Properties</a>
+                <a href="#related">Related Resources</a>
+
+            </nav>
+        </aside>
+    </div>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+</body>
+</html>

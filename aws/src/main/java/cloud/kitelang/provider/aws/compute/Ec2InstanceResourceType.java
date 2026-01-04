@@ -74,17 +74,20 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
             requestBuilder.userData(encoded);
         }
 
-        // Availability zone
-        if (resource.getAvailabilityZone() != null) {
-            requestBuilder.placement(Placement.builder()
-                    .availabilityZone(resource.getAvailabilityZone())
-                    .tenancy(resource.getTenancy() != null ?
-                            Tenancy.fromValue(resource.getTenancy()) : null)
-                    .build());
-        } else if (resource.getTenancy() != null) {
-            requestBuilder.placement(Placement.builder()
-                    .tenancy(Tenancy.fromValue(resource.getTenancy()))
-                    .build());
+        // Placement: availability zone, tenancy, and placement group
+        if (resource.getAvailabilityZone() != null || resource.getTenancy() != null ||
+            resource.getPlacementGroup() != null) {
+            var placementBuilder = Placement.builder();
+            if (resource.getAvailabilityZone() != null) {
+                placementBuilder.availabilityZone(resource.getAvailabilityZone());
+            }
+            if (resource.getTenancy() != null) {
+                placementBuilder.tenancy(Tenancy.fromValue(resource.getTenancy()));
+            }
+            if (resource.getPlacementGroup() != null) {
+                placementBuilder.groupName(resource.getPlacementGroup());
+            }
+            requestBuilder.placement(placementBuilder.build());
         }
 
         // Monitoring
@@ -92,6 +95,37 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
             requestBuilder.monitoring(RunInstancesMonitoringEnabled.builder()
                     .enabled(true)
                     .build());
+        }
+
+        // EBS optimization
+        if (resource.getEbsOptimized() != null && resource.getEbsOptimized()) {
+            requestBuilder.ebsOptimized(true);
+        }
+
+        // CPU credits for burstable instances (T2, T3, T3a, T4g)
+        if (resource.getCpuCredits() != null && !resource.getCpuCredits().isBlank()) {
+            requestBuilder.creditSpecification(CreditSpecificationRequest.builder()
+                    .cpuCredits(resource.getCpuCredits())
+                    .build());
+        }
+
+        // Hibernation
+        if (resource.getHibernation() != null && resource.getHibernation()) {
+            requestBuilder.hibernationOptions(HibernationOptionsRequest.builder()
+                    .configured(true)
+                    .build());
+        }
+
+        // Instance metadata options (IMDSv2)
+        if (resource.getMetadataHttpTokens() != null || resource.getMetadataHttpPutResponseHopLimit() != null) {
+            var metadataBuilder = InstanceMetadataOptionsRequest.builder();
+            if (resource.getMetadataHttpTokens() != null) {
+                metadataBuilder.httpTokens(HttpTokensState.fromValue(resource.getMetadataHttpTokens()));
+            }
+            if (resource.getMetadataHttpPutResponseHopLimit() != null) {
+                metadataBuilder.httpPutResponseHopLimit(resource.getMetadataHttpPutResponseHopLimit());
+            }
+            requestBuilder.metadataOptions(metadataBuilder.build());
         }
 
         // Root volume configuration
@@ -287,6 +321,37 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
                     .build());
         }
 
+        // Update CPU credits (for burstable instances)
+        if (resource.getCpuCredits() != null &&
+            !resource.getCpuCredits().equals(current.getCpuCredits())) {
+            log.info("Changing CPU credits from {} to {}",
+                    current.getCpuCredits(), resource.getCpuCredits());
+            ec2Client.modifyInstanceCreditSpecification(ModifyInstanceCreditSpecificationRequest.builder()
+                    .instanceCreditSpecifications(InstanceCreditSpecificationRequest.builder()
+                            .instanceId(instanceId)
+                            .cpuCredits(resource.getCpuCredits())
+                            .build())
+                    .build());
+        }
+
+        // Update metadata options (IMDSv2)
+        boolean metadataChanged = (resource.getMetadataHttpTokens() != null &&
+                !resource.getMetadataHttpTokens().equals(current.getMetadataHttpTokens())) ||
+                (resource.getMetadataHttpPutResponseHopLimit() != null &&
+                !resource.getMetadataHttpPutResponseHopLimit().equals(current.getMetadataHttpPutResponseHopLimit()));
+
+        if (metadataChanged) {
+            var metadataBuilder = ModifyInstanceMetadataOptionsRequest.builder()
+                    .instanceId(instanceId);
+            if (resource.getMetadataHttpTokens() != null) {
+                metadataBuilder.httpTokens(HttpTokensState.fromValue(resource.getMetadataHttpTokens()));
+            }
+            if (resource.getMetadataHttpPutResponseHopLimit() != null) {
+                metadataBuilder.httpPutResponseHopLimit(resource.getMetadataHttpPutResponseHopLimit());
+            }
+            ec2Client.modifyInstanceMetadataOptions(metadataBuilder.build());
+        }
+
         // Update tags
         if (resource.getTags() != null) {
             if (current.getTags() != null && !current.getTags().isEmpty()) {
@@ -371,6 +436,33 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
             }
         }
 
+        // Validate CPU credits
+        if (resource.getCpuCredits() != null && !resource.getCpuCredits().isBlank()) {
+            if (!resource.getCpuCredits().equals("standard") &&
+                !resource.getCpuCredits().equals("unlimited")) {
+                diagnostics.add(Diagnostic.error("cpuCredits must be 'standard' or 'unlimited'")
+                        .withProperty("cpuCredits"));
+            }
+        }
+
+        // Validate metadata HTTP tokens
+        if (resource.getMetadataHttpTokens() != null && !resource.getMetadataHttpTokens().isBlank()) {
+            if (!resource.getMetadataHttpTokens().equals("optional") &&
+                !resource.getMetadataHttpTokens().equals("required")) {
+                diagnostics.add(Diagnostic.error("metadataHttpTokens must be 'optional' or 'required'")
+                        .withProperty("metadataHttpTokens"));
+            }
+        }
+
+        // Validate metadata hop limit
+        if (resource.getMetadataHttpPutResponseHopLimit() != null) {
+            int hopLimit = resource.getMetadataHttpPutResponseHopLimit();
+            if (hopLimit < 1 || hopLimit > 64) {
+                diagnostics.add(Diagnostic.error("metadataHttpPutResponseHopLimit must be between 1 and 64")
+                        .withProperty("metadataHttpPutResponseHopLimit"));
+            }
+        }
+
         return diagnostics;
     }
 
@@ -398,6 +490,25 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
             if (instance.placement().tenancy() != null) {
                 resource.setTenancy(instance.placement().tenancy().toString());
             }
+            if (instance.placement().groupName() != null && !instance.placement().groupName().isEmpty()) {
+                resource.setPlacementGroup(instance.placement().groupName());
+            }
+        }
+
+        // EBS optimization
+        resource.setEbsOptimized(instance.ebsOptimized());
+
+        // Hibernation
+        if (instance.hibernationOptions() != null) {
+            resource.setHibernation(instance.hibernationOptions().configured());
+        }
+
+        // Instance metadata options
+        if (instance.metadataOptions() != null) {
+            if (instance.metadataOptions().httpTokens() != null) {
+                resource.setMetadataHttpTokens(instance.metadataOptions().httpTokensAsString());
+            }
+            resource.setMetadataHttpPutResponseHopLimit(instance.metadataOptions().httpPutResponseHopLimit());
         }
 
         if (instance.monitoring() != null) {
