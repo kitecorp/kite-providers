@@ -1,7 +1,8 @@
 {
   "provider": "aws",
   "version": "0.1.2",
-  "generatedAt": "2026-01-04T04:25:59.476242",
+  "logoUrl": "https://cdn.simpleicons.org/amazonaws/FF9900",
+  "generatedAt": "2026-01-04T04:28:11.607462",
   "resources": {
     "EbsVolume": {
       "domain": "storage",
