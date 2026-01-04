@@ -92,6 +92,30 @@
                     </div>
                 </div>
 
+                <h2 id="quick-start">Quick Start</h2>
+                <div class="quick-start-section">
+                    <h3>Installation</h3>
+                    <p>Install the Aws provider:</p>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">kite</span> <span class="name">providers</span> <span class="str">install</span> aws@0.1.1</code></pre>
+                    </div>
+
+                    <h3>Import in your .kite file</h3>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="name">*</span> <span class="kw">from</span> <span class="str">"aws"</span></code></pre>
+                    </div>
+
+                    <h3>Define a resource</h3>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">resource</span> <span class="type">EbsVolume</span> <span class="name">myResource</span> <span class="brace">{</span>
+    <span class="comment">// Configure properties here</span>
+<span class="brace">}</span></code></pre>
+                    </div>
+                </div>
+
                 <h2 id="categories">Categories</h2>
                 <div id="category-grid" class="category-grid">
                     <div class="loading">Loading...</div>
@@ -106,6 +130,7 @@
         <aside class="sidebar-right">
             <div class="toc-header">On this page</div>
             <nav class="toc">
+                <a href="#quick-start">Quick Start</a>
                 <a href="#categories">Categories</a>
                 <a href="#all-resources">All Resources</a>
             </nav>
