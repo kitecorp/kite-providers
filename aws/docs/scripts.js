@@ -17,6 +17,20 @@ function toggleTheme() {
     }
 })();
 
+// Embedded mode: hide theme button and listen for parent theme changes
+(function initEmbedded() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('embedded') === 'true') {
+        document.querySelector('.theme-toggle')?.remove();
+    }
+
+    window.addEventListener('message', (event) => {
+        if (event.data?.type === 'theme-change') {
+            document.documentElement.setAttribute('data-theme', event.data.theme);
+        }
+    });
+})();
+
 // Back to top button
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
