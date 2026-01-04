@@ -5,9 +5,5 @@
   "addedResources": ["IamInstanceProfile", "IamPolicy", "IamRole"],
   "removedResources": [],
   "changedResources": {
-    "Ec2Instance": {
-      "addedProperties": ["ebsOptimized", "cpuCredits", "hibernation", "placementGroup", "metadataHttpTokens", "metadataHttpPutResponseHopLimit"],
-      "removedProperties": []
-    }
   }
 }

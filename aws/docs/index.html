@@ -162,7 +162,9 @@
 
         async function loadResources(version) {
             try {
-                const res = await fetch(version + '/manifest.json');
+                // Add cache-busting to ensure fresh content
+                const res = await fetch(version + '/manifest.json?_=' + Date.now());
+                if (!res.ok) throw new Error('Failed to fetch manifest for ' + version);
                 const data = await res.json();
                 const resourcesObj = data.resources || {};
                 const resources = Object.entries(resourcesObj).map(([name, info]) => ({
