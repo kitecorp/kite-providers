@@ -785,24 +785,6 @@ font-size: 0.8125rem;
 }
     }
 
-    /* Skip link for accessibility */
-    .skip-link {
-position: absolute;
-top: -40px;
-left: 0;
-background: var(--kite-primary);
-color: white;
-padding: 0.5rem 1rem;
-z-index: 300;
-text-decoration: none;
-border-radius: 0 0 0.25rem 0;
-transition: top 0.2s;
-    }
-
-    .skip-link:focus {
-top: 0;
-    }
-
     /* Related resources section */
     .related-section {
 margin-top: 2rem;
