@@ -385,90 +385,116 @@
 </div>
 <div class="property-content active" id="props-user">
 <p class="props-desc">Properties you configure when defining the resource.</p>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Required</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-cidrBlock">
-  <td><code class="prop-name" onclick="copyPropLink('cidrBlock')" title="Click to copy link">cidrBlock<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The IPv4 CIDR block for the VPC (e.g., 10.0.0.0/16)</td>
+    <td><code class="prop-name" onclick="copyPropLink('cidrBlock')" title="Click to copy link">cidrBlock<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The IPv4 CIDR block for the VPC (e.g., 10.0.0.0/16)</td>
 </tr>
 <tr id="prop-ipv6CidrBlock">
-  <td><code class="prop-name" onclick="copyPropLink('ipv6CidrBlock')" title="Click to copy link">ipv6CidrBlock<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The IPv6 CIDR block for the VPC. If specified, AWS associates an IPv6 CIDR block</td>
+    <td><code class="prop-name" onclick="copyPropLink('ipv6CidrBlock')" title="Click to copy link">ipv6CidrBlock<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The IPv6 CIDR block for the VPC. If specified, AWS associates an IPv6 CIDR block</td>
 </tr>
 <tr id="prop-instanceTenancy">
-  <td><code class="prop-name" onclick="copyPropLink('instanceTenancy')" title="Click to copy link">instanceTenancy<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><code class="default-value">default</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Tenancy option for instances<br><span class="valid-values-label">Valid values: </span><code class="valid-value">default</code> <code class="valid-value">dedicated</code></td>
+    <td><code class="prop-name" onclick="copyPropLink('instanceTenancy')" title="Click to copy link">instanceTenancy<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><code class="default-value">default</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Tenancy option for instances<br><span class="valid-values-label">Valid values: </span><code class="valid-value">default</code> <code class="valid-value">dedicated</code></td>
 </tr>
 <tr id="prop-enableDnsSupport">
-  <td><code class="prop-name" onclick="copyPropLink('enableDnsSupport')" title="Click to copy link">enableDnsSupport<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">boolean</code></td>
-  <td><code class="default-value">true</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Enable DNS support in the VPC</td>
+    <td><code class="prop-name" onclick="copyPropLink('enableDnsSupport')" title="Click to copy link">enableDnsSupport<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><code class="default-value">true</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Enable DNS support in the VPC</td>
 </tr>
 <tr id="prop-enableDnsHostnames">
-  <td><code class="prop-name" onclick="copyPropLink('enableDnsHostnames')" title="Click to copy link">enableDnsHostnames<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">boolean</code></td>
-  <td><code class="default-value">false</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Enable DNS hostnames in the VPC</td>
+    <td><code class="prop-name" onclick="copyPropLink('enableDnsHostnames')" title="Click to copy link">enableDnsHostnames<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><code class="default-value">false</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Enable DNS hostnames in the VPC</td>
 </tr>
 <tr id="prop-tags">
-  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">map</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Tags to apply to the VPC</td>
+    <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">map</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Tags to apply to the VPC</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </div>
 <div class="property-content" id="props-cloud">
 <p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-vpcId">
-  <td><code class="prop-name" onclick="copyPropLink('vpcId')" title="Click to copy link">vpcId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The VPC ID assigned by AWS</td>
+    <td><code class="prop-name" onclick="copyPropLink('vpcId')" title="Click to copy link">vpcId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The VPC ID assigned by AWS</td>
 </tr>
 <tr id="prop-state">
-  <td><code class="prop-name" onclick="copyPropLink('state')" title="Click to copy link">state<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The current state of the VPC (pending, available)</td>
+    <td><code class="prop-name" onclick="copyPropLink('state')" title="Click to copy link">state<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The current state of the VPC (pending, available)</td>
 </tr>
 <tr id="prop-mainRouteTableId">
-  <td><code class="prop-name" onclick="copyPropLink('mainRouteTableId')" title="Click to copy link">mainRouteTableId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The ID of the main route table</td>
+    <td><code class="prop-name" onclick="copyPropLink('mainRouteTableId')" title="Click to copy link">mainRouteTableId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The ID of the main route table</td>
 </tr>
 <tr id="prop-defaultNetworkAclId">
-  <td><code class="prop-name" onclick="copyPropLink('defaultNetworkAclId')" title="Click to copy link">defaultNetworkAclId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The ID of the default network ACL</td>
+    <td><code class="prop-name" onclick="copyPropLink('defaultNetworkAclId')" title="Click to copy link">defaultNetworkAclId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The ID of the default network ACL</td>
 </tr>
 <tr id="prop-defaultSecurityGroupId">
-  <td><code class="prop-name" onclick="copyPropLink('defaultSecurityGroupId')" title="Click to copy link">defaultSecurityGroupId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The ID of the default security group</td>
+    <td><code class="prop-name" onclick="copyPropLink('defaultSecurityGroupId')" title="Click to copy link">defaultSecurityGroupId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The ID of the default security group</td>
 </tr>
 <tr id="prop-ownerId">
-  <td><code class="prop-name" onclick="copyPropLink('ownerId')" title="Click to copy link">ownerId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The AWS account ID that owns the VPC</td>
+    <td><code class="prop-name" onclick="copyPropLink('ownerId')" title="Click to copy link">ownerId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The AWS account ID that owns the VPC</td>
 </tr>
 <tr id="prop-arn">
-  <td><code class="prop-name" onclick="copyPropLink('arn')" title="Click to copy link">arn<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The Amazon Resource Name (ARN) of the VPC</td>
+    <td><code class="prop-name" onclick="copyPropLink('arn')" title="Click to copy link">arn<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The Amazon Resource Name (ARN) of the VPC</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </div>
 </section>
 <section id="related" class="related-section">
@@ -502,7 +528,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:41:16.748613">January 4, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:59:23.50405">January 4, 2026</time></p>
                 </footer>
             </article>
         </main>

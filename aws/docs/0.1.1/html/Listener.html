@@ -394,95 +394,121 @@
 </div>
 <div class="property-content active" id="props-user">
 <p class="props-desc">Properties you configure when defining the resource.</p>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Required</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-loadBalancerArn">
-  <td><code class="prop-name" onclick="copyPropLink('loadBalancerArn')" title="Click to copy link">loadBalancerArn<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The ARN of the load balancer</td>
+    <td><code class="prop-name" onclick="copyPropLink('loadBalancerArn')" title="Click to copy link">loadBalancerArn<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The ARN of the load balancer</td>
 </tr>
 <tr id="prop-port">
-  <td><code class="prop-name" onclick="copyPropLink('port')" title="Click to copy link">port<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">integer</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The port on which the listener listens</td>
+    <td><code class="prop-name" onclick="copyPropLink('port')" title="Click to copy link">port<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">integer</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The port on which the listener listens</td>
 </tr>
 <tr id="prop-protocol">
-  <td><code class="prop-name" onclick="copyPropLink('protocol')" title="Click to copy link">protocol<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The protocol for the listener<br><span class="valid-values-label">Valid values: </span><code class="valid-value">HTTP</code> <code class="valid-value">HTTPS</code> <code class="valid-value">TCP</code> <code class="valid-value">TLS</code> <code class="valid-value">UDP</code> <code class="valid-value">TCP_UDP</code> <code class="valid-value">GENEVE</code></td>
+    <td><code class="prop-name" onclick="copyPropLink('protocol')" title="Click to copy link">protocol<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The protocol for the listener<br><span class="valid-values-label">Valid values: </span><code class="valid-value">HTTP</code> <code class="valid-value">HTTPS</code> <code class="valid-value">TCP</code> <code class="valid-value">TLS</code> <code class="valid-value">UDP</code> <code class="valid-value">TCP_UDP</code> <code class="valid-value">GENEVE</code></td>
 </tr>
 <tr id="prop-certificateArn">
-  <td><code class="prop-name" onclick="copyPropLink('certificateArn')" title="Click to copy link">certificateArn<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The ARN of the default SSL server certificate (HTTPS/TLS only)</td>
+    <td><code class="prop-name" onclick="copyPropLink('certificateArn')" title="Click to copy link">certificateArn<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The ARN of the default SSL server certificate (HTTPS/TLS only)</td>
 </tr>
 <tr id="prop-sslPolicy">
-  <td><code class="prop-name" onclick="copyPropLink('sslPolicy')" title="Click to copy link">sslPolicy<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The SSL policy for HTTPS/TLS listeners</td>
+    <td><code class="prop-name" onclick="copyPropLink('sslPolicy')" title="Click to copy link">sslPolicy<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The SSL policy for HTTPS/TLS listeners</td>
 </tr>
 <tr id="prop-alpnPolicy">
-  <td><code class="prop-name" onclick="copyPropLink('alpnPolicy')" title="Click to copy link">alpnPolicy<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The ALPN policy for TLS listeners (NLB only)</td>
+    <td><code class="prop-name" onclick="copyPropLink('alpnPolicy')" title="Click to copy link">alpnPolicy<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The ALPN policy for TLS listeners (NLB only)</td>
 </tr>
 <tr id="prop-defaultTargetGroupArn">
-  <td><code class="prop-name" onclick="copyPropLink('defaultTargetGroupArn')" title="Click to copy link">defaultTargetGroupArn<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The ARN of the default target group for forward action</td>
+    <td><code class="prop-name" onclick="copyPropLink('defaultTargetGroupArn')" title="Click to copy link">defaultTargetGroupArn<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The ARN of the default target group for forward action</td>
 </tr>
 <tr id="prop-defaultActionType">
-  <td><code class="prop-name" onclick="copyPropLink('defaultActionType')" title="Click to copy link">defaultActionType<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><code class="default-value">forward</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The default action type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">forward</code> <code class="valid-value">redirect</code> <code class="valid-value">fixed-response</code></td>
+    <td><code class="prop-name" onclick="copyPropLink('defaultActionType')" title="Click to copy link">defaultActionType<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><code class="default-value">forward</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The default action type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">forward</code> <code class="valid-value">redirect</code> <code class="valid-value">fixed-response</code></td>
 </tr>
 <tr id="prop-redirectConfig">
-  <td><code class="prop-name" onclick="copyPropLink('redirectConfig')" title="Click to copy link">redirectConfig<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">redirectconfig</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Redirect configuration when defaultActionType is 'redirect'</td>
+    <td><code class="prop-name" onclick="copyPropLink('redirectConfig')" title="Click to copy link">redirectConfig<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">redirectconfig</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Redirect configuration when defaultActionType is 'redirect'</td>
 </tr>
 <tr id="prop-fixedResponseConfig">
-  <td><code class="prop-name" onclick="copyPropLink('fixedResponseConfig')" title="Click to copy link">fixedResponseConfig<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">fixedresponseconfig</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Fixed response configuration when defaultActionType is 'fixed-response'</td>
+    <td><code class="prop-name" onclick="copyPropLink('fixedResponseConfig')" title="Click to copy link">fixedResponseConfig<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">fixedresponseconfig</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Fixed response configuration when defaultActionType is 'fixed-response'</td>
 </tr>
 <tr id="prop-tags">
-  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">map</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Tags to apply to the listener</td>
+    <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">map</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Tags to apply to the listener</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </div>
 <div class="property-content" id="props-cloud">
 <p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-arn">
-  <td><code class="prop-name" onclick="copyPropLink('arn')" title="Click to copy link">arn<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The ARN of the listener</td>
+    <td><code class="prop-name" onclick="copyPropLink('arn')" title="Click to copy link">arn<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The ARN of the listener</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </div>
 </section>
 <section id="related" class="related-section">
@@ -513,7 +539,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:41:16.713867">January 4, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:59:23.456984">January 4, 2026</time></p>
                 </footer>
             </article>
         </main>

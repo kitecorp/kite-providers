@@ -414,136 +414,162 @@
 </div>
 <div class="property-content active" id="props-user">
 <p class="props-desc">Properties you configure when defining the resource.</p>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Required</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-bucket">
-  <td><code class="prop-name" onclick="copyPropLink('bucket')" title="Click to copy link">bucket<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Bucket name (globally unique, DNS-compliant)</td>
+    <td><code class="prop-name" onclick="copyPropLink('bucket')" title="Click to copy link">bucket<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Bucket name (globally unique, DNS-compliant)</td>
 </tr>
 <tr id="prop-acl">
-  <td><code class="prop-name" onclick="copyPropLink('acl')" title="Click to copy link">acl<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><code class="default-value">private</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Canned ACL for the bucket<br><span class="valid-values-label">Valid values: </span><code class="valid-value">private</code> <code class="valid-value">public-read</code> <code class="valid-value">public-read-write</code> <code class="valid-value">authenticated-read</code></td>
+    <td><code class="prop-name" onclick="copyPropLink('acl')" title="Click to copy link">acl<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><code class="default-value">private</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Canned ACL for the bucket<br><span class="valid-values-label">Valid values: </span><code class="valid-value">private</code> <code class="valid-value">public-read</code> <code class="valid-value">public-read-write</code> <code class="valid-value">authenticated-read</code></td>
 </tr>
 <tr id="prop-versioning">
-  <td><code class="prop-name" onclick="copyPropLink('versioning')" title="Click to copy link">versioning<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">boolean</code></td>
-  <td><code class="default-value">false</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Enable versioning for the bucket</td>
+    <td><code class="prop-name" onclick="copyPropLink('versioning')" title="Click to copy link">versioning<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><code class="default-value">false</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Enable versioning for the bucket</td>
 </tr>
 <tr id="prop-region">
-  <td><code class="prop-name" onclick="copyPropLink('region')" title="Click to copy link">region<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>AWS region for the bucket</td>
+    <td><code class="prop-name" onclick="copyPropLink('region')" title="Click to copy link">region<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>AWS region for the bucket</td>
 </tr>
 <tr id="prop-serverSideEncryption">
-  <td><code class="prop-name" onclick="copyPropLink('serverSideEncryption')" title="Click to copy link">serverSideEncryption<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Server-side encryption algorithm<br><span class="valid-values-label">Valid values: </span><code class="valid-value">AES256</code> <code class="valid-value">aws:kms</code></td>
+    <td><code class="prop-name" onclick="copyPropLink('serverSideEncryption')" title="Click to copy link">serverSideEncryption<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Server-side encryption algorithm<br><span class="valid-values-label">Valid values: </span><code class="valid-value">AES256</code> <code class="valid-value">aws:kms</code></td>
 </tr>
 <tr id="prop-kmsKeyId">
-  <td><code class="prop-name" onclick="copyPropLink('kmsKeyId')" title="Click to copy link">kmsKeyId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>KMS key ID for encryption (when using aws:kms)</td>
+    <td><code class="prop-name" onclick="copyPropLink('kmsKeyId')" title="Click to copy link">kmsKeyId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>KMS key ID for encryption (when using aws:kms)</td>
 </tr>
 <tr id="prop-blockPublicAccess">
-  <td><code class="prop-name" onclick="copyPropLink('blockPublicAccess')" title="Click to copy link">blockPublicAccess<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">boolean</code></td>
-  <td><code class="default-value">true</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Block all public access</td>
+    <td><code class="prop-name" onclick="copyPropLink('blockPublicAccess')" title="Click to copy link">blockPublicAccess<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><code class="default-value">true</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Block all public access</td>
 </tr>
 <tr id="prop-websiteIndexDocument">
-  <td><code class="prop-name" onclick="copyPropLink('websiteIndexDocument')" title="Click to copy link">websiteIndexDocument<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Index document for static website hosting</td>
+    <td><code class="prop-name" onclick="copyPropLink('websiteIndexDocument')" title="Click to copy link">websiteIndexDocument<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Index document for static website hosting</td>
 </tr>
 <tr id="prop-websiteErrorDocument">
-  <td><code class="prop-name" onclick="copyPropLink('websiteErrorDocument')" title="Click to copy link">websiteErrorDocument<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Error document for static website hosting</td>
+    <td><code class="prop-name" onclick="copyPropLink('websiteErrorDocument')" title="Click to copy link">websiteErrorDocument<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Error document for static website hosting</td>
 </tr>
 <tr id="prop-websiteRedirectAllRequestsTo">
-  <td><code class="prop-name" onclick="copyPropLink('websiteRedirectAllRequestsTo')" title="Click to copy link">websiteRedirectAllRequestsTo<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Redirect all requests to another host</td>
+    <td><code class="prop-name" onclick="copyPropLink('websiteRedirectAllRequestsTo')" title="Click to copy link">websiteRedirectAllRequestsTo<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Redirect all requests to another host</td>
 </tr>
 <tr id="prop-corsRules">
-  <td><code class="prop-name" onclick="copyPropLink('corsRules')" title="Click to copy link">corsRules<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">list</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>CORS configuration rules</td>
+    <td><code class="prop-name" onclick="copyPropLink('corsRules')" title="Click to copy link">corsRules<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">list</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>CORS configuration rules</td>
 </tr>
 <tr id="prop-lifecycleRules">
-  <td><code class="prop-name" onclick="copyPropLink('lifecycleRules')" title="Click to copy link">lifecycleRules<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">list</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Lifecycle rules for object management</td>
+    <td><code class="prop-name" onclick="copyPropLink('lifecycleRules')" title="Click to copy link">lifecycleRules<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">list</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Lifecycle rules for object management</td>
 </tr>
 <tr id="prop-logging">
-  <td><code class="prop-name" onclick="copyPropLink('logging')" title="Click to copy link">logging<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">loggingconfig</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Access logging configuration</td>
+    <td><code class="prop-name" onclick="copyPropLink('logging')" title="Click to copy link">logging<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">loggingconfig</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Access logging configuration</td>
 </tr>
 <tr id="prop-tags">
-  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">map</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Tags to apply to the bucket</td>
+    <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">map</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Tags to apply to the bucket</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </div>
 <div class="property-content" id="props-cloud">
 <p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-arn">
-  <td><code class="prop-name" onclick="copyPropLink('arn')" title="Click to copy link">arn<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The ARN of the bucket</td>
+    <td><code class="prop-name" onclick="copyPropLink('arn')" title="Click to copy link">arn<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The ARN of the bucket</td>
 </tr>
 <tr id="prop-domainName">
-  <td><code class="prop-name" onclick="copyPropLink('domainName')" title="Click to copy link">domainName<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The domain name of the bucket</td>
+    <td><code class="prop-name" onclick="copyPropLink('domainName')" title="Click to copy link">domainName<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The domain name of the bucket</td>
 </tr>
 <tr id="prop-regionalDomainName">
-  <td><code class="prop-name" onclick="copyPropLink('regionalDomainName')" title="Click to copy link">regionalDomainName<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The regional domain name of the bucket</td>
+    <td><code class="prop-name" onclick="copyPropLink('regionalDomainName')" title="Click to copy link">regionalDomainName<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The regional domain name of the bucket</td>
 </tr>
 <tr id="prop-websiteEndpoint">
-  <td><code class="prop-name" onclick="copyPropLink('websiteEndpoint')" title="Click to copy link">websiteEndpoint<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>Website endpoint (if hosting enabled)</td>
+    <td><code class="prop-name" onclick="copyPropLink('websiteEndpoint')" title="Click to copy link">websiteEndpoint<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>Website endpoint (if hosting enabled)</td>
 </tr>
 <tr id="prop-creationDate">
-  <td><code class="prop-name" onclick="copyPropLink('creationDate')" title="Click to copy link">creationDate<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The creation date of the bucket</td>
+    <td><code class="prop-name" onclick="copyPropLink('creationDate')" title="Click to copy link">creationDate<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The creation date of the bucket</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </div>
 </section>
 <section id="related" class="related-section">
@@ -574,7 +600,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:41:16.728972">January 4, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:59:23.479889">January 4, 2026</time></p>
                 </footer>
             </article>
         </main>

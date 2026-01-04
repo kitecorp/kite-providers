@@ -376,80 +376,106 @@
 </div>
 <div class="property-content active" id="props-user">
 <p class="props-desc">Properties you configure when defining the resource.</p>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Required</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-name">
-  <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The domain name for the hosted zone (e.g., 'example.com')</td>
+    <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The domain name for the hosted zone (e.g., 'example.com')</td>
 </tr>
 <tr id="prop-comment">
-  <td><code class="prop-name" onclick="copyPropLink('comment')" title="Click to copy link">comment<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>A comment for the hosted zone</td>
+    <td><code class="prop-name" onclick="copyPropLink('comment')" title="Click to copy link">comment<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>A comment for the hosted zone</td>
 </tr>
 <tr id="prop-privateZone">
-  <td><code class="prop-name" onclick="copyPropLink('privateZone')" title="Click to copy link">privateZone<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">boolean</code></td>
-  <td><code class="default-value">false</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Whether this is a private hosted zone</td>
+    <td><code class="prop-name" onclick="copyPropLink('privateZone')" title="Click to copy link">privateZone<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><code class="default-value">false</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Whether this is a private hosted zone</td>
 </tr>
 <tr id="prop-vpcId">
-  <td><code class="prop-name" onclick="copyPropLink('vpcId')" title="Click to copy link">vpcId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>VPC ID to associate with private hosted zone</td>
+    <td><code class="prop-name" onclick="copyPropLink('vpcId')" title="Click to copy link">vpcId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>VPC ID to associate with private hosted zone</td>
 </tr>
 <tr id="prop-vpcRegion">
-  <td><code class="prop-name" onclick="copyPropLink('vpcRegion')" title="Click to copy link">vpcRegion<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>VPC region for private hosted zone</td>
+    <td><code class="prop-name" onclick="copyPropLink('vpcRegion')" title="Click to copy link">vpcRegion<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>VPC region for private hosted zone</td>
 </tr>
 <tr id="prop-tags">
-  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">map</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Tags to apply to the hosted zone</td>
+    <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">map</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Tags to apply to the hosted zone</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </div>
 <div class="property-content" id="props-cloud">
 <p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-hostedZoneId">
-  <td><code class="prop-name" onclick="copyPropLink('hostedZoneId')" title="Click to copy link">hostedZoneId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The hosted zone ID (without /hostedzone/ prefix)</td>
+    <td><code class="prop-name" onclick="copyPropLink('hostedZoneId')" title="Click to copy link">hostedZoneId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The hosted zone ID (without /hostedzone/ prefix)</td>
 </tr>
 <tr id="prop-nameServers">
-  <td><code class="prop-name" onclick="copyPropLink('nameServers')" title="Click to copy link">nameServers<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">list</code></td>
-  <td>The name servers for the hosted zone</td>
+    <td><code class="prop-name" onclick="copyPropLink('nameServers')" title="Click to copy link">nameServers<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">list</code></td>
+    <td>The name servers for the hosted zone</td>
 </tr>
 <tr id="prop-resourceRecordSetCount">
-  <td><code class="prop-name" onclick="copyPropLink('resourceRecordSetCount')" title="Click to copy link">resourceRecordSetCount<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">integer</code></td>
-  <td>The number of resource record sets in the hosted zone</td>
+    <td><code class="prop-name" onclick="copyPropLink('resourceRecordSetCount')" title="Click to copy link">resourceRecordSetCount<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">integer</code></td>
+    <td>The number of resource record sets in the hosted zone</td>
 </tr>
 <tr id="prop-callerReference">
-  <td><code class="prop-name" onclick="copyPropLink('callerReference')" title="Click to copy link">callerReference<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>A unique string that identifies the request to create the zone</td>
+    <td><code class="prop-name" onclick="copyPropLink('callerReference')" title="Click to copy link">callerReference<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>A unique string that identifies the request to create the zone</td>
 </tr>
 <tr id="prop-arn">
-  <td><code class="prop-name" onclick="copyPropLink('arn')" title="Click to copy link">arn<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The Amazon Resource Name (ARN) of the hosted zone</td>
+    <td><code class="prop-name" onclick="copyPropLink('arn')" title="Click to copy link">arn<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The Amazon Resource Name (ARN) of the hosted zone</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </div>
 </section>
 <section id="related" class="related-section">
@@ -479,7 +505,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:41:16.707334">January 4, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:59:23.448068">January 4, 2026</time></p>
                 </footer>
             </article>
         </main>

@@ -397,108 +397,134 @@
 </div>
 <div class="property-content active" id="props-user">
 <p class="props-desc">Properties you configure when defining the resource.</p>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Required</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-availabilityZone">
-  <td><code class="prop-name" onclick="copyPropLink('availabilityZone')" title="Click to copy link">availabilityZone<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The Availability Zone in which to create the volume</td>
+    <td><code class="prop-name" onclick="copyPropLink('availabilityZone')" title="Click to copy link">availabilityZone<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The Availability Zone in which to create the volume</td>
 </tr>
 <tr id="prop-size">
-  <td><code class="prop-name" onclick="copyPropLink('size')" title="Click to copy link">size<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">integer</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The size of the volume in GiBs</td>
+    <td><code class="prop-name" onclick="copyPropLink('size')" title="Click to copy link">size<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">integer</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The size of the volume in GiBs</td>
 </tr>
 <tr id="prop-volumeType">
-  <td><code class="prop-name" onclick="copyPropLink('volumeType')" title="Click to copy link">volumeType<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><code class="default-value">gp3</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The volume type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">gp2</code> <code class="valid-value">gp3</code> <code class="valid-value">io1</code> <code class="valid-value">io2</code> <code class="valid-value">st1</code> <code class="valid-value">sc1</code> <code class="valid-value">standard</code></td>
+    <td><code class="prop-name" onclick="copyPropLink('volumeType')" title="Click to copy link">volumeType<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><code class="default-value">gp3</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The volume type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">gp2</code> <code class="valid-value">gp3</code> <code class="valid-value">io1</code> <code class="valid-value">io2</code> <code class="valid-value">st1</code> <code class="valid-value">sc1</code> <code class="valid-value">standard</code></td>
 </tr>
 <tr id="prop-iops">
-  <td><code class="prop-name" onclick="copyPropLink('iops')" title="Click to copy link">iops<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">integer</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The number of I/O operations per second (IOPS)</td>
+    <td><code class="prop-name" onclick="copyPropLink('iops')" title="Click to copy link">iops<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">integer</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The number of I/O operations per second (IOPS)</td>
 </tr>
 <tr id="prop-throughput">
-  <td><code class="prop-name" onclick="copyPropLink('throughput')" title="Click to copy link">throughput<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">integer</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The throughput in MiB/s. Only valid for gp3 volumes</td>
+    <td><code class="prop-name" onclick="copyPropLink('throughput')" title="Click to copy link">throughput<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">integer</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The throughput in MiB/s. Only valid for gp3 volumes</td>
 </tr>
 <tr id="prop-encrypted">
-  <td><code class="prop-name" onclick="copyPropLink('encrypted')" title="Click to copy link">encrypted<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">boolean</code></td>
-  <td><code class="default-value">false</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Whether the volume should be encrypted</td>
+    <td><code class="prop-name" onclick="copyPropLink('encrypted')" title="Click to copy link">encrypted<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><code class="default-value">false</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Whether the volume should be encrypted</td>
 </tr>
 <tr id="prop-kmsKeyId">
-  <td><code class="prop-name" onclick="copyPropLink('kmsKeyId')" title="Click to copy link">kmsKeyId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The ARN of the KMS key to use for encryption</td>
+    <td><code class="prop-name" onclick="copyPropLink('kmsKeyId')" title="Click to copy link">kmsKeyId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The ARN of the KMS key to use for encryption</td>
 </tr>
 <tr id="prop-snapshotId">
-  <td><code class="prop-name" onclick="copyPropLink('snapshotId')" title="Click to copy link">snapshotId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The snapshot ID to create the volume from</td>
+    <td><code class="prop-name" onclick="copyPropLink('snapshotId')" title="Click to copy link">snapshotId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The snapshot ID to create the volume from</td>
 </tr>
 <tr id="prop-multiAttachEnabled">
-  <td><code class="prop-name" onclick="copyPropLink('multiAttachEnabled')" title="Click to copy link">multiAttachEnabled<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">boolean</code></td>
-  <td><code class="default-value">false</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Enable Multi-Attach for io1/io2 volumes</td>
+    <td><code class="prop-name" onclick="copyPropLink('multiAttachEnabled')" title="Click to copy link">multiAttachEnabled<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><code class="default-value">false</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Enable Multi-Attach for io1/io2 volumes</td>
 </tr>
 <tr id="prop-tags">
-  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">map</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Tags to apply to the volume</td>
+    <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">map</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Tags to apply to the volume</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </div>
 <div class="property-content" id="props-cloud">
 <p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-volumeId">
-  <td><code class="prop-name" onclick="copyPropLink('volumeId')" title="Click to copy link">volumeId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The volume ID assigned by AWS</td>
+    <td><code class="prop-name" onclick="copyPropLink('volumeId')" title="Click to copy link">volumeId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The volume ID assigned by AWS</td>
 </tr>
 <tr id="prop-arn">
-  <td><code class="prop-name" onclick="copyPropLink('arn')" title="Click to copy link">arn<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The Amazon Resource Name (ARN) of the volume</td>
+    <td><code class="prop-name" onclick="copyPropLink('arn')" title="Click to copy link">arn<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The Amazon Resource Name (ARN) of the volume</td>
 </tr>
 <tr id="prop-state">
-  <td><code class="prop-name" onclick="copyPropLink('state')" title="Click to copy link">state<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The current state of the volume</td>
+    <td><code class="prop-name" onclick="copyPropLink('state')" title="Click to copy link">state<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The current state of the volume</td>
 </tr>
 <tr id="prop-createTime">
-  <td><code class="prop-name" onclick="copyPropLink('createTime')" title="Click to copy link">createTime<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The time the volume was created</td>
+    <td><code class="prop-name" onclick="copyPropLink('createTime')" title="Click to copy link">createTime<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The time the volume was created</td>
 </tr>
 <tr id="prop-attachments">
-  <td><code class="prop-name" onclick="copyPropLink('attachments')" title="Click to copy link">attachments<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>Information about the volume attachments</td>
+    <td><code class="prop-name" onclick="copyPropLink('attachments')" title="Click to copy link">attachments<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>Information about the volume attachments</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </div>
 </section>
 <section id="related" class="related-section">
@@ -529,7 +555,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:41:16.686793">January 4, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:59:23.425222">January 4, 2026</time></p>
                 </footer>
             </article>
         </main>

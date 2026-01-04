@@ -418,163 +418,189 @@
 </div>
 <div class="property-content active" id="props-user">
 <p class="props-desc">Properties you configure when defining the resource.</p>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Required</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-ami">
-  <td><code class="prop-name" onclick="copyPropLink('ami')" title="Click to copy link">ami<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The AMI ID to use for the instance</td>
+    <td><code class="prop-name" onclick="copyPropLink('ami')" title="Click to copy link">ami<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The AMI ID to use for the instance</td>
 </tr>
 <tr id="prop-instanceType">
-  <td><code class="prop-name" onclick="copyPropLink('instanceType')" title="Click to copy link">instanceType<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The instance type (e.g., t3.micro, m5.large)</td>
+    <td><code class="prop-name" onclick="copyPropLink('instanceType')" title="Click to copy link">instanceType<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The instance type (e.g., t3.micro, m5.large)</td>
 </tr>
 <tr id="prop-subnetId">
-  <td><code class="prop-name" onclick="copyPropLink('subnetId')" title="Click to copy link">subnetId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The subnet ID to launch the instance in</td>
+    <td><code class="prop-name" onclick="copyPropLink('subnetId')" title="Click to copy link">subnetId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The subnet ID to launch the instance in</td>
 </tr>
 <tr id="prop-securityGroupIds">
-  <td><code class="prop-name" onclick="copyPropLink('securityGroupIds')" title="Click to copy link">securityGroupIds<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">list</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>List of security group IDs to attach</td>
+    <td><code class="prop-name" onclick="copyPropLink('securityGroupIds')" title="Click to copy link">securityGroupIds<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">list</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>List of security group IDs to attach</td>
 </tr>
 <tr id="prop-keyName">
-  <td><code class="prop-name" onclick="copyPropLink('keyName')" title="Click to copy link">keyName<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The name of the key pair for SSH access</td>
+    <td><code class="prop-name" onclick="copyPropLink('keyName')" title="Click to copy link">keyName<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The name of the key pair for SSH access</td>
 </tr>
 <tr id="prop-associatePublicIpAddress">
-  <td><code class="prop-name" onclick="copyPropLink('associatePublicIpAddress')" title="Click to copy link">associatePublicIpAddress<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">boolean</code></td>
-  <td><code class="default-value">false</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Whether to associate a public IP address</td>
+    <td><code class="prop-name" onclick="copyPropLink('associatePublicIpAddress')" title="Click to copy link">associatePublicIpAddress<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><code class="default-value">false</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Whether to associate a public IP address</td>
 </tr>
 <tr id="prop-iamInstanceProfile">
-  <td><code class="prop-name" onclick="copyPropLink('iamInstanceProfile')" title="Click to copy link">iamInstanceProfile<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The IAM instance profile name or ARN</td>
+    <td><code class="prop-name" onclick="copyPropLink('iamInstanceProfile')" title="Click to copy link">iamInstanceProfile<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The IAM instance profile name or ARN</td>
 </tr>
 <tr id="prop-userData">
-  <td><code class="prop-name" onclick="copyPropLink('userData')" title="Click to copy link">userData<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>User data script for instance initialization (base64 encoded)</td>
+    <td><code class="prop-name" onclick="copyPropLink('userData')" title="Click to copy link">userData<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>User data script for instance initialization (base64 encoded)</td>
 </tr>
 <tr id="prop-availabilityZone">
-  <td><code class="prop-name" onclick="copyPropLink('availabilityZone')" title="Click to copy link">availabilityZone<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The availability zone to launch in</td>
+    <td><code class="prop-name" onclick="copyPropLink('availabilityZone')" title="Click to copy link">availabilityZone<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The availability zone to launch in</td>
 </tr>
 <tr id="prop-monitoring">
-  <td><code class="prop-name" onclick="copyPropLink('monitoring')" title="Click to copy link">monitoring<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">boolean</code></td>
-  <td><code class="default-value">false</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Enable detailed monitoring</td>
+    <td><code class="prop-name" onclick="copyPropLink('monitoring')" title="Click to copy link">monitoring<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><code class="default-value">false</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Enable detailed monitoring</td>
 </tr>
 <tr id="prop-tenancy">
-  <td><code class="prop-name" onclick="copyPropLink('tenancy')" title="Click to copy link">tenancy<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><code class="default-value">default</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Instance tenancy option<br><span class="valid-values-label">Valid values: </span><code class="valid-value">default</code> <code class="valid-value">dedicated</code> <code class="valid-value">host</code></td>
+    <td><code class="prop-name" onclick="copyPropLink('tenancy')" title="Click to copy link">tenancy<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><code class="default-value">default</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Instance tenancy option<br><span class="valid-values-label">Valid values: </span><code class="valid-value">default</code> <code class="valid-value">dedicated</code> <code class="valid-value">host</code></td>
 </tr>
 <tr id="prop-rootVolumeSize">
-  <td><code class="prop-name" onclick="copyPropLink('rootVolumeSize')" title="Click to copy link">rootVolumeSize<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">integer</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Root volume size in GiB</td>
+    <td><code class="prop-name" onclick="copyPropLink('rootVolumeSize')" title="Click to copy link">rootVolumeSize<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">integer</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Root volume size in GiB</td>
 </tr>
 <tr id="prop-rootVolumeType">
-  <td><code class="prop-name" onclick="copyPropLink('rootVolumeType')" title="Click to copy link">rootVolumeType<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><code class="default-value">gp3</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Root volume type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">gp2</code> <code class="valid-value">gp3</code> <code class="valid-value">io1</code> <code class="valid-value">io2</code> <code class="valid-value">st1</code> <code class="valid-value">sc1</code></td>
+    <td><code class="prop-name" onclick="copyPropLink('rootVolumeType')" title="Click to copy link">rootVolumeType<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><code class="default-value">gp3</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Root volume type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">gp2</code> <code class="valid-value">gp3</code> <code class="valid-value">io1</code> <code class="valid-value">io2</code> <code class="valid-value">st1</code> <code class="valid-value">sc1</code></td>
 </tr>
 <tr id="prop-deleteRootVolumeOnTermination">
-  <td><code class="prop-name" onclick="copyPropLink('deleteRootVolumeOnTermination')" title="Click to copy link">deleteRootVolumeOnTermination<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">boolean</code></td>
-  <td><code class="default-value">true</code></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Delete root volume on termination</td>
+    <td><code class="prop-name" onclick="copyPropLink('deleteRootVolumeOnTermination')" title="Click to copy link">deleteRootVolumeOnTermination<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><code class="default-value">true</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Delete root volume on termination</td>
 </tr>
 <tr id="prop-tags">
-  <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">map</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Tags to apply to the instance</td>
+    <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">map</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Tags to apply to the instance</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </div>
 <div class="property-content" id="props-cloud">
 <p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-instanceId">
-  <td><code class="prop-name" onclick="copyPropLink('instanceId')" title="Click to copy link">instanceId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The instance ID assigned by AWS</td>
+    <td><code class="prop-name" onclick="copyPropLink('instanceId')" title="Click to copy link">instanceId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The instance ID assigned by AWS</td>
 </tr>
 <tr id="prop-state">
-  <td><code class="prop-name" onclick="copyPropLink('state')" title="Click to copy link">state<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>Instance state: pending, running, stopping, stopped, terminated</td>
+    <td><code class="prop-name" onclick="copyPropLink('state')" title="Click to copy link">state<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>Instance state: pending, running, stopping, stopped, terminated</td>
 </tr>
 <tr id="prop-publicIp">
-  <td><code class="prop-name" onclick="copyPropLink('publicIp')" title="Click to copy link">publicIp<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The public IP address (if assigned)</td>
+    <td><code class="prop-name" onclick="copyPropLink('publicIp')" title="Click to copy link">publicIp<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The public IP address (if assigned)</td>
 </tr>
 <tr id="prop-privateIp">
-  <td><code class="prop-name" onclick="copyPropLink('privateIp')" title="Click to copy link">privateIp<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The private IP address</td>
+    <td><code class="prop-name" onclick="copyPropLink('privateIp')" title="Click to copy link">privateIp<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The private IP address</td>
 </tr>
 <tr id="prop-publicDnsName">
-  <td><code class="prop-name" onclick="copyPropLink('publicDnsName')" title="Click to copy link">publicDnsName<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The public DNS name</td>
+    <td><code class="prop-name" onclick="copyPropLink('publicDnsName')" title="Click to copy link">publicDnsName<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The public DNS name</td>
 </tr>
 <tr id="prop-privateDnsName">
-  <td><code class="prop-name" onclick="copyPropLink('privateDnsName')" title="Click to copy link">privateDnsName<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The private DNS name</td>
+    <td><code class="prop-name" onclick="copyPropLink('privateDnsName')" title="Click to copy link">privateDnsName<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The private DNS name</td>
 </tr>
 <tr id="prop-vpcId">
-  <td><code class="prop-name" onclick="copyPropLink('vpcId')" title="Click to copy link">vpcId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The VPC ID the instance is in</td>
+    <td><code class="prop-name" onclick="copyPropLink('vpcId')" title="Click to copy link">vpcId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The VPC ID the instance is in</td>
 </tr>
 <tr id="prop-architecture">
-  <td><code class="prop-name" onclick="copyPropLink('architecture')" title="Click to copy link">architecture<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The architecture: x86_64 or arm64</td>
+    <td><code class="prop-name" onclick="copyPropLink('architecture')" title="Click to copy link">architecture<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The architecture: x86_64 or arm64</td>
 </tr>
 <tr id="prop-rootDeviceName">
-  <td><code class="prop-name" onclick="copyPropLink('rootDeviceName')" title="Click to copy link">rootDeviceName<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td>The root device name</td>
+    <td><code class="prop-name" onclick="copyPropLink('rootDeviceName')" title="Click to copy link">rootDeviceName<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The root device name</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </div>
 </section>
 <nav class="resource-nav" aria-label="Resource navigation">
@@ -597,7 +623,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:41:16.699388">January 4, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:59:23.438086">January 4, 2026</time></p>
                 </footer>
             </article>
         </main>

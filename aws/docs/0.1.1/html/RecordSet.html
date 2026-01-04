@@ -386,92 +386,106 @@
                 </section>
 <section id="properties">
 <h2>Properties</h2>
-<div class="table-wrapper"><table><thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Required</th><th scope="col">Description</th></tr></thead><tbody>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
 <tr id="prop-hostedZoneId">
-  <td><code class="prop-name" onclick="copyPropLink('hostedZoneId')" title="Click to copy link">hostedZoneId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The ID of the hosted zone</td>
+    <td><code class="prop-name" onclick="copyPropLink('hostedZoneId')" title="Click to copy link">hostedZoneId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The ID of the hosted zone</td>
 </tr>
 <tr id="prop-name">
-  <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The name of the record (fully qualified domain name)</td>
+    <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The name of the record (fully qualified domain name)</td>
 </tr>
 <tr id="prop-type">
-  <td><code class="prop-name" onclick="copyPropLink('type')" title="Click to copy link">type<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The DNS record type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">A</code> <code class="valid-value">AAAA</code> <code class="valid-value">CNAME</code> <code class="valid-value">MX</code> <code class="valid-value">TXT</code> <code class="valid-value">NS</code> <code class="valid-value">SOA</code> <code class="valid-value">SRV</code> <code class="valid-value">CAA</code> <code class="valid-value">PTR</code></td>
+    <td><code class="prop-name" onclick="copyPropLink('type')" title="Click to copy link">type<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The DNS record type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">A</code> <code class="valid-value">AAAA</code> <code class="valid-value">CNAME</code> <code class="valid-value">MX</code> <code class="valid-value">TXT</code> <code class="valid-value">NS</code> <code class="valid-value">SOA</code> <code class="valid-value">SRV</code> <code class="valid-value">CAA</code> <code class="valid-value">PTR</code></td>
 </tr>
 <tr id="prop-ttl">
-  <td><code class="prop-name" onclick="copyPropLink('ttl')" title="Click to copy link">ttl<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">integer</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The TTL (time to live) in seconds</td>
+    <td><code class="prop-name" onclick="copyPropLink('ttl')" title="Click to copy link">ttl<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">integer</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The TTL (time to live) in seconds</td>
 </tr>
 <tr id="prop-records">
-  <td><code class="prop-name" onclick="copyPropLink('records')" title="Click to copy link">records<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">list</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>The record values</td>
+    <td><code class="prop-name" onclick="copyPropLink('records')" title="Click to copy link">records<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">list</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The record values</td>
 </tr>
 <tr id="prop-aliasTarget">
-  <td><code class="prop-name" onclick="copyPropLink('aliasTarget')" title="Click to copy link">aliasTarget<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">aliastarget</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Alias target for AWS resources (ELB, CloudFront, S3, etc.)</td>
+    <td><code class="prop-name" onclick="copyPropLink('aliasTarget')" title="Click to copy link">aliasTarget<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">aliastarget</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Alias target for AWS resources (ELB, CloudFront, S3, etc.)</td>
 </tr>
 <tr id="prop-weight">
-  <td><code class="prop-name" onclick="copyPropLink('weight')" title="Click to copy link">weight<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">integer</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Weighted routing weight (0-255)</td>
+    <td><code class="prop-name" onclick="copyPropLink('weight')" title="Click to copy link">weight<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">integer</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Weighted routing weight (0-255)</td>
 </tr>
 <tr id="prop-setIdentifier">
-  <td><code class="prop-name" onclick="copyPropLink('setIdentifier')" title="Click to copy link">setIdentifier<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Set identifier for routing policies</td>
+    <td><code class="prop-name" onclick="copyPropLink('setIdentifier')" title="Click to copy link">setIdentifier<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Set identifier for routing policies</td>
 </tr>
 <tr id="prop-failover">
-  <td><code class="prop-name" onclick="copyPropLink('failover')" title="Click to copy link">failover<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Failover routing type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">PRIMARY</code> <code class="valid-value">SECONDARY</code></td>
+    <td><code class="prop-name" onclick="copyPropLink('failover')" title="Click to copy link">failover<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Failover routing type<br><span class="valid-values-label">Valid values: </span><code class="valid-value">PRIMARY</code> <code class="valid-value">SECONDARY</code></td>
 </tr>
 <tr id="prop-geoLocation">
-  <td><code class="prop-name" onclick="copyPropLink('geoLocation')" title="Click to copy link">geoLocation<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">geolocation</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Geolocation routing configuration</td>
+    <td><code class="prop-name" onclick="copyPropLink('geoLocation')" title="Click to copy link">geoLocation<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">geolocation</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Geolocation routing configuration</td>
 </tr>
 <tr id="prop-healthCheckId">
-  <td><code class="prop-name" onclick="copyPropLink('healthCheckId')" title="Click to copy link">healthCheckId<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Health check ID to associate with the record</td>
+    <td><code class="prop-name" onclick="copyPropLink('healthCheckId')" title="Click to copy link">healthCheckId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Health check ID to associate with the record</td>
 </tr>
 <tr id="prop-multiValueAnswer">
-  <td><code class="prop-name" onclick="copyPropLink('multiValueAnswer')" title="Click to copy link">multiValueAnswer<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">boolean</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td>Whether this is a multivalue answer record</td>
+    <td><code class="prop-name" onclick="copyPropLink('multiValueAnswer')" title="Click to copy link">multiValueAnswer<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Whether this is a multivalue answer record</td>
 </tr>
-</tbody></table></div>
+
+    </tbody>
+</table>
+</div>
 </section>
 <section id="related" class="related-section">
 <h2>Related Resources</h2>
@@ -500,7 +514,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:41:16.723357">January 4, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-04T02:59:23.471167">January 4, 2026</time></p>
                 </footer>
             </article>
         </main>
