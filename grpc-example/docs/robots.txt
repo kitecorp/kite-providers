@@ -1,0 +1,8 @@
+# Kite Grpc-example Provider Documentation
+# https://docs.kitelang.cloud/grpc-example/
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://docs.kitelang.cloud/grpc-example/sitemap.xml

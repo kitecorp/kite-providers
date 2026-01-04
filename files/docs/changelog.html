@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's New - Files Provider | Kite</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <main id="main-content" class="content">
+        <article class="resource-content">
+            <h1>What's New in v0.1.0</h1>
+            <div id="changelog-content">
+                <p class="loading">Loading changelog...</p>
+            </div>
+        </article>
+    </main>
+    <script src="scripts.js"></script>
+    <script>
+        fetch('0.1.0/changelog.json')
+            .then(r => r.ok ? r.json() : null)
+            .catch(() => null)
+            .then(data => {
+                const container = document.getElementById('changelog-content');
+                if (!data) {
+                    container.innerHTML = '<p class="no-changes">This is the first version. No previous version to compare.</p>';
+                    return;
+                }
+
+                let html = '<p class="changelog-meta">Changes from <strong>v' + data.fromVersion + '</strong> to <strong>v' + data.toVersion + '</strong></p>';
+
+                // Added resources
+                if (data.addedResources && data.addedResources.length > 0) {
+                    html += '<section class="changelog-section"><h2>✨ New Resources</h2><ul class="changelog-list added">';
+                    data.addedResources.forEach(r => {
+                        html += '<li><a href="' + r + '.html">' + r + '</a></li>';
+                    });
+                    html += '</ul></section>';
+                }
+
+                // Removed resources
+                if (data.removedResources && data.removedResources.length > 0) {
+                    html += '<section class="changelog-section"><h2>🗑️ Removed Resources</h2><ul class="changelog-list removed">';
+                    data.removedResources.forEach(r => {
+                        html += '<li>' + r + '</li>';
+                    });
+                    html += '</ul></section>';
+                }
+
+                // Changed resources
+                if (data.changedResources && Object.keys(data.changedResources).length > 0) {
+                    html += '<section class="changelog-section"><h2>🔄 Changed Resources</h2>';
+                    for (const [resource, changes] of Object.entries(data.changedResources)) {
+                        html += '<div class="resource-changes"><h3><a href="' + resource + '.html">' + resource + '</a></h3>';
+                        if (changes.addedProperties && changes.addedProperties.length > 0) {
+                            html += '<p class="prop-change added">Added: <code>' + changes.addedProperties.join('</code>, <code>') + '</code></p>';
+                        }
+                        if (changes.removedProperties && changes.removedProperties.length > 0) {
+                            html += '<p class="prop-change removed">Removed: <code>' + changes.removedProperties.join('</code>, <code>') + '</code></p>';
+                        }
+                        html += '</div>';
+                    }
+                    html += '</section>';
+                }
+
+                if (!data.addedResources?.length && !data.removedResources?.length && !Object.keys(data.changedResources || {}).length) {
+                    html += '<p class="no-changes">No changes detected in this version.</p>';
+                }
+
+                container.innerHTML = html;
+            });
+    </script>
+</body>
+</html>

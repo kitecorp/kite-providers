@@ -384,9 +384,39 @@ data.versions
 // switchVersion for resource pages - navigates to the new version's page
 // Note: Index page defines its own switchVersion that does dynamic loading
 if (!window.switchVersion) {
-    window.switchVersion = function(versionPath) {
+    window.switchVersion = async function(versionPath) {
         const currentPath = window.location.pathname;
         const newPath = currentPath.replace(/\/[^/]+\/html\//, '/' + versionPath + '/html/');
+
+        // Check if resource exists in target version
+        const resourceMatch = currentPath.match(/\/html\/(\w+)\.html/);
+        if (resourceMatch) {
+            const resourceName = resourceMatch[1];
+            try {
+                const res = await fetch('../../' + versionPath + '/manifest.json');
+                if (res.ok) {
+                    const manifest = await res.json();
+                    if (!manifest.resources || !manifest.resources[resourceName]) {
+                        // Resource doesn't exist in target version
+                        // Get current version from path
+                        const currentVersionMatch = currentPath.match(/\/([^/]+)\/html\//);
+                        const currentVersion = currentVersionMatch ? currentVersionMatch[1] : 'current version';
+
+                        // Show informative message
+                        showToast(`${resourceName} was added in v${currentVersion}`, 3000);
+
+                        // Reset dropdown to current version
+                        const select = document.getElementById('version-select');
+                        if (select && currentVersionMatch) {
+                            select.value = currentVersionMatch[1];
+                        }
+                        return;
+                    }
+                }
+            } catch (e) {
+                // On error, try the direct path anyway
+            }
+        }
         window.location.href = newPath;
     };
 }

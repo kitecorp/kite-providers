@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Grpc-example Provider Resources | Kite</title>
+        <description>Infrastructure as code resources for Grpc-example provider. Stay updated with the latest resource documentation.</description>
+        <link>https://docs.kitelang.cloud/grpc-example/</link>
+        <atom:link href="https://docs.kitelang.cloud/grpc-example/feed.xml" rel="self" type="application/rss+xml"/>
+        <language>en-us</language>
+        <lastBuildDate>2026-01-04T18:10:11.433495</lastBuildDate>
+        <generator>Kite Documentation Generator</generator>
+    <item>
+        <title>File</title>
+        <description>Documentation for File resource.</description>
+        <link>https://docs.kitelang.cloud/grpc-example/File.html</link>
+        <guid isPermaLink="true">https://docs.kitelang.cloud/grpc-example/File.html</guid>
+        <category>General</category>
+    </item>
+    </channel>
+</rss>

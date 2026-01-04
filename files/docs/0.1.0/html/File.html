@@ -4,44 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File | Files Provider | Kite</title>
-    <meta name="description" content="Documentation for File resource in Files provider. Learn about properties, examples, and configuration.">
+    <meta name="description" content="Documentation for File resource in Files provider.">
     <meta name="keywords" content="kite, infrastructure as code, files, cloud, terraform alternative, IaC">
     <meta name="author" content="Kite">
     <meta name="robots" content="index, follow">
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://kitelang.cloud/providers/files/File.html">
+    <link rel="canonical" href="https://docs.kitelang.cloud/files/File.html">
 
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
 
     <!-- Preload critical resources -->
-    <link rel="preload" href="styles.css" as="style">
-    <link rel="preload" href="scripts.js" as="script">
+    <link rel="preload" href="../../styles.css" as="style">
+    <link rel="preload" href="../../scripts.js" as="script">
 
     <!-- Stylesheet -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../../styles.css">
 
     <!-- Scripts -->
-    <script src="scripts.js" defer></script>
+    <script src="../../scripts.js" defer></script>
 
     <!-- RSS Feed -->
-    <link rel="alternate" type="application/rss+xml" title="Files Provider Resources" href="feed.xml">
+    <link rel="alternate" type="application/rss+xml" title="Files Provider Resources" href="../../feed.xml">
 
     <!-- OpenSearch -->
-    <link rel="search" type="application/opensearchdescription+xml" title="Kite Files Docs" href="opensearch.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Kite Files Docs" href="../../opensearch.xml">
 
     <!-- Open Graph -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="File | Files Provider | Kite">
-    <meta property="og:description" content="Documentation for File resource in Files provider. Learn about properties, examples, and configuration.">
-    <meta property="og:url" content="https://kitelang.cloud/providers/files/File.html">
+    <meta property="og:description" content="Documentation for File resource in Files provider.">
+    <meta property="og:url" content="https://docs.kitelang.cloud/files/File.html">
     <meta property="og:site_name" content="Kite Documentation">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="File | Files Provider | Kite">
-    <meta name="twitter:description" content="Documentation for File resource in Files provider. Learn about properties, examples, and configuration.">
+    <meta name="twitter:description" content="Documentation for File resource in Files provider.">
 </head>
 <script type="application/ld+json">
 [
@@ -61,7 +61,7 @@
         },
         "mainEntityOfPage": {
             "@type": "WebPage",
-            "@id": "https://kitelang.cloud/providers/files/File.html"
+            "@id": "https://docs.kitelang.cloud/files/File.html"
         },
         "about": {
             "@type": "SoftwareSourceCode",
@@ -80,13 +80,13 @@
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Files Provider",
-                "item": "https://kitelang.cloud/providers/files/"
+                "item": "https://docs.kitelang.cloud/files/"
             },
             {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "General",
-                "item": "https://kitelang.cloud/providers/files/File.html"
+                "item": "https://docs.kitelang.cloud/files/File.html"
             },
             {
                 "@type": "ListItem",
@@ -128,7 +128,6 @@
 ]
 </script>
 <body>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
     <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
         <span class="hamburger-icon"></span>
     </button>
@@ -137,8 +136,8 @@
         <aside class="sidebar-left">
             <div class="sidebar-header">
                 <div class="header-top">
-                    <a href="index.html" class="logo-link">
-                        <h1>🪁 Files</h1>
+                    <a href="../../index.html" class="logo-link">
+                        <span class="provider-emoji">🪁</span><h1>Files</h1>
                     </a>
                     <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
                         <span class="theme-icon-light">☀️</span>
@@ -150,7 +149,7 @@
                         <option value="0.1.0" selected>v0.1.0</option>
                     </select>
                 </div>
-                <a href="changelog.html" class="whats-new-link">✨ What's New</a>
+                <a href="../../changelog.html" class="whats-new-link">✨ What's New</a>
             </div>
             <div class="search-wrapper">
                 <div class="search-container">
@@ -176,12 +175,13 @@
                 </li>
                 </ul>
             </div>
+
             </nav>
         </aside>
         <main id="main-content" class="content">
             <article class="resource-content" itemscope itemtype="https://schema.org/TechArticle">
                 <nav class="breadcrumbs" aria-label="Breadcrumb">
-                    <a href="index.html">Home</a>
+                    <a href="../../index.html">Home</a>
                     <span class="sep" aria-hidden="true">›</span>
                     <span class="domain">📄 General</span>
                     <span class="sep" aria-hidden="true">›</span>
@@ -190,7 +190,8 @@
 
                 <header>
                     <h1 itemprop="name">File</h1>
-</header>
+                    
+                </header>
                 <section id="import">
                     <h2>Import</h2>
                     <div class="code-wrapper">
@@ -261,6 +262,12 @@
                 </section>
 <section id="properties">
 <h2>Properties</h2>
+<div class="property-tabs">
+<button class="property-tab active" onclick="showPropertyTab(this, 'user')">User Properties</button>
+<button class="property-tab" onclick="showPropertyTab(this, 'cloud')">Cloud Properties</button>
+</div>
+<div class="property-content active" id="props-user">
+<p class="props-desc">Properties you configure when defining the resource.</p>
 <div class="table-wrapper">
 <table>
     <thead>
@@ -274,32 +281,32 @@
     </thead>
     <tbody>
 <tr id="prop-path">
-  <td><code class="prop-name" onclick="copyPropLink('path')" title="Click to copy link">path<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td></td>
+    <td><code class="prop-name" onclick="copyPropLink('path')" title="Click to copy link">path<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td></td>
 </tr>
 <tr id="prop-content">
-  <td><code class="prop-name" onclick="copyPropLink('content')" title="Click to copy link">content<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td></td>
+    <td><code class="prop-name" onclick="copyPropLink('content')" title="Click to copy link">content<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td></td>
 </tr>
 <tr id="prop-permissions">
-  <td><code class="prop-name" onclick="copyPropLink('permissions')" title="Click to copy link">permissions<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td><span class="no-value">—</span></td>
-  <td><span class="badge badge-optional">No</span></td>
-  <td></td>
+    <td><code class="prop-name" onclick="copyPropLink('permissions')" title="Click to copy link">permissions<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td></td>
 </tr>
+
     </tbody>
 </table>
 </div>
-</section>
-<section id="cloud-properties">
-<h2>Cloud Properties</h2>
+</div>
+<div class="property-content" id="props-cloud">
 <p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
 <div class="table-wrapper">
 <table>
@@ -312,17 +319,19 @@
     </thead>
     <tbody>
 <tr id="prop-checksum">
-  <td><code class="prop-name" onclick="copyPropLink('checksum')" title="Click to copy link">checksum<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td></td>
+    <td><code class="prop-name" onclick="copyPropLink('checksum')" title="Click to copy link">checksum<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td></td>
 </tr>
 <tr id="prop-lastModified">
-  <td><code class="prop-name" onclick="copyPropLink('lastModified')" title="Click to copy link">lastModified<span class="link-icon">#</span></code></td>
-  <td><code class="prop-type">string</code></td>
-  <td></td>
+    <td><code class="prop-name" onclick="copyPropLink('lastModified')" title="Click to copy link">lastModified<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td></td>
 </tr>
+
     </tbody>
 </table>
+</div>
 </div>
 </section>
 <nav class="resource-nav" aria-label="Resource navigation">
@@ -334,18 +343,18 @@
                     <div class="footer-actions">
                         <div class="share-buttons">
                             <span class="share-label">Share:</span>
-                            <a href="https://twitter.com/intent/tweet?text=File%20-%20Kite%20Files%20Provider&url=https://kitelang.cloud/providers/files/File.html" target="_blank" rel="noopener" class="share-btn share-twitter" title="Share on Twitter">
+                            <a href="https://twitter.com/intent/tweet?text=File%20-%20Kite%20Files%20Provider&url=https://docs.kitelang.cloud/files/File.html" target="_blank" rel="noopener" class="share-btn share-twitter" title="Share on Twitter">
                                 <span>𝕏</span>
                             </a>
-                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://kitelang.cloud/providers/files/File.html" target="_blank" rel="noopener" class="share-btn share-linkedin" title="Share on LinkedIn">
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://docs.kitelang.cloud/files/File.html" target="_blank" rel="noopener" class="share-btn share-linkedin" title="Share on LinkedIn">
                                 <span>in</span>
                             </a>
                         </div>
-                        <a href="https://github.com/kitecorp/kite-providers/issues/new?title=Docs:%20File%20-%20&body=**Resource:** File%0A**Provider:** files%0A**Page:** https://kitelang.cloud/providers/files/File.html%0A%0A**Issue:**%0A" target="_blank" rel="noopener" class="report-issue">
+                        <a href="https://github.com/kitecorp/kite-providers/issues/new?title=Docs:%20File%20-%20&body=**Resource:** File%0A**Provider:** files%0A**Page:** https://docs.kitelang.cloud/files/File.html%0A%0A**Issue:**%0A" target="_blank" rel="noopener" class="report-issue">
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-03T16:43:25.315765">January 3, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-04T18:10:07.04725">January 4, 2026</time></p>
                 </footer>
             </article>
         </main>
@@ -355,8 +364,8 @@
                 <a href="#import">Import</a>
                 <a href="#example">Example</a>
                 <a href="#schema" class="toc-h3">Schema Definition</a>
-<a href="#properties">Properties</a>
-<a href="#cloud-properties">Cloud Properties</a>
+                <a href="#properties">Properties</a>
+
             </nav>
         </aside>
     </div>
