@@ -118,8 +118,8 @@ function copyCode(btn) {
         btn.classList.add('copied');
         showToast('Copied to clipboard!');
         setTimeout(() => {
-            btn.textContent = 'Copy';
-            btn.classList.remove('copied');
+btn.textContent = 'Copy';
+btn.classList.remove('copied');
         }, 2000);
     });
 }
@@ -132,26 +132,26 @@ document.getElementById('search')?.addEventListener('input', function(e) {
         let hasVisible = false;
 
         category.querySelectorAll('.nav-item').forEach(item => {
-            const name = item.dataset.name || '';
-            const desc = item.dataset.desc || '';
-            // Fuzzy match: check if all characters appear in order
-            const fuzzyMatch = (text, pattern) => {
-                if (!pattern) return true;
-                let pi = 0;
-                for (let i = 0; i < text.length && pi < pattern.length; i++) {
-                    if (text[i] === pattern[pi]) pi++;
-                }
-                return pi === pattern.length;
-            };
-            const visible = fuzzyMatch(name, query) || desc.includes(query);
-            item.style.display = visible ? '' : 'none';
-            if (visible) hasVisible = true;
+const name = item.dataset.name || '';
+const desc = item.dataset.desc || '';
+// Fuzzy match: check if all characters appear in order
+const fuzzyMatch = (text, pattern) => {
+    if (!pattern) return true;
+    let pi = 0;
+    for (let i = 0; i < text.length && pi < pattern.length; i++) {
+        if (text[i] === pattern[pi]) pi++;
+    }
+    return pi === pattern.length;
+};
+const visible = fuzzyMatch(name, query) || desc.includes(query);
+item.style.display = visible ? '' : 'none';
+if (visible) hasVisible = true;
         });
 
         category.style.display = hasVisible ? '' : 'none';
 
         if (query && hasVisible) {
-            category.classList.remove('collapsed');
+category.classList.remove('collapsed');
         }
     });
 });
@@ -171,44 +171,44 @@ document.addEventListener('keydown', function(e) {
     // Escape to close mobile menu or blur search
     if (e.key === 'Escape') {
         if (sidebar?.classList.contains('open')) {
-            toggleMobileMenu();
+toggleMobileMenu();
         } else if (document.activeElement === searchInput) {
-            searchInput.blur();
-            searchInput.value = '';
-            searchInput.dispatchEvent(new Event('input'));
+searchInput.blur();
+searchInput.value = '';
+searchInput.dispatchEvent(new Event('input'));
         }
     }
 
     // Arrow key navigation in search results
     if (searchInput && document.activeElement === searchInput) {
         const visibleItems = Array.from(document.querySelectorAll('.nav-item'))
-            .filter(item => item.style.display !== 'none');
+.filter(item => item.style.display !== 'none');
 
         if (e.key === 'ArrowDown' && visibleItems.length > 0) {
-            e.preventDefault();
-            visibleItems[0].querySelector('a')?.focus();
+e.preventDefault();
+visibleItems[0].querySelector('a')?.focus();
         }
     }
 
     // Navigate between visible items with arrow keys
     if (document.activeElement.closest('.nav-item')) {
         const visibleItems = Array.from(document.querySelectorAll('.nav-item'))
-            .filter(item => item.style.display !== 'none');
+.filter(item => item.style.display !== 'none');
         const currentItem = document.activeElement.closest('.nav-item');
         const currentIndex = visibleItems.indexOf(currentItem);
 
         if (e.key === 'ArrowDown' && currentIndex < visibleItems.length - 1) {
-            e.preventDefault();
-            visibleItems[currentIndex + 1].querySelector('a')?.focus();
+e.preventDefault();
+visibleItems[currentIndex + 1].querySelector('a')?.focus();
         } else if (e.key === 'ArrowUp') {
-            e.preventDefault();
-            if (currentIndex > 0) {
-                visibleItems[currentIndex - 1].querySelector('a')?.focus();
-            } else {
-                searchInput?.focus();
-            }
+e.preventDefault();
+if (currentIndex > 0) {
+    visibleItems[currentIndex - 1].querySelector('a')?.focus();
+} else {
+    searchInput?.focus();
+}
         } else if (e.key === 'Enter') {
-            // Already handled by link click
+// Already handled by link click
         }
     }
 
@@ -218,9 +218,9 @@ document.addEventListener('keydown', function(e) {
         const nextLink = document.querySelector('.nav-next');
 
         if (e.key === 'j' && nextLink) {
-            window.location.href = nextLink.href;
+window.location.href = nextLink.href;
         } else if (e.key === 'k' && prevLink) {
-            window.location.href = prevLink.href;
+window.location.href = prevLink.href;
         }
     }
 });
@@ -235,10 +235,10 @@ const observer = new IntersectionObserver((entries) => {
         const id = entry.target.getAttribute('id');
         const tocLink = document.querySelector(`.toc a[href="#${id}"]`);
         if (tocLink) {
-            if (entry.isIntersecting) {
-                document.querySelectorAll('.toc a').forEach(a => a.classList.remove('active'));
-                tocLink.classList.add('active');
-            }
+if (entry.isIntersecting) {
+    document.querySelectorAll('.toc a').forEach(a => a.classList.remove('active'));
+    tocLink.classList.add('active');
+}
         }
     });
 }, observerOptions);
@@ -265,9 +265,9 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
-            e.preventDefault();
-            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            history.pushState(null, '', this.getAttribute('href'));
+e.preventDefault();
+target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+history.pushState(null, '', this.getAttribute('href'));
         }
     });
 });
@@ -309,26 +309,26 @@ function loadVersions() {
         .then(res => res.ok ? res.json() : null)
         .catch(() => null)
         .then(data => {
-            if (!data || !data.versions) return;
+if (!data || !data.versions) return;
 
-            const select = document.getElementById('version-select');
-            if (!select) return;
+const select = document.getElementById('version-select');
+if (!select) return;
 
-            // Get current version from path
-            const pathMatch = window.location.pathname.match(/\/([^/]+)\/html\//);
-            const currentVersion = pathMatch ? pathMatch[1] : null;
+// Get current version from path
+const pathMatch = window.location.pathname.match(/\/([^/]+)\/html\//);
+const currentVersion = pathMatch ? pathMatch[1] : null;
 
-            // Clear and rebuild options
-            select.innerHTML = '';
-            data.versions
-                .sort((a, b) => b.version.localeCompare(a.version, undefined, {numeric: true}))
-                .forEach(v => {
-                    const opt = document.createElement('option');
-                    opt.value = v.path;
-                    opt.textContent = 'v' + v.version + (v.version === data.latest ? ' (latest)' : '');
-                    opt.selected = (v.path === currentVersion || v.version === currentVersion);
-                    select.appendChild(opt);
-                });
+// Clear and rebuild options
+select.innerHTML = '';
+data.versions
+    .sort((a, b) => b.version.localeCompare(a.version, undefined, {numeric: true}))
+    .forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.path;
+        opt.textContent = 'v' + v.version + (v.version === data.latest ? ' (latest)' : '');
+        opt.selected = (v.path === currentVersion || v.version === currentVersion);
+        select.appendChild(opt);
+    });
         });
 }
 
