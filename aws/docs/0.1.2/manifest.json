@@ -1,7 +1,7 @@
 {
   "provider": "aws",
   "version": "0.1.2",
-  "generatedAt": "2026-01-04T04:23:02.811662",
+  "generatedAt": "2026-01-04T04:25:59.476242",
   "resources": {
     "EbsVolume": {
       "domain": "storage",

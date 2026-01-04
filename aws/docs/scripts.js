@@ -126,16 +126,51 @@ function toggleSchema(header) {
 }
 
 function copyCode(btn) {
-    const code = btn.parentElement.querySelector('code').textContent;
-    navigator.clipboard.writeText(code).then(() => {
+    const codeEl = btn.parentElement.querySelector('code');
+    if (!codeEl) {
+        showToast('Error: Could not find code to copy');
+        return;
+    }
+    const code = codeEl.textContent;
+
+    // Try modern clipboard API first, fall back to execCommand
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+            btn.textContent = 'Copied!';
+            btn.classList.add('copied');
+            showToast('Copied to clipboard!');
+            setTimeout(() => {
+                btn.textContent = 'Copy';
+                btn.classList.remove('copied');
+            }, 2000);
+        }).catch(() => {
+            fallbackCopy(code, btn);
+        });
+    } else {
+        fallbackCopy(code, btn);
+    }
+}
+
+function fallbackCopy(text, btn) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.opacity = '0';
+    document.body.appendChild(textarea);
+    textarea.select();
+    try {
+        document.execCommand('copy');
         btn.textContent = 'Copied!';
         btn.classList.add('copied');
         showToast('Copied to clipboard!');
         setTimeout(() => {
-btn.textContent = 'Copy';
-btn.classList.remove('copied');
+            btn.textContent = 'Copy';
+            btn.classList.remove('copied');
         }, 2000);
-    });
+    } catch (e) {
+        showToast('Copy failed - please copy manually');
+    }
+    document.body.removeChild(textarea);
 }
 
 // Fuzzy search with descriptions
