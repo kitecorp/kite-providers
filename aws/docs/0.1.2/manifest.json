@@ -2,7 +2,7 @@
   "provider": "aws",
   "version": "0.1.2",
   "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg",
-  "generatedAt": "2026-01-04T04:31:16.652884",
+  "generatedAt": "2026-01-04T04:34:18.164339",
   "resources": {
     "EbsVolume": {
       "domain": "storage",
