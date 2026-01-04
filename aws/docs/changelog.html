@@ -31,10 +31,11 @@
                 let html = '<p class="changelog-meta">Changes from <strong>v' + data.fromVersion + '</strong> to <strong>v' + data.toVersion + '</strong></p>';
 
                 // Added resources
+                const version = data.toVersion;
                 if (data.addedResources && data.addedResources.length > 0) {
                     html += '<section class="changelog-section"><h2>✨ New Resources</h2><ul class="changelog-list added">';
                     data.addedResources.forEach(r => {
-                        html += '<li><a href="' + r + '.html">' + r + '</a></li>';
+                        html += '<li><a href="' + version + '/html/' + r + '.html">' + r + '</a></li>';
                     });
                     html += '</ul></section>';
                 }
@@ -52,7 +53,7 @@
                 if (data.changedResources && Object.keys(data.changedResources).length > 0) {
                     html += '<section class="changelog-section"><h2>🔄 Changed Resources</h2>';
                     for (const [resource, changes] of Object.entries(data.changedResources)) {
-                        html += '<div class="resource-changes"><h3><a href="' + resource + '.html">' + resource + '</a></h3>';
+                        html += '<div class="resource-changes"><h3><a href="' + version + '/html/' + resource + '.html">' + resource + '</a></h3>';
                         if (changes.addedProperties && changes.addedProperties.length > 0) {
                             html += '<p class="prop-change added">Added: <code>' + changes.addedProperties.join('</code>, <code>') + '</code></p>';
                         }
