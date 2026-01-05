@@ -43,7 +43,7 @@
 | [LoadBalancer](LoadBalancer.md) | 20 |  |
 | [TargetGroup](TargetGroup.md) | 15 |  |
 
-## 📄 General
+## 🪪 Iam
 
 | Resource | Properties | Description |
 |----------|------------|-------------|

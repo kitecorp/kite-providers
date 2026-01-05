@@ -6,7 +6,7 @@
         <link>https://docs.kitelang.cloud/aws/</link>
         <atom:link href="https://docs.kitelang.cloud/aws/feed.xml" rel="self" type="application/rss+xml"/>
         <language>en-us</language>
-        <lastBuildDate>2026-01-05T10:43:06.173457</lastBuildDate>
+        <lastBuildDate>2026-01-05T10:52:30.536599</lastBuildDate>
         <generator>Kite Documentation Generator</generator>
     <item>
         <title>EbsVolume</title>
@@ -41,21 +41,21 @@
         <description>Documentation for IamInstanceProfile resource.</description>
         <link>https://docs.kitelang.cloud/aws/IamInstanceProfile.html</link>
         <guid isPermaLink="true">https://docs.kitelang.cloud/aws/IamInstanceProfile.html</guid>
-        <category>General</category>
+        <category>Iam</category>
     </item>
     <item>
         <title>IamPolicy</title>
         <description>Documentation for IamPolicy resource.</description>
         <link>https://docs.kitelang.cloud/aws/IamPolicy.html</link>
         <guid isPermaLink="true">https://docs.kitelang.cloud/aws/IamPolicy.html</guid>
-        <category>General</category>
+        <category>Iam</category>
     </item>
     <item>
         <title>IamRole</title>
         <description>Documentation for IamRole resource.</description>
         <link>https://docs.kitelang.cloud/aws/IamRole.html</link>
         <guid isPermaLink="true">https://docs.kitelang.cloud/aws/IamRole.html</guid>
-        <category>General</category>
+        <category>Iam</category>
     </item>
     <item>
         <title>InternetGateway</title>

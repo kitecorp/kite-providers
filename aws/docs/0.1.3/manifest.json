@@ -2,7 +2,7 @@
   "provider": "aws",
   "version": "0.1.3",
   "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg",
-  "generatedAt": "2026-01-05T10:43:06.175251",
+  "generatedAt": "2026-01-05T10:52:30.53927",
   "resources": {
     "EbsVolume": {
       "domain": "storage",
@@ -435,7 +435,7 @@
       }
     },
     "IamInstanceProfile": {
-      "domain": "general",
+      "domain": "iam",
       "properties": {
         "name": {
           "type": "string",
@@ -482,7 +482,7 @@
       }
     },
     "IamPolicy": {
-      "domain": "general",
+      "domain": "iam",
       "properties": {
         "name": {
           "type": "string",
@@ -547,7 +547,7 @@
       }
     },
     "IamRole": {
-      "domain": "general",
+      "domain": "iam",
       "properties": {
         "name": {
           "type": "string",
