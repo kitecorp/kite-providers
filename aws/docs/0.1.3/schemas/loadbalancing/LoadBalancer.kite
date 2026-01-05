@@ -1,32 +1,32 @@
 // LoadBalancer
 schema LoadBalancer {
-    string name                        // The name of the load balancer. Must be unique within your AWS account
+    string  name                        // The name of the load balancer. Must be unique within your AWS account
     @allowed(["application", "network", "gateway"])
-    string type = "application"        // The type of load balancer
+    string  type = "application"        // The type of load balancer
     @allowed(["internet-facing", "internal"])
-    string scheme = "internet-facing"  // The scheme for the load balancer
-    list subnets                     // The subnet IDs. At least two in different Availability Zones
-    list securityGroups              // The security group IDs. Required for ALB, not applicable for NLB
+    string  scheme = "internet-facing"  // The scheme for the load balancer
+    list    subnets                     // The subnet IDs. At least two in different Availability Zones
+    list    securityGroups              // The security group IDs. Required for ALB, not applicable for NLB
     @allowed(["ipv4", "dualstack"])
-    string ipAddressType = "ipv4"      // The IP address type
+    string  ipAddressType = "ipv4"      // The IP address type
     boolean deletionProtection = false  // Enable deletion protection
     boolean crossZoneLoadBalancing      // Enable cross-zone load balancing
     boolean enableHttp2 = true          // Enable HTTP/2 support (ALB only)
     integer idleTimeout = 60            // Idle timeout in seconds (ALB only)
     boolean accessLogsEnabled = false   // Enable access logs
-    string accessLogsBucket            // S3 bucket for access logs
-    string accessLogsPrefix            // S3 bucket prefix for access logs
-    map tags                        // Tags to apply to the load balancer
+    string  accessLogsBucket            // S3 bucket for access logs
+    string  accessLogsPrefix            // S3 bucket prefix for access logs
+    map     tags                        // Tags to apply to the load balancer
     @cloud(importable)
-    string arn                         // The Amazon Resource Name (ARN) of the load balancer
+    string  arn                         // The Amazon Resource Name (ARN) of the load balancer
     @cloud
-    string dnsName                     // The DNS name of the load balancer
+    string  dnsName                     // The DNS name of the load balancer
     @cloud
-    string canonicalHostedZoneId       // The canonical hosted zone ID of the load balancer
+    string  canonicalHostedZoneId       // The canonical hosted zone ID of the load balancer
     @cloud
-    string vpcId                       // The VPC ID of the load balancer
+    string  vpcId                       // The VPC ID of the load balancer
     @cloud
-    string state                       // The current state of the load balancer
+    string  state                       // The current state of the load balancer
     @cloud
-    list availabilityZones           // The Availability Zones for the load balancer
+    list    availabilityZones           // The Availability Zones for the load balancer
 }

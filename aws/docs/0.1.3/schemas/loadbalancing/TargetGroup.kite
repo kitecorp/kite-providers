@@ -1,24 +1,24 @@
 // TargetGroup
 schema TargetGroup {
-    string name                       // The name of the target group
-    integer port                       // The port on which targets receive traffic
+    string      name                       // The name of the target group
+    integer     port                       // The port on which targets receive traffic
     @allowed(["HTTP", "HTTPS", "TCP", "TLS", "UDP", "TCP_UDP", "GENEVE"])
-    string protocol = "HTTP"          // The protocol for routing traffic
+    string      protocol = "HTTP"          // The protocol for routing traffic
     @allowed(["HTTP1", "HTTP2", "GRPC"])
-    string protocolVersion = "HTTP1"  // The protocol version (ALB only)
-    string vpcId                      // The VPC ID for the target group
+    string      protocolVersion = "HTTP1"  // The protocol version (ALB only)
+    string      vpcId                      // The VPC ID for the target group
     @allowed(["instance", "ip", "lambda", "alb"])
-    string targetType = "instance"    // The target type
+    string      targetType = "instance"    // The target type
     @allowed(["ipv4", "ipv6"])
-    string ipAddressType = "ipv4"     // The IP address type
+    string      ipAddressType = "ipv4"     // The IP address type
     healthcheck healthCheck                // Health check configuration
-    integer deregistrationDelay = 300  // Deregistration delay in seconds
-    integer slowStart = 0              // Slow start duration in seconds (ALB only)
-    stickiness stickiness                 // Stickiness configuration
-    list targets                    // Target IDs to register (instance IDs or IP addresses)
-    map tags                       // Tags to apply to the target group
+    integer     deregistrationDelay = 300  // Deregistration delay in seconds
+    integer     slowStart = 0              // Slow start duration in seconds (ALB only)
+    stickiness  stickiness                 // Stickiness configuration
+    list        targets                    // Target IDs to register (instance IDs or IP addresses)
+    map         tags                       // Tags to apply to the target group
     @cloud(importable)
-    string arn                        // The Amazon Resource Name (ARN) of the target group
+    string      arn                        // The Amazon Resource Name (ARN) of the target group
     @cloud
-    list loadBalancerArns           // The load balancer ARNs attached to this target group
+    list        loadBalancerArns           // The load balancer ARNs attached to this target group
 }

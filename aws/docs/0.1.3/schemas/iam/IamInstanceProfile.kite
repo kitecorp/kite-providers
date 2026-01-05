@@ -3,7 +3,7 @@ schema IamInstanceProfile {
     string name               // Name of the instance profile
     string path               // Path for the instance profile (default: /)
     string role               // Name of the IAM role to associate with the instance profile
-    map tags               // Tags to apply to the instance profile
+    map    tags               // Tags to apply to the instance profile
     @cloud
     string instanceProfileId  // The stable and unique ID for the instance profile
     @cloud(importable)

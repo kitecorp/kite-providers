@@ -4,7 +4,7 @@ schema NatGateway {
     string allocationId                 // The allocation ID of the Elastic IP for public NAT gateway
     @allowed(["public", "private"])
     string connectivityType = "public"  // The connectivity type for the NAT gateway
-    map tags                         // Tags to apply to the NAT gateway
+    map    tags                         // Tags to apply to the NAT gateway
     @cloud
     string natGatewayId                 // The NAT gateway ID assigned by AWS
     @cloud

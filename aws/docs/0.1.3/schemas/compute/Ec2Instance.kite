@@ -1,46 +1,46 @@
 // Ec2Instance
 schema Ec2Instance {
-    string ami                                   // The AMI ID to use for the instance
-    string instanceType                          // The instance type (e.g., t3.micro, m5.large)
-    string subnetId                              // The subnet ID to launch the instance in
-    list securityGroupIds                      // List of security group IDs to attach
-    string keyName                               // The name of the key pair for SSH access
+    string  ami                                   // The AMI ID to use for the instance
+    string  instanceType                          // The instance type (e.g., t3.micro, m5.large)
+    string  subnetId                              // The subnet ID to launch the instance in
+    list    securityGroupIds                      // List of security group IDs to attach
+    string  keyName                               // The name of the key pair for SSH access
     boolean associatePublicIpAddress = false      // Whether to associate a public IP address
-    string iamInstanceProfile                    // The IAM instance profile name or ARN
-    string userData                              // User data script for instance initialization (base64 encoded)
-    string availabilityZone                      // The availability zone to launch in
+    string  iamInstanceProfile                    // The IAM instance profile name or ARN
+    string  userData                              // User data script for instance initialization (base64 encoded)
+    string  availabilityZone                      // The availability zone to launch in
     boolean monitoring = false                    // Enable detailed monitoring
     @allowed(["default", "dedicated", "host"])
-    string tenancy = "default"                   // Instance tenancy option
+    string  tenancy = "default"                   // Instance tenancy option
     integer rootVolumeSize                        // Root volume size in GiB
     @allowed(["gp2", "gp3", "io1", "io2", "st1", "sc1"])
-    string rootVolumeType = "gp3"                // Root volume type
+    string  rootVolumeType = "gp3"                // Root volume type
     boolean deleteRootVolumeOnTermination = true  // Delete root volume on termination
-    map tags                                  // Tags to apply to the instance
+    map     tags                                  // Tags to apply to the instance
     boolean ebsOptimized = false                  // Whether the instance is optimized for Amazon EBS I/O
     @allowed(["standard", "unlimited"])
-    string cpuCredits                            // CPU credit option for burstable instances
+    string  cpuCredits                            // CPU credit option for burstable instances
     boolean hibernation = false                   // Whether instance hibernation is enabled
-    string placementGroup                        // The name of the placement group for cluster networking
+    string  placementGroup                        // The name of the placement group for cluster networking
     @allowed(["optional", "required"])
-    string metadataHttpTokens = "optional"       // HTTP tokens requirement for instance metadata service (IMDSv2)
+    string  metadataHttpTokens = "optional"       // HTTP tokens requirement for instance metadata service (IMDSv2)
     integer metadataHttpPutResponseHopLimit = 1   // HTTP PUT response hop limit for instance metadata requests (1-64)
     @cloud
-    string instanceId                            // The instance ID assigned by AWS
+    string  instanceId                            // The instance ID assigned by AWS
     @cloud
-    string state                                 // Instance state: pending, running, stopping, stopped, terminated
+    string  state                                 // Instance state: pending, running, stopping, stopped, terminated
     @cloud
-    string publicIp                              // The public IP address (if assigned)
+    string  publicIp                              // The public IP address (if assigned)
     @cloud
-    string privateIp                             // The private IP address
+    string  privateIp                             // The private IP address
     @cloud
-    string publicDnsName                         // The public DNS name
+    string  publicDnsName                         // The public DNS name
     @cloud
-    string privateDnsName                        // The private DNS name
+    string  privateDnsName                        // The private DNS name
     @cloud
-    string vpcId                                 // The VPC ID the instance is in
+    string  vpcId                                 // The VPC ID the instance is in
     @cloud
-    string architecture                          // The architecture: x86_64 or arm64
+    string  architecture                          // The architecture: x86_64 or arm64
     @cloud
-    string rootDeviceName                        // The root device name
+    string  rootDeviceName                        // The root device name
 }
