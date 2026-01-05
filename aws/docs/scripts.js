@@ -54,6 +54,15 @@ function showToast(message, duration = 2000) {
     }
 }
 
+// Show pending toast from session storage (used after redirect)
+(function showPendingToast() {
+    const message = sessionStorage.getItem('kite-toast');
+    if (message) {
+        sessionStorage.removeItem('kite-toast');
+        setTimeout(() => showToast(message, 3000), 100);
+    }
+})();
+
 // Recently viewed resources (localStorage) - scoped per provider
 function getProviderName() {
     // Extract provider from path: /aws/Vpc.html -> aws
@@ -402,14 +411,11 @@ if (!window.switchVersion) {
                         const currentVersionMatch = currentPath.match(/\/([^/]+)\/html\//);
                         const currentVersion = currentVersionMatch ? currentVersionMatch[1] : 'current version';
 
-                        // Show informative message
-                        showToast(`${resourceName} was added in v${currentVersion}`, 3000);
+                        // Store toast message to show after redirect
+                        sessionStorage.setItem('kite-toast', `${resourceName} was added in v${currentVersion}`);
 
-                        // Reset dropdown to current version
-                        const select = document.getElementById('version-select');
-                        if (select && currentVersionMatch) {
-                            select.value = currentVersionMatch[1];
-                        }
+                        // Navigate to index page
+                        window.location.href = '../../index.html';
                         return;
                     }
                 }
