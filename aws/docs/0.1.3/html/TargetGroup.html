@@ -391,27 +391,27 @@
                             <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
                             <pre class="code-block"><code><span class="comment">// TargetGroup</span>
 <span class="kw">schema</span> <span class="type">TargetGroup</span> <span class="brace">{</span>
-    <span class="type">string</span> <span class="prop">name</span>                       <span class="comment">// The name of the target group</span>
-    <span class="type">integer</span> <span class="prop">port</span>                       <span class="comment">// The port on which targets receive traffic</span>
+    <span class="type">string</span>      <span class="prop">name</span>                       <span class="comment">// The name of the target group</span>
+    <span class="type">integer</span>     <span class="prop">port</span>                       <span class="comment">// The port on which targets receive traffic</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"HTTP"</span>, <span class="str">"HTTPS"</span>, <span class="str">"TCP"</span>, <span class="str">"TLS"</span>, <span class="str">"UDP"</span>, <span class="str">"TCP_UDP"</span>, <span class="str">"GENEVE"</span><span class="brace">])</span>
-    <span class="type">string</span> <span class="prop">protocol</span> <span class="eq">=</span> <span class="str">&quot;HTTP&quot;</span>          <span class="comment">// The protocol for routing traffic</span>
+    <span class="type">string</span>      <span class="prop">protocol</span> <span class="eq">=</span> <span class="str">&quot;HTTP&quot;</span>          <span class="comment">// The protocol for routing traffic</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"HTTP1"</span>, <span class="str">"HTTP2"</span>, <span class="str">"GRPC"</span><span class="brace">])</span>
-    <span class="type">string</span> <span class="prop">protocolVersion</span> <span class="eq">=</span> <span class="str">&quot;HTTP1&quot;</span>  <span class="comment">// The protocol version (ALB only)</span>
-    <span class="type">string</span> <span class="prop">vpcId</span>                      <span class="comment">// The VPC ID for the target group</span>
+    <span class="type">string</span>      <span class="prop">protocolVersion</span> <span class="eq">=</span> <span class="str">&quot;HTTP1&quot;</span>  <span class="comment">// The protocol version (ALB only)</span>
+    <span class="type">string</span>      <span class="prop">vpcId</span>                      <span class="comment">// The VPC ID for the target group</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"instance"</span>, <span class="str">"ip"</span>, <span class="str">"lambda"</span>, <span class="str">"alb"</span><span class="brace">])</span>
-    <span class="type">string</span> <span class="prop">targetType</span> <span class="eq">=</span> <span class="str">&quot;instance&quot;</span>    <span class="comment">// The target type</span>
+    <span class="type">string</span>      <span class="prop">targetType</span> <span class="eq">=</span> <span class="str">&quot;instance&quot;</span>    <span class="comment">// The target type</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"ipv4"</span>, <span class="str">"ipv6"</span><span class="brace">])</span>
-    <span class="type">string</span> <span class="prop">ipAddressType</span> <span class="eq">=</span> <span class="str">&quot;ipv4&quot;</span>     <span class="comment">// The IP address type</span>
+    <span class="type">string</span>      <span class="prop">ipAddressType</span> <span class="eq">=</span> <span class="str">&quot;ipv4&quot;</span>     <span class="comment">// The IP address type</span>
     <span class="type">healthcheck</span> <span class="prop">healthCheck</span>                <span class="comment">// Health check configuration</span>
-    <span class="type">integer</span> <span class="prop">deregistrationDelay</span> <span class="eq">=</span> <span class="num">300</span>  <span class="comment">// Deregistration delay in seconds</span>
-    <span class="type">integer</span> <span class="prop">slowStart</span> <span class="eq">=</span> <span class="num">0</span>              <span class="comment">// Slow start duration in seconds (ALB only)</span>
-    <span class="type">stickiness</span> <span class="prop">stickiness</span>                 <span class="comment">// Stickiness configuration</span>
-    <span class="type">list</span> <span class="prop">targets</span>                    <span class="comment">// Target IDs to register (instance IDs or IP addresses)</span>
-    <span class="type">map</span> <span class="prop">tags</span>                       <span class="comment">// Tags to apply to the target group</span>
+    <span class="type">integer</span>     <span class="prop">deregistrationDelay</span> <span class="eq">=</span> <span class="num">300</span>  <span class="comment">// Deregistration delay in seconds</span>
+    <span class="type">integer</span>     <span class="prop">slowStart</span> <span class="eq">=</span> <span class="num">0</span>              <span class="comment">// Slow start duration in seconds (ALB only)</span>
+    <span class="type">stickiness</span>  <span class="prop">stickiness</span>                 <span class="comment">// Stickiness configuration</span>
+    <span class="type">list</span>        <span class="prop">targets</span>                    <span class="comment">// Target IDs to register (instance IDs or IP addresses)</span>
+    <span class="type">map</span>         <span class="prop">tags</span>                       <span class="comment">// Tags to apply to the target group</span>
     <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
-    <span class="type">string</span> <span class="prop">arn</span>                        <span class="comment">// The Amazon Resource Name (ARN) of the target group</span>
+    <span class="type">string</span>      <span class="prop">arn</span>                        <span class="comment">// The Amazon Resource Name (ARN) of the target group</span>
     <span class="decorator">@cloud</span>
-    <span class="type">list</span> <span class="prop">loadBalancerArns</span>           <span class="comment">// The load balancer ARNs attached to this target group</span>
+    <span class="type">list</span>        <span class="prop">loadBalancerArns</span>           <span class="comment">// The load balancer ARNs attached to this target group</span>
 <span class="brace">}</span></code></pre>
                         </div>
                     </div>
@@ -588,7 +588,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-05T18:55:11.823203">January 5, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-05T19:01:49.084084">January 5, 2026</time></p>
                 </footer>
             </article>
         </main>

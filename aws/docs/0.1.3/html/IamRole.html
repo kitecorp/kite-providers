@@ -376,20 +376,20 @@
                             <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
                             <pre class="code-block"><code><span class="comment">// IamRole</span>
 <span class="kw">schema</span> <span class="type">IamRole</span> <span class="brace">{</span>
-    <span class="type">string</span> <span class="prop">name</span>                <span class="comment">// Name of the IAM role</span>
-    <span class="type">string</span> <span class="prop">description</span>         <span class="comment">// Description of the role</span>
-    <span class="type">string</span> <span class="prop">assumeRolePolicy</span>    <span class="comment">// The trust policy that grants an entity permission to assume the role (JSON)</span>
-    <span class="type">string</span> <span class="prop">path</span>                <span class="comment">// Path for the role (default: /)</span>
+    <span class="type">string</span>  <span class="prop">name</span>                <span class="comment">// Name of the IAM role</span>
+    <span class="type">string</span>  <span class="prop">description</span>         <span class="comment">// Description of the role</span>
+    <span class="type">string</span>  <span class="prop">assumeRolePolicy</span>    <span class="comment">// The trust policy that grants an entity permission to assume the role (JSON)</span>
+    <span class="type">string</span>  <span class="prop">path</span>                <span class="comment">// Path for the role (default: /)</span>
     <span class="type">integer</span> <span class="prop">maxSessionDuration</span>  <span class="comment">// Maximum session duration in seconds (3600-43200)</span>
-    <span class="type">list</span> <span class="prop">managedPolicyArns</span>   <span class="comment">// ARNs of AWS managed policies to attach</span>
-    <span class="type">map</span> <span class="prop">inlinePolicies</span>      <span class="comment">// Inline policies to embed in the role (name -&gt; policy JSON)</span>
-    <span class="type">map</span> <span class="prop">tags</span>                <span class="comment">// Tags to apply to the role</span>
+    <span class="type">list</span>    <span class="prop">managedPolicyArns</span>   <span class="comment">// ARNs of AWS managed policies to attach</span>
+    <span class="type">map</span>     <span class="prop">inlinePolicies</span>      <span class="comment">// Inline policies to embed in the role (name -&gt; policy JSON)</span>
+    <span class="type">map</span>     <span class="prop">tags</span>                <span class="comment">// Tags to apply to the role</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span> <span class="prop">roleId</span>              <span class="comment">// The stable and unique ID for the role</span>
+    <span class="type">string</span>  <span class="prop">roleId</span>              <span class="comment">// The stable and unique ID for the role</span>
     <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
-    <span class="type">string</span> <span class="prop">arn</span>                 <span class="comment">// The Amazon Resource Name (ARN) of the role</span>
+    <span class="type">string</span>  <span class="prop">arn</span>                 <span class="comment">// The Amazon Resource Name (ARN) of the role</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span> <span class="prop">createDate</span>          <span class="comment">// The date and time when the role was created</span>
+    <span class="type">string</span>  <span class="prop">createDate</span>          <span class="comment">// The date and time when the role was created</span>
 <span class="brace">}</span></code></pre>
                         </div>
                     </div>
@@ -536,7 +536,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-05T18:55:11.789116">January 5, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-05T19:01:49.043521">January 5, 2026</time></p>
                 </footer>
             </article>
         </main>

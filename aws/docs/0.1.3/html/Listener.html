@@ -385,21 +385,21 @@
                             <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
                             <pre class="code-block"><code><span class="comment">// Listener</span>
 <span class="kw">schema</span> <span class="type">Listener</span> <span class="brace">{</span>
-    <span class="type">string</span> <span class="prop">loadBalancerArn</span>                <span class="comment">// The ARN of the load balancer</span>
-    <span class="type">integer</span> <span class="prop">port</span>                           <span class="comment">// The port on which the listener listens</span>
+    <span class="type">string</span>              <span class="prop">loadBalancerArn</span>                <span class="comment">// The ARN of the load balancer</span>
+    <span class="type">integer</span>             <span class="prop">port</span>                           <span class="comment">// The port on which the listener listens</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"HTTP"</span>, <span class="str">"HTTPS"</span>, <span class="str">"TCP"</span>, <span class="str">"TLS"</span>, <span class="str">"UDP"</span>, <span class="str">"TCP_UDP"</span>, <span class="str">"GENEVE"</span><span class="brace">])</span>
-    <span class="type">string</span> <span class="prop">protocol</span>                       <span class="comment">// The protocol for the listener</span>
-    <span class="type">string</span> <span class="prop">certificateArn</span>                 <span class="comment">// The ARN of the default SSL server certificate (HTTPS/TLS only)</span>
-    <span class="type">string</span> <span class="prop">sslPolicy</span>                      <span class="comment">// The SSL policy for HTTPS/TLS listeners</span>
-    <span class="type">string</span> <span class="prop">alpnPolicy</span>                     <span class="comment">// The ALPN policy for TLS listeners (NLB only)</span>
-    <span class="type">string</span> <span class="prop">defaultTargetGroupArn</span>          <span class="comment">// The ARN of the default target group for forward action</span>
+    <span class="type">string</span>              <span class="prop">protocol</span>                       <span class="comment">// The protocol for the listener</span>
+    <span class="type">string</span>              <span class="prop">certificateArn</span>                 <span class="comment">// The ARN of the default SSL server certificate (HTTPS/TLS only)</span>
+    <span class="type">string</span>              <span class="prop">sslPolicy</span>                      <span class="comment">// The SSL policy for HTTPS/TLS listeners</span>
+    <span class="type">string</span>              <span class="prop">alpnPolicy</span>                     <span class="comment">// The ALPN policy for TLS listeners (NLB only)</span>
+    <span class="type">string</span>              <span class="prop">defaultTargetGroupArn</span>          <span class="comment">// The ARN of the default target group for forward action</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"forward"</span>, <span class="str">"redirect"</span>, <span class="str">"fixed-response"</span><span class="brace">])</span>
-    <span class="type">string</span> <span class="prop">defaultActionType</span> <span class="eq">=</span> <span class="str">&quot;forward&quot;</span>  <span class="comment">// The default action type</span>
-    <span class="type">redirectconfig</span> <span class="prop">redirectConfig</span>                 <span class="comment">// Redirect configuration when defaultActionType is 'redirect'</span>
+    <span class="type">string</span>              <span class="prop">defaultActionType</span> <span class="eq">=</span> <span class="str">&quot;forward&quot;</span>  <span class="comment">// The default action type</span>
+    <span class="type">redirectconfig</span>      <span class="prop">redirectConfig</span>                 <span class="comment">// Redirect configuration when defaultActionType is 'redirect'</span>
     <span class="type">fixedresponseconfig</span> <span class="prop">fixedResponseConfig</span>            <span class="comment">// Fixed response configuration when defaultActionType is 'fixed-response'</span>
-    <span class="type">map</span> <span class="prop">tags</span>                           <span class="comment">// Tags to apply to the listener</span>
+    <span class="type">map</span>                 <span class="prop">tags</span>                           <span class="comment">// Tags to apply to the listener</span>
     <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
-    <span class="type">string</span> <span class="prop">arn</span>                            <span class="comment">// The ARN of the listener</span>
+    <span class="type">string</span>              <span class="prop">arn</span>                            <span class="comment">// The ARN of the listener</span>
 <span class="brace">}</span></code></pre>
                         </div>
                     </div>
@@ -557,7 +557,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-05T18:55:11.795224">January 5, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-05T19:01:49.052554">January 5, 2026</time></p>
                 </footer>
             </article>
         </main>

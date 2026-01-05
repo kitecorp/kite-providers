@@ -366,22 +366,22 @@
                             <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
                             <pre class="code-block"><code><span class="comment">// HostedZone</span>
 <span class="kw">schema</span> <span class="type">HostedZone</span> <span class="brace">{</span>
-    <span class="type">string</span> <span class="prop">name</span>                    <span class="comment">// The domain name for the hosted zone (e.g., 'example.com')</span>
-    <span class="type">string</span> <span class="prop">comment</span>                 <span class="comment">// A comment for the hosted zone</span>
+    <span class="type">string</span>  <span class="prop">name</span>                    <span class="comment">// The domain name for the hosted zone (e.g., 'example.com')</span>
+    <span class="type">string</span>  <span class="prop">comment</span>                 <span class="comment">// A comment for the hosted zone</span>
     <span class="type">boolean</span> <span class="prop">privateZone</span> <span class="eq">=</span> <span class="bool">false</span>     <span class="comment">// Whether this is a private hosted zone</span>
-    <span class="type">string</span> <span class="prop">vpcId</span>                   <span class="comment">// VPC ID to associate with private hosted zone</span>
-    <span class="type">string</span> <span class="prop">vpcRegion</span>               <span class="comment">// VPC region for private hosted zone</span>
-    <span class="type">map</span> <span class="prop">tags</span>                    <span class="comment">// Tags to apply to the hosted zone</span>
+    <span class="type">string</span>  <span class="prop">vpcId</span>                   <span class="comment">// VPC ID to associate with private hosted zone</span>
+    <span class="type">string</span>  <span class="prop">vpcRegion</span>               <span class="comment">// VPC region for private hosted zone</span>
+    <span class="type">map</span>     <span class="prop">tags</span>                    <span class="comment">// Tags to apply to the hosted zone</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span> <span class="prop">hostedZoneId</span>            <span class="comment">// The hosted zone ID (without /hostedzone/ prefix)</span>
+    <span class="type">string</span>  <span class="prop">hostedZoneId</span>            <span class="comment">// The hosted zone ID (without /hostedzone/ prefix)</span>
     <span class="decorator">@cloud</span>
-    <span class="type">list</span> <span class="prop">nameServers</span>             <span class="comment">// The name servers for the hosted zone</span>
+    <span class="type">list</span>    <span class="prop">nameServers</span>             <span class="comment">// The name servers for the hosted zone</span>
     <span class="decorator">@cloud</span>
     <span class="type">integer</span> <span class="prop">resourceRecordSetCount</span>  <span class="comment">// The number of resource record sets in the hosted zone</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span> <span class="prop">callerReference</span>         <span class="comment">// A unique string that identifies the request to create the zone</span>
+    <span class="type">string</span>  <span class="prop">callerReference</span>         <span class="comment">// A unique string that identifies the request to create the zone</span>
     <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
-    <span class="type">string</span> <span class="prop">arn</span>                     <span class="comment">// The Amazon Resource Name (ARN) of the hosted zone</span>
+    <span class="type">string</span>  <span class="prop">arn</span>                     <span class="comment">// The Amazon Resource Name (ARN) of the hosted zone</span>
 <span class="brace">}</span></code></pre>
                         </div>
                     </div>
@@ -523,7 +523,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-05T18:55:11.780407">January 5, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-05T19:01:49.033432">January 5, 2026</time></p>
                 </footer>
             </article>
         </main>

@@ -384,20 +384,20 @@
                             <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
                             <pre class="code-block"><code><span class="comment">// RecordSet</span>
 <span class="kw">schema</span> <span class="type">RecordSet</span> <span class="brace">{</span>
-    <span class="type">string</span> <span class="prop">hostedZoneId</span>      <span class="comment">// The ID of the hosted zone</span>
-    <span class="type">string</span> <span class="prop">name</span>              <span class="comment">// The name of the record (fully qualified domain name)</span>
+    <span class="type">string</span>      <span class="prop">hostedZoneId</span>      <span class="comment">// The ID of the hosted zone</span>
+    <span class="type">string</span>      <span class="prop">name</span>              <span class="comment">// The name of the record (fully qualified domain name)</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"A"</span>, <span class="str">"AAAA"</span>, <span class="str">"CNAME"</span>, <span class="str">"MX"</span>, <span class="str">"TXT"</span>, <span class="str">"NS"</span>, <span class="str">"SOA"</span>, <span class="str">"SRV"</span>, <span class="str">"CAA"</span>, <span class="str">"PTR"</span><span class="brace">])</span>
-    <span class="type">string</span> <span class="prop">type</span>              <span class="comment">// The DNS record type</span>
-    <span class="type">integer</span> <span class="prop">ttl</span>               <span class="comment">// The TTL (time to live) in seconds</span>
-    <span class="type">list</span> <span class="prop">records</span>           <span class="comment">// The record values</span>
+    <span class="type">string</span>      <span class="prop">type</span>              <span class="comment">// The DNS record type</span>
+    <span class="type">integer</span>     <span class="prop">ttl</span>               <span class="comment">// The TTL (time to live) in seconds</span>
+    <span class="type">list</span>        <span class="prop">records</span>           <span class="comment">// The record values</span>
     <span class="type">aliastarget</span> <span class="prop">aliasTarget</span>       <span class="comment">// Alias target for AWS resources (ELB, CloudFront, S3, etc.)</span>
-    <span class="type">integer</span> <span class="prop">weight</span>            <span class="comment">// Weighted routing weight (0-255)</span>
-    <span class="type">string</span> <span class="prop">setIdentifier</span>     <span class="comment">// Set identifier for routing policies</span>
+    <span class="type">integer</span>     <span class="prop">weight</span>            <span class="comment">// Weighted routing weight (0-255)</span>
+    <span class="type">string</span>      <span class="prop">setIdentifier</span>     <span class="comment">// Set identifier for routing policies</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"PRIMARY"</span>, <span class="str">"SECONDARY"</span><span class="brace">])</span>
-    <span class="type">string</span> <span class="prop">failover</span>          <span class="comment">// Failover routing type</span>
+    <span class="type">string</span>      <span class="prop">failover</span>          <span class="comment">// Failover routing type</span>
     <span class="type">geolocation</span> <span class="prop">geoLocation</span>       <span class="comment">// Geolocation routing configuration</span>
-    <span class="type">string</span> <span class="prop">healthCheckId</span>     <span class="comment">// Health check ID to associate with the record</span>
-    <span class="type">boolean</span> <span class="prop">multiValueAnswer</span>  <span class="comment">// Whether this is a multivalue answer record</span>
+    <span class="type">string</span>      <span class="prop">healthCheckId</span>     <span class="comment">// Health check ID to associate with the record</span>
+    <span class="type">boolean</span>     <span class="prop">multiValueAnswer</span>  <span class="comment">// Whether this is a multivalue answer record</span>
 <span class="brace">}</span></code></pre>
                         </div>
                     </div>
@@ -532,7 +532,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-05T18:55:11.804798">January 5, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-05T19:01:49.064413">January 5, 2026</time></p>
                 </footer>
             </article>
         </main>

@@ -394,35 +394,35 @@
                             <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
                             <pre class="code-block"><code><span class="comment">// LoadBalancer</span>
 <span class="kw">schema</span> <span class="type">LoadBalancer</span> <span class="brace">{</span>
-    <span class="type">string</span> <span class="prop">name</span>                        <span class="comment">// The name of the load balancer. Must be unique within your AWS account</span>
+    <span class="type">string</span>  <span class="prop">name</span>                        <span class="comment">// The name of the load balancer. Must be unique within your AWS account</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"application"</span>, <span class="str">"network"</span>, <span class="str">"gateway"</span><span class="brace">])</span>
-    <span class="type">string</span> <span class="prop">type</span> <span class="eq">=</span> <span class="str">&quot;application&quot;</span>        <span class="comment">// The type of load balancer</span>
+    <span class="type">string</span>  <span class="prop">type</span> <span class="eq">=</span> <span class="str">&quot;application&quot;</span>        <span class="comment">// The type of load balancer</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"internet-facing"</span>, <span class="str">"internal"</span><span class="brace">])</span>
-    <span class="type">string</span> <span class="prop">scheme</span> <span class="eq">=</span> <span class="str">&quot;internet-facing&quot;</span>  <span class="comment">// The scheme for the load balancer</span>
-    <span class="type">list</span> <span class="prop">subnets</span>                     <span class="comment">// The subnet IDs. At least two in different Availability Zones</span>
-    <span class="type">list</span> <span class="prop">securityGroups</span>              <span class="comment">// The security group IDs. Required for ALB, not applicable for NLB</span>
+    <span class="type">string</span>  <span class="prop">scheme</span> <span class="eq">=</span> <span class="str">&quot;internet-facing&quot;</span>  <span class="comment">// The scheme for the load balancer</span>
+    <span class="type">list</span>    <span class="prop">subnets</span>                     <span class="comment">// The subnet IDs. At least two in different Availability Zones</span>
+    <span class="type">list</span>    <span class="prop">securityGroups</span>              <span class="comment">// The security group IDs. Required for ALB, not applicable for NLB</span>
     <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"ipv4"</span>, <span class="str">"dualstack"</span><span class="brace">])</span>
-    <span class="type">string</span> <span class="prop">ipAddressType</span> <span class="eq">=</span> <span class="str">&quot;ipv4&quot;</span>      <span class="comment">// The IP address type</span>
+    <span class="type">string</span>  <span class="prop">ipAddressType</span> <span class="eq">=</span> <span class="str">&quot;ipv4&quot;</span>      <span class="comment">// The IP address type</span>
     <span class="type">boolean</span> <span class="prop">deletionProtection</span> <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Enable deletion protection</span>
     <span class="type">boolean</span> <span class="prop">crossZoneLoadBalancing</span>      <span class="comment">// Enable cross-zone load balancing</span>
     <span class="type">boolean</span> <span class="prop">enableHttp2</span> <span class="eq">=</span> <span class="bool">true</span>          <span class="comment">// Enable HTTP/2 support (ALB only)</span>
     <span class="type">integer</span> <span class="prop">idleTimeout</span> <span class="eq">=</span> <span class="num">60</span>            <span class="comment">// Idle timeout in seconds (ALB only)</span>
     <span class="type">boolean</span> <span class="prop">accessLogsEnabled</span> <span class="eq">=</span> <span class="bool">false</span>   <span class="comment">// Enable access logs</span>
-    <span class="type">string</span> <span class="prop">accessLogsBucket</span>            <span class="comment">// S3 bucket for access logs</span>
-    <span class="type">string</span> <span class="prop">accessLogsPrefix</span>            <span class="comment">// S3 bucket prefix for access logs</span>
-    <span class="type">map</span> <span class="prop">tags</span>                        <span class="comment">// Tags to apply to the load balancer</span>
+    <span class="type">string</span>  <span class="prop">accessLogsBucket</span>            <span class="comment">// S3 bucket for access logs</span>
+    <span class="type">string</span>  <span class="prop">accessLogsPrefix</span>            <span class="comment">// S3 bucket prefix for access logs</span>
+    <span class="type">map</span>     <span class="prop">tags</span>                        <span class="comment">// Tags to apply to the load balancer</span>
     <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
-    <span class="type">string</span> <span class="prop">arn</span>                         <span class="comment">// The Amazon Resource Name (ARN) of the load balancer</span>
+    <span class="type">string</span>  <span class="prop">arn</span>                         <span class="comment">// The Amazon Resource Name (ARN) of the load balancer</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span> <span class="prop">dnsName</span>                     <span class="comment">// The DNS name of the load balancer</span>
+    <span class="type">string</span>  <span class="prop">dnsName</span>                     <span class="comment">// The DNS name of the load balancer</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span> <span class="prop">canonicalHostedZoneId</span>       <span class="comment">// The canonical hosted zone ID of the load balancer</span>
+    <span class="type">string</span>  <span class="prop">canonicalHostedZoneId</span>       <span class="comment">// The canonical hosted zone ID of the load balancer</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span> <span class="prop">vpcId</span>                       <span class="comment">// The VPC ID of the load balancer</span>
+    <span class="type">string</span>  <span class="prop">vpcId</span>                       <span class="comment">// The VPC ID of the load balancer</span>
     <span class="decorator">@cloud</span>
-    <span class="type">string</span> <span class="prop">state</span>                       <span class="comment">// The current state of the load balancer</span>
+    <span class="type">string</span>  <span class="prop">state</span>                       <span class="comment">// The current state of the load balancer</span>
     <span class="decorator">@cloud</span>
-    <span class="type">list</span> <span class="prop">availabilityZones</span>           <span class="comment">// The Availability Zones for the load balancer</span>
+    <span class="type">list</span>    <span class="prop">availabilityZones</span>           <span class="comment">// The Availability Zones for the load balancer</span>
 <span class="brace">}</span></code></pre>
                         </div>
                     </div>
@@ -626,7 +626,7 @@
                             Report an issue
                         </a>
                     </div>
-                    <p class="footer-date">Generated on <time datetime="2026-01-05T18:55:11.798575">January 5, 2026</time></p>
+                    <p class="footer-date">Generated on <time datetime="2026-01-05T19:01:49.05651">January 5, 2026</time></p>
                 </footer>
             </article>
         </main>
