@@ -1056,6 +1056,16 @@ padding: 0.5rem 0;
 border-bottom: 1px solid var(--border-color);
     }
 
+    .changelog-list a {
+color: var(--link-color);
+font-weight: 500;
+text-decoration: none;
+    }
+
+    .changelog-list a:hover {
+text-decoration: underline;
+    }
+
     .changelog-list.added li::before {
 content: "+ ";
 color: #22c55e;

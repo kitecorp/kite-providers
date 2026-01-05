@@ -386,8 +386,29 @@ data.versions
 if (!window.switchVersion) {
     window.switchVersion = function(versionPath) {
         const currentPath = window.location.pathname;
-        const newPath = currentPath.replace(/\/[^/]+\/html\//, '/' + versionPath + '/html/');
-        window.location.href = newPath;
+        const resourceMatch = currentPath.match(/\/html\/(\w+)\.html/);
+        const resourceName = resourceMatch ? resourceMatch[1] : null;
+        const currentVersionMatch = currentPath.match(/\/([^/]+)\/html\//);
+        const currentVersion = currentVersionMatch ? currentVersionMatch[1] : null;
+
+        // Fetch manifest to check if resource exists in target version
+        fetch('../../' + versionPath + '/manifest.json')
+            .then(res => res.ok ? res.json() : null)
+            .then(manifest => {
+                if (manifest && resourceName && (!manifest.resources || !manifest.resources[resourceName])) {
+                    // Resource doesn't exist in target version - go to index with selected version
+                    window.location.href = '../../index.html?version=' + versionPath + '&toast=' + encodeURIComponent(resourceName + ' was added in v' + currentVersion);
+                } else {
+                    // Navigate to new version
+                    const newPath = currentPath.replace(/\/[^/]+\/html\//, '/' + versionPath + '/html/');
+                    window.location.href = newPath;
+                }
+            })
+            .catch(() => {
+                // On error, try direct navigation
+                const newPath = currentPath.replace(/\/[^/]+\/html\//, '/' + versionPath + '/html/');
+                window.location.href = newPath;
+            });
     };
 }
 

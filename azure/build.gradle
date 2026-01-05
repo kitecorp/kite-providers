@@ -12,6 +12,7 @@ repositories {
 
 kiteProvider {
     name = 'azure'
+    logoUrl = 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Microsoft_Azure.svg'
     // mainClass auto-detected from ProviderServer subclass
 }
 
