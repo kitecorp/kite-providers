@@ -54,15 +54,6 @@ function showToast(message, duration = 2000) {
     }
 }
 
-// Show pending toast from session storage (used after redirect)
-(function showPendingToast() {
-    const message = sessionStorage.getItem('kite-toast');
-    if (message) {
-        sessionStorage.removeItem('kite-toast');
-        setTimeout(() => showToast(message, 3000), 100);
-    }
-})();
-
 // Recently viewed resources (localStorage) - scoped per provider
 function getProviderName() {
     // Extract provider from path: /aws/Vpc.html -> aws
@@ -393,37 +384,34 @@ data.versions
 // switchVersion for resource pages - navigates to the new version's page
 // Note: Index page defines its own switchVersion that does dynamic loading
 if (!window.switchVersion) {
-    window.switchVersion = async function(versionPath) {
+    window.switchVersion = function(versionPath) {
         const currentPath = window.location.pathname;
-        const newPath = currentPath.replace(/\/[^/]+\/html\//, '/' + versionPath + '/html/');
-
-        // Check if resource exists in target version
         const resourceMatch = currentPath.match(/\/html\/(\w+)\.html/);
-        if (resourceMatch) {
-            const resourceName = resourceMatch[1];
-            try {
-                const res = await fetch('../../' + versionPath + '/manifest.json');
-                if (res.ok) {
-                    const manifest = await res.json();
-                    if (!manifest.resources || !manifest.resources[resourceName]) {
-                        // Resource doesn't exist in target version
-                        // Get current version from path
-                        const currentVersionMatch = currentPath.match(/\/([^/]+)\/html\//);
-                        const currentVersion = currentVersionMatch ? currentVersionMatch[1] : 'current version';
+        const resourceName = resourceMatch ? resourceMatch[1] : null;
+        const currentVersionMatch = currentPath.match(/\/([^/]+)\/html\//);
+        const currentVersion = currentVersionMatch ? currentVersionMatch[1] : null;
 
-                        // Store toast message to show after redirect
-                        sessionStorage.setItem('kite-toast', `${resourceName} was added in v${currentVersion}`);
-
-                        // Navigate to index page
-                        window.location.href = '../../index.html';
-                        return;
-                    }
+        // Fetch manifest to check if resource exists in target version
+        fetch('../../' + versionPath + '/manifest.json')
+            .then(res => res.ok ? res.json() : null)
+            .then(manifest => {
+                if (manifest && resourceName && (!manifest.resources || !manifest.resources[resourceName])) {
+                    // Resource doesn't exist in target version
+                    alert(resourceName + ' was added in v' + currentVersion);
+                    // Reset dropdown
+                    document.getElementById('version-select').value = currentVersion;
+                    window.location.href = '../../index.html';
+                } else {
+                    // Navigate to new version
+                    const newPath = currentPath.replace(/\/[^/]+\/html\//, '/' + versionPath + '/html/');
+                    window.location.href = newPath;
                 }
-            } catch (e) {
-                // On error, try the direct path anyway
-            }
-        }
-        window.location.href = newPath;
+            })
+            .catch(() => {
+                // On error, try direct navigation
+                const newPath = currentPath.replace(/\/[^/]+\/html\//, '/' + versionPath + '/html/');
+                window.location.href = newPath;
+            });
     };
 }
 
