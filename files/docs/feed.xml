@@ -6,14 +6,14 @@
         <link>https://docs.kitelang.cloud/files/</link>
         <atom:link href="https://docs.kitelang.cloud/files/feed.xml" rel="self" type="application/rss+xml"/>
         <language>en-us</language>
-        <lastBuildDate>2026-01-04T18:10:07.03099</lastBuildDate>
+        <lastBuildDate>2026-01-05T14:54:08.444423</lastBuildDate>
         <generator>Kite Documentation Generator</generator>
     <item>
         <title>File</title>
         <description>Documentation for File resource.</description>
         <link>https://docs.kitelang.cloud/files/File.html</link>
         <guid isPermaLink="true">https://docs.kitelang.cloud/files/File.html</guid>
-        <category>General</category>
+        <category>Files</category>
     </item>
     </channel>
 </rss>

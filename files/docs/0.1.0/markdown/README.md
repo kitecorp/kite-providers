@@ -2,11 +2,11 @@
 
 **Version:** 0.1.0
 
-## 📄 General
+## 📁 Files
 
 | Resource | Properties | Description |
 |----------|------------|-------------|
 | [File](File.md) | 5 |  |
 
 ---
-*Generated on 2026-01-04*
+*Generated on 2026-01-05*

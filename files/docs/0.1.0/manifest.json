@@ -1,10 +1,10 @@
 {
   "provider": "files",
   "version": "0.1.0",
-  "generatedAt": "2026-01-04T18:10:07.034524",
+  "generatedAt": "2026-01-05T14:54:08.446145",
   "resources": {
     "File": {
-      "domain": "general",
+      "domain": "files",
       "properties": {
         "path": {
           "type": "string",
