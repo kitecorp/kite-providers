@@ -35,7 +35,7 @@
 | [HostedZone](HostedZone.md) | 11 |  |
 | [RecordSet](RecordSet.md) | 12 |  |
 
-## ⚖️ Loadbalancing
+## 🚦 Loadbalancing
 
 | Resource | Properties | Description |
 |----------|------------|-------------|
