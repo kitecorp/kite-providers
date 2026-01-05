@@ -396,11 +396,8 @@ if (!window.switchVersion) {
             .then(res => res.ok ? res.json() : null)
             .then(manifest => {
                 if (manifest && resourceName && (!manifest.resources || !manifest.resources[resourceName])) {
-                    // Resource doesn't exist in target version
-                    alert(resourceName + ' was added in v' + currentVersion);
-                    // Reset dropdown
-                    document.getElementById('version-select').value = currentVersion;
-                    window.location.href = '../../index.html';
+                    // Resource doesn't exist in target version - go to index with selected version
+                    window.location.href = '../../index.html?version=' + versionPath + '&toast=' + encodeURIComponent(resourceName + ' was added in v' + currentVersion);
                 } else {
                     // Navigate to new version
                     const newPath = currentPath.replace(/\/[^/]+\/html\//, '/' + versionPath + '/html/');

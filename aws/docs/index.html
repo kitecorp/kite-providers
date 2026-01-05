@@ -147,17 +147,38 @@
                 const res = await fetch('versions.json');
                 const data = await res.json();
                 const versions = data.versions || [];
-                currentVersion = data.latest || (versions[0] && versions[0].path);
+
+                // Check for version query param (from resource page redirect)
+                const params = new URLSearchParams(window.location.search);
+                const requestedVersion = params.get('version');
+                currentVersion = requestedVersion || data.latest || (versions[0] && versions[0].path);
 
                 const select = document.getElementById('version-select');
                 select.innerHTML = versions.map(v =>
-                    `<option value="${v.path}" ${v.version === data.latest ? 'selected' : ''}>v${v.version}${v.version === data.latest ? ' (latest)' : ''}</option>`
+                    `<option value="${v.path}" ${v.path === currentVersion ? 'selected' : ''}>v${v.version}${v.version === data.latest ? ' (latest)' : ''}</option>`
                 ).join('');
 
                 await loadResources(currentVersion);
+
+                // Show toast if provided (from resource page redirect)
+                const toastMsg = params.get('toast');
+                if (toastMsg) {
+                    showToast(toastMsg, 3000);
+                    // Clean up URL
+                    history.replaceState(null, '', window.location.pathname);
+                }
             } catch (e) {
                 console.error('Failed to load versions', e);
                 document.getElementById('nav-tree').innerHTML = '<div class="error">Failed to load</div>';
+            }
+        }
+
+        function showToast(message, duration = 2000) {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), duration);
             }
         }
 
