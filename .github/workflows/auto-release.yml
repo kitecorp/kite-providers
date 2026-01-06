@@ -30,6 +30,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
+          fetch-tags: true
 
       - name: Create release tags
         run: |
