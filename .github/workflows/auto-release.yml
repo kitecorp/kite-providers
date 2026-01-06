@@ -69,8 +69,14 @@ jobs:
             echo "Creating tag: $TAG"
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git tag -f "$TAG"
-            git push origin "$TAG" --force
+
+            # Delete existing tag (local and remote) to trigger fresh push event
+            git tag -d "$TAG" 2>/dev/null || true
+            git push origin ":refs/tags/$TAG" 2>/dev/null || true
+
+            # Create and push new tag
+            git tag "$TAG"
+            git push origin "$TAG"
 
             echo "Created and pushed tag: $TAG"
           done
