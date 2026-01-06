@@ -66,16 +66,11 @@ jobs:
 
             TAG="${PROVIDER}-v${CURRENT_VERSION}"
 
-            if git rev-parse "$TAG" >/dev/null 2>&1; then
-              echo "Tag $TAG already exists, skipping"
-              continue
-            fi
-
             echo "Creating tag: $TAG"
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git tag "$TAG"
-            git push origin "$TAG"
+            git tag -f "$TAG"
+            git push origin "$TAG" --force
 
             echo "Created and pushed tag: $TAG"
           done
