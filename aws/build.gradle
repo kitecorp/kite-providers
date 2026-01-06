@@ -1,5 +1,5 @@
 plugins {
-    id 'cloud.kitelang.provider' version '0.2.1'
+    id 'cloud.kitelang.provider' version '0.2.2'
 }
 
 group = 'cloud.kitelang'
@@ -12,7 +12,7 @@ repositories {
 
 kiteProvider {
     name = 'aws'
-    // logoUrl requires gradle plugin 0.2.2+
+    logoUrl = 'https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg'
     // mainClass auto-detected from ProviderServer subclass
 }
 
