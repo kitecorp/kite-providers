@@ -1,7 +1,7 @@
 {
   "provider": "files",
   "version": "0.1.0",
-  "generatedAt": "2026-01-10T20:52:51.828087",
+  "generatedAt": "2026-01-10T21:25:00.409924",
   "resources": {
     "File": {
       "domain": "files",
