@@ -24,14 +24,30 @@ public class RecordSetResourceType extends ResourceTypeHandler<RecordSetResource
     private static final Set<String> VALID_FAILOVER = Set.of("PRIMARY", "SECONDARY");
     private static final Set<String> VALID_CONTINENTS = Set.of("AF", "AN", "AS", "EU", "OC", "NA", "SA");
 
-    private final Route53Client route53Client;
+    private volatile Route53Client route53Client;
 
     public RecordSetResourceType() {
-        this.route53Client = Route53Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public RecordSetResourceType(Route53Client route53Client) {
         this.route53Client = route53Client;
+    }
+
+    /**
+     * Get or create a Route53 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private Route53Client getClient() {
+        if (route53Client == null) {
+            synchronized (this) {
+                if (route53Client == null) {
+                    log.debug("Creating Route53 client with current AWS configuration");
+                    route53Client = Route53Client.create();
+                }
+            }
+        }
+        return route53Client;
     }
 
     @Override
@@ -47,7 +63,7 @@ public class RecordSetResourceType extends ResourceTypeHandler<RecordSetResource
                         .build())
                 .build();
 
-        var response = route53Client.changeResourceRecordSets(ChangeResourceRecordSetsRequest.builder()
+        var response = getClient().changeResourceRecordSets(ChangeResourceRecordSetsRequest.builder()
                 .hostedZoneId(resource.getHostedZoneId())
                 .changeBatch(changeBatch)
                 .build());
@@ -70,7 +86,7 @@ public class RecordSetResourceType extends ResourceTypeHandler<RecordSetResource
         log.info("Reading Record Set: {} ({})", resource.getName(), resource.getType());
 
         try {
-            var response = route53Client.listResourceRecordSets(ListResourceRecordSetsRequest.builder()
+            var response = getClient().listResourceRecordSets(ListResourceRecordSetsRequest.builder()
                     .hostedZoneId(resource.getHostedZoneId())
                     .startRecordName(resource.getName())
                     .startRecordType(RRType.fromValue(resource.getType()))
@@ -109,7 +125,7 @@ public class RecordSetResourceType extends ResourceTypeHandler<RecordSetResource
                         .build())
                 .build();
 
-        var response = route53Client.changeResourceRecordSets(ChangeResourceRecordSetsRequest.builder()
+        var response = getClient().changeResourceRecordSets(ChangeResourceRecordSetsRequest.builder()
                 .hostedZoneId(resource.getHostedZoneId())
                 .changeBatch(changeBatch)
                 .build());
@@ -146,7 +162,7 @@ public class RecordSetResourceType extends ResourceTypeHandler<RecordSetResource
                             .build())
                     .build();
 
-            route53Client.changeResourceRecordSets(ChangeResourceRecordSetsRequest.builder()
+            getClient().changeResourceRecordSets(ChangeResourceRecordSetsRequest.builder()
                     .hostedZoneId(resource.getHostedZoneId())
                     .changeBatch(changeBatch)
                     .build());
@@ -379,7 +395,7 @@ public class RecordSetResourceType extends ResourceTypeHandler<RecordSetResource
         int attempt = 0;
 
         while (attempt < maxAttempts) {
-            var response = route53Client.getChange(GetChangeRequest.builder()
+            var response = getClient().getChange(GetChangeRequest.builder()
                     .id(changeId)
                     .build());
 

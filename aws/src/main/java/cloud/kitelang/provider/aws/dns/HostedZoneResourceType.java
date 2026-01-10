@@ -18,14 +18,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResource> {
 
-    private final Route53Client route53Client;
+    private volatile Route53Client route53Client;
 
     public HostedZoneResourceType() {
-        this.route53Client = Route53Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public HostedZoneResourceType(Route53Client route53Client) {
         this.route53Client = route53Client;
+    }
+
+    /**
+     * Get or create a Route53 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private Route53Client getClient() {
+        if (route53Client == null) {
+            synchronized (this) {
+                if (route53Client == null) {
+                    log.debug("Creating Route53 client with current AWS configuration");
+                    route53Client = Route53Client.create();
+                }
+            }
+        }
+        return route53Client;
     }
 
     @Override
@@ -56,7 +72,7 @@ public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResour
                     .build());
         }
 
-        var response = route53Client.createHostedZone(requestBuilder.build());
+        var response = getClient().createHostedZone(requestBuilder.build());
         var hostedZone = response.hostedZone();
 
         log.info("Created Hosted Zone: {}", hostedZone.id());
@@ -71,7 +87,7 @@ public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResour
                     .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                     .collect(Collectors.toList());
 
-            route53Client.changeTagsForResource(ChangeTagsForResourceRequest.builder()
+            getClient().changeTagsForResource(ChangeTagsForResourceRequest.builder()
                     .resourceType(TagResourceType.HOSTEDZONE)
                     .resourceId(zoneId)
                     .addTags(tags)
@@ -97,13 +113,13 @@ public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResour
 
             if (resource.getHostedZoneId() != null) {
                 zoneId = resource.getHostedZoneId();
-                var response = route53Client.getHostedZone(GetHostedZoneRequest.builder()
+                var response = getClient().getHostedZone(GetHostedZoneRequest.builder()
                         .id(zoneId)
                         .build());
                 hostedZone = response.hostedZone();
             } else {
                 // Find by name
-                var listResponse = route53Client.listHostedZonesByName(ListHostedZonesByNameRequest.builder()
+                var listResponse = getClient().listHostedZonesByName(ListHostedZonesByNameRequest.builder()
                         .dnsName(resource.getName())
                         .maxItems("1")
                         .build());
@@ -139,7 +155,7 @@ public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResour
 
         // Update comment
         if (resource.getComment() != null && !resource.getComment().equals(current.getComment())) {
-            route53Client.updateHostedZoneComment(UpdateHostedZoneCommentRequest.builder()
+            getClient().updateHostedZoneComment(UpdateHostedZoneCommentRequest.builder()
                     .id(resource.getHostedZoneId())
                     .comment(resource.getComment())
                     .build());
@@ -148,7 +164,7 @@ public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResour
         // Update tags
         if (resource.getTags() != null) {
             // Get existing tags
-            var existingTagsResponse = route53Client.listTagsForResource(ListTagsForResourceRequest.builder()
+            var existingTagsResponse = getClient().listTagsForResource(ListTagsForResourceRequest.builder()
                     .resourceType(TagResourceType.HOSTEDZONE)
                     .resourceId(resource.getHostedZoneId())
                     .build());
@@ -159,7 +175,7 @@ public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResour
 
             // Remove all existing tags
             if (!existingKeys.isEmpty()) {
-                route53Client.changeTagsForResource(ChangeTagsForResourceRequest.builder()
+                getClient().changeTagsForResource(ChangeTagsForResourceRequest.builder()
                         .resourceType(TagResourceType.HOSTEDZONE)
                         .resourceId(resource.getHostedZoneId())
                         .removeTagKeys(existingKeys)
@@ -172,7 +188,7 @@ public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResour
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
 
-                route53Client.changeTagsForResource(ChangeTagsForResourceRequest.builder()
+                getClient().changeTagsForResource(ChangeTagsForResourceRequest.builder()
                         .resourceType(TagResourceType.HOSTEDZONE)
                         .resourceId(resource.getHostedZoneId())
                         .addTags(tags)
@@ -193,7 +209,7 @@ public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResour
         log.info("Deleting Hosted Zone: {}", resource.getHostedZoneId());
 
         try {
-            route53Client.deleteHostedZone(DeleteHostedZoneRequest.builder()
+            getClient().deleteHostedZone(DeleteHostedZoneRequest.builder()
                     .id(resource.getHostedZoneId())
                     .build());
 
@@ -256,7 +272,7 @@ public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResour
         // Get name servers (for public zones)
         if (resource.getPrivateZone() == null || !resource.getPrivateZone()) {
             try {
-                var zoneResponse = route53Client.getHostedZone(GetHostedZoneRequest.builder()
+                var zoneResponse = getClient().getHostedZone(GetHostedZoneRequest.builder()
                         .id(zoneId)
                         .build());
                 if (zoneResponse.delegationSet() != null) {
@@ -269,7 +285,7 @@ public class HostedZoneResourceType extends ResourceTypeHandler<HostedZoneResour
 
         // Get tags
         try {
-            var tagsResponse = route53Client.listTagsForResource(ListTagsForResourceRequest.builder()
+            var tagsResponse = getClient().listTagsForResource(ListTagsForResourceRequest.builder()
                     .resourceType(TagResourceType.HOSTEDZONE)
                     .resourceId(zoneId)
                     .build());

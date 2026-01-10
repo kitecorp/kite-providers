@@ -17,14 +17,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
 
-    private final Ec2Client ec2Client;
+    private volatile Ec2Client ec2Client;
 
     public SubnetResourceType() {
-        this.ec2Client = Ec2Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public SubnetResourceType(Ec2Client ec2Client) {
         this.ec2Client = ec2Client;
+    }
+
+    /**
+     * Get or create an EC2 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private Ec2Client getClient() {
+        if (ec2Client == null) {
+            synchronized (this) {
+                if (ec2Client == null) {
+                    log.debug("Creating EC2 client with current AWS configuration");
+                    ec2Client = Ec2Client.create();
+                }
+            }
+        }
+        return ec2Client;
     }
 
     @Override
@@ -55,7 +71,7 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
             requestBuilder.tagSpecifications(tagSpecs);
         }
 
-        var response = ec2Client.createSubnet(requestBuilder.build());
+        var response = getClient().createSubnet(requestBuilder.build());
         var subnet = response.subnet();
         log.info("Created Subnet: {}", subnet.subnetId());
 
@@ -63,14 +79,14 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
 
         // Configure subnet attributes
         if (Boolean.TRUE.equals(resource.getMapPublicIpOnLaunch())) {
-            ec2Client.modifySubnetAttribute(ModifySubnetAttributeRequest.builder()
+            getClient().modifySubnetAttribute(ModifySubnetAttributeRequest.builder()
                     .subnetId(subnet.subnetId())
                     .mapPublicIpOnLaunch(AttributeBooleanValue.builder().value(true).build())
                     .build());
         }
 
         if (Boolean.TRUE.equals(resource.getAssignIpv6AddressOnCreation())) {
-            ec2Client.modifySubnetAttribute(ModifySubnetAttributeRequest.builder()
+            getClient().modifySubnetAttribute(ModifySubnetAttributeRequest.builder()
                     .subnetId(subnet.subnetId())
                     .assignIpv6AddressOnCreation(AttributeBooleanValue.builder().value(true).build())
                     .build());
@@ -90,7 +106,7 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
         log.info("Reading Subnet: {}", resource.getSubnetId());
 
         try {
-            var response = ec2Client.describeSubnets(DescribeSubnetsRequest.builder()
+            var response = getClient().describeSubnets(DescribeSubnetsRequest.builder()
                     .subnetIds(resource.getSubnetId())
                     .build());
 
@@ -122,7 +138,7 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
         // Update mapPublicIpOnLaunch if changed
         if (resource.getMapPublicIpOnLaunch() != null &&
                 !resource.getMapPublicIpOnLaunch().equals(current.getMapPublicIpOnLaunch())) {
-            ec2Client.modifySubnetAttribute(ModifySubnetAttributeRequest.builder()
+            getClient().modifySubnetAttribute(ModifySubnetAttributeRequest.builder()
                     .subnetId(subnetId)
                     .mapPublicIpOnLaunch(AttributeBooleanValue.builder()
                             .value(resource.getMapPublicIpOnLaunch())
@@ -133,7 +149,7 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
         // Update assignIpv6AddressOnCreation if changed
         if (resource.getAssignIpv6AddressOnCreation() != null &&
                 !resource.getAssignIpv6AddressOnCreation().equals(current.getAssignIpv6AddressOnCreation())) {
-            ec2Client.modifySubnetAttribute(ModifySubnetAttributeRequest.builder()
+            getClient().modifySubnetAttribute(ModifySubnetAttributeRequest.builder()
                     .subnetId(subnetId)
                     .assignIpv6AddressOnCreation(AttributeBooleanValue.builder()
                             .value(resource.getAssignIpv6AddressOnCreation())
@@ -148,7 +164,7 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
                 var oldTags = current.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.deleteTags(DeleteTagsRequest.builder()
+                getClient().deleteTags(DeleteTagsRequest.builder()
                         .resources(subnetId)
                         .tags(oldTags)
                         .build());
@@ -158,7 +174,7 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
                 var newTags = resource.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.createTags(CreateTagsRequest.builder()
+                getClient().createTags(CreateTagsRequest.builder()
                         .resources(subnetId)
                         .tags(newTags)
                         .build());
@@ -178,7 +194,7 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
         log.info("Deleting Subnet: {}", resource.getSubnetId());
 
         try {
-            ec2Client.deleteSubnet(DeleteSubnetRequest.builder()
+            getClient().deleteSubnet(DeleteSubnetRequest.builder()
                     .subnetId(resource.getSubnetId())
                     .build());
 

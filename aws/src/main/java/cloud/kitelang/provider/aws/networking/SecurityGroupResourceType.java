@@ -17,14 +17,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SecurityGroupResourceType extends ResourceTypeHandler<SecurityGroupResource> {
 
-    private final Ec2Client ec2Client;
+    private volatile Ec2Client ec2Client;
 
     public SecurityGroupResourceType() {
-        this.ec2Client = Ec2Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public SecurityGroupResourceType(Ec2Client ec2Client) {
         this.ec2Client = ec2Client;
+    }
+
+    /**
+     * Get or create an EC2 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private Ec2Client getClient() {
+        if (ec2Client == null) {
+            synchronized (this) {
+                if (ec2Client == null) {
+                    log.debug("Creating EC2 client with current AWS configuration");
+                    ec2Client = Ec2Client.create();
+                }
+            }
+        }
+        return ec2Client;
     }
 
     @Override
@@ -39,7 +55,7 @@ public class SecurityGroupResourceType extends ResourceTypeHandler<SecurityGroup
                 .vpcId(resource.getVpcId())
                 .build();
 
-        var createResponse = ec2Client.createSecurityGroup(createRequest);
+        var createResponse = getClient().createSecurityGroup(createRequest);
         String groupId = createResponse.groupId();
         log.info("Created Security Group: {}", groupId);
 
@@ -77,7 +93,7 @@ public class SecurityGroupResourceType extends ResourceTypeHandler<SecurityGroup
                             .ipRanges(IpRange.builder().cidrIp("0.0.0.0/0").build())
                             .build())
                     .build();
-            ec2Client.revokeSecurityGroupEgress(revokeRequest);
+            getClient().revokeSecurityGroupEgress(revokeRequest);
         } catch (Ec2Exception e) {
             // Ignore if rule doesn't exist
             log.debug("Could not revoke default egress rule: {}", e.getMessage());
@@ -96,7 +112,7 @@ public class SecurityGroupResourceType extends ResourceTypeHandler<SecurityGroup
                 .ipPermissions(ipPermissions)
                 .build();
 
-        ec2Client.authorizeSecurityGroupIngress(request);
+        getClient().authorizeSecurityGroupIngress(request);
         log.debug("Added {} ingress rules to {}", rules.size(), groupId);
     }
 
@@ -112,7 +128,7 @@ public class SecurityGroupResourceType extends ResourceTypeHandler<SecurityGroup
                 .ipPermissions(ipPermissions)
                 .build();
 
-        ec2Client.authorizeSecurityGroupEgress(request);
+        getClient().authorizeSecurityGroupEgress(request);
         log.debug("Added {} egress rules to {}", rules.size(), groupId);
     }
 
@@ -163,7 +179,7 @@ public class SecurityGroupResourceType extends ResourceTypeHandler<SecurityGroup
                 .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                 .collect(Collectors.toList());
 
-        ec2Client.createTags(CreateTagsRequest.builder()
+        getClient().createTags(CreateTagsRequest.builder()
                 .resources(groupId)
                 .tags(tagList)
                 .build());
@@ -179,7 +195,7 @@ public class SecurityGroupResourceType extends ResourceTypeHandler<SecurityGroup
         log.info("Reading Security Group: {}", resource.getSecurityGroupId());
 
         try {
-            var response = ec2Client.describeSecurityGroups(DescribeSecurityGroupsRequest.builder()
+            var response = getClient().describeSecurityGroups(DescribeSecurityGroupsRequest.builder()
                     .groupIds(resource.getSecurityGroupId())
                     .build());
 
@@ -231,7 +247,7 @@ public class SecurityGroupResourceType extends ResourceTypeHandler<SecurityGroup
                 var oldTags = current.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.deleteTags(DeleteTagsRequest.builder()
+                getClient().deleteTags(DeleteTagsRequest.builder()
                         .resources(groupId)
                         .tags(oldTags)
                         .build());
@@ -253,7 +269,7 @@ public class SecurityGroupResourceType extends ResourceTypeHandler<SecurityGroup
                 .collect(Collectors.toList());
 
         try {
-            ec2Client.revokeSecurityGroupIngress(RevokeSecurityGroupIngressRequest.builder()
+            getClient().revokeSecurityGroupIngress(RevokeSecurityGroupIngressRequest.builder()
                     .groupId(groupId)
                     .ipPermissions(ipPermissions)
                     .build());
@@ -270,7 +286,7 @@ public class SecurityGroupResourceType extends ResourceTypeHandler<SecurityGroup
                 .collect(Collectors.toList());
 
         try {
-            ec2Client.revokeSecurityGroupEgress(RevokeSecurityGroupEgressRequest.builder()
+            getClient().revokeSecurityGroupEgress(RevokeSecurityGroupEgressRequest.builder()
                     .groupId(groupId)
                     .ipPermissions(ipPermissions)
                     .build());
@@ -289,7 +305,7 @@ public class SecurityGroupResourceType extends ResourceTypeHandler<SecurityGroup
         log.info("Deleting Security Group: {}", resource.getSecurityGroupId());
 
         try {
-            ec2Client.deleteSecurityGroup(DeleteSecurityGroupRequest.builder()
+            getClient().deleteSecurityGroup(DeleteSecurityGroupRequest.builder()
                     .groupId(resource.getSecurityGroupId())
                     .build());
 

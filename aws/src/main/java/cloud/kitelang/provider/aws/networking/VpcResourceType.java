@@ -17,14 +17,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class VpcResourceType extends ResourceTypeHandler<VpcResource> {
 
-    private final Ec2Client ec2Client;
+    private volatile Ec2Client ec2Client;
 
     public VpcResourceType() {
-        this.ec2Client = Ec2Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public VpcResourceType(Ec2Client ec2Client) {
         this.ec2Client = ec2Client;
+    }
+
+    /**
+     * Get or create an EC2 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private Ec2Client getClient() {
+        if (ec2Client == null) {
+            synchronized (this) {
+                if (ec2Client == null) {
+                    log.debug("Creating EC2 client with current AWS configuration");
+                    ec2Client = Ec2Client.create();
+                }
+            }
+        }
+        return ec2Client;
     }
 
     @Override
@@ -42,7 +58,7 @@ public class VpcResourceType extends ResourceTypeHandler<VpcResource> {
             requestBuilder.amazonProvidedIpv6CidrBlock(true);
         }
 
-        var response = ec2Client.createVpc(requestBuilder.build());
+        var response = getClient().createVpc(requestBuilder.build());
         var vpc = response.vpc();
 
         log.info("Created VPC: {}", vpc.vpcId());
@@ -77,7 +93,7 @@ public class VpcResourceType extends ResourceTypeHandler<VpcResource> {
         log.info("Reading VPC: {}", resource.getVpcId());
 
         try {
-            var response = ec2Client.describeVpcs(DescribeVpcsRequest.builder()
+            var response = getClient().describeVpcs(DescribeVpcsRequest.builder()
                     .vpcIds(resource.getVpcId())
                     .build());
 
@@ -131,7 +147,7 @@ public class VpcResourceType extends ResourceTypeHandler<VpcResource> {
         log.info("Deleting VPC: {}", resource.getVpcId());
 
         try {
-            ec2Client.deleteVpc(DeleteVpcRequest.builder()
+            getClient().deleteVpc(DeleteVpcRequest.builder()
                     .vpcId(resource.getVpcId())
                     .build());
 
@@ -181,7 +197,7 @@ public class VpcResourceType extends ResourceTypeHandler<VpcResource> {
         int attempt = 0;
 
         while (attempt < maxAttempts) {
-            var response = ec2Client.describeVpcs(DescribeVpcsRequest.builder()
+            var response = getClient().describeVpcs(DescribeVpcsRequest.builder()
                     .vpcIds(vpcId)
                     .build());
 
@@ -207,7 +223,7 @@ public class VpcResourceType extends ResourceTypeHandler<VpcResource> {
 
     private void configureDnsSettings(String vpcId, VpcResource resource) {
         if (resource.getEnableDnsSupport() != null) {
-            ec2Client.modifyVpcAttribute(ModifyVpcAttributeRequest.builder()
+            getClient().modifyVpcAttribute(ModifyVpcAttributeRequest.builder()
                     .vpcId(vpcId)
                     .enableDnsSupport(AttributeBooleanValue.builder()
                             .value(resource.getEnableDnsSupport())
@@ -216,7 +232,7 @@ public class VpcResourceType extends ResourceTypeHandler<VpcResource> {
         }
 
         if (resource.getEnableDnsHostnames() != null) {
-            ec2Client.modifyVpcAttribute(ModifyVpcAttributeRequest.builder()
+            getClient().modifyVpcAttribute(ModifyVpcAttributeRequest.builder()
                     .vpcId(vpcId)
                     .enableDnsHostnames(AttributeBooleanValue.builder()
                             .value(resource.getEnableDnsHostnames())
@@ -230,21 +246,21 @@ public class VpcResourceType extends ResourceTypeHandler<VpcResource> {
                 .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                 .collect(Collectors.toList());
 
-        ec2Client.createTags(CreateTagsRequest.builder()
+        getClient().createTags(CreateTagsRequest.builder()
                 .resources(vpcId)
                 .tags(tagList)
                 .build());
     }
 
     private void deleteAllTags(String vpcId) {
-        var response = ec2Client.describeVpcs(DescribeVpcsRequest.builder()
+        var response = getClient().describeVpcs(DescribeVpcsRequest.builder()
                 .vpcIds(vpcId)
                 .build());
 
         if (!response.vpcs().isEmpty()) {
             var existingTags = response.vpcs().get(0).tags();
             if (!existingTags.isEmpty()) {
-                ec2Client.deleteTags(DeleteTagsRequest.builder()
+                getClient().deleteTags(DeleteTagsRequest.builder()
                         .resources(vpcId)
                         .tags(existingTags)
                         .build());
@@ -260,13 +276,13 @@ public class VpcResourceType extends ResourceTypeHandler<VpcResource> {
         resource.setInstanceTenancy(vpc.instanceTenancyAsString());
 
         // DNS settings (need to query separately)
-        var dnsSupport = ec2Client.describeVpcAttribute(DescribeVpcAttributeRequest.builder()
+        var dnsSupport = getClient().describeVpcAttribute(DescribeVpcAttributeRequest.builder()
                 .vpcId(vpc.vpcId())
                 .attribute(VpcAttributeName.ENABLE_DNS_SUPPORT)
                 .build());
         resource.setEnableDnsSupport(dnsSupport.enableDnsSupport().value());
 
-        var dnsHostnames = ec2Client.describeVpcAttribute(DescribeVpcAttributeRequest.builder()
+        var dnsHostnames = getClient().describeVpcAttribute(DescribeVpcAttributeRequest.builder()
                 .vpcId(vpc.vpcId())
                 .attribute(VpcAttributeName.ENABLE_DNS_HOSTNAMES)
                 .build());
@@ -284,7 +300,7 @@ public class VpcResourceType extends ResourceTypeHandler<VpcResource> {
         resource.setOwnerId(vpc.ownerId());
 
         // Get additional VPC details
-        var routeTables = ec2Client.describeRouteTables(DescribeRouteTablesRequest.builder()
+        var routeTables = getClient().describeRouteTables(DescribeRouteTablesRequest.builder()
                 .filters(Filter.builder()
                         .name("vpc-id")
                         .values(vpc.vpcId())
@@ -300,7 +316,7 @@ public class VpcResourceType extends ResourceTypeHandler<VpcResource> {
         }
 
         // Get default network ACL
-        var networkAcls = ec2Client.describeNetworkAcls(DescribeNetworkAclsRequest.builder()
+        var networkAcls = getClient().describeNetworkAcls(DescribeNetworkAclsRequest.builder()
                 .filters(Filter.builder()
                         .name("vpc-id")
                         .values(vpc.vpcId())
@@ -316,7 +332,7 @@ public class VpcResourceType extends ResourceTypeHandler<VpcResource> {
         }
 
         // Get default security group
-        var securityGroups = ec2Client.describeSecurityGroups(DescribeSecurityGroupsRequest.builder()
+        var securityGroups = getClient().describeSecurityGroups(DescribeSecurityGroupsRequest.builder()
                 .filters(Filter.builder()
                         .name("vpc-id")
                         .values(vpc.vpcId())

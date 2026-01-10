@@ -17,14 +17,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResource> {
 
-    private final Ec2Client ec2Client;
+    private volatile Ec2Client ec2Client;
 
     public RouteTableResourceType() {
-        this.ec2Client = Ec2Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public RouteTableResourceType(Ec2Client ec2Client) {
         this.ec2Client = ec2Client;
+    }
+
+    /**
+     * Get or create an EC2 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private Ec2Client getClient() {
+        if (ec2Client == null) {
+            synchronized (this) {
+                if (ec2Client == null) {
+                    log.debug("Creating EC2 client with current AWS configuration");
+                    ec2Client = Ec2Client.create();
+                }
+            }
+        }
+        return ec2Client;
     }
 
     @Override
@@ -45,7 +61,7 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
             requestBuilder.tagSpecifications(tagSpecs);
         }
 
-        var response = ec2Client.createRouteTable(requestBuilder.build());
+        var response = getClient().createRouteTable(requestBuilder.build());
         var routeTable = response.routeTable();
         log.info("Created Route Table: {}", routeTable.routeTableId());
 
@@ -93,7 +109,7 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
             requestBuilder.egressOnlyInternetGatewayId(route.getEgressOnlyInternetGatewayId());
         }
 
-        ec2Client.createRoute(requestBuilder.build());
+        getClient().createRoute(requestBuilder.build());
         log.debug("Added route to {}: {}", routeTableId,
                 route.getDestinationCidrBlock() != null ? route.getDestinationCidrBlock() : route.getDestinationIpv6CidrBlock());
     }
@@ -108,7 +124,7 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
         log.info("Reading Route Table: {}", resource.getRouteTableId());
 
         try {
-            var response = ec2Client.describeRouteTables(DescribeRouteTablesRequest.builder()
+            var response = getClient().describeRouteTables(DescribeRouteTablesRequest.builder()
                     .routeTableIds(resource.getRouteTableId())
                     .build());
 
@@ -161,7 +177,7 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
                 var oldTags = current.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.deleteTags(DeleteTagsRequest.builder()
+                getClient().deleteTags(DeleteTagsRequest.builder()
                         .resources(routeTableId)
                         .tags(oldTags)
                         .build());
@@ -170,7 +186,7 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
                 var newTags = resource.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.createTags(CreateTagsRequest.builder()
+                getClient().createTags(CreateTagsRequest.builder()
                         .resources(routeTableId)
                         .tags(newTags)
                         .build());
@@ -191,7 +207,7 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
                 requestBuilder.destinationIpv6CidrBlock(route.getDestinationIpv6CidrBlock());
             }
 
-            ec2Client.deleteRoute(requestBuilder.build());
+            getClient().deleteRoute(requestBuilder.build());
         } catch (Ec2Exception e) {
             log.debug("Could not delete route: {}", e.getMessage());
         }
@@ -207,7 +223,7 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
         log.info("Deleting Route Table: {}", resource.getRouteTableId());
 
         try {
-            ec2Client.deleteRouteTable(DeleteRouteTableRequest.builder()
+            getClient().deleteRouteTable(DeleteRouteTableRequest.builder()
                     .routeTableId(resource.getRouteTableId())
                     .build());
 

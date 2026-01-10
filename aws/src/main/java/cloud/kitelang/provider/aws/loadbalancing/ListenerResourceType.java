@@ -23,14 +23,30 @@ public class ListenerResourceType extends ResourceTypeHandler<ListenerResource> 
     );
     private static final Set<String> SECURE_PROTOCOLS = Set.of("HTTPS", "TLS");
 
-    private final ElasticLoadBalancingV2Client elbClient;
+    private volatile ElasticLoadBalancingV2Client elbClient;
 
     public ListenerResourceType() {
-        this.elbClient = ElasticLoadBalancingV2Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public ListenerResourceType(ElasticLoadBalancingV2Client elbClient) {
         this.elbClient = elbClient;
+    }
+
+    /**
+     * Get or create an ELBv2 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private ElasticLoadBalancingV2Client getClient() {
+        if (elbClient == null) {
+            synchronized (this) {
+                if (elbClient == null) {
+                    log.debug("Creating ELBv2 client with current AWS configuration");
+                    elbClient = ElasticLoadBalancingV2Client.create();
+                }
+            }
+        }
+        return elbClient;
     }
 
     @Override
@@ -70,7 +86,7 @@ public class ListenerResourceType extends ResourceTypeHandler<ListenerResource> 
             requestBuilder.tags(tags);
         }
 
-        var response = elbClient.createListener(requestBuilder.build());
+        var response = getClient().createListener(requestBuilder.build());
         var listener = response.listeners().get(0);
 
         log.info("Created Listener: {}", listener.listenerArn());
@@ -90,7 +106,7 @@ public class ListenerResourceType extends ResourceTypeHandler<ListenerResource> 
         log.info("Reading Listener: {}", resource.getArn());
 
         try {
-            var response = elbClient.describeListeners(DescribeListenersRequest.builder()
+            var response = getClient().describeListeners(DescribeListenersRequest.builder()
                     .listenerArns(resource.getArn())
                     .build());
 
@@ -147,11 +163,11 @@ public class ListenerResourceType extends ResourceTypeHandler<ListenerResource> 
         // Default action
         modifyBuilder.defaultActions(buildDefaultAction(resource));
 
-        elbClient.modifyListener(modifyBuilder.build());
+        getClient().modifyListener(modifyBuilder.build());
 
         // Update tags
         if (resource.getTags() != null) {
-            var existingTags = elbClient.describeTags(DescribeTagsRequest.builder()
+            var existingTags = getClient().describeTags(DescribeTagsRequest.builder()
                     .resourceArns(resource.getArn())
                     .build());
             if (!existingTags.tagDescriptions().isEmpty()) {
@@ -159,7 +175,7 @@ public class ListenerResourceType extends ResourceTypeHandler<ListenerResource> 
                         .map(Tag::key)
                         .collect(Collectors.toList());
                 if (!tagKeys.isEmpty()) {
-                    elbClient.removeTags(RemoveTagsRequest.builder()
+                    getClient().removeTags(RemoveTagsRequest.builder()
                             .resourceArns(resource.getArn())
                             .tagKeys(tagKeys)
                             .build());
@@ -169,7 +185,7 @@ public class ListenerResourceType extends ResourceTypeHandler<ListenerResource> 
                 var tags = resource.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                elbClient.addTags(AddTagsRequest.builder()
+                getClient().addTags(AddTagsRequest.builder()
                         .resourceArns(resource.getArn())
                         .tags(tags)
                         .build());
@@ -189,7 +205,7 @@ public class ListenerResourceType extends ResourceTypeHandler<ListenerResource> 
         log.info("Deleting Listener: {}", resource.getArn());
 
         try {
-            elbClient.deleteListener(DeleteListenerRequest.builder()
+            getClient().deleteListener(DeleteListenerRequest.builder()
                     .listenerArn(resource.getArn())
                     .build());
 
@@ -352,7 +368,7 @@ public class ListenerResourceType extends ResourceTypeHandler<ListenerResource> 
         }
 
         // Get tags
-        var tagsResponse = elbClient.describeTags(DescribeTagsRequest.builder()
+        var tagsResponse = getClient().describeTags(DescribeTagsRequest.builder()
                 .resourceArns(listener.listenerArn())
                 .build());
         if (!tagsResponse.tagDescriptions().isEmpty()) {

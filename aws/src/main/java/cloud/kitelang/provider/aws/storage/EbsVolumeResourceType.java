@@ -24,14 +24,30 @@ public class EbsVolumeResourceType extends ResourceTypeHandler<EbsVolumeResource
 
     private static final Set<String> IOPS_VOLUME_TYPES = Set.of("gp3", "io1", "io2");
 
-    private final Ec2Client ec2Client;
+    private volatile Ec2Client ec2Client;
 
     public EbsVolumeResourceType() {
-        this.ec2Client = Ec2Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public EbsVolumeResourceType(Ec2Client ec2Client) {
         this.ec2Client = ec2Client;
+    }
+
+    /**
+     * Get or create an EC2 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private Ec2Client getClient() {
+        if (ec2Client == null) {
+            synchronized (this) {
+                if (ec2Client == null) {
+                    log.debug("Creating EC2 client with current AWS configuration");
+                    ec2Client = Ec2Client.create();
+                }
+            }
+        }
+        return ec2Client;
     }
 
     @Override
@@ -93,7 +109,7 @@ public class EbsVolumeResourceType extends ResourceTypeHandler<EbsVolumeResource
             requestBuilder.tagSpecifications(tagSpecs);
         }
 
-        var response = ec2Client.createVolume(requestBuilder.build());
+        var response = getClient().createVolume(requestBuilder.build());
 
         log.info("Created EBS volume: {}", response.volumeId());
 
@@ -118,7 +134,7 @@ public class EbsVolumeResourceType extends ResourceTypeHandler<EbsVolumeResource
         log.info("Reading EBS volume: {}", resource.getVolumeId());
 
         try {
-            var response = ec2Client.describeVolumes(DescribeVolumesRequest.builder()
+            var response = getClient().describeVolumes(DescribeVolumesRequest.builder()
                     .volumeIds(resource.getVolumeId())
                     .build());
 
@@ -178,7 +194,7 @@ public class EbsVolumeResourceType extends ResourceTypeHandler<EbsVolumeResource
         }
 
         if (needsModification) {
-            ec2Client.modifyVolume(modifyBuilder.build());
+            getClient().modifyVolume(modifyBuilder.build());
             log.info("Modified EBS volume: {}", resource.getVolumeId());
 
             // Wait for modification to complete
@@ -206,7 +222,7 @@ public class EbsVolumeResourceType extends ResourceTypeHandler<EbsVolumeResource
         log.info("Deleting EBS volume: {}", resource.getVolumeId());
 
         try {
-            ec2Client.deleteVolume(DeleteVolumeRequest.builder()
+            getClient().deleteVolume(DeleteVolumeRequest.builder()
                     .volumeId(resource.getVolumeId())
                     .build());
 
@@ -317,7 +333,7 @@ public class EbsVolumeResourceType extends ResourceTypeHandler<EbsVolumeResource
         int attempt = 0;
 
         while (attempt < maxAttempts) {
-            var response = ec2Client.describeVolumes(DescribeVolumesRequest.builder()
+            var response = getClient().describeVolumes(DescribeVolumesRequest.builder()
                     .volumeIds(volumeId)
                     .build());
 
@@ -351,7 +367,7 @@ public class EbsVolumeResourceType extends ResourceTypeHandler<EbsVolumeResource
         int attempt = 0;
 
         while (attempt < maxAttempts) {
-            var response = ec2Client.describeVolumesModifications(DescribeVolumesModificationsRequest.builder()
+            var response = getClient().describeVolumesModifications(DescribeVolumesModificationsRequest.builder()
                     .volumeIds(volumeId)
                     .build());
 
@@ -384,21 +400,21 @@ public class EbsVolumeResourceType extends ResourceTypeHandler<EbsVolumeResource
                 .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                 .collect(Collectors.toList());
 
-        ec2Client.createTags(CreateTagsRequest.builder()
+        getClient().createTags(CreateTagsRequest.builder()
                 .resources(volumeId)
                 .tags(tagList)
                 .build());
     }
 
     private void deleteAllTags(String volumeId) {
-        var response = ec2Client.describeVolumes(DescribeVolumesRequest.builder()
+        var response = getClient().describeVolumes(DescribeVolumesRequest.builder()
                 .volumeIds(volumeId)
                 .build());
 
         if (!response.volumes().isEmpty()) {
             var existingTags = response.volumes().get(0).tags();
             if (!existingTags.isEmpty()) {
-                ec2Client.deleteTags(DeleteTagsRequest.builder()
+                getClient().deleteTags(DeleteTagsRequest.builder()
                         .resources(volumeId)
                         .tags(existingTags)
                         .build());

@@ -17,14 +17,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ElasticIpResourceType extends ResourceTypeHandler<ElasticIpResource> {
 
-    private final Ec2Client ec2Client;
+    private volatile Ec2Client ec2Client;
 
     public ElasticIpResourceType() {
-        this.ec2Client = Ec2Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public ElasticIpResourceType(Ec2Client ec2Client) {
         this.ec2Client = ec2Client;
+    }
+
+    /**
+     * Get or create an EC2 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private Ec2Client getClient() {
+        if (ec2Client == null) {
+            synchronized (this) {
+                if (ec2Client == null) {
+                    log.debug("Creating EC2 client with current AWS configuration");
+                    ec2Client = Ec2Client.create();
+                }
+            }
+        }
+        return ec2Client;
     }
 
     @Override
@@ -61,7 +77,7 @@ public class ElasticIpResourceType extends ResourceTypeHandler<ElasticIpResource
             requestBuilder.tagSpecifications(tagSpecs);
         }
 
-        var response = ec2Client.allocateAddress(requestBuilder.build());
+        var response = getClient().allocateAddress(requestBuilder.build());
         log.info("Allocated Elastic IP: {} (allocation: {})",
                 response.publicIp(), response.allocationId());
 
@@ -81,7 +97,7 @@ public class ElasticIpResourceType extends ResourceTypeHandler<ElasticIpResource
         log.info("Reading Elastic IP: {}", resource.getAllocationId());
 
         try {
-            var response = ec2Client.describeAddresses(DescribeAddressesRequest.builder()
+            var response = getClient().describeAddresses(DescribeAddressesRequest.builder()
                     .allocationIds(resource.getAllocationId())
                     .build());
 
@@ -117,7 +133,7 @@ public class ElasticIpResourceType extends ResourceTypeHandler<ElasticIpResource
                 var oldTags = current.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.deleteTags(DeleteTagsRequest.builder()
+                getClient().deleteTags(DeleteTagsRequest.builder()
                         .resources(allocationId)
                         .tags(oldTags)
                         .build());
@@ -127,7 +143,7 @@ public class ElasticIpResourceType extends ResourceTypeHandler<ElasticIpResource
                 var newTags = resource.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.createTags(CreateTagsRequest.builder()
+                getClient().createTags(CreateTagsRequest.builder()
                         .resources(allocationId)
                         .tags(newTags)
                         .build());
@@ -151,12 +167,12 @@ public class ElasticIpResourceType extends ResourceTypeHandler<ElasticIpResource
             var current = read(resource);
             if (current != null && current.getAssociationId() != null) {
                 log.info("Disassociating Elastic IP before release");
-                ec2Client.disassociateAddress(DisassociateAddressRequest.builder()
+                getClient().disassociateAddress(DisassociateAddressRequest.builder()
                         .associationId(current.getAssociationId())
                         .build());
             }
 
-            ec2Client.releaseAddress(ReleaseAddressRequest.builder()
+            getClient().releaseAddress(ReleaseAddressRequest.builder()
                     .allocationId(resource.getAllocationId())
                     .build());
 

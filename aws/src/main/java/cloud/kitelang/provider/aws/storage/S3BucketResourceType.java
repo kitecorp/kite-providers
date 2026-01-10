@@ -25,21 +25,46 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
 
     private static final Set<String> VALID_SSE = Set.of("AES256", "aws:kms");
 
-    private final S3Client s3Client;
-    private final String defaultRegion;
+    private volatile S3Client s3Client;
+    private volatile String defaultRegion;
 
     public S3BucketResourceType() {
-        this.defaultRegion = System.getenv("AWS_REGION") != null
-                ? System.getenv("AWS_REGION")
-                : "us-east-1";
-        this.s3Client = S3Client.builder()
-                .region(Region.of(defaultRegion))
-                .build();
+        // Client created lazily to pick up configuration
     }
 
     public S3BucketResourceType(S3Client s3Client, String defaultRegion) {
         this.s3Client = s3Client;
         this.defaultRegion = defaultRegion;
+    }
+
+    /**
+     * Get the default region, initializing lazily if needed.
+     */
+    private String getDefaultRegion() {
+        if (defaultRegion == null) {
+            defaultRegion = System.getenv("AWS_REGION") != null
+                    ? System.getenv("AWS_REGION")
+                    : "us-east-1";
+        }
+        return defaultRegion;
+    }
+
+    /**
+     * Get or create an S3 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private S3Client getClient() {
+        if (s3Client == null) {
+            synchronized (this) {
+                if (s3Client == null) {
+                    log.debug("Creating S3 client with current AWS configuration");
+                    s3Client = S3Client.builder()
+                            .region(Region.of(getDefaultRegion()))
+                            .build();
+                }
+            }
+        }
+        return s3Client;
     }
 
     @Override
@@ -50,7 +75,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
                 .bucket(resource.getBucket());
 
         // Set region (only needed for non-us-east-1)
-        var region = resource.getRegion() != null ? resource.getRegion() : defaultRegion;
+        var region = resource.getRegion() != null ? resource.getRegion() : getDefaultRegion();
         if (!"us-east-1".equals(region)) {
             createRequest.createBucketConfiguration(
                     CreateBucketConfiguration.builder()
@@ -63,7 +88,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
             createRequest.acl(BucketCannedACL.fromValue(resource.getAcl().replace("-", "_").toUpperCase()));
         }
 
-        s3Client.createBucket(createRequest.build());
+        getClient().createBucket(createRequest.build());
         log.info("Created S3 Bucket: {}", resource.getBucket());
 
         // Configure bucket settings
@@ -83,7 +108,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
 
         try {
             // Check if bucket exists
-            s3Client.headBucket(HeadBucketRequest.builder()
+            getClient().headBucket(HeadBucketRequest.builder()
                     .bucket(resource.getBucket())
                     .build());
 
@@ -123,7 +148,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
             deleteAllObjects(resource.getBucket());
 
             // Delete the bucket
-            s3Client.deleteBucket(DeleteBucketRequest.builder()
+            getClient().deleteBucket(DeleteBucketRequest.builder()
                     .bucket(resource.getBucket())
                     .build());
 
@@ -183,7 +208,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
                     ? BucketVersioningStatus.ENABLED
                     : BucketVersioningStatus.SUSPENDED;
 
-            s3Client.putBucketVersioning(PutBucketVersioningRequest.builder()
+            getClient().putBucketVersioning(PutBucketVersioningRequest.builder()
                     .bucket(resource.getBucket())
                     .versioningConfiguration(VersioningConfiguration.builder()
                             .status(versioningStatus)
@@ -202,7 +227,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
                         .kmsMasterKeyID(resource.getKmsKeyId());
             }
 
-            s3Client.putBucketEncryption(PutBucketEncryptionRequest.builder()
+            getClient().putBucketEncryption(PutBucketEncryptionRequest.builder()
                     .bucket(resource.getBucket())
                     .serverSideEncryptionConfiguration(ServerSideEncryptionConfiguration.builder()
                             .rules(ServerSideEncryptionRule.builder()
@@ -214,7 +239,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
 
         // Configure public access block
         if (resource.getBlockPublicAccess() != null && resource.getBlockPublicAccess()) {
-            s3Client.putPublicAccessBlock(PutPublicAccessBlockRequest.builder()
+            getClient().putPublicAccessBlock(PutPublicAccessBlockRequest.builder()
                     .bucket(resource.getBucket())
                     .publicAccessBlockConfiguration(PublicAccessBlockConfiguration.builder()
                             .blockPublicAcls(true)
@@ -245,7 +270,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
                 }
             }
 
-            s3Client.putBucketWebsite(PutBucketWebsiteRequest.builder()
+            getClient().putBucketWebsite(PutBucketWebsiteRequest.builder()
                     .bucket(resource.getBucket())
                     .websiteConfiguration(websiteBuilder.build())
                     .build());
@@ -263,7 +288,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
                             .build())
                     .collect(Collectors.toList());
 
-            s3Client.putBucketCors(PutBucketCorsRequest.builder()
+            getClient().putBucketCors(PutBucketCorsRequest.builder()
                     .bucket(resource.getBucket())
                     .corsConfiguration(CORSConfiguration.builder()
                             .corsRules(corsRules)
@@ -277,7 +302,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
                     .map(this::mapLifecycleRule)
                     .collect(Collectors.toList());
 
-            s3Client.putBucketLifecycleConfiguration(PutBucketLifecycleConfigurationRequest.builder()
+            getClient().putBucketLifecycleConfiguration(PutBucketLifecycleConfigurationRequest.builder()
                     .bucket(resource.getBucket())
                     .lifecycleConfiguration(BucketLifecycleConfiguration.builder()
                             .rules(lifecycleRules)
@@ -287,7 +312,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
 
         // Configure logging
         if (resource.getLogging() != null) {
-            s3Client.putBucketLogging(PutBucketLoggingRequest.builder()
+            getClient().putBucketLogging(PutBucketLoggingRequest.builder()
                     .bucket(resource.getBucket())
                     .bucketLoggingStatus(BucketLoggingStatus.builder()
                             .loggingEnabled(LoggingEnabled.builder()
@@ -304,7 +329,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
                     .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                     .collect(Collectors.toList());
 
-            s3Client.putBucketTagging(PutBucketTaggingRequest.builder()
+            getClient().putBucketTagging(PutBucketTaggingRequest.builder()
                     .bucket(resource.getBucket())
                     .tagging(Tagging.builder().tagSet(tags).build())
                     .build());
@@ -363,14 +388,14 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
         ListObjectsV2Response listResponse;
 
         do {
-            listResponse = s3Client.listObjectsV2(listRequest);
+            listResponse = getClient().listObjectsV2(listRequest);
 
             if (!listResponse.contents().isEmpty()) {
                 var objectsToDelete = listResponse.contents().stream()
                         .map(obj -> ObjectIdentifier.builder().key(obj.key()).build())
                         .collect(Collectors.toList());
 
-                s3Client.deleteObjects(DeleteObjectsRequest.builder()
+                getClient().deleteObjects(DeleteObjectsRequest.builder()
                         .bucket(bucket)
                         .delete(Delete.builder().objects(objectsToDelete).build())
                         .build());
@@ -386,7 +411,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
         // Also delete all object versions if versioning was enabled
         try {
             var versionsRequest = ListObjectVersionsRequest.builder().bucket(bucket).build();
-            var versionsResponse = s3Client.listObjectVersions(versionsRequest);
+            var versionsResponse = getClient().listObjectVersions(versionsRequest);
 
             var versions = new ArrayList<ObjectIdentifier>();
             for (var v : versionsResponse.versions()) {
@@ -403,7 +428,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
             }
 
             if (!versions.isEmpty()) {
-                s3Client.deleteObjects(DeleteObjectsRequest.builder()
+                getClient().deleteObjects(DeleteObjectsRequest.builder()
                         .bucket(bucket)
                         .delete(Delete.builder().objects(versions).build())
                         .build());
@@ -420,18 +445,18 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
 
         // Get bucket location
         try {
-            var locationResponse = s3Client.getBucketLocation(GetBucketLocationRequest.builder()
+            var locationResponse = getClient().getBucketLocation(GetBucketLocationRequest.builder()
                     .bucket(bucket)
                     .build());
             var location = locationResponse.locationConstraintAsString();
             resource.setRegion(location != null && !location.isEmpty() ? location : "us-east-1");
         } catch (Exception e) {
-            resource.setRegion(defaultRegion);
+            resource.setRegion(getDefaultRegion());
         }
 
         // Get versioning status
         try {
-            var versioningResponse = s3Client.getBucketVersioning(GetBucketVersioningRequest.builder()
+            var versioningResponse = getClient().getBucketVersioning(GetBucketVersioningRequest.builder()
                     .bucket(bucket)
                     .build());
             resource.setVersioning(versioningResponse.status() == BucketVersioningStatus.ENABLED);
@@ -441,7 +466,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
 
         // Get encryption
         try {
-            var encryptionResponse = s3Client.getBucketEncryption(GetBucketEncryptionRequest.builder()
+            var encryptionResponse = getClient().getBucketEncryption(GetBucketEncryptionRequest.builder()
                     .bucket(bucket)
                     .build());
             var rules = encryptionResponse.serverSideEncryptionConfiguration().rules();
@@ -460,7 +485,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
 
         // Get tags
         try {
-            var tagsResponse = s3Client.getBucketTagging(GetBucketTaggingRequest.builder()
+            var tagsResponse = getClient().getBucketTagging(GetBucketTaggingRequest.builder()
                     .bucket(bucket)
                     .build());
             resource.setTags(tagsResponse.tagSet().stream()
@@ -470,14 +495,14 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
         }
 
         // Set cloud-managed properties
-        var region = resource.getRegion() != null ? resource.getRegion() : defaultRegion;
+        var region = resource.getRegion() != null ? resource.getRegion() : getDefaultRegion();
         resource.setArn("arn:aws:s3:::" + bucket);
         resource.setDomainName(bucket + ".s3.amazonaws.com");
         resource.setRegionalDomainName(bucket + ".s3." + region + ".amazonaws.com");
 
         // Get website endpoint if configured
         try {
-            s3Client.getBucketWebsite(GetBucketWebsiteRequest.builder()
+            getClient().getBucketWebsite(GetBucketWebsiteRequest.builder()
                     .bucket(bucket)
                     .build());
             resource.setWebsiteEndpoint(bucket + ".s3-website-" + region + ".amazonaws.com");

@@ -18,14 +18,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceResource> {
 
-    private final Ec2Client ec2Client;
+    private volatile Ec2Client ec2Client;
 
     public Ec2InstanceResourceType() {
-        this.ec2Client = Ec2Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public Ec2InstanceResourceType(Ec2Client ec2Client) {
         this.ec2Client = ec2Client;
+    }
+
+    /**
+     * Get or create an EC2 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private Ec2Client getClient() {
+        if (ec2Client == null) {
+            synchronized (this) {
+                if (ec2Client == null) {
+                    log.debug("Creating EC2 client with current AWS configuration");
+                    ec2Client = Ec2Client.create();
+                }
+            }
+        }
+        return ec2Client;
     }
 
     @Override
@@ -163,7 +179,7 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
             requestBuilder.tagSpecifications(tagSpecs);
         }
 
-        var response = ec2Client.runInstances(requestBuilder.build());
+        var response = getClient().runInstances(requestBuilder.build());
         var instance = response.instances().get(0);
         log.info("Created EC2 instance: {} (state: {})",
                 instance.instanceId(), instance.state().nameAsString());
@@ -178,7 +194,7 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
 
     private String getRootDeviceName(String amiId) {
         try {
-            var response = ec2Client.describeImages(DescribeImagesRequest.builder()
+            var response = getClient().describeImages(DescribeImagesRequest.builder()
                     .imageIds(amiId)
                     .build());
             if (!response.images().isEmpty()) {
@@ -198,7 +214,7 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
 
         while (attempt < maxAttempts) {
             try {
-                var response = ec2Client.describeInstances(DescribeInstancesRequest.builder()
+                var response = getClient().describeInstances(DescribeInstancesRequest.builder()
                         .instanceIds(instanceId)
                         .build());
 
@@ -236,7 +252,7 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
         log.info("Reading EC2 instance: {}", resource.getInstanceId());
 
         try {
-            var response = ec2Client.describeInstances(DescribeInstancesRequest.builder()
+            var response = getClient().describeInstances(DescribeInstancesRequest.builder()
                     .instanceIds(resource.getInstanceId())
                     .build());
 
@@ -280,13 +296,13 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
                     current.getInstanceType(), resource.getInstanceType());
 
             // Stop instance
-            ec2Client.stopInstances(StopInstancesRequest.builder()
+            getClient().stopInstances(StopInstancesRequest.builder()
                     .instanceIds(instanceId)
                     .build());
             waitForInstance(instanceId, "stopped");
 
             // Modify instance type
-            ec2Client.modifyInstanceAttribute(ModifyInstanceAttributeRequest.builder()
+            getClient().modifyInstanceAttribute(ModifyInstanceAttributeRequest.builder()
                     .instanceId(instanceId)
                     .instanceType(AttributeValue.builder()
                             .value(resource.getInstanceType())
@@ -294,7 +310,7 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
                     .build());
 
             // Start instance
-            ec2Client.startInstances(StartInstancesRequest.builder()
+            getClient().startInstances(StartInstancesRequest.builder()
                     .instanceIds(instanceId)
                     .build());
             waitForInstance(instanceId, "running");
@@ -303,11 +319,11 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
         // Update monitoring
         if (resource.getMonitoring() != null) {
             if (resource.getMonitoring()) {
-                ec2Client.monitorInstances(MonitorInstancesRequest.builder()
+                getClient().monitorInstances(MonitorInstancesRequest.builder()
                         .instanceIds(instanceId)
                         .build());
             } else {
-                ec2Client.unmonitorInstances(UnmonitorInstancesRequest.builder()
+                getClient().unmonitorInstances(UnmonitorInstancesRequest.builder()
                         .instanceIds(instanceId)
                         .build());
             }
@@ -315,7 +331,7 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
 
         // Update security groups (VPC only)
         if (resource.getSecurityGroupIds() != null && current.getSubnetId() != null) {
-            ec2Client.modifyInstanceAttribute(ModifyInstanceAttributeRequest.builder()
+            getClient().modifyInstanceAttribute(ModifyInstanceAttributeRequest.builder()
                     .instanceId(instanceId)
                     .groups(resource.getSecurityGroupIds())
                     .build());
@@ -326,7 +342,7 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
             !resource.getCpuCredits().equals(current.getCpuCredits())) {
             log.info("Changing CPU credits from {} to {}",
                     current.getCpuCredits(), resource.getCpuCredits());
-            ec2Client.modifyInstanceCreditSpecification(ModifyInstanceCreditSpecificationRequest.builder()
+            getClient().modifyInstanceCreditSpecification(ModifyInstanceCreditSpecificationRequest.builder()
                     .instanceCreditSpecifications(InstanceCreditSpecificationRequest.builder()
                             .instanceId(instanceId)
                             .cpuCredits(resource.getCpuCredits())
@@ -349,7 +365,7 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
             if (resource.getMetadataHttpPutResponseHopLimit() != null) {
                 metadataBuilder.httpPutResponseHopLimit(resource.getMetadataHttpPutResponseHopLimit());
             }
-            ec2Client.modifyInstanceMetadataOptions(metadataBuilder.build());
+            getClient().modifyInstanceMetadataOptions(metadataBuilder.build());
         }
 
         // Update tags
@@ -358,7 +374,7 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
                 var oldTags = current.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.deleteTags(DeleteTagsRequest.builder()
+                getClient().deleteTags(DeleteTagsRequest.builder()
                         .resources(instanceId)
                         .tags(oldTags)
                         .build());
@@ -367,7 +383,7 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
                 var newTags = resource.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.createTags(CreateTagsRequest.builder()
+                getClient().createTags(CreateTagsRequest.builder()
                         .resources(instanceId)
                         .tags(newTags)
                         .build());
@@ -387,7 +403,7 @@ public class Ec2InstanceResourceType extends ResourceTypeHandler<Ec2InstanceReso
         log.info("Terminating EC2 instance: {}", resource.getInstanceId());
 
         try {
-            ec2Client.terminateInstances(TerminateInstancesRequest.builder()
+            getClient().terminateInstances(TerminateInstancesRequest.builder()
                     .instanceIds(resource.getInstanceId())
                     .build());
 

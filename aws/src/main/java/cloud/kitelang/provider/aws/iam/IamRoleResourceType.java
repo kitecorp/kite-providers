@@ -18,14 +18,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
 
-    private final IamClient iamClient;
+    private volatile IamClient iamClient;
 
     public IamRoleResourceType() {
-        this.iamClient = IamClient.builder().build();
+        // Client created lazily to pick up configuration
     }
 
     public IamRoleResourceType(IamClient iamClient) {
         this.iamClient = iamClient;
+    }
+
+    /**
+     * Get or create an IAM client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private IamClient getClient() {
+        if (iamClient == null) {
+            synchronized (this) {
+                if (iamClient == null) {
+                    log.debug("Creating IAM client with current AWS configuration");
+                    iamClient = IamClient.builder().build();
+                }
+            }
+        }
+        return iamClient;
     }
 
     @Override
@@ -49,14 +65,14 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
             requestBuilder.tags(toIamTags(resource.getTags()));
         }
 
-        var response = iamClient.createRole(requestBuilder.build());
+        var response = getClient().createRole(requestBuilder.build());
         log.info("Created IAM Role: {} (ARN: {})",
                 response.role().roleName(), response.role().arn());
 
         // Attach managed policies
         if (resource.getManagedPolicyArns() != null) {
             for (var policyArn : resource.getManagedPolicyArns()) {
-                iamClient.attachRolePolicy(AttachRolePolicyRequest.builder()
+                getClient().attachRolePolicy(AttachRolePolicyRequest.builder()
                         .roleName(resource.getName())
                         .policyArn(policyArn)
                         .build());
@@ -67,7 +83,7 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
         // Add inline policies
         if (resource.getInlinePolicies() != null) {
             for (var entry : resource.getInlinePolicies().entrySet()) {
-                iamClient.putRolePolicy(PutRolePolicyRequest.builder()
+                getClient().putRolePolicy(PutRolePolicyRequest.builder()
                         .roleName(resource.getName())
                         .policyName(entry.getKey())
                         .policyDocument(entry.getValue())
@@ -89,7 +105,7 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
         log.info("Reading IAM Role: {}", resource.getName());
 
         try {
-            var response = iamClient.getRole(GetRoleRequest.builder()
+            var response = getClient().getRole(GetRoleRequest.builder()
                     .roleName(resource.getName())
                     .build());
 
@@ -111,7 +127,7 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
 
         // Update assume role policy
         if (resource.getAssumeRolePolicy() != null) {
-            iamClient.updateAssumeRolePolicy(UpdateAssumeRolePolicyRequest.builder()
+            getClient().updateAssumeRolePolicy(UpdateAssumeRolePolicyRequest.builder()
                     .roleName(resource.getName())
                     .policyDocument(resource.getAssumeRolePolicy())
                     .build());
@@ -119,7 +135,7 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
 
         // Update description
         if (resource.getDescription() != null) {
-            iamClient.updateRole(UpdateRoleRequest.builder()
+            getClient().updateRole(UpdateRoleRequest.builder()
                     .roleName(resource.getName())
                     .description(resource.getDescription())
                     .maxSessionDuration(resource.getMaxSessionDuration())
@@ -134,7 +150,7 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
         // Detach policies not in desired list
         for (var policyArn : currentPolicies) {
             if (!desiredPolicies.contains(policyArn)) {
-                iamClient.detachRolePolicy(DetachRolePolicyRequest.builder()
+                getClient().detachRolePolicy(DetachRolePolicyRequest.builder()
                         .roleName(resource.getName())
                         .policyArn(policyArn)
                         .build());
@@ -145,7 +161,7 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
         // Attach new policies
         for (var policyArn : desiredPolicies) {
             if (!currentPolicies.contains(policyArn)) {
-                iamClient.attachRolePolicy(AttachRolePolicyRequest.builder()
+                getClient().attachRolePolicy(AttachRolePolicyRequest.builder()
                         .roleName(resource.getName())
                         .policyArn(policyArn)
                         .build());
@@ -159,7 +175,7 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
             var currentInline = listInlinePolicies(resource.getName());
             for (var policyName : currentInline) {
                 if (!resource.getInlinePolicies().containsKey(policyName)) {
-                    iamClient.deleteRolePolicy(DeleteRolePolicyRequest.builder()
+                    getClient().deleteRolePolicy(DeleteRolePolicyRequest.builder()
                             .roleName(resource.getName())
                             .policyName(policyName)
                             .build());
@@ -167,7 +183,7 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
             }
             // Add/update inline policies
             for (var entry : resource.getInlinePolicies().entrySet()) {
-                iamClient.putRolePolicy(PutRolePolicyRequest.builder()
+                getClient().putRolePolicy(PutRolePolicyRequest.builder()
                         .roleName(resource.getName())
                         .policyName(entry.getKey())
                         .policyDocument(entry.getValue())
@@ -179,14 +195,14 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
         if (resource.getTags() != null) {
             // Untag all existing tags
             if (current.getTags() != null && !current.getTags().isEmpty()) {
-                iamClient.untagRole(UntagRoleRequest.builder()
+                getClient().untagRole(UntagRoleRequest.builder()
                         .roleName(resource.getName())
                         .tagKeys(current.getTags().keySet().stream().toList())
                         .build());
             }
             // Apply new tags
             if (!resource.getTags().isEmpty()) {
-                iamClient.tagRole(TagRoleRequest.builder()
+                getClient().tagRole(TagRoleRequest.builder()
                         .roleName(resource.getName())
                         .tags(toIamTags(resource.getTags()))
                         .build());
@@ -197,7 +213,7 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
     }
 
     private List<String> listAttachedPolicies(String roleName) {
-        var response = iamClient.listAttachedRolePolicies(ListAttachedRolePoliciesRequest.builder()
+        var response = getClient().listAttachedRolePolicies(ListAttachedRolePoliciesRequest.builder()
                 .roleName(roleName)
                 .build());
         return response.attachedPolicies().stream()
@@ -206,7 +222,7 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
     }
 
     private List<String> listInlinePolicies(String roleName) {
-        var response = iamClient.listRolePolicies(ListRolePoliciesRequest.builder()
+        var response = getClient().listRolePolicies(ListRolePoliciesRequest.builder()
                 .roleName(roleName)
                 .build());
         return response.policyNames();
@@ -225,7 +241,7 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
             // Detach all managed policies first
             var attachedPolicies = listAttachedPolicies(resource.getName());
             for (var policyArn : attachedPolicies) {
-                iamClient.detachRolePolicy(DetachRolePolicyRequest.builder()
+                getClient().detachRolePolicy(DetachRolePolicyRequest.builder()
                         .roleName(resource.getName())
                         .policyArn(policyArn)
                         .build());
@@ -234,25 +250,25 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
             // Delete all inline policies
             var inlinePolicies = listInlinePolicies(resource.getName());
             for (var policyName : inlinePolicies) {
-                iamClient.deleteRolePolicy(DeleteRolePolicyRequest.builder()
+                getClient().deleteRolePolicy(DeleteRolePolicyRequest.builder()
                         .roleName(resource.getName())
                         .policyName(policyName)
                         .build());
             }
 
             // Remove role from all instance profiles
-            var profiles = iamClient.listInstanceProfilesForRole(ListInstanceProfilesForRoleRequest.builder()
+            var profiles = getClient().listInstanceProfilesForRole(ListInstanceProfilesForRoleRequest.builder()
                     .roleName(resource.getName())
                     .build());
             for (var profile : profiles.instanceProfiles()) {
-                iamClient.removeRoleFromInstanceProfile(RemoveRoleFromInstanceProfileRequest.builder()
+                getClient().removeRoleFromInstanceProfile(RemoveRoleFromInstanceProfileRequest.builder()
                         .instanceProfileName(profile.instanceProfileName())
                         .roleName(resource.getName())
                         .build());
             }
 
             // Delete the role
-            iamClient.deleteRole(DeleteRoleRequest.builder()
+            getClient().deleteRole(DeleteRoleRequest.builder()
                     .roleName(resource.getName())
                     .build());
 
@@ -326,7 +342,7 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
         if (!inlinePolicyNames.isEmpty()) {
             var inlinePolicies = new java.util.HashMap<String, String>();
             for (var policyName : inlinePolicyNames) {
-                var policyResponse = iamClient.getRolePolicy(GetRolePolicyRequest.builder()
+                var policyResponse = getClient().getRolePolicy(GetRolePolicyRequest.builder()
                         .roleName(role.roleName())
                         .policyName(policyName)
                         .build());

@@ -18,14 +18,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class IamPolicyResourceType extends ResourceTypeHandler<IamPolicyResource> {
 
-    private final IamClient iamClient;
+    private volatile IamClient iamClient;
 
     public IamPolicyResourceType() {
-        this.iamClient = IamClient.builder().build();
+        // Client created lazily to pick up configuration
     }
 
     public IamPolicyResourceType(IamClient iamClient) {
         this.iamClient = iamClient;
+    }
+
+    /**
+     * Get or create an IAM client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private IamClient getClient() {
+        if (iamClient == null) {
+            synchronized (this) {
+                if (iamClient == null) {
+                    log.debug("Creating IAM client with current AWS configuration");
+                    iamClient = IamClient.builder().build();
+                }
+            }
+        }
+        return iamClient;
     }
 
     @Override
@@ -46,7 +62,7 @@ public class IamPolicyResourceType extends ResourceTypeHandler<IamPolicyResource
             requestBuilder.tags(toIamTags(resource.getTags()));
         }
 
-        var response = iamClient.createPolicy(requestBuilder.build());
+        var response = getClient().createPolicy(requestBuilder.build());
         log.info("Created IAM Policy: {} (ARN: {})",
                 response.policy().policyName(), response.policy().arn());
 
@@ -70,7 +86,7 @@ public class IamPolicyResourceType extends ResourceTypeHandler<IamPolicyResource
         log.info("Reading IAM Policy: {}", arn);
 
         try {
-            var response = iamClient.getPolicy(GetPolicyRequest.builder()
+            var response = getClient().getPolicy(GetPolicyRequest.builder()
                     .policyArn(arn)
                     .build());
 
@@ -88,7 +104,7 @@ public class IamPolicyResourceType extends ResourceTypeHandler<IamPolicyResource
                 .pathPrefix(path != null ? path : "/")
                 .build();
 
-        var response = iamClient.listPolicies(request);
+        var response = getClient().listPolicies(request);
         for (var policy : response.policies()) {
             if (policy.policyName().equals(name)) {
                 return policy.arn();
@@ -114,7 +130,7 @@ public class IamPolicyResourceType extends ResourceTypeHandler<IamPolicyResource
             deleteOldPolicyVersions(arn);
 
             // Create new version
-            iamClient.createPolicyVersion(CreatePolicyVersionRequest.builder()
+            getClient().createPolicyVersion(CreatePolicyVersionRequest.builder()
                     .policyArn(arn)
                     .policyDocument(resource.getPolicy())
                     .setAsDefault(true)
@@ -126,14 +142,14 @@ public class IamPolicyResourceType extends ResourceTypeHandler<IamPolicyResource
         if (resource.getTags() != null) {
             // Untag all existing tags
             if (current.getTags() != null && !current.getTags().isEmpty()) {
-                iamClient.untagPolicy(UntagPolicyRequest.builder()
+                getClient().untagPolicy(UntagPolicyRequest.builder()
                         .policyArn(arn)
                         .tagKeys(current.getTags().keySet().stream().toList())
                         .build());
             }
             // Apply new tags
             if (!resource.getTags().isEmpty()) {
-                iamClient.tagPolicy(TagPolicyRequest.builder()
+                getClient().tagPolicy(TagPolicyRequest.builder()
                         .policyArn(arn)
                         .tags(toIamTags(resource.getTags()))
                         .build());
@@ -144,7 +160,7 @@ public class IamPolicyResourceType extends ResourceTypeHandler<IamPolicyResource
     }
 
     private void deleteOldPolicyVersions(String policyArn) {
-        var versions = iamClient.listPolicyVersions(ListPolicyVersionsRequest.builder()
+        var versions = getClient().listPolicyVersions(ListPolicyVersionsRequest.builder()
                 .policyArn(policyArn)
                 .build()).versions();
 
@@ -152,7 +168,7 @@ public class IamPolicyResourceType extends ResourceTypeHandler<IamPolicyResource
         if (versions.size() >= 5) {
             for (var version : versions) {
                 if (!version.isDefaultVersion()) {
-                    iamClient.deletePolicyVersion(DeletePolicyVersionRequest.builder()
+                    getClient().deletePolicyVersion(DeletePolicyVersionRequest.builder()
                             .policyArn(policyArn)
                             .versionId(version.versionId())
                             .build());
@@ -182,12 +198,12 @@ public class IamPolicyResourceType extends ResourceTypeHandler<IamPolicyResource
             detachPolicyFromAllEntities(arn);
 
             // Delete all non-default versions
-            var versions = iamClient.listPolicyVersions(ListPolicyVersionsRequest.builder()
+            var versions = getClient().listPolicyVersions(ListPolicyVersionsRequest.builder()
                     .policyArn(arn)
                     .build()).versions();
             for (var version : versions) {
                 if (!version.isDefaultVersion()) {
-                    iamClient.deletePolicyVersion(DeletePolicyVersionRequest.builder()
+                    getClient().deletePolicyVersion(DeletePolicyVersionRequest.builder()
                             .policyArn(arn)
                             .versionId(version.versionId())
                             .build());
@@ -195,7 +211,7 @@ public class IamPolicyResourceType extends ResourceTypeHandler<IamPolicyResource
             }
 
             // Delete the policy
-            iamClient.deletePolicy(DeletePolicyRequest.builder()
+            getClient().deletePolicy(DeletePolicyRequest.builder()
                     .policyArn(arn)
                     .build());
 
@@ -209,36 +225,36 @@ public class IamPolicyResourceType extends ResourceTypeHandler<IamPolicyResource
 
     private void detachPolicyFromAllEntities(String policyArn) {
         // Detach from roles
-        var roles = iamClient.listEntitiesForPolicy(ListEntitiesForPolicyRequest.builder()
+        var roles = getClient().listEntitiesForPolicy(ListEntitiesForPolicyRequest.builder()
                 .policyArn(policyArn)
                 .entityFilter(EntityType.ROLE)
                 .build());
         for (var role : roles.policyRoles()) {
-            iamClient.detachRolePolicy(DetachRolePolicyRequest.builder()
+            getClient().detachRolePolicy(DetachRolePolicyRequest.builder()
                     .roleName(role.roleName())
                     .policyArn(policyArn)
                     .build());
         }
 
         // Detach from users
-        var users = iamClient.listEntitiesForPolicy(ListEntitiesForPolicyRequest.builder()
+        var users = getClient().listEntitiesForPolicy(ListEntitiesForPolicyRequest.builder()
                 .policyArn(policyArn)
                 .entityFilter(EntityType.USER)
                 .build());
         for (var user : users.policyUsers()) {
-            iamClient.detachUserPolicy(DetachUserPolicyRequest.builder()
+            getClient().detachUserPolicy(DetachUserPolicyRequest.builder()
                     .userName(user.userName())
                     .policyArn(policyArn)
                     .build());
         }
 
         // Detach from groups
-        var groups = iamClient.listEntitiesForPolicy(ListEntitiesForPolicyRequest.builder()
+        var groups = getClient().listEntitiesForPolicy(ListEntitiesForPolicyRequest.builder()
                 .policyArn(policyArn)
                 .entityFilter(EntityType.GROUP)
                 .build());
         for (var group : groups.policyGroups()) {
-            iamClient.detachGroupPolicy(DetachGroupPolicyRequest.builder()
+            getClient().detachGroupPolicy(DetachGroupPolicyRequest.builder()
                     .groupName(group.groupName())
                     .policyArn(policyArn)
                     .build());
@@ -292,7 +308,7 @@ public class IamPolicyResourceType extends ResourceTypeHandler<IamPolicyResource
 
         // Get the policy document from default version
         if (policy.defaultVersionId() != null) {
-            var versionResponse = iamClient.getPolicyVersion(GetPolicyVersionRequest.builder()
+            var versionResponse = getClient().getPolicyVersion(GetPolicyVersionRequest.builder()
                     .policyArn(policy.arn())
                     .versionId(policy.defaultVersionId())
                     .build());

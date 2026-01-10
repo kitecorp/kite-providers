@@ -17,14 +17,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResource> {
 
-    private final Ec2Client ec2Client;
+    private volatile Ec2Client ec2Client;
 
     public NatGatewayResourceType() {
-        this.ec2Client = Ec2Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public NatGatewayResourceType(Ec2Client ec2Client) {
         this.ec2Client = ec2Client;
+    }
+
+    /**
+     * Get or create an EC2 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private Ec2Client getClient() {
+        if (ec2Client == null) {
+            synchronized (this) {
+                if (ec2Client == null) {
+                    log.debug("Creating EC2 client with current AWS configuration");
+                    ec2Client = Ec2Client.create();
+                }
+            }
+        }
+        return ec2Client;
     }
 
     @Override
@@ -55,7 +71,7 @@ public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResour
             requestBuilder.tagSpecifications(tagSpecs);
         }
 
-        var response = ec2Client.createNatGateway(requestBuilder.build());
+        var response = getClient().createNatGateway(requestBuilder.build());
         var natGateway = response.natGateway();
         log.info("Created NAT Gateway: {} (state: {})",
                 natGateway.natGatewayId(), natGateway.stateAsString());
@@ -76,7 +92,7 @@ public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResour
 
         while (attempt < maxAttempts) {
             try {
-                var response = ec2Client.describeNatGateways(DescribeNatGatewaysRequest.builder()
+                var response = getClient().describeNatGateways(DescribeNatGatewaysRequest.builder()
                         .natGatewayIds(natGatewayId)
                         .build());
 
@@ -113,7 +129,7 @@ public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResour
         log.info("Reading NAT Gateway: {}", resource.getNatGatewayId());
 
         try {
-            var response = ec2Client.describeNatGateways(DescribeNatGatewaysRequest.builder()
+            var response = getClient().describeNatGateways(DescribeNatGatewaysRequest.builder()
                     .natGatewayIds(resource.getNatGatewayId())
                     .build());
 
@@ -155,7 +171,7 @@ public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResour
                 var oldTags = current.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.deleteTags(DeleteTagsRequest.builder()
+                getClient().deleteTags(DeleteTagsRequest.builder()
                         .resources(natGatewayId)
                         .tags(oldTags)
                         .build());
@@ -164,7 +180,7 @@ public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResour
                 var newTags = resource.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.createTags(CreateTagsRequest.builder()
+                getClient().createTags(CreateTagsRequest.builder()
                         .resources(natGatewayId)
                         .tags(newTags)
                         .build());
@@ -184,7 +200,7 @@ public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResour
         log.info("Deleting NAT Gateway: {}", resource.getNatGatewayId());
 
         try {
-            ec2Client.deleteNatGateway(DeleteNatGatewayRequest.builder()
+            getClient().deleteNatGateway(DeleteNatGatewayRequest.builder()
                     .natGatewayId(resource.getNatGatewayId())
                     .build());
 

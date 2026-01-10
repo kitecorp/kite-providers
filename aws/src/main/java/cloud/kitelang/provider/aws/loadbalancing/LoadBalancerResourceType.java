@@ -22,14 +22,30 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
     private static final Set<String> VALID_SCHEMES = Set.of("internet-facing", "internal");
     private static final Set<String> VALID_IP_TYPES = Set.of("ipv4", "dualstack");
 
-    private final ElasticLoadBalancingV2Client elbClient;
+    private volatile ElasticLoadBalancingV2Client elbClient;
 
     public LoadBalancerResourceType() {
-        this.elbClient = ElasticLoadBalancingV2Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public LoadBalancerResourceType(ElasticLoadBalancingV2Client elbClient) {
         this.elbClient = elbClient;
+    }
+
+    /**
+     * Get or create an ELBv2 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private ElasticLoadBalancingV2Client getClient() {
+        if (elbClient == null) {
+            synchronized (this) {
+                if (elbClient == null) {
+                    log.debug("Creating ELBv2 client with current AWS configuration");
+                    elbClient = ElasticLoadBalancingV2Client.create();
+                }
+            }
+        }
+        return elbClient;
     }
 
     @Override
@@ -67,7 +83,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
             requestBuilder.tags(tags);
         }
 
-        var response = elbClient.createLoadBalancer(requestBuilder.build());
+        var response = getClient().createLoadBalancer(requestBuilder.build());
         var lb = response.loadBalancers().get(0);
 
         log.info("Created Load Balancer: {}", lb.loadBalancerArn());
@@ -99,11 +115,11 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
         try {
             DescribeLoadBalancersResponse response;
             if (resource.getArn() != null) {
-                response = elbClient.describeLoadBalancers(DescribeLoadBalancersRequest.builder()
+                response = getClient().describeLoadBalancers(DescribeLoadBalancersRequest.builder()
                         .loadBalancerArns(resource.getArn())
                         .build());
             } else {
-                response = elbClient.describeLoadBalancers(DescribeLoadBalancersRequest.builder()
+                response = getClient().describeLoadBalancers(DescribeLoadBalancersRequest.builder()
                         .names(resource.getName())
                         .build());
             }
@@ -130,7 +146,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
 
         // Update security groups (ALB only)
         if (resource.getSecurityGroups() != null && "application".equals(current.getType())) {
-            elbClient.setSecurityGroups(SetSecurityGroupsRequest.builder()
+            getClient().setSecurityGroups(SetSecurityGroupsRequest.builder()
                     .loadBalancerArn(resource.getArn())
                     .securityGroups(resource.getSecurityGroups())
                     .build());
@@ -138,7 +154,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
 
         // Update subnets
         if (resource.getSubnets() != null) {
-            elbClient.setSubnets(SetSubnetsRequest.builder()
+            getClient().setSubnets(SetSubnetsRequest.builder()
                     .loadBalancerArn(resource.getArn())
                     .subnets(resource.getSubnets())
                     .build());
@@ -146,7 +162,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
 
         // Update IP address type
         if (resource.getIpAddressType() != null) {
-            elbClient.setIpAddressType(SetIpAddressTypeRequest.builder()
+            getClient().setIpAddressType(SetIpAddressTypeRequest.builder()
                     .loadBalancerArn(resource.getArn())
                     .ipAddressType(IpAddressType.fromValue(resource.getIpAddressType()))
                     .build());
@@ -158,7 +174,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
         // Update tags
         if (resource.getTags() != null) {
             // Remove existing tags
-            var existingTags = elbClient.describeTags(DescribeTagsRequest.builder()
+            var existingTags = getClient().describeTags(DescribeTagsRequest.builder()
                     .resourceArns(resource.getArn())
                     .build());
             if (!existingTags.tagDescriptions().isEmpty()) {
@@ -166,7 +182,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
                         .map(Tag::key)
                         .collect(Collectors.toList());
                 if (!tagKeys.isEmpty()) {
-                    elbClient.removeTags(RemoveTagsRequest.builder()
+                    getClient().removeTags(RemoveTagsRequest.builder()
                             .resourceArns(resource.getArn())
                             .tagKeys(tagKeys)
                             .build());
@@ -178,7 +194,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
                 var tags = resource.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                elbClient.addTags(AddTagsRequest.builder()
+                getClient().addTags(AddTagsRequest.builder()
                         .resourceArns(resource.getArn())
                         .tags(tags)
                         .build());
@@ -198,7 +214,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
         log.info("Deleting Load Balancer: {}", resource.getArn());
 
         try {
-            elbClient.deleteLoadBalancer(DeleteLoadBalancerRequest.builder()
+            getClient().deleteLoadBalancer(DeleteLoadBalancerRequest.builder()
                     .loadBalancerArn(resource.getArn())
                     .build());
 
@@ -278,7 +294,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
         int attempt = 0;
 
         while (attempt < maxAttempts) {
-            var response = elbClient.describeLoadBalancers(DescribeLoadBalancersRequest.builder()
+            var response = getClient().describeLoadBalancers(DescribeLoadBalancersRequest.builder()
                     .loadBalancerArns(arn)
                     .build());
 
@@ -358,7 +374,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
         }
 
         if (!attributes.isEmpty()) {
-            elbClient.modifyLoadBalancerAttributes(ModifyLoadBalancerAttributesRequest.builder()
+            getClient().modifyLoadBalancerAttributes(ModifyLoadBalancerAttributesRequest.builder()
                     .loadBalancerArn(arn)
                     .attributes(attributes)
                     .build());
@@ -389,7 +405,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
         }
 
         // Get attributes
-        var attributesResponse = elbClient.describeLoadBalancerAttributes(
+        var attributesResponse = getClient().describeLoadBalancerAttributes(
                 DescribeLoadBalancerAttributesRequest.builder()
                         .loadBalancerArn(lb.loadBalancerArn())
                         .build());
@@ -421,7 +437,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
         }
 
         // Get tags
-        var tagsResponse = elbClient.describeTags(DescribeTagsRequest.builder()
+        var tagsResponse = getClient().describeTags(DescribeTagsRequest.builder()
                 .resourceArns(lb.loadBalancerArn())
                 .build());
         if (!tagsResponse.tagDescriptions().isEmpty()) {

@@ -17,14 +17,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class InternetGatewayResourceType extends ResourceTypeHandler<InternetGatewayResource> {
 
-    private final Ec2Client ec2Client;
+    private volatile Ec2Client ec2Client;
 
     public InternetGatewayResourceType() {
-        this.ec2Client = Ec2Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public InternetGatewayResourceType(Ec2Client ec2Client) {
         this.ec2Client = ec2Client;
+    }
+
+    /**
+     * Get or create an EC2 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private Ec2Client getClient() {
+        if (ec2Client == null) {
+            synchronized (this) {
+                if (ec2Client == null) {
+                    log.debug("Creating EC2 client with current AWS configuration");
+                    ec2Client = Ec2Client.create();
+                }
+            }
+        }
+        return ec2Client;
     }
 
     @Override
@@ -44,7 +60,7 @@ public class InternetGatewayResourceType extends ResourceTypeHandler<InternetGat
             requestBuilder.tagSpecifications(tagSpecs);
         }
 
-        var response = ec2Client.createInternetGateway(requestBuilder.build());
+        var response = getClient().createInternetGateway(requestBuilder.build());
         var igw = response.internetGateway();
         log.info("Created Internet Gateway: {}", igw.internetGatewayId());
 
@@ -61,7 +77,7 @@ public class InternetGatewayResourceType extends ResourceTypeHandler<InternetGat
     private void attachToVpc(String internetGatewayId, String vpcId) {
         log.info("Attaching Internet Gateway '{}' to VPC '{}'", internetGatewayId, vpcId);
 
-        ec2Client.attachInternetGateway(AttachInternetGatewayRequest.builder()
+        getClient().attachInternetGateway(AttachInternetGatewayRequest.builder()
                 .internetGatewayId(internetGatewayId)
                 .vpcId(vpcId)
                 .build());
@@ -71,7 +87,7 @@ public class InternetGatewayResourceType extends ResourceTypeHandler<InternetGat
         log.info("Detaching Internet Gateway '{}' from VPC '{}'", internetGatewayId, vpcId);
 
         try {
-            ec2Client.detachInternetGateway(DetachInternetGatewayRequest.builder()
+            getClient().detachInternetGateway(DetachInternetGatewayRequest.builder()
                     .internetGatewayId(internetGatewayId)
                     .vpcId(vpcId)
                     .build());
@@ -90,7 +106,7 @@ public class InternetGatewayResourceType extends ResourceTypeHandler<InternetGat
         log.info("Reading Internet Gateway: {}", resource.getInternetGatewayId());
 
         try {
-            var response = ec2Client.describeInternetGateways(DescribeInternetGatewaysRequest.builder()
+            var response = getClient().describeInternetGateways(DescribeInternetGatewaysRequest.builder()
                     .internetGatewayIds(resource.getInternetGatewayId())
                     .build());
 
@@ -139,7 +155,7 @@ public class InternetGatewayResourceType extends ResourceTypeHandler<InternetGat
                 var oldTags = current.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.deleteTags(DeleteTagsRequest.builder()
+                getClient().deleteTags(DeleteTagsRequest.builder()
                         .resources(igwId)
                         .tags(oldTags)
                         .build());
@@ -148,7 +164,7 @@ public class InternetGatewayResourceType extends ResourceTypeHandler<InternetGat
                 var newTags = resource.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                ec2Client.createTags(CreateTagsRequest.builder()
+                getClient().createTags(CreateTagsRequest.builder()
                         .resources(igwId)
                         .tags(newTags)
                         .build());
@@ -180,7 +196,7 @@ public class InternetGatewayResourceType extends ResourceTypeHandler<InternetGat
             }
 
             // Delete the internet gateway
-            ec2Client.deleteInternetGateway(DeleteInternetGatewayRequest.builder()
+            getClient().deleteInternetGateway(DeleteInternetGatewayRequest.builder()
                     .internetGatewayId(resource.getInternetGatewayId())
                     .build());
 

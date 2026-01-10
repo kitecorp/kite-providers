@@ -17,26 +17,42 @@ import java.util.List;
 @Slf4j
 public class S3BucketPolicyResourceType extends ResourceTypeHandler<S3BucketPolicyResource> {
 
-    private final S3Client s3Client;
+    private volatile S3Client s3Client;
 
     public S3BucketPolicyResourceType() {
-        var region = System.getenv("AWS_REGION") != null
-                ? System.getenv("AWS_REGION")
-                : "us-east-1";
-        this.s3Client = S3Client.builder()
-                .region(Region.of(region))
-                .build();
+        // Client created lazily to pick up configuration
     }
 
     public S3BucketPolicyResourceType(S3Client s3Client) {
         this.s3Client = s3Client;
     }
 
+    /**
+     * Get or create an S3 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private S3Client getClient() {
+        if (s3Client == null) {
+            synchronized (this) {
+                if (s3Client == null) {
+                    log.debug("Creating S3 client with current AWS configuration");
+                    var region = System.getenv("AWS_REGION") != null
+                            ? System.getenv("AWS_REGION")
+                            : "us-east-1";
+                    s3Client = S3Client.builder()
+                            .region(Region.of(region))
+                            .build();
+                }
+            }
+        }
+        return s3Client;
+    }
+
     @Override
     public S3BucketPolicyResource create(S3BucketPolicyResource resource) {
         log.info("Creating S3 Bucket Policy for: {}", resource.getBucket());
 
-        s3Client.putBucketPolicy(PutBucketPolicyRequest.builder()
+        getClient().putBucketPolicy(PutBucketPolicyRequest.builder()
                 .bucket(resource.getBucket())
                 .policy(resource.getPolicy())
                 .build());
@@ -56,7 +72,7 @@ public class S3BucketPolicyResourceType extends ResourceTypeHandler<S3BucketPoli
         log.info("Reading S3 Bucket Policy for: {}", resource.getBucket());
 
         try {
-            var response = s3Client.getBucketPolicy(GetBucketPolicyRequest.builder()
+            var response = getClient().getBucketPolicy(GetBucketPolicyRequest.builder()
                     .bucket(resource.getBucket())
                     .build());
 
@@ -78,7 +94,7 @@ public class S3BucketPolicyResourceType extends ResourceTypeHandler<S3BucketPoli
         log.info("Updating S3 Bucket Policy for: {}", resource.getBucket());
 
         // Put replaces the existing policy
-        s3Client.putBucketPolicy(PutBucketPolicyRequest.builder()
+        getClient().putBucketPolicy(PutBucketPolicyRequest.builder()
                 .bucket(resource.getBucket())
                 .policy(resource.getPolicy())
                 .build());
@@ -96,7 +112,7 @@ public class S3BucketPolicyResourceType extends ResourceTypeHandler<S3BucketPoli
         log.info("Deleting S3 Bucket Policy for: {}", resource.getBucket());
 
         try {
-            s3Client.deleteBucketPolicy(DeleteBucketPolicyRequest.builder()
+            getClient().deleteBucketPolicy(DeleteBucketPolicyRequest.builder()
                     .bucket(resource.getBucket())
                     .build());
 

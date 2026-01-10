@@ -25,14 +25,30 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
             "instance", "ip", "lambda", "alb"
     );
 
-    private final ElasticLoadBalancingV2Client elbClient;
+    private volatile ElasticLoadBalancingV2Client elbClient;
 
     public TargetGroupResourceType() {
-        this.elbClient = ElasticLoadBalancingV2Client.create();
+        // Client created lazily to pick up configuration
     }
 
     public TargetGroupResourceType(ElasticLoadBalancingV2Client elbClient) {
         this.elbClient = elbClient;
+    }
+
+    /**
+     * Get or create an ELBv2 client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private ElasticLoadBalancingV2Client getClient() {
+        if (elbClient == null) {
+            synchronized (this) {
+                if (elbClient == null) {
+                    log.debug("Creating ELBv2 client with current AWS configuration");
+                    elbClient = ElasticLoadBalancingV2Client.create();
+                }
+            }
+        }
+        return elbClient;
     }
 
     @Override
@@ -105,7 +121,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
             requestBuilder.tags(tags);
         }
 
-        var response = elbClient.createTargetGroup(requestBuilder.build());
+        var response = getClient().createTargetGroup(requestBuilder.build());
         var tg = response.targetGroups().get(0);
 
         log.info("Created Target Group: {}", tg.targetGroupArn());
@@ -135,11 +151,11 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
         try {
             DescribeTargetGroupsResponse response;
             if (resource.getArn() != null) {
-                response = elbClient.describeTargetGroups(DescribeTargetGroupsRequest.builder()
+                response = getClient().describeTargetGroups(DescribeTargetGroupsRequest.builder()
                         .targetGroupArns(resource.getArn())
                         .build());
             } else {
-                response = elbClient.describeTargetGroups(DescribeTargetGroupsRequest.builder()
+                response = getClient().describeTargetGroups(DescribeTargetGroupsRequest.builder()
                         .names(resource.getName())
                         .build());
             }
@@ -195,7 +211,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
                 modifyBuilder.matcher(Matcher.builder().httpCode(hc.getMatcher()).build());
             }
 
-            elbClient.modifyTargetGroup(modifyBuilder.build());
+            getClient().modifyTargetGroup(modifyBuilder.build());
         }
 
         // Update attributes
@@ -204,7 +220,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
         // Update targets
         if (resource.getTargets() != null) {
             // Get current targets
-            var healthResponse = elbClient.describeTargetHealth(DescribeTargetHealthRequest.builder()
+            var healthResponse = getClient().describeTargetHealth(DescribeTargetHealthRequest.builder()
                     .targetGroupArn(resource.getArn())
                     .build());
             var currentTargetIds = healthResponse.targetHealthDescriptions().stream()
@@ -217,7 +233,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
                     .map(id -> TargetDescription.builder().id(id).build())
                     .collect(Collectors.toList());
             if (!toDeregister.isEmpty()) {
-                elbClient.deregisterTargets(DeregisterTargetsRequest.builder()
+                getClient().deregisterTargets(DeregisterTargetsRequest.builder()
                         .targetGroupArn(resource.getArn())
                         .targets(toDeregister)
                         .build());
@@ -234,7 +250,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
 
         // Update tags
         if (resource.getTags() != null) {
-            var existingTags = elbClient.describeTags(DescribeTagsRequest.builder()
+            var existingTags = getClient().describeTags(DescribeTagsRequest.builder()
                     .resourceArns(resource.getArn())
                     .build());
             if (!existingTags.tagDescriptions().isEmpty()) {
@@ -242,7 +258,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
                         .map(Tag::key)
                         .collect(Collectors.toList());
                 if (!tagKeys.isEmpty()) {
-                    elbClient.removeTags(RemoveTagsRequest.builder()
+                    getClient().removeTags(RemoveTagsRequest.builder()
                             .resourceArns(resource.getArn())
                             .tagKeys(tagKeys)
                             .build());
@@ -252,7 +268,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
                 var tags = resource.getTags().entrySet().stream()
                         .map(e -> Tag.builder().key(e.getKey()).value(e.getValue()).build())
                         .collect(Collectors.toList());
-                elbClient.addTags(AddTagsRequest.builder()
+                getClient().addTags(AddTagsRequest.builder()
                         .resourceArns(resource.getArn())
                         .tags(tags)
                         .build());
@@ -272,7 +288,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
         log.info("Deleting Target Group: {}", resource.getArn());
 
         try {
-            elbClient.deleteTargetGroup(DeleteTargetGroupRequest.builder()
+            getClient().deleteTargetGroup(DeleteTargetGroupRequest.builder()
                     .targetGroupArn(resource.getArn())
                     .build());
 
@@ -374,7 +390,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
         }
 
         if (!attributes.isEmpty()) {
-            elbClient.modifyTargetGroupAttributes(ModifyTargetGroupAttributesRequest.builder()
+            getClient().modifyTargetGroupAttributes(ModifyTargetGroupAttributesRequest.builder()
                     .targetGroupArn(arn)
                     .attributes(attributes)
                     .build());
@@ -392,7 +408,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
                 })
                 .collect(Collectors.toList());
 
-        elbClient.registerTargets(RegisterTargetsRequest.builder()
+        getClient().registerTargets(RegisterTargetsRequest.builder()
                 .targetGroupArn(arn)
                 .targets(targetDescriptions)
                 .build());
@@ -424,7 +440,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
         resource.setHealthCheck(hc);
 
         // Get attributes
-        var attributesResponse = elbClient.describeTargetGroupAttributes(
+        var attributesResponse = getClient().describeTargetGroupAttributes(
                 DescribeTargetGroupAttributesRequest.builder()
                         .targetGroupArn(tg.targetGroupArn())
                         .build());
@@ -455,7 +471,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
         resource.setStickiness(stickiness);
 
         // Get registered targets
-        var healthResponse = elbClient.describeTargetHealth(DescribeTargetHealthRequest.builder()
+        var healthResponse = getClient().describeTargetHealth(DescribeTargetHealthRequest.builder()
                 .targetGroupArn(tg.targetGroupArn())
                 .build());
         resource.setTargets(healthResponse.targetHealthDescriptions().stream()
@@ -463,7 +479,7 @@ public class TargetGroupResourceType extends ResourceTypeHandler<TargetGroupReso
                 .collect(Collectors.toList()));
 
         // Get tags
-        var tagsResponse = elbClient.describeTags(DescribeTagsRequest.builder()
+        var tagsResponse = getClient().describeTags(DescribeTagsRequest.builder()
                 .resourceArns(tg.targetGroupArn())
                 .build());
         if (!tagsResponse.tagDescriptions().isEmpty()) {

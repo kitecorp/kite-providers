@@ -18,14 +18,30 @@ import java.util.stream.Collectors;
 @Slf4j
 public class IamInstanceProfileResourceType extends ResourceTypeHandler<IamInstanceProfileResource> {
 
-    private final IamClient iamClient;
+    private volatile IamClient iamClient;
 
     public IamInstanceProfileResourceType() {
-        this.iamClient = IamClient.builder().build();
+        // Client created lazily to pick up configuration
     }
 
     public IamInstanceProfileResourceType(IamClient iamClient) {
         this.iamClient = iamClient;
+    }
+
+    /**
+     * Get or create an IAM client.
+     * Creates the client lazily to allow provider configuration to be applied first.
+     */
+    private IamClient getClient() {
+        if (iamClient == null) {
+            synchronized (this) {
+                if (iamClient == null) {
+                    log.debug("Creating IAM client with current AWS configuration");
+                    iamClient = IamClient.builder().build();
+                }
+            }
+        }
+        return iamClient;
     }
 
     @Override
@@ -42,7 +58,7 @@ public class IamInstanceProfileResourceType extends ResourceTypeHandler<IamInsta
             requestBuilder.tags(toIamTags(resource.getTags()));
         }
 
-        var response = iamClient.createInstanceProfile(requestBuilder.build());
+        var response = getClient().createInstanceProfile(requestBuilder.build());
         log.info("Created IAM Instance Profile: {} (ARN: {})",
                 response.instanceProfile().instanceProfileName(),
                 response.instanceProfile().arn());
@@ -52,7 +68,7 @@ public class IamInstanceProfileResourceType extends ResourceTypeHandler<IamInsta
             // Wait a moment for the instance profile to be ready
             waitForInstanceProfile(resource.getName());
 
-            iamClient.addRoleToInstanceProfile(AddRoleToInstanceProfileRequest.builder()
+            getClient().addRoleToInstanceProfile(AddRoleToInstanceProfileRequest.builder()
                     .instanceProfileName(resource.getName())
                     .roleName(resource.getRole())
                     .build());
@@ -66,7 +82,7 @@ public class IamInstanceProfileResourceType extends ResourceTypeHandler<IamInsta
         int maxAttempts = 10;
         for (int i = 0; i < maxAttempts; i++) {
             try {
-                iamClient.getInstanceProfile(GetInstanceProfileRequest.builder()
+                getClient().getInstanceProfile(GetInstanceProfileRequest.builder()
                         .instanceProfileName(name)
                         .build());
                 return;
@@ -91,7 +107,7 @@ public class IamInstanceProfileResourceType extends ResourceTypeHandler<IamInsta
         log.info("Reading IAM Instance Profile: {}", resource.getName());
 
         try {
-            var response = iamClient.getInstanceProfile(GetInstanceProfileRequest.builder()
+            var response = getClient().getInstanceProfile(GetInstanceProfileRequest.builder()
                     .instanceProfileName(resource.getName())
                     .build());
 
@@ -117,7 +133,7 @@ public class IamInstanceProfileResourceType extends ResourceTypeHandler<IamInsta
 
         if (currentRole != null && !currentRole.equals(desiredRole)) {
             // Remove current role
-            iamClient.removeRoleFromInstanceProfile(RemoveRoleFromInstanceProfileRequest.builder()
+            getClient().removeRoleFromInstanceProfile(RemoveRoleFromInstanceProfileRequest.builder()
                     .instanceProfileName(resource.getName())
                     .roleName(currentRole)
                     .build());
@@ -126,7 +142,7 @@ public class IamInstanceProfileResourceType extends ResourceTypeHandler<IamInsta
 
         if (desiredRole != null && !desiredRole.isBlank() && !desiredRole.equals(currentRole)) {
             // Add new role
-            iamClient.addRoleToInstanceProfile(AddRoleToInstanceProfileRequest.builder()
+            getClient().addRoleToInstanceProfile(AddRoleToInstanceProfileRequest.builder()
                     .instanceProfileName(resource.getName())
                     .roleName(desiredRole)
                     .build());
@@ -137,14 +153,14 @@ public class IamInstanceProfileResourceType extends ResourceTypeHandler<IamInsta
         if (resource.getTags() != null) {
             // Untag all existing tags
             if (current.getTags() != null && !current.getTags().isEmpty()) {
-                iamClient.untagInstanceProfile(UntagInstanceProfileRequest.builder()
+                getClient().untagInstanceProfile(UntagInstanceProfileRequest.builder()
                         .instanceProfileName(resource.getName())
                         .tagKeys(current.getTags().keySet().stream().toList())
                         .build());
             }
             // Apply new tags
             if (!resource.getTags().isEmpty()) {
-                iamClient.tagInstanceProfile(TagInstanceProfileRequest.builder()
+                getClient().tagInstanceProfile(TagInstanceProfileRequest.builder()
                         .instanceProfileName(resource.getName())
                         .tags(toIamTags(resource.getTags()))
                         .build());
@@ -172,7 +188,7 @@ public class IamInstanceProfileResourceType extends ResourceTypeHandler<IamInsta
 
             // Remove role from instance profile if present
             if (current.getRole() != null) {
-                iamClient.removeRoleFromInstanceProfile(RemoveRoleFromInstanceProfileRequest.builder()
+                getClient().removeRoleFromInstanceProfile(RemoveRoleFromInstanceProfileRequest.builder()
                         .instanceProfileName(resource.getName())
                         .roleName(current.getRole())
                         .build());
@@ -180,7 +196,7 @@ public class IamInstanceProfileResourceType extends ResourceTypeHandler<IamInsta
             }
 
             // Delete the instance profile
-            iamClient.deleteInstanceProfile(DeleteInstanceProfileRequest.builder()
+            getClient().deleteInstanceProfile(DeleteInstanceProfileRequest.builder()
                     .instanceProfileName(resource.getName())
                     .build());
 
