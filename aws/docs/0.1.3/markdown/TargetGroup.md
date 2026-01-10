@@ -16,7 +16,7 @@ resource TargetGroup example {
     slowStart           = 0
     stickiness          = "..."
     targets             = ["item1", "item2"]
-    tags                = { key = "value" }
+    tags                = { key: "value" }
 }
 ```
 

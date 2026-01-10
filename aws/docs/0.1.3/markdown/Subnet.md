@@ -10,7 +10,7 @@ resource Subnet example {
     availabilityZone            = "example-value"
     mapPublicIpOnLaunch         = false
     assignIpv6AddressOnCreation = false
-    tags                        = { key = "value" }
+    tags                        = { key: "value" }
 }
 ```
 

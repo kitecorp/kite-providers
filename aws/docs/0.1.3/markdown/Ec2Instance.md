@@ -18,7 +18,7 @@ resource Ec2Instance example {
     rootVolumeSize                  = 42
     rootVolumeType                  = "gp3"
     deleteRootVolumeOnTermination   = true
-    tags                            = { key = "value" }
+    tags                            = { key: "value" }
     ebsOptimized                    = false
     cpuCredits                      = "standard"
     hibernation                     = false

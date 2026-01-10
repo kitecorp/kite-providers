@@ -7,7 +7,7 @@ resource ElasticIp example {
     domain             = "vpc"
     networkBorderGroup = "example-value"
     publicIpv4Pool     = "example-value"
-    tags               = { key = "value" }
+    tags               = { key: "value" }
 }
 ```
 

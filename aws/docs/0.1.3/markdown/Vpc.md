@@ -9,7 +9,7 @@ resource Vpc example {
     instanceTenancy    = "default"
     enableDnsSupport   = true
     enableDnsHostnames = false
-    tags               = { key = "value" }
+    tags               = { key: "value" }
 }
 ```
 

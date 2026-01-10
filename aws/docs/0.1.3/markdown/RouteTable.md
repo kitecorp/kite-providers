@@ -6,7 +6,7 @@
 resource RouteTable example {
     vpcId  = "example-value"
     routes = ["item1", "item2"]
-    tags   = { key = "value" }
+    tags   = { key: "value" }
 }
 ```
 

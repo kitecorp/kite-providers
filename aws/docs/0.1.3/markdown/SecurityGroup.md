@@ -9,7 +9,7 @@ resource SecurityGroup example {
     vpcId       = "example-value"
     ingress     = ["item1", "item2"]
     egress      = ["item1", "item2"]
-    tags        = { key = "value" }
+    tags        = { key: "value" }
 }
 ```
 

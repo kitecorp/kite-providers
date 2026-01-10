@@ -554,6 +554,7 @@ transition: all 0.15s;
     .name { color: #a5b4fc; }
     .prop { color: #f8fafc; }
     .eq { color: #64748b; }
+    .colon { color: #64748b; }
     .str { color: #86efac; }
     .num { color: #fcd34d; }
     .bool { color: #fb923c; }

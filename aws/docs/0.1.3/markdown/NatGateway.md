@@ -7,7 +7,7 @@ resource NatGateway example {
     subnetId         = "example-value"
     allocationId     = "example-value"
     connectivityType = "public"
-    tags             = { key = "value" }
+    tags             = { key: "value" }
 }
 ```
 

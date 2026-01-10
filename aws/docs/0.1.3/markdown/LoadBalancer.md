@@ -17,7 +17,7 @@ resource LoadBalancer example {
     accessLogsEnabled      = false
     accessLogsBucket       = "example-value"
     accessLogsPrefix       = "example-value"
-    tags                   = { key = "value" }
+    tags                   = { key: "value" }
 }
 ```
 

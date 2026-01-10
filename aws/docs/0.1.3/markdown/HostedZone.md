@@ -9,7 +9,7 @@ resource HostedZone example {
     privateZone = false
     vpcId       = "example-value"
     vpcRegion   = "example-value"
-    tags        = { key = "value" }
+    tags        = { key: "value" }
 }
 ```
 

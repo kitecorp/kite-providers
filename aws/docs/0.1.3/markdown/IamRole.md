@@ -10,8 +10,8 @@ resource IamRole example {
     path               = "example-value"
     maxSessionDuration = 42
     managedPolicyArns  = ["item1", "item2"]
-    inlinePolicies     = { key = "value" }
-    tags               = { key = "value" }
+    inlinePolicies     = { key: "value" }
+    tags               = { key: "value" }
 }
 ```
 

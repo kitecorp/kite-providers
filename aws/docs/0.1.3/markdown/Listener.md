@@ -14,7 +14,7 @@ resource Listener example {
     defaultActionType     = "forward"
     redirectConfig        = "..."
     fixedResponseConfig   = "..."
-    tags                  = { key = "value" }
+    tags                  = { key: "value" }
 }
 ```
 

@@ -8,7 +8,7 @@ resource IamPolicy example {
     description = "example-value"
     path        = "example-value"
     policy      = "example-value"
-    tags        = { key = "value" }
+    tags        = { key: "value" }
 }
 ```
 

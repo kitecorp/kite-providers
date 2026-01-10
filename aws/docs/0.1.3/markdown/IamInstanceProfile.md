@@ -7,7 +7,7 @@ resource IamInstanceProfile example {
     name = "example-value"
     path = "example-value"
     role = "example-value"
-    tags = { key = "value" }
+    tags = { key: "value" }
 }
 ```
 

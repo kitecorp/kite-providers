@@ -5,7 +5,7 @@
 ```kite
 resource InternetGateway example {
     vpcId = "example-value"
-    tags  = { key = "value" }
+    tags  = { key: "value" }
 }
 ```
 

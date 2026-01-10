@@ -17,7 +17,7 @@ resource S3Bucket example {
     corsRules                    = ["item1", "item2"]
     lifecycleRules               = ["item1", "item2"]
     logging                      = "..."
-    tags                         = { key = "value" }
+    tags                         = { key: "value" }
 }
 ```
 

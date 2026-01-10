@@ -13,7 +13,7 @@ resource EbsVolume example {
     kmsKeyId           = "example-value"
     snapshotId         = "example-value"
     multiAttachEnabled = false
-    tags               = { key = "value" }
+    tags               = { key: "value" }
 }
 ```
 
