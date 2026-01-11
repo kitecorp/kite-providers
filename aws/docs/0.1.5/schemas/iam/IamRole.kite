@@ -1,0 +1,17 @@
+// IamRole
+schema IamRole {
+    string  name                // Name of the IAM role
+    string  description         // Description of the role
+    string  assumeRolePolicy    // The trust policy that grants an entity permission to assume the role (JSON)
+    string  path                // Path for the role (default: /)
+    integer maxSessionDuration  // Maximum session duration in seconds (3600-43200)
+    any[]   managedPolicyArns   // ARNs of AWS managed policies to attach
+    object  inlinePolicies      // Inline policies to embed in the role (name -> policy JSON)
+    object  tags                // Tags to apply to the role
+    @cloud
+    string  roleId              // The stable and unique ID for the role
+    @cloud(importable)
+    string  arn                 // The Amazon Resource Name (ARN) of the role
+    @cloud
+    string  createDate          // The date and time when the role was created
+}

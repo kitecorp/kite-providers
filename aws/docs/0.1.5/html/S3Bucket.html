@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S3Bucket | Aws Provider | Kite</title>
+    <meta name="description" content="Documentation for S3Bucket resource in Aws provider.">
+    <meta name="keywords" content="kite, infrastructure as code, aws, cloud, terraform alternative, IaC">
+    <meta name="author" content="Kite">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://docs.kitelang.cloud/aws/S3Bucket.html">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="../../styles.css" as="style">
+    <link rel="preload" href="../../scripts.js" as="script">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../../styles.css">
+
+    <!-- Scripts -->
+    <script src="../../scripts.js" defer></script>
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Aws Provider Resources" href="../../feed.xml">
+
+    <!-- OpenSearch -->
+    <link rel="search" type="application/opensearchdescription+xml" title="Kite Aws Docs" href="../../opensearch.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="S3Bucket | Aws Provider | Kite">
+    <meta property="og:description" content="Documentation for S3Bucket resource in Aws provider.">
+    <meta property="og:url" content="https://docs.kitelang.cloud/aws/S3Bucket.html">
+    <meta property="og:site_name" content="Kite Documentation">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="S3Bucket | Aws Provider | Kite">
+    <meta name="twitter:description" content="Documentation for S3Bucket resource in Aws provider.">
+</head>
+<script type="application/ld+json">
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "S3Bucket Resource Documentation",
+        "description": "",
+        "author": {
+            "@type": "Organization",
+            "name": "Kite"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Kite",
+            "url": "https://kitelang.cloud"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://docs.kitelang.cloud/aws/S3Bucket.html"
+        },
+        "about": {
+            "@type": "SoftwareSourceCode",
+            "name": "S3Bucket",
+            "programmingLanguage": "Kite",
+            "codeRepository": "https://github.com/kitelang/kite"
+        },
+        "articleSection": "Storage",
+        "keywords": ["kite", "aws", "s3bucket", "infrastructure as code", "cloud"]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Aws Provider",
+                "item": "https://docs.kitelang.cloud/aws/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Storage",
+                "item": "https://docs.kitelang.cloud/aws/EbsVolume.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "S3Bucket"
+            }
+        ]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is S3Bucket in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "S3Bucket is a storage resource in the Aws provider. Use it to manage your cloud infrastructure."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I import S3Bucket in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Use: import S3Bucket from \"aws/storage\""
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What properties does S3Bucket have?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "S3Bucket has 14 configurable properties. See the Properties section for details."
+                }
+            }
+        ]
+    }
+]
+</script>
+<body>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div class="layout">
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <div class="header-top">
+                    <a href="../../index.html" class="logo-link">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/93/Amazon_Web_Services_Logo.svg" alt="aws logo" class="provider-logo"><h1>Aws</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
+                <div class="version-selector">
+                    <select id="version-select" onchange="switchVersion(this.value)" aria-label="Select version">
+                        <option value="0.1.5" selected>v0.1.5</option>
+                    </select>
+                </div>
+                <a href="../../changelog.html" class="whats-new-link">✨ What's New</a>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
+            </div>
+            <div id="recently-viewed" class="recently-viewed" style="display: none;">
+                <div class="recently-header">Recently Viewed</div>
+                <ul class="recently-list"></ul>
+            </div>
+            <nav class="nav-tree" aria-label="Resources navigation">
+            <div class="nav-category collapsed" data-domain="networking">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">🌐</span>
+                    <span class="category-name">Networking</span>
+                    <span class="category-count">7</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="elasticip" data-desc="">
+                    <a href="ElasticIp.html">ElasticIp</a>
+                </li>
+                <li class="nav-item" data-name="internetgateway" data-desc="">
+                    <a href="InternetGateway.html">InternetGateway</a>
+                </li>
+                <li class="nav-item" data-name="natgateway" data-desc="">
+                    <a href="NatGateway.html">NatGateway</a>
+                </li>
+                <li class="nav-item" data-name="routetable" data-desc="">
+                    <a href="RouteTable.html">RouteTable</a>
+                </li>
+                <li class="nav-item" data-name="securitygroup" data-desc="">
+                    <a href="SecurityGroup.html">SecurityGroup</a>
+                </li>
+                <li class="nav-item" data-name="subnet" data-desc="">
+                    <a href="Subnet.html">Subnet</a>
+                </li>
+                <li class="nav-item" data-name="vpc" data-desc="">
+                    <a href="Vpc.html">Vpc</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="compute">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💻</span>
+                    <span class="category-name">Compute</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="ec2instance" data-desc="">
+                    <a href="Ec2Instance.html">Ec2Instance</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category" data-domain="storage">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="true">
+                    <span class="category-icon" aria-hidden="true">💾</span>
+                    <span class="category-name">Storage</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="ebsvolume" data-desc="">
+                    <a href="EbsVolume.html">EbsVolume</a>
+                </li>
+                <li class="nav-item active" data-name="s3bucket" data-desc="">
+                    <a href="S3Bucket.html" aria-current="page">S3Bucket</a>
+                </li>
+                <li class="nav-item" data-name="s3bucketpolicy" data-desc="">
+                    <a href="S3BucketPolicy.html">S3BucketPolicy</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="dns">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">📍</span>
+                    <span class="category-name">Dns</span>
+                    <span class="category-count">2</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="hostedzone" data-desc="">
+                    <a href="HostedZone.html">HostedZone</a>
+                </li>
+                <li class="nav-item" data-name="recordset" data-desc="">
+                    <a href="RecordSet.html">RecordSet</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="loadbalancing">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">🚦</span>
+                    <span class="category-name">Loadbalancing</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="listener" data-desc="">
+                    <a href="Listener.html">Listener</a>
+                </li>
+                <li class="nav-item" data-name="loadbalancer" data-desc="">
+                    <a href="LoadBalancer.html">LoadBalancer</a>
+                </li>
+                <li class="nav-item" data-name="targetgroup" data-desc="">
+                    <a href="TargetGroup.html">TargetGroup</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="iam">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">🪪</span>
+                    <span class="category-name">Iam</span>
+                    <span class="category-count">3</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="iaminstanceprofile" data-desc="">
+                    <a href="IamInstanceProfile.html">IamInstanceProfile</a>
+                </li>
+                <li class="nav-item" data-name="iampolicy" data-desc="">
+                    <a href="IamPolicy.html">IamPolicy</a>
+                </li>
+                <li class="nav-item" data-name="iamrole" data-desc="">
+                    <a href="IamRole.html">IamRole</a>
+                </li>
+                </ul>
+            </div>
+
+            </nav>
+        </aside>
+        <main id="main-content" class="content">
+            <article class="resource-content" itemscope itemtype="https://schema.org/TechArticle">
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <a href="../../index.html">Home</a>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="domain">💾 Storage</span>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="current" aria-current="page">S3Bucket</span>
+                </nav>
+
+                <header>
+                    <h1 itemprop="name">S3Bucket</h1>
+                    
+                </header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">S3Bucket</span> <span class="kw">from</span> <span class="str">"aws/storage"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Examples</h2>
+                    <div class="example-tabs">
+                        <button class="example-tab active" onclick="showExample(this, 'basic')">Basic</button>
+                        <button class="example-tab" onclick="showExample(this, 'references')">With References</button>
+                        <button class="example-tab" onclick="showExample(this, 'complete')">Complete</button>
+                    </div>
+                    <div class="example-content active" id="example-basic">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code itemprop="text"><span class="kw">resource</span> <span class="type">S3Bucket</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">bucket</span>                       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">acl</span>                          <span class="eq">=</span> <span class="str">"private"</span>
+    <span class="prop">versioning</span>                   <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">region</span>                       <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">serverSideEncryption</span>         <span class="eq">=</span> <span class="str">"AES256"</span>
+    <span class="prop">kmsKeyId</span>                     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">blockPublicAccess</span>            <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">websiteIndexDocument</span>         <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">websiteErrorDocument</span>         <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">websiteRedirectAllRequestsTo</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">corsRules</span>                    <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">lifecycleRules</span>               <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">logging</span>                      <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">tags</span>                         <span class="eq">=</span> <span class="str">"..."</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-references">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Example with resource references</span>
+
+<span class="kw">resource</span> <span class="type">EbsVolume</span> <span class="name">my_ebsvolume</span> <span class="brace">{</span>
+    <span class="comment">// ... configuration</span>
+<span class="brace">}</span>
+
+<span class="kw">resource</span> <span class="type">S3BucketPolicy</span> <span class="name">my_s3bucketpolicy</span> <span class="brace">{</span>
+    <span class="comment">// ... configuration</span>
+<span class="brace">}</span>
+
+<span class="kw">resource</span> <span class="type">S3Bucket</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">bucket</span> <span class="eq">=</span> <span class="name">my_ebsvolume</span>.<span class="prop">id</span>
+    <span class="prop">acl</span> <span class="eq">=</span> <span class="name">my_s3bucketpolicy</span>.<span class="prop">id</span>
+    <span class="prop">versioning</span> <span class="eq">=</span> <span class="bool">false</span>
+    <span class="prop">region</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">serverSideEncryption</span> <span class="eq">=</span> <span class="str">"AES256"</span>
+    <span class="prop">kmsKeyId</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">blockPublicAccess</span> <span class="eq">=</span> <span class="bool">true</span>
+    <span class="prop">websiteIndexDocument</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">websiteErrorDocument</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">websiteRedirectAllRequestsTo</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">corsRules</span> <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">lifecycleRules</span> <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">logging</span> <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">tags</span> <span class="eq">=</span> <span class="str">"..."</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-complete">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Complete example with all properties</span>
+<span class="kw">resource</span> <span class="type">S3Bucket</span> <span class="name">complete_example</span> <span class="brace">{</span>
+    <span class="prop">bucket</span>                       <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// Bucket name (globally unique, DNS-com...</span>
+    <span class="prop">acl</span>                          <span class="eq">=</span> <span class="str">"private"</span>  <span class="comment">// Canned ACL for the bucket</span>
+    <span class="prop">versioning</span>                   <span class="eq">=</span> <span class="bool">false</span>  <span class="comment">// Enable versioning for the bucket</span>
+    <span class="prop">region</span>                       <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// AWS region for the bucket</span>
+    <span class="prop">serverSideEncryption</span>         <span class="eq">=</span> <span class="str">"AES256"</span>  <span class="comment">// Server-side encryption algorithm</span>
+    <span class="prop">kmsKeyId</span>                     <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// KMS key ID for encryption (when using...</span>
+    <span class="prop">blockPublicAccess</span>            <span class="eq">=</span> <span class="bool">true</span>  <span class="comment">// Block all public access</span>
+    <span class="prop">websiteIndexDocument</span>         <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// Index document for static website hos...</span>
+    <span class="prop">websiteErrorDocument</span>         <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// Error document for static website hos...</span>
+    <span class="prop">websiteRedirectAllRequestsTo</span> <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// Redirect all requests to another host</span>
+    <span class="prop">corsRules</span>                    <span class="eq">=</span> <span class="str">"..."</span>  <span class="comment">// CORS configuration rules</span>
+    <span class="prop">lifecycleRules</span>               <span class="eq">=</span> <span class="str">"..."</span>  <span class="comment">// Lifecycle rules for object management</span>
+    <span class="prop">logging</span>                      <span class="eq">=</span> <span class="str">"..."</span>  <span class="comment">// Access logging configuration</span>
+    <span class="prop">tags</span>                         <span class="eq">=</span> <span class="str">"..."</span>  <span class="comment">// Tags to apply to the bucket</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section id="schema" class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)" role="button" aria-expanded="false">
+                        <span class="toggle-icon" aria-hidden="true">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// S3Bucket</span>
+<span class="kw">schema</span> <span class="type">S3Bucket</span> <span class="brace">{</span>
+    <span class="type">string</span>        <span class="prop">bucket</span>                        <span class="comment">// Bucket name (globally unique, DNS-compliant)</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"private"</span>, <span class="str">"public-read"</span>, <span class="str">"public-read-write"</span>, <span class="str">"authenticated-read"</span><span class="brace">])</span>
+    <span class="type">string</span>        <span class="prop">acl</span> <span class="eq">=</span> <span class="str">&quot;private&quot;</span>               <span class="comment">// Canned ACL for the bucket</span>
+    <span class="type">boolean</span>       <span class="prop">versioning</span> <span class="eq">=</span> <span class="bool">false</span>            <span class="comment">// Enable versioning for the bucket</span>
+    <span class="type">string</span>        <span class="prop">region</span>                        <span class="comment">// AWS region for the bucket</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"AES256"</span>, <span class="str">"aws:kms"</span><span class="brace">])</span>
+    <span class="type">string</span>        <span class="prop">serverSideEncryption</span>          <span class="comment">// Server-side encryption algorithm</span>
+    <span class="type">string</span>        <span class="prop">kmsKeyId</span>                      <span class="comment">// KMS key ID for encryption (when using aws:kms)</span>
+    <span class="type">boolean</span>       <span class="prop">blockPublicAccess</span> <span class="eq">=</span> <span class="bool">true</span>      <span class="comment">// Block all public access</span>
+    <span class="type">string</span>        <span class="prop">websiteIndexDocument</span>          <span class="comment">// Index document for static website hosting</span>
+    <span class="type">string</span>        <span class="prop">websiteErrorDocument</span>          <span class="comment">// Error document for static website hosting</span>
+    <span class="type">string</span>        <span class="prop">websiteRedirectAllRequestsTo</span>  <span class="comment">// Redirect all requests to another host</span>
+    <span class="type">any[]</span>         <span class="prop">corsRules</span>                     <span class="comment">// CORS configuration rules</span>
+    <span class="type">any[]</span>         <span class="prop">lifecycleRules</span>                <span class="comment">// Lifecycle rules for object management</span>
+    <span class="type">loggingconfig</span> <span class="prop">logging</span>                       <span class="comment">// Access logging configuration</span>
+    <span class="type">object</span>        <span class="prop">tags</span>                          <span class="comment">// Tags to apply to the bucket</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span>        <span class="prop">arn</span>                           <span class="comment">// The ARN of the bucket</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span>        <span class="prop">domainName</span>                    <span class="comment">// The domain name of the bucket</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span>        <span class="prop">regionalDomainName</span>            <span class="comment">// The regional domain name of the bucket</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span>        <span class="prop">websiteEndpoint</span>               <span class="comment">// Website endpoint (if hosting enabled)</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span>        <span class="prop">creationDate</span>                  <span class="comment">// The creation date of the bucket</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="property-tabs">
+<button class="property-tab active" onclick="showPropertyTab(this, 'user')">User Properties</button>
+<button class="property-tab" onclick="showPropertyTab(this, 'cloud')">Cloud Properties</button>
+</div>
+<div class="property-content active" id="props-user">
+<p class="props-desc">Properties you configure when defining the resource.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-bucket">
+    <td><code class="prop-name" onclick="copyPropLink('bucket')" title="Click to copy link">bucket<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Bucket name (globally unique, DNS-compliant)</td>
+</tr>
+<tr id="prop-acl">
+    <td><code class="prop-name" onclick="copyPropLink('acl')" title="Click to copy link">acl<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><code class="default-value">private</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Canned ACL for the bucket<br><span class="valid-values-label">Valid values: </span><code class="valid-value">private</code> <code class="valid-value">public-read</code> <code class="valid-value">public-read-write</code> <code class="valid-value">authenticated-read</code></td>
+</tr>
+<tr id="prop-versioning">
+    <td><code class="prop-name" onclick="copyPropLink('versioning')" title="Click to copy link">versioning<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><code class="default-value">false</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Enable versioning for the bucket</td>
+</tr>
+<tr id="prop-region">
+    <td><code class="prop-name" onclick="copyPropLink('region')" title="Click to copy link">region<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>AWS region for the bucket</td>
+</tr>
+<tr id="prop-serverSideEncryption">
+    <td><code class="prop-name" onclick="copyPropLink('serverSideEncryption')" title="Click to copy link">serverSideEncryption<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Server-side encryption algorithm<br><span class="valid-values-label">Valid values: </span><code class="valid-value">AES256</code> <code class="valid-value">aws:kms</code></td>
+</tr>
+<tr id="prop-kmsKeyId">
+    <td><code class="prop-name" onclick="copyPropLink('kmsKeyId')" title="Click to copy link">kmsKeyId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>KMS key ID for encryption (when using aws:kms)</td>
+</tr>
+<tr id="prop-blockPublicAccess">
+    <td><code class="prop-name" onclick="copyPropLink('blockPublicAccess')" title="Click to copy link">blockPublicAccess<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">boolean</code></td>
+    <td><code class="default-value">true</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Block all public access</td>
+</tr>
+<tr id="prop-websiteIndexDocument">
+    <td><code class="prop-name" onclick="copyPropLink('websiteIndexDocument')" title="Click to copy link">websiteIndexDocument<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Index document for static website hosting</td>
+</tr>
+<tr id="prop-websiteErrorDocument">
+    <td><code class="prop-name" onclick="copyPropLink('websiteErrorDocument')" title="Click to copy link">websiteErrorDocument<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Error document for static website hosting</td>
+</tr>
+<tr id="prop-websiteRedirectAllRequestsTo">
+    <td><code class="prop-name" onclick="copyPropLink('websiteRedirectAllRequestsTo')" title="Click to copy link">websiteRedirectAllRequestsTo<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Redirect all requests to another host</td>
+</tr>
+<tr id="prop-corsRules">
+    <td><code class="prop-name" onclick="copyPropLink('corsRules')" title="Click to copy link">corsRules<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">any[]</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>CORS configuration rules</td>
+</tr>
+<tr id="prop-lifecycleRules">
+    <td><code class="prop-name" onclick="copyPropLink('lifecycleRules')" title="Click to copy link">lifecycleRules<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">any[]</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Lifecycle rules for object management</td>
+</tr>
+<tr id="prop-logging">
+    <td><code class="prop-name" onclick="copyPropLink('logging')" title="Click to copy link">logging<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">loggingconfig</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Access logging configuration</td>
+</tr>
+<tr id="prop-tags">
+    <td><code class="prop-name" onclick="copyPropLink('tags')" title="Click to copy link">tags<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">object</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Tags to apply to the bucket</td>
+</tr>
+
+    </tbody>
+</table>
+</div>
+</div>
+<div class="property-content" id="props-cloud">
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-arn">
+    <td><code class="prop-name" onclick="copyPropLink('arn')" title="Click to copy link">arn<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The ARN of the bucket</td>
+</tr>
+<tr id="prop-domainName">
+    <td><code class="prop-name" onclick="copyPropLink('domainName')" title="Click to copy link">domainName<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The domain name of the bucket</td>
+</tr>
+<tr id="prop-regionalDomainName">
+    <td><code class="prop-name" onclick="copyPropLink('regionalDomainName')" title="Click to copy link">regionalDomainName<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The regional domain name of the bucket</td>
+</tr>
+<tr id="prop-websiteEndpoint">
+    <td><code class="prop-name" onclick="copyPropLink('websiteEndpoint')" title="Click to copy link">websiteEndpoint<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>Website endpoint (if hosting enabled)</td>
+</tr>
+<tr id="prop-creationDate">
+    <td><code class="prop-name" onclick="copyPropLink('creationDate')" title="Click to copy link">creationDate<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The creation date of the bucket</td>
+</tr>
+
+    </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="related" class="related-section">
+<h2>Related Resources</h2>
+<p class="related-desc">Other resources in the Storage category:</p>
+<div class="related-grid">
+<a href="EbsVolume.html" class="related-card"><span class="related-icon">💾</span><span class="related-name">EbsVolume</span></a>
+<a href="S3BucketPolicy.html" class="related-card"><span class="related-icon">💾</span><span class="related-name">S3BucketPolicy</span></a>
+</div>
+</section>
+<nav class="resource-nav" aria-label="Resource navigation">
+<a href="EbsVolume.html" class="nav-prev" rel="prev" title="Previous in Storage">← EbsVolume</a>
+<span class="nav-category-label">Storage</span>
+<a href="S3BucketPolicy.html" class="nav-next" rel="next" title="Next in Storage">S3BucketPolicy →</a>
+</nav>
+                <footer class="resource-footer">
+                    <div class="footer-actions">
+                        <div class="share-buttons">
+                            <span class="share-label">Share:</span>
+                            <a href="https://twitter.com/intent/tweet?text=S3Bucket%20-%20Kite%20Aws%20Provider&url=https://docs.kitelang.cloud/aws/S3Bucket.html" target="_blank" rel="noopener" class="share-btn share-twitter" title="Share on Twitter">
+                                <span>𝕏</span>
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://docs.kitelang.cloud/aws/S3Bucket.html" target="_blank" rel="noopener" class="share-btn share-linkedin" title="Share on LinkedIn">
+                                <span>in</span>
+                            </a>
+                        </div>
+                        <a href="https://github.com/kitecorp/kite-providers/issues/new?title=Docs:%20S3Bucket%20-%20&body=**Resource:** S3Bucket%0A**Provider:** aws%0A**Page:** https://docs.kitelang.cloud/aws/S3Bucket.html%0A%0A**Issue:**%0A" target="_blank" rel="noopener" class="report-issue">
+                            Report an issue
+                        </a>
+                    </div>
+                    <p class="footer-date">Generated on <time datetime="2026-01-11T02:51:48.043714">January 11, 2026</time></p>
+                </footer>
+            </article>
+        </main>
+        <aside class="sidebar-right">
+            <div class="toc-header">On this page</div>
+            <nav class="toc" aria-label="Table of contents">
+                <a href="#import">Import</a>
+                <a href="#example">Example</a>
+                <a href="#schema" class="toc-h3">Schema Definition</a>
+                <a href="#properties">Properties</a>
+                <a href="#related">Related Resources</a>
+
+            </nav>
+        </aside>
+    </div>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+</body>
+</html>

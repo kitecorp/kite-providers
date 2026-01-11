@@ -1,7 +1,7 @@
 {
   "provider": "grpc-example",
   "version": "0.1.0",
-  "generatedAt": "2026-01-11T00:28:37.014189",
+  "generatedAt": "2026-01-11T00:47:49.590728",
   "resources": {
     "File": {
       "domain": "general",
