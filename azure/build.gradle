@@ -1,5 +1,5 @@
 plugins {
-    id 'cloud.kitelang.provider' version '0.2.2'
+    id 'cloud.kitelang.provider' version '0.3.0'
 }
 
 group = 'cloud.kitelang'
@@ -17,6 +17,9 @@ kiteProvider {
 }
 
 dependencies {
+    // Kite Provider SDK
+    implementation 'cloud.kitelang:kite-provider-sdk:0.2.2'
+    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.2.2'
 
     // Azure SDK - Resource Manager
     implementation 'com.azure.resourcemanager:azure-resourcemanager-resources:2.43.0'

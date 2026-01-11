@@ -1,5 +1,5 @@
 plugins {
-    id 'cloud.kitelang.provider' version '0.2.6'
+    id 'cloud.kitelang.provider' version '0.3.0'
 }
 
 group = 'cloud.kitelang'
@@ -17,6 +17,10 @@ kiteProvider {
 }
 
 dependencies {
+    // Kite Provider SDK
+    implementation 'cloud.kitelang:kite-provider-sdk:0.2.2'
+    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.2.2'
+
     // AWS SDK v2
     implementation platform('software.amazon.awssdk:bom:2.28.22')
     implementation 'software.amazon.awssdk:ec2:2.40.7'
