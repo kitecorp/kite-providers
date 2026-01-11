@@ -176,3 +176,4 @@ jobs:
           tag_name: ${{ matrix.provider }}-v${{ matrix.version }}
           files: ${{ matrix.provider }}.zip
           generate_release_notes: true
+          draft: false
