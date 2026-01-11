@@ -22,7 +22,7 @@ on:
 
 jobs:
   detect:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -82,7 +82,7 @@ jobs:
   release:
     needs: detect
     if: ${{ fromJson(needs.detect.outputs.matrix).include[0] != null }}
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     strategy:
