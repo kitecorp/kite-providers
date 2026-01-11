@@ -99,11 +99,16 @@
                     <p>Install the Aws provider:</p>
                     <div class="code-wrapper">
                         <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
-                        <pre class="code-block"><code><span class="kw">kite</span> <span class="name">providers</span> <span class="str">install</span> aws@0.1.3</code></pre>
+                        <pre class="code-block"><code><span class="kw">kite</span> <span class="name">providers</span> <span class="str">install</span> aws@0.1.4</code></pre>
                     </div>
 
-                    <h3>Use in your .kite file</h3>
-                    <p>Provider types are automatically available after installation - no import needed:</p>
+                    <h3>Import in your .kite file</h3>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="name">*</span> <span class="kw">from</span> <span class="str">"aws"</span></code></pre>
+                    </div>
+
+                    <h3>Define a resource</h3>
                     <div class="code-wrapper">
                         <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
                         <pre class="code-block"><code><span class="kw">resource</span> <span class="type">EbsVolume</span> <span class="name">myResource</span> <span class="brace">{</span>
@@ -204,86 +209,18 @@
             let html = '';
             for (const [domain, items] of Object.entries(byDomain)) {
                 html += `<div class="nav-category" data-domain="${domain}">
-                    <div class="category-header" onclick="toggleCategoryWithHash(this, '${domain}')" role="button" aria-expanded="true">
+                    <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="true">
                         <span class="category-icon">${getDomainIcon(domain)}</span>
                         <span class="category-name">${capitalize(domain)}</span>
                         <span class="category-count">${items.length}</span>
                         <span class="category-arrow">▾</span>
                     </div>
                     <ul class="category-items">
-                        ${items.map(r => `<li class="nav-item" data-name="${r.name.toLowerCase()}"><a href="${version}/html/${r.name}.html" onclick="updateHashBeforeNav('${r.name}')">${r.name}</a></li>`).join('')}
+                        ${items.map(r => `<li class="nav-item" data-name="${r.name.toLowerCase()}"><a href="${version}/html/${r.name}.html">${r.name}</a></li>`).join('')}
                     </ul>
                 </div>`;
             }
             document.getElementById('nav-tree').innerHTML = html;
-            // Restore state from URL hash
-            restoreFromHash();
-        }
-
-        function toggleCategoryWithHash(header, domain) {
-            toggleCategory(header);
-            // Update URL hash with expanded categories
-            updateUrlHash();
-        }
-
-        function updateHashBeforeNav(resourceName) {
-            // Update hash before navigation so users can copy URL
-            history.replaceState(null, '', '#' + resourceName);
-        }
-
-        function updateUrlHash() {
-            const expanded = [];
-            document.querySelectorAll('.nav-category:not(.collapsed)').forEach(cat => {
-                expanded.push(cat.dataset.domain);
-            });
-            const hash = expanded.length > 0 ? '#categories=' + expanded.join(',') : '';
-            history.replaceState(null, '', window.location.pathname + window.location.search + hash);
-        }
-
-        function restoreFromHash() {
-            const hash = window.location.hash;
-            if (!hash) return;
-
-            // Handle #ResourceName - highlight in nav and scroll to in grid
-            if (!hash.includes('=')) {
-                const resourceName = hash.substring(1);
-                highlightResource(resourceName);
-                return;
-            }
-
-            // Handle #categories=networking,compute
-            if (hash.startsWith('#categories=')) {
-                const categories = hash.substring(12).split(',');
-                document.querySelectorAll('.nav-category').forEach(cat => {
-                    if (categories.includes(cat.dataset.domain)) {
-                        cat.classList.remove('collapsed');
-                    } else {
-                        cat.classList.add('collapsed');
-                    }
-                });
-            }
-        }
-
-        function highlightResource(name) {
-            // Highlight in navigation
-            const navItem = document.querySelector(`.nav-item[data-name="${name.toLowerCase()}"]`);
-            if (navItem) {
-                navItem.classList.add('highlighted');
-                // Expand parent category
-                const category = navItem.closest('.nav-category');
-                if (category) category.classList.remove('collapsed');
-                // Scroll into view
-                navItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-
-            // Highlight in resource grid
-            const card = document.querySelector(`.resource-card .resource-name`);
-            document.querySelectorAll('.resource-card').forEach(c => {
-                if (c.querySelector('.resource-name')?.textContent === name) {
-                    c.classList.add('highlighted');
-                    setTimeout(() => c.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
-                }
-            });
         }
 
         function renderCategoryGrid(resources, version) {
