@@ -10,7 +10,7 @@
 
     <main id="main-content" class="content">
         <article class="resource-content">
-            <h1>What's New in v0.1.5</h1>
+            <h1>What's New in v0.1.6</h1>
             <div id="changelog-content">
                 <p class="loading">Loading changelog...</p>
             </div>
@@ -18,7 +18,7 @@
     </main>
     <script src="scripts.js"></script>
     <script>
-        fetch('0.1.5/changelog.json')
+        fetch('0.1.6/changelog.json')
             .then(r => r.ok ? r.json() : null)
             .catch(() => null)
             .then(data => {

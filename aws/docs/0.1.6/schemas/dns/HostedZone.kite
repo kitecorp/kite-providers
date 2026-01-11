@@ -1,0 +1,19 @@
+// HostedZone
+schema HostedZone {
+    string  name                    // The domain name for the hosted zone (e.g., 'example.com')
+    string  comment                 // A comment for the hosted zone
+    boolean privateZone = false     // Whether this is a private hosted zone
+    string  vpcId                   // VPC ID to associate with private hosted zone
+    string  vpcRegion               // VPC region for private hosted zone
+    object  tags                    // Tags to apply to the hosted zone
+    @cloud
+    string  hostedZoneId            // The hosted zone ID (without /hostedzone/ prefix)
+    @cloud
+    any[]   nameServers             // The name servers for the hosted zone
+    @cloud
+    number  resourceRecordSetCount  // The number of resource record sets in the hosted zone
+    @cloud
+    string  callerReference         // A unique string that identifies the request to create the zone
+    @cloud(importable)
+    string  arn                     // The Amazon Resource Name (ARN) of the hosted zone
+}

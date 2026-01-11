@@ -1,9 +1,9 @@
 plugins {
-    id 'cloud.kitelang.provider' version '0.2.5'
+    id 'cloud.kitelang.provider' version '0.2.6'
 }
 
 group = 'cloud.kitelang'
-version = '0.1.5'
+version = '0.1.6'
 
 repositories {
     mavenLocal()

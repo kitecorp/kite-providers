@@ -1,0 +1,18 @@
+// IamPolicy
+schema IamPolicy {
+    string name              // Name of the policy
+    string description       // Description of the policy
+    string path              // Path for the policy (default: /)
+    string policy            // The JSON policy document
+    object tags              // Tags to apply to the policy
+    @cloud
+    string policyId          // The stable and unique ID for the policy
+    @cloud(importable)
+    string arn               // The Amazon Resource Name (ARN) of the policy
+    @cloud
+    string createDate        // The date and time when the policy was created
+    @cloud
+    number attachmentCount   // The number of entities (users, groups, roles) attached to this policy
+    @cloud
+    string defaultVersionId  // The default version ID of the policy
+}
