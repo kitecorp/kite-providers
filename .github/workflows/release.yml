@@ -72,9 +72,8 @@ jobs:
       - name: Setup Gradle wrapper for SDK build
         working-directory: sdk-build
         run: |
-          # Copy gradlew from one of the SDK subprojects instead of requiring global gradle
-          cp kite-api/gradlew .
-          cp -r kite-api/gradle .
+          # Generate Gradle wrapper (setup-gradle provides gradle command)
+          gradle wrapper
 
       - name: Build and publish SDK to Maven Local
         working-directory: sdk-build
