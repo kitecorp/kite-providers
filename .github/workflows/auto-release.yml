@@ -22,7 +22,7 @@ on:
 
 jobs:
   detect:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
@@ -49,20 +49,26 @@ jobs:
               continue
             fi
 
-            # For push events, check if file was modified
+            VERSION=$(grep "^version = " "$BUILD_FILE" | sed "s/version = ['\"]//;s/['\"]//")
+            if [ -z "$VERSION" ]; then
+              continue
+            fi
+
+            TAG="$PROVIDER-v$VERSION"
+
+            # For push events, check if release already exists for this version
             if [ -z "$MANUAL_PROVIDER" ]; then
-              if ! git diff --name-only HEAD~1 HEAD | grep -q "^$BUILD_FILE$"; then
+              # Check if tag already has a release (not just a tag)
+              if gh release view "$TAG" &>/dev/null; then
+                echo "Release $TAG already exists, skipping $PROVIDER"
                 continue
               fi
             fi
 
-            VERSION=$(grep "^version = " "$BUILD_FILE" | sed "s/version = ['\"]//;s/['\"]//")
-            if [ -n "$VERSION" ]; then
-              if [ -n "$PROVIDERS_TO_RELEASE" ]; then
-                PROVIDERS_TO_RELEASE="$PROVIDERS_TO_RELEASE,"
-              fi
-              PROVIDERS_TO_RELEASE="$PROVIDERS_TO_RELEASE{\"provider\":\"$PROVIDER\",\"version\":\"$VERSION\"}"
+            if [ -n "$PROVIDERS_TO_RELEASE" ]; then
+              PROVIDERS_TO_RELEASE="$PROVIDERS_TO_RELEASE,"
             fi
+            PROVIDERS_TO_RELEASE="$PROVIDERS_TO_RELEASE{\"provider\":\"$PROVIDER\",\"version\":\"$VERSION\"}"
           done
 
           if [ -z "$PROVIDERS_TO_RELEASE" ]; then
@@ -76,7 +82,7 @@ jobs:
   release:
     needs: detect
     if: ${{ fromJson(needs.detect.outputs.matrix).include[0] != null }}
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     permissions:
       contents: write
     strategy:
