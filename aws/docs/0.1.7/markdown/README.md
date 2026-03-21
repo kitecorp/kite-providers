@@ -1,6 +1,6 @@
 # Aws Provider
 
-**Version:** 0.1.6
+**Version:** 0.1.7
 
 ## 🌐 Networking
 
@@ -52,4 +52,4 @@
 | [IamRole](IamRole.md) | 11 |  |
 
 ---
-*Generated on 2026-01-12*
+*Generated on 2026-03-21*
