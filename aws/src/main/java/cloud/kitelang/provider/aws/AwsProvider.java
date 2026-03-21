@@ -4,12 +4,15 @@ import cloud.kitelang.provider.KiteProvider;
 import cloud.kitelang.provider.ProviderServer;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
+import software.amazon.awssdk.awscore.client.builder.AwsClientBuilder;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
-import software.amazon.awssdk.services.ec2.Ec2ClientBuilder;
+import software.amazon.awssdk.services.elasticloadbalancingv2.ElasticLoadBalancingV2Client;
+import software.amazon.awssdk.services.iam.IamClient;
+import software.amazon.awssdk.services.route53.Route53Client;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
 import java.util.Map;
 import java.util.logging.ConsoleHandler;
@@ -49,6 +52,15 @@ public class AwsProvider extends KiteProvider {
     @Getter
     private volatile S3Client s3Client;
 
+    @Getter
+    private volatile ElasticLoadBalancingV2Client elbClient;
+
+    @Getter
+    private volatile Route53Client route53Client;
+
+    @Getter
+    private volatile IamClient iamClient;
+
     private String profile;
     private String region;
 
@@ -80,36 +92,72 @@ public class AwsProvider extends KiteProvider {
                 log.info("Set aws.region system property to: {}", region);
             }
 
-            // Recreate clients with new configuration
+            // Recreate clients with new configuration and push to resource types
             createClients();
+            wireClientsToResourceTypes();
         }
     }
 
     /**
-     * Create AWS SDK clients with the configured credentials.
+     * Create all AWS SDK clients with the configured credentials.
+     * Builds EC2, S3, ELBv2, Route53, and IAM clients using the profile/region
+     * from the kitefile configuration.
      */
     private void createClients() {
-        // Build EC2 client
-        Ec2ClientBuilder ec2Builder = Ec2Client.builder();
-        S3ClientBuilder s3Builder = S3Client.builder();
+        AwsCredentialsProvider credentialsProvider = null;
+        Region awsRegion = null;
 
         if (profile != null && !profile.isEmpty()) {
-            var credentialsProvider = ProfileCredentialsProvider.create(profile);
-            ec2Builder.credentialsProvider(credentialsProvider);
-            s3Builder.credentialsProvider(credentialsProvider);
+            credentialsProvider = ProfileCredentialsProvider.create(profile);
             log.debug("Using AWS profile: {}", profile);
         }
-
         if (region != null && !region.isEmpty()) {
-            var awsRegion = Region.of(region);
-            ec2Builder.region(awsRegion);
-            s3Builder.region(awsRegion);
+            awsRegion = Region.of(region);
             log.debug("Using AWS region: {}", region);
         }
 
-        this.ec2Client = ec2Builder.build();
-        this.s3Client = s3Builder.build();
+        this.ec2Client = configureBuilder(Ec2Client.builder(), credentialsProvider, awsRegion).build();
+        this.s3Client = configureBuilder(S3Client.builder(), credentialsProvider, awsRegion).build();
+        this.elbClient = configureBuilder(ElasticLoadBalancingV2Client.builder(), credentialsProvider, awsRegion).build();
+        // Route53 and IAM are global services, but credentials still apply
+        this.route53Client = configureBuilder(Route53Client.builder(), credentialsProvider, null).build();
+        this.iamClient = configureBuilder(IamClient.builder(), credentialsProvider, null).build();
+
         log.info("AWS clients created successfully");
+    }
+
+    /**
+     * Apply credentials and region to any AWS client builder.
+     *
+     * @param builder             the AWS client builder
+     * @param credentialsProvider the credentials provider, or null for default chain
+     * @param awsRegion           the region, or null to use the SDK default
+     * @return the configured builder (same instance, for chaining)
+     */
+    @SuppressWarnings("unchecked")
+    private <B extends AwsClientBuilder<B, ?>> B configureBuilder(
+            B builder, AwsCredentialsProvider credentialsProvider, Region awsRegion) {
+        if (credentialsProvider != null) {
+            builder.credentialsProvider(credentialsProvider);
+        }
+        if (awsRegion != null) {
+            builder.region(awsRegion);
+        }
+        return builder;
+    }
+
+    /**
+     * Push the configured clients to all registered resource type handlers.
+     * Each handler that implements {@link AwsClientAware} receives the appropriate client
+     * so it does not fall back to creating its own unconfigured client.
+     */
+    private void wireClientsToResourceTypes() {
+        for (var handler : getResourceTypes().values()) {
+            if (handler instanceof AwsClientAware aware) {
+                aware.setAwsClients(ec2Client, s3Client, elbClient, route53Client, iamClient);
+            }
+        }
+        log.debug("Wired AWS clients to {} resource type handlers", getResourceTypes().size());
     }
 
     /**

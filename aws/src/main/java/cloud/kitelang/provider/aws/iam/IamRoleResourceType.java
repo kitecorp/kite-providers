@@ -2,9 +2,14 @@ package cloud.kitelang.provider.aws.iam;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
+import cloud.kitelang.provider.aws.AwsClientAware;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.elasticloadbalancingv2.ElasticLoadBalancingV2Client;
 import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.iam.model.*;
+import software.amazon.awssdk.services.route53.Route53Client;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +21,7 @@ import java.util.stream.Collectors;
  * Implements CRUD operations for IAM roles using AWS SDK.
  */
 @Slf4j
-public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
+public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> implements AwsClientAware {
 
     private volatile IamClient iamClient;
 
@@ -24,13 +29,21 @@ public class IamRoleResourceType extends ResourceTypeHandler<IamRoleResource> {
         // Client created lazily to pick up configuration
     }
 
+    /** Constructor for testing with a mock client. */
     public IamRoleResourceType(IamClient iamClient) {
+        this.iamClient = iamClient;
+    }
+
+    @Override
+    public void setAwsClients(Ec2Client ec2Client, S3Client s3Client,
+                              ElasticLoadBalancingV2Client elbClient,
+                              Route53Client route53Client, IamClient iamClient) {
         this.iamClient = iamClient;
     }
 
     /**
      * Get or create an IAM client.
-     * Creates the client lazily to allow provider configuration to be applied first.
+     * Returns the client injected by the provider, or creates a default one as fallback.
      */
     private IamClient getClient() {
         if (iamClient == null) {

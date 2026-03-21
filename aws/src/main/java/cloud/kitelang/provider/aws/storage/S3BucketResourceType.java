@@ -2,8 +2,13 @@ package cloud.kitelang.provider.aws.storage;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
+import cloud.kitelang.provider.aws.AwsClientAware;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.ec2.Ec2Client;
+import software.amazon.awssdk.services.elasticloadbalancingv2.ElasticLoadBalancingV2Client;
+import software.amazon.awssdk.services.iam.IamClient;
+import software.amazon.awssdk.services.route53.Route53Client;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
 
@@ -17,7 +22,7 @@ import java.util.stream.Collectors;
  * Implements CRUD operations using AWS S3 SDK.
  */
 @Slf4j
-public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> {
+public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> implements AwsClientAware {
 
     private static final Set<String> VALID_ACLS = Set.of(
             "private", "public-read", "public-read-write", "authenticated-read"
@@ -32,9 +37,17 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
         // Client created lazily to pick up configuration
     }
 
+    /** Constructor for testing with a mock client. */
     public S3BucketResourceType(S3Client s3Client, String defaultRegion) {
         this.s3Client = s3Client;
         this.defaultRegion = defaultRegion;
+    }
+
+    @Override
+    public void setAwsClients(Ec2Client ec2Client, S3Client s3Client,
+                              ElasticLoadBalancingV2Client elbClient,
+                              Route53Client route53Client, IamClient iamClient) {
+        this.s3Client = s3Client;
     }
 
     /**
@@ -51,7 +64,7 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
 
     /**
      * Get or create an S3 client.
-     * Creates the client lazily to allow provider configuration to be applied first.
+     * Returns the client injected by the provider, or creates a default one as fallback.
      */
     private S3Client getClient() {
         if (s3Client == null) {

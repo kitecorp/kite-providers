@@ -2,9 +2,14 @@ package cloud.kitelang.provider.aws.networking;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
+import cloud.kitelang.provider.aws.AwsClientAware;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.*;
+import software.amazon.awssdk.services.elasticloadbalancingv2.ElasticLoadBalancingV2Client;
+import software.amazon.awssdk.services.iam.IamClient;
+import software.amazon.awssdk.services.route53.Route53Client;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +20,7 @@ import java.util.stream.Collectors;
  * Implements CRUD operations for Subnets using AWS EC2 SDK.
  */
 @Slf4j
-public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
+public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> implements AwsClientAware {
 
     private volatile Ec2Client ec2Client;
 
@@ -23,13 +28,21 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
         // Client created lazily to pick up configuration
     }
 
+    /** Constructor for testing with a mock client. */
     public SubnetResourceType(Ec2Client ec2Client) {
+        this.ec2Client = ec2Client;
+    }
+
+    @Override
+    public void setAwsClients(Ec2Client ec2Client, S3Client s3Client,
+                              ElasticLoadBalancingV2Client elbClient,
+                              Route53Client route53Client, IamClient iamClient) {
         this.ec2Client = ec2Client;
     }
 
     /**
      * Get or create an EC2 client.
-     * Creates the client lazily to allow provider configuration to be applied first.
+     * Returns the client injected by the provider, or creates a default one as fallback.
      */
     private Ec2Client getClient() {
         if (ec2Client == null) {

@@ -2,9 +2,14 @@ package cloud.kitelang.provider.aws.loadbalancing;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
+import cloud.kitelang.provider.aws.AwsClientAware;
 import lombok.extern.slf4j.Slf4j;
+import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.elasticloadbalancingv2.ElasticLoadBalancingV2Client;
 import software.amazon.awssdk.services.elasticloadbalancingv2.model.*;
+import software.amazon.awssdk.services.iam.IamClient;
+import software.amazon.awssdk.services.route53.Route53Client;
+import software.amazon.awssdk.services.s3.S3Client;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +21,7 @@ import java.util.stream.Collectors;
  * Implements CRUD operations using AWS ELBv2 SDK.
  */
 @Slf4j
-public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerResource> {
+public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerResource> implements AwsClientAware {
 
     private static final Set<String> VALID_TYPES = Set.of("application", "network", "gateway");
     private static final Set<String> VALID_SCHEMES = Set.of("internet-facing", "internal");
@@ -28,13 +33,21 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
         // Client created lazily to pick up configuration
     }
 
+    /** Constructor for testing with a mock client. */
     public LoadBalancerResourceType(ElasticLoadBalancingV2Client elbClient) {
+        this.elbClient = elbClient;
+    }
+
+    @Override
+    public void setAwsClients(Ec2Client ec2Client, S3Client s3Client,
+                              ElasticLoadBalancingV2Client elbClient,
+                              Route53Client route53Client, IamClient iamClient) {
         this.elbClient = elbClient;
     }
 
     /**
      * Get or create an ELBv2 client.
-     * Creates the client lazily to allow provider configuration to be applied first.
+     * Returns the client injected by the provider, or creates a default one as fallback.
      */
     private ElasticLoadBalancingV2Client getClient() {
         if (elbClient == null) {
