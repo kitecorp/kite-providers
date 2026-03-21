@@ -17,8 +17,8 @@ kiteProvider {
 
 dependencies {
     // Kite Provider SDK
-    implementation 'cloud.kitelang:kite-provider-sdk:0.2.3'
-    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.2.3'
+    implementation 'cloud.kitelang:kite-provider-sdk:0.2.4'
+    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.2.4'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.42'
