@@ -96,8 +96,9 @@ public class S3BucketResourceType extends ResourceTypeHandler<S3BucketResource> 
                             .build());
         }
 
-        // Set ACL if specified
-        if (resource.getAcl() != null) {
+        // Set ACL if specified (skip "private" — it's the default and AWS rejects
+        // ACLs when BucketOwnerEnforced ownership is active, which is the default since 2023)
+        if (resource.getAcl() != null && !"private".equals(resource.getAcl())) {
             createRequest.acl(BucketCannedACL.fromValue(resource.getAcl().replace("-", "_").toUpperCase()));
         }
 
