@@ -15,10 +15,10 @@ on:
         type: choice
         required: true
         options:
+          - all
           - aws
           - azure
           - files
-          - all
 
 jobs:
   detect:
