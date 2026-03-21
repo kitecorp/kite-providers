@@ -16,9 +16,9 @@ kiteProvider {
 }
 
 dependencies {
-    // Use project SDK when building from monorepo
-    implementation project(':kite-provider-sdk')
-    annotationProcessor project(':kite-provider-sdk')
+    // Kite Provider SDK
+    implementation 'cloud.kitelang:kite-provider-sdk:0.2.3'
+    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.2.3'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.42'
