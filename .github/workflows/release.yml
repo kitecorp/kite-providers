@@ -98,7 +98,7 @@ jobs:
           zip -r $GITHUB_WORKSPACE/${{ steps.extract.outputs.provider }}.zip .
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: ${{ steps.extract.outputs.provider }} ${{ steps.extract.outputs.version }}
           tag_name: ${{ steps.extract.outputs.tag }}
