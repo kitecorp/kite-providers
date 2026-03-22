@@ -30,8 +30,8 @@ dependencies {
     implementation 'com.azure:azure-identity:1.14.2'
 
     // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.42'
-    annotationProcessor 'org.projectlombok:lombok:1.18.42'
+    compileOnly 'org.projectlombok:lombok:1.18.44'
+    annotationProcessor 'org.projectlombok:lombok:1.18.44'
 
     // SLF4J with JDK logging
     implementation 'org.slf4j:slf4j-api:2.0.17'
