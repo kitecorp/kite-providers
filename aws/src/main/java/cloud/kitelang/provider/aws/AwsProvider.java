@@ -2,6 +2,14 @@ package cloud.kitelang.provider.aws;
 
 import cloud.kitelang.provider.KiteProvider;
 import cloud.kitelang.provider.ProviderServer;
+import cloud.kitelang.provider.aws.compute.Ec2InstanceResourceType;
+import cloud.kitelang.provider.aws.dns.HostedZoneResourceType;
+import cloud.kitelang.provider.aws.dns.RecordSetResourceType;
+import cloud.kitelang.provider.aws.loadbalancing.LoadBalancerResourceType;
+import cloud.kitelang.provider.aws.networking.SubnetResourceType;
+import cloud.kitelang.provider.aws.networking.VpcResourceType;
+import cloud.kitelang.provider.aws.stdlib.*;
+import cloud.kitelang.provider.aws.storage.S3BucketResourceType;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
@@ -66,7 +74,54 @@ public class AwsProvider extends KiteProvider {
 
     public AwsProvider() {
         // Name and version auto-loaded from provider-info.properties
+        // Resource types are discovered by the superclass constructor
+        registerStandardTypeAdapters();
         log.info("AWS Provider initialized with resources: {}", getResourceTypes().keySet());
+    }
+
+    /**
+     * Register standard library type adapters for all supported mappings.
+     * Each adapter bridges a provider-agnostic stdlib type to its AWS-specific implementation.
+     * Must be called after resource types are discovered (handled by superclass constructor).
+     */
+    @SuppressWarnings("unchecked")
+    private void registerStandardTypeAdapters() {
+        var ec2Handler = getResourceTypes().get("Ec2Instance");
+        if (ec2Handler instanceof Ec2InstanceResourceType typed) {
+            registerAdapter(new ServerAdapter(typed));
+        }
+
+        var vpcHandler = getResourceTypes().get("Vpc");
+        if (vpcHandler instanceof VpcResourceType typed) {
+            registerAdapter(new NetworkAdapter(typed));
+        }
+
+        var subnetHandler = getResourceTypes().get("Subnet");
+        if (subnetHandler instanceof SubnetResourceType typed) {
+            registerAdapter(new SubnetAdapter(typed));
+        }
+
+        var s3Handler = getResourceTypes().get("S3Bucket");
+        if (s3Handler instanceof S3BucketResourceType typed) {
+            registerAdapter(new BucketAdapter(typed));
+        }
+
+        var lbHandler = getResourceTypes().get("LoadBalancer");
+        if (lbHandler instanceof LoadBalancerResourceType typed) {
+            registerAdapter(new LoadBalancerAdapter(typed));
+        }
+
+        var hostedZoneHandler = getResourceTypes().get("HostedZone");
+        if (hostedZoneHandler instanceof HostedZoneResourceType typed) {
+            registerAdapter(new DnsZoneAdapter(typed));
+        }
+
+        var recordSetHandler = getResourceTypes().get("RecordSet");
+        if (recordSetHandler instanceof RecordSetResourceType typed) {
+            registerAdapter(new DnsRecordAdapter(typed));
+        }
+
+        log.info("Registered {} standard type adapters", getStandardTypeAdapters().size());
     }
 
     @Override
