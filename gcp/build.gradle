@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'cloud.kitelang'
-version = '0.2.0'
+version = '0.1.0'
 
 repositories {
     mavenLocal()
@@ -11,23 +11,21 @@ repositories {
 }
 
 kiteProvider {
-    name = 'azure'
-    logoUrl = 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Microsoft_Azure.svg'
+    name = 'gcp'
+    logoUrl = 'https://upload.wikimedia.org/wikipedia/commons/5/51/Google_Cloud_logo.svg'
     // mainClass auto-detected from ProviderServer subclass
 }
 
 dependencies {
     // Kite Provider SDK
-    implementation 'cloud.kitelang:kite-provider-sdk:0.2.3'
-    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.2.3'
+    implementation 'cloud.kitelang:kite-provider-sdk:0.2.4'
+    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.2.4'
 
-    // Azure SDK - Resource Manager
-    implementation 'com.azure.resourcemanager:azure-resourcemanager-resources:2.43.0'
-    implementation 'com.azure.resourcemanager:azure-resourcemanager-network:2.43.0'
-    implementation 'com.azure.resourcemanager:azure-resourcemanager-compute:2.43.0'
-    implementation 'com.azure.resourcemanager:azure-resourcemanager-dns:2.43.0'
-    implementation 'com.azure.resourcemanager:azure-resourcemanager-storage:2.43.0'
-    implementation 'com.azure:azure-identity:1.14.2'
+    // GCP SDK - managed by BOM
+    implementation platform('com.google.cloud:libraries-bom:26.51.0')
+    implementation 'com.google.cloud:google-cloud-compute'
+    implementation 'com.google.cloud:google-cloud-storage'
+    implementation 'com.google.cloud:google-cloud-dns'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.44'
@@ -53,4 +51,15 @@ java {
 
 test {
     useJUnitPlatform()
+}
+
+// Customize shadowJar minimize if needed
+shadowJar {
+    minimize {
+        exclude(dependency('org.slf4j:.*'))
+        exclude(dependency('io.grpc:.*'))
+        exclude(dependency('com.google.protobuf:.*'))
+        exclude(dependency('org.msgpack:.*'))
+        exclude(dependency('cloud.kitelang:.*'))
+    }
 }
