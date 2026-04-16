@@ -6,6 +6,7 @@ on:
       - 'aws-*'
       - 'azure-*'
       - 'files-*'
+      - 'gcp-*'
 
 jobs:
   release:

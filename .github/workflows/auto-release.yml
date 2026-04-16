@@ -8,6 +8,7 @@ on:
       - 'aws/build.gradle'
       - 'azure/build.gradle'
       - 'files/build.gradle'
+      - 'gcp/build.gradle'
   workflow_dispatch:
     inputs:
       provider:
@@ -19,6 +20,7 @@ on:
           - aws
           - azure
           - files
+          - gcp
 
 jobs:
   detect:
@@ -39,7 +41,7 @@ jobs:
           if [ -n "$MANUAL_PROVIDER" ] && [ "$MANUAL_PROVIDER" != "all" ]; then
             PROVIDERS="$MANUAL_PROVIDER"
           else
-            PROVIDERS="aws azure files"
+            PROVIDERS="aws azure files gcp"
           fi
 
           for PROVIDER in $PROVIDERS; do
