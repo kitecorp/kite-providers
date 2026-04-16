@@ -1,24 +1,29 @@
 {
-    "providers": [
-        {
-            "name": "aws",
-            "latestVersion": "0.2.0",
-            "resourceCount": 19
-        },
-        {
-            "name": "azure",
-            "latestVersion": "0.2.0",
-            "resourceCount": 0
-        },
-        {
-            "name": "files",
-            "latestVersion": "0.1.0",
-            "resourceCount": 1
-        },
-        {
-            "name": "gcp",
-            "latestVersion": "0.1.0",
-            "resourceCount": 7
-        }
-    ]
+  "providers": [
+    {
+      "name": "aws",
+      "latestVersion": "0.2.0",
+      "resourceCount": 19
+    },
+    {
+      "name": "azure",
+      "latestVersion": "0.2.0",
+      "resourceCount": 0
+    },
+    {
+      "name": "files",
+      "latestVersion": "0.1.0",
+      "resourceCount": 1
+    },
+    {
+      "name": "gcp",
+      "latestVersion": "0.1.0",
+      "resourceCount": 7
+    },
+    {
+      "name": "grpc-example",
+      "latestVersion": "0.1.0",
+      "resourceCount": 1
+    }
+  ]
 }
