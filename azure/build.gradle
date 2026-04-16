@@ -18,8 +18,8 @@ kiteProvider {
 
 dependencies {
     // Kite Provider SDK
-    implementation 'cloud.kitelang:kite-provider-sdk:0.2.3'
-    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.2.3'
+    implementation 'cloud.kitelang:kite-provider-sdk:0.2.4'
+    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.2.4'
 
     // Azure SDK - Resource Manager
     implementation 'com.azure.resourcemanager:azure-resourcemanager-resources:2.43.0'
