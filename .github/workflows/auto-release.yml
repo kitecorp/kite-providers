@@ -202,3 +202,60 @@ jobs:
           files: ${{ matrix.provider }}.zip
           generate_release_notes: true
           draft: false
+
+  update-index:
+    name: Regenerate providers.json index
+    needs: release
+    if: always() && needs.release.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Regenerate docs/providers.json
+        run: |
+          set -euo pipefail
+          # Scan every directory that has a docs/versions.json — that's the
+          # source of truth for which providers have published docs.
+          ENTRIES=""
+          for DIR in */; do
+            PROVIDER="${DIR%/}"
+            VERSIONS="$PROVIDER/docs/versions.json"
+            [ -f "$VERSIONS" ] || continue
+
+            LATEST=$(jq -r '.latest' "$VERSIONS")
+            [ -n "$LATEST" ] && [ "$LATEST" != "null" ] || continue
+
+            MANIFEST="$PROVIDER/docs/$LATEST/manifest.json"
+            if [ -f "$MANIFEST" ]; then
+              COUNT=$(jq '.resources | length' "$MANIFEST")
+            else
+              COUNT=0
+            fi
+
+            [ -n "$ENTRIES" ] && ENTRIES="$ENTRIES,"
+            ENTRIES="$ENTRIES{\"name\":\"$PROVIDER\",\"latestVersion\":\"$LATEST\",\"resourceCount\":$COUNT}"
+          done
+
+          mkdir -p docs
+          echo "{\"providers\":[$ENTRIES]}" | jq . > docs/providers.json
+          cat docs/providers.json
+
+      - name: Commit if changed
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/providers.json
+          if git diff --cached --quiet; then
+            echo "providers.json unchanged"
+          else
+            git commit -m "docs: regenerate providers.json index [skip ci]"
+            git pull --rebase origin main
+            git push origin main
+          fi
