@@ -2,7 +2,7 @@
   "provider": "gcp",
   "version": "0.1.0",
   "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/5/51/Google_Cloud_logo.svg",
-  "generatedAt": "2026-04-16T19:01:48.249872586",
+  "generatedAt": "2026-04-16T19:17:53.268475895",
   "resources": {
     "CloudStorageBucket": {
       "domain": "storage",
