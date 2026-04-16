@@ -159,17 +159,33 @@ jobs:
           cd "$INSTALL_DIR"
           zip -r $GITHUB_WORKSPACE/${{ matrix.provider }}.zip .
 
+      - name: Commit regenerated docs
+        env:
+          PROVIDER: ${{ matrix.provider }}
+          VERSION: ${{ matrix.version }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add "$PROVIDER/docs/"
+          if git diff --cached --quiet; then
+            echo "No doc changes to commit for $PROVIDER"
+          else
+            git commit -m "docs($PROVIDER): regenerate for v$VERSION [skip ci]"
+            # Rebase in case another matrix job pushed while we were building
+            git pull --rebase origin main
+            git push origin main
+          fi
+
       - name: Create tag and release
         run: |
           TAG="${{ matrix.provider }}-v${{ matrix.version }}"
 
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
           # Delete existing tag if present
           git push origin ":refs/tags/$TAG" 2>/dev/null || true
 
-          # Create and push tag
+          # Create tag on current HEAD (which now includes the docs commit)
           git tag -f "$TAG"
           git push origin "$TAG"
 

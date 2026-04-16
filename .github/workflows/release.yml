@@ -16,6 +16,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+        with:
+          # Need full history to be able to push a follow-up docs commit to main
+          fetch-depth: 0
 
       - name: Set up JDK 25
         uses: actions/setup-java@v5
@@ -97,6 +100,41 @@ jobs:
           cd "$INSTALL_DIR"
           ls -la
           zip -r $GITHUB_WORKSPACE/${{ steps.extract.outputs.provider }}.zip .
+
+      - name: Commit regenerated docs to main
+        env:
+          PROVIDER: ${{ steps.extract.outputs.provider }}
+          VERSION: ${{ steps.extract.outputs.version }}
+        run: |
+          set -euo pipefail
+          # We're on a detached HEAD at the tag commit. Stash the freshly
+          # generated docs, switch to main, restore, commit as a follow-up.
+          # The tag stays where it was placed by the user.
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          mkdir -p "$RUNNER_TEMP/fresh-docs"
+          if [ -d "$PROVIDER/docs" ]; then
+            cp -r "$PROVIDER/docs" "$RUNNER_TEMP/fresh-docs/"
+          fi
+
+          git fetch origin main
+          git checkout -B main origin/main
+
+          # Restore freshly built docs over main's state
+          rm -rf "$PROVIDER/docs"
+          if [ -d "$RUNNER_TEMP/fresh-docs/docs" ]; then
+            cp -r "$RUNNER_TEMP/fresh-docs/docs" "$PROVIDER/docs"
+          fi
+
+          git add "$PROVIDER/docs/"
+          if git diff --cached --quiet; then
+            echo "No doc changes to commit for $PROVIDER"
+          else
+            git commit -m "docs($PROVIDER): regenerate for v$VERSION [skip ci]"
+            git pull --rebase origin main
+            git push origin main
+          fi
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
