@@ -173,8 +173,9 @@ jobs:
             echo "No doc changes to commit for $PROVIDER"
           else
             git commit -m "docs($PROVIDER): regenerate for v$VERSION [skip ci]"
-            # Rebase in case another matrix job pushed while we were building
-            git pull --rebase origin main
+            # Rebase in case another matrix job pushed while we were building.
+            # --autostash handles any build leftovers still in the working tree.
+            git pull --rebase --autostash origin main
             git push origin main
           fi
 
