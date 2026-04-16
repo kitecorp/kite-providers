@@ -176,9 +176,20 @@ jobs:
             # Move any leftover build artifacts aside so rebase has a clean tree.
             # We don't need them — the zip was produced in the previous step.
             git stash push --include-untracked --message "build-leftovers" || true
-            # Rebase in case another matrix job pushed while we were building.
-            git pull --rebase origin main
-            git push origin main
+            # Retry loop: another matrix job can push between our rebase and
+            # our push. Keep pulling and retrying until the push sticks.
+            for attempt in 1 2 3 4 5 6 7 8; do
+              git pull --rebase origin main
+              if git push origin main; then
+                break
+              fi
+              echo "Push rejected on attempt $attempt, retrying..."
+              sleep $((attempt * 2))
+              if [ $attempt -eq 8 ]; then
+                echo "::error::Push failed after 8 attempts"
+                exit 1
+              fi
+            done
             # Drop the stash (build artifacts are disposable)
             git stash drop 2>/dev/null || true
           fi
@@ -256,6 +267,16 @@ jobs:
             echo "providers.json unchanged"
           else
             git commit -m "docs: regenerate providers.json index [skip ci]"
-            git pull --rebase origin main
-            git push origin main
+            for attempt in 1 2 3 4 5 6 7 8; do
+              git pull --rebase origin main
+              if git push origin main; then
+                break
+              fi
+              echo "Push rejected on attempt $attempt, retrying..."
+              sleep $((attempt * 2))
+              if [ $attempt -eq 8 ]; then
+                echo "::error::Push failed after 8 attempts"
+                exit 1
+              fi
+            done
           fi
