@@ -65,7 +65,17 @@
                     html += '</section>';
                 }
 
-                if (!data.addedResources?.length && !data.removedResources?.length && !Object.keys(data.changedResources || {}).length) {
+                // Bug fixes & improvements (git commits)
+                if (data.commits && data.commits.length > 0) {
+                    html += '<section class="changelog-section"><h2>🛠️ Bug Fixes &amp; Improvements</h2><ul class="changelog-list commits">';
+                    data.commits.forEach(msg => {
+                        html += '<li>' + msg.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</li>';
+                    });
+                    html += '</ul></section>';
+                }
+
+                const hasSchemaChanges = data.addedResources?.length || data.removedResources?.length || Object.keys(data.changedResources || {}).length;
+                if (!hasSchemaChanges && !data.commits?.length) {
                     html += '<p class="no-changes">No changes detected in this version.</p>';
                 }
 
