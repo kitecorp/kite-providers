@@ -1,0 +1,13 @@
+// IamInstanceProfile
+schema IamInstanceProfile {
+    string name               // Name of the instance profile
+    string path               // Path for the instance profile (default: /)
+    string role               // Name of the IAM role to associate with the instance profile
+    object tags               // Tags to apply to the instance profile
+    @cloud
+    string instanceProfileId  // The stable and unique ID for the instance profile
+    @cloud(importable)
+    string arn                // The Amazon Resource Name (ARN) of the instance profile
+    @cloud
+    string createDate         // The date and time when the instance profile was created
+}
