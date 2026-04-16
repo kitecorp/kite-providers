@@ -173,10 +173,14 @@ jobs:
             echo "No doc changes to commit for $PROVIDER"
           else
             git commit -m "docs($PROVIDER): regenerate for v$VERSION [skip ci]"
+            # Move any leftover build artifacts aside so rebase has a clean tree.
+            # We don't need them — the zip was produced in the previous step.
+            git stash push --include-untracked --message "build-leftovers" || true
             # Rebase in case another matrix job pushed while we were building.
-            # --autostash handles any build leftovers still in the working tree.
-            git pull --rebase --autostash origin main
+            git pull --rebase origin main
             git push origin main
+            # Drop the stash (build artifacts are disposable)
+            git stash drop 2>/dev/null || true
           fi
 
       - name: Create tag and release
