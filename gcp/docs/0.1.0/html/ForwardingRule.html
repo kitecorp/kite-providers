@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForwardingRule | Gcp Provider | Kite</title>
+    <meta name="description" content="Documentation for ForwardingRule resource in Gcp provider.">
+    <meta name="keywords" content="kite, infrastructure as code, gcp, cloud, terraform alternative, IaC">
+    <meta name="author" content="Kite">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://docs.kitelang.cloud/gcp/ForwardingRule.html">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="../../styles.css" as="style">
+    <link rel="preload" href="../../scripts.js" as="script">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../../styles.css">
+
+    <!-- Scripts -->
+    <script src="../../scripts.js" defer></script>
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Gcp Provider Resources" href="../../feed.xml">
+
+    <!-- OpenSearch -->
+    <link rel="search" type="application/opensearchdescription+xml" title="Kite Gcp Docs" href="../../opensearch.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ForwardingRule | Gcp Provider | Kite">
+    <meta property="og:description" content="Documentation for ForwardingRule resource in Gcp provider.">
+    <meta property="og:url" content="https://docs.kitelang.cloud/gcp/ForwardingRule.html">
+    <meta property="og:site_name" content="Kite Documentation">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="ForwardingRule | Gcp Provider | Kite">
+    <meta name="twitter:description" content="Documentation for ForwardingRule resource in Gcp provider.">
+</head>
+<script type="application/ld+json">
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "ForwardingRule Resource Documentation",
+        "description": "",
+        "author": {
+            "@type": "Organization",
+            "name": "Kite"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Kite",
+            "url": "https://kitelang.cloud"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://docs.kitelang.cloud/gcp/ForwardingRule.html"
+        },
+        "about": {
+            "@type": "SoftwareSourceCode",
+            "name": "ForwardingRule",
+            "programmingLanguage": "Kite",
+            "codeRepository": "https://github.com/kitelang/kite"
+        },
+        "articleSection": "Loadbalancing",
+        "keywords": ["kite", "gcp", "forwardingrule", "infrastructure as code", "cloud"]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Gcp Provider",
+                "item": "https://docs.kitelang.cloud/gcp/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Loadbalancing",
+                "item": "https://docs.kitelang.cloud/gcp/ForwardingRule.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "ForwardingRule"
+            }
+        ]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is ForwardingRule in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "ForwardingRule is a loadbalancing resource in the Gcp provider. Use it to manage your cloud infrastructure."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I import ForwardingRule in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Use: import ForwardingRule from \"gcp/loadbalancing\""
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What properties does ForwardingRule have?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "ForwardingRule has 10 configurable properties. See the Properties section for details."
+                }
+            }
+        ]
+    }
+]
+</script>
+<body>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div class="layout">
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <div class="header-top">
+                    <a href="../../index.html" class="logo-link">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Google_Cloud_logo.svg" alt="gcp logo" class="provider-logo"><h1>Gcp</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
+                <div class="version-selector">
+                    <select id="version-select" onchange="switchVersion(this.value)" aria-label="Select version">
+                        <option value="0.1.0" selected>v0.1.0</option>
+                    </select>
+                </div>
+                <a href="../../changelog.html" class="whats-new-link">✨ What's New</a>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
+            </div>
+            <div id="recently-viewed" class="recently-viewed" style="display: none;">
+                <div class="recently-header">Recently Viewed</div>
+                <ul class="recently-list"></ul>
+            </div>
+            <nav class="nav-tree" aria-label="Resources navigation">
+            <div class="nav-category collapsed" data-domain="networking">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">🌐</span>
+                    <span class="category-name">Networking</span>
+                    <span class="category-count">2</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="subnetwork" data-desc="">
+                    <a href="Subnetwork.html">Subnetwork</a>
+                </li>
+                <li class="nav-item" data-name="vpcnetwork" data-desc="">
+                    <a href="VpcNetwork.html">VpcNetwork</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="compute">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💻</span>
+                    <span class="category-name">Compute</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="computeinstance" data-desc="">
+                    <a href="ComputeInstance.html">ComputeInstance</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="storage">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💾</span>
+                    <span class="category-name">Storage</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="cloudstoragebucket" data-desc="">
+                    <a href="CloudStorageBucket.html">CloudStorageBucket</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="dns">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">📍</span>
+                    <span class="category-name">Dns</span>
+                    <span class="category-count">2</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="managedzone" data-desc="">
+                    <a href="ManagedZone.html">ManagedZone</a>
+                </li>
+                <li class="nav-item" data-name="resourcerecordset" data-desc="">
+                    <a href="ResourceRecordSet.html">ResourceRecordSet</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category" data-domain="loadbalancing">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="true">
+                    <span class="category-icon" aria-hidden="true">🚦</span>
+                    <span class="category-name">Loadbalancing</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item active" data-name="forwardingrule" data-desc="">
+                    <a href="ForwardingRule.html" aria-current="page">ForwardingRule</a>
+                </li>
+                </ul>
+            </div>
+
+            </nav>
+        </aside>
+        <main id="main-content" class="content">
+            <article class="resource-content" itemscope itemtype="https://schema.org/TechArticle">
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <a href="../../index.html">Home</a>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="domain">🚦 Loadbalancing</span>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="current" aria-current="page">ForwardingRule</span>
+                </nav>
+
+                <header>
+                    <h1 itemprop="name">ForwardingRule</h1>
+                    
+                </header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">ForwardingRule</span> <span class="kw">from</span> <span class="str">"gcp/loadbalancing"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Examples</h2>
+                    <div class="example-tabs">
+                        <button class="example-tab active" onclick="showExample(this, 'basic')">Basic</button>
+                        <button class="example-tab" onclick="showExample(this, 'references')">With References</button>
+                        <button class="example-tab" onclick="showExample(this, 'complete')">Complete</button>
+                    </div>
+                    <div class="example-content active" id="example-basic">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code itemprop="text"><span class="kw">resource</span> <span class="type">ForwardingRule</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">target</span>              <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">portRange</span>           <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">ipProtocol</span>          <span class="eq">=</span> <span class="str">"TCP"</span>
+    <span class="prop">loadBalancingScheme</span> <span class="eq">=</span> <span class="str">"EXTERNAL"</span>
+    <span class="prop">network</span>             <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">subnetwork</span>          <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">region</span>              <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">labels</span>              <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">description</span>         <span class="eq">=</span> <span class="str">"example-value"</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-references">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Example with resource references</span>
+
+<span class="kw">resource</span> <span class="type">ForwardingRule</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">target</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">portRange</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">ipProtocol</span> <span class="eq">=</span> <span class="str">"TCP"</span>
+    <span class="prop">loadBalancingScheme</span> <span class="eq">=</span> <span class="str">"EXTERNAL"</span>
+    <span class="prop">network</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">subnetwork</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">region</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">labels</span> <span class="eq">=</span> <span class="str">"..."</span>
+    <span class="prop">description</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-complete">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Complete example with all properties</span>
+<span class="kw">resource</span> <span class="type">ForwardingRule</span> <span class="name">complete_example</span> <span class="brace">{</span>
+    <span class="prop">name</span>                <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The name of the forwarding rule</span>
+    <span class="prop">target</span>              <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The target resource URL (target pool,...</span>
+    <span class="prop">portRange</span>           <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The port range for this forwarding ru...</span>
+    <span class="prop">ipProtocol</span>          <span class="eq">=</span> <span class="str">"TCP"</span>  <span class="comment">// The IP protocol for this forwarding rule</span>
+    <span class="prop">loadBalancingScheme</span> <span class="eq">=</span> <span class="str">"EXTERNAL"</span>  <span class="comment">// The load balancing scheme</span>
+    <span class="prop">network</span>             <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The VPC network for internal load bal...</span>
+    <span class="prop">subnetwork</span>          <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The subnetwork for internal load bala...</span>
+    <span class="prop">region</span>              <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The GCP region for this forwarding ru...</span>
+    <span class="prop">labels</span>              <span class="eq">=</span> <span class="str">"..."</span>  <span class="comment">// Labels to apply to the forwarding rule</span>
+    <span class="prop">description</span>         <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// An optional description</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section id="schema" class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)" role="button" aria-expanded="false">
+                        <span class="toggle-icon" aria-hidden="true">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// ForwardingRule</span>
+<span class="kw">schema</span> <span class="type">ForwardingRule</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">name</span>                              <span class="comment">// The name of the forwarding rule</span>
+    <span class="type">string</span> <span class="prop">target</span>                            <span class="comment">// The target resource URL (target pool, proxy, or backend service)</span>
+    <span class="type">string</span> <span class="prop">portRange</span>                         <span class="comment">// The port range for this forwarding rule (e.g., '80', '8080-8090')</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"TCP"</span>, <span class="str">"UDP"</span>, <span class="str">"ESP"</span>, <span class="str">"AH"</span>, <span class="str">"SCTP"</span>, <span class="str">"ICMP"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">ipProtocol</span> <span class="eq">=</span> <span class="str">&quot;TCP&quot;</span>                <span class="comment">// The IP protocol for this forwarding rule</span>
+    <span class="decorator">@allowed</span><span class="brace">([</span><span class="str">"EXTERNAL"</span>, <span class="str">"EXTERNAL_MANAGED"</span>, <span class="str">"INTERNAL"</span>, <span class="str">"INTERNAL_MANAGED"</span>, <span class="str">"INTERNAL_SELF_MANAGED"</span><span class="brace">])</span>
+    <span class="type">string</span> <span class="prop">loadBalancingScheme</span> <span class="eq">=</span> <span class="str">&quot;EXTERNAL&quot;</span>  <span class="comment">// The load balancing scheme</span>
+    <span class="type">string</span> <span class="prop">network</span>                           <span class="comment">// The VPC network for internal load balancers</span>
+    <span class="type">string</span> <span class="prop">subnetwork</span>                        <span class="comment">// The subnetwork for internal load balancers</span>
+    <span class="type">string</span> <span class="prop">region</span>                            <span class="comment">// The GCP region for this forwarding rule (regional rules only)</span>
+    <span class="type">object</span> <span class="prop">labels</span>                            <span class="comment">// Labels to apply to the forwarding rule</span>
+    <span class="type">string</span> <span class="prop">description</span>                       <span class="comment">// An optional description</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">forwardingRuleId</span>                  <span class="comment">// The unique ID of the forwarding rule</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">selfLink</span>                          <span class="comment">// The self-link URL of the forwarding rule</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">ipAddress</span>                         <span class="comment">// The IP address assigned to this forwarding rule</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="property-tabs">
+<button class="property-tab active" onclick="showPropertyTab(this, 'user')">User Properties</button>
+<button class="property-tab" onclick="showPropertyTab(this, 'cloud')">Cloud Properties</button>
+</div>
+<div class="property-content active" id="props-user">
+<p class="props-desc">Properties you configure when defining the resource.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-name">
+    <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The name of the forwarding rule</td>
+</tr>
+<tr id="prop-target">
+    <td><code class="prop-name" onclick="copyPropLink('target')" title="Click to copy link">target<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The target resource URL (target pool, proxy, or backend service)</td>
+</tr>
+<tr id="prop-portRange">
+    <td><code class="prop-name" onclick="copyPropLink('portRange')" title="Click to copy link">portRange<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The port range for this forwarding rule (e.g., '80', '8080-8090')</td>
+</tr>
+<tr id="prop-ipProtocol">
+    <td><code class="prop-name" onclick="copyPropLink('ipProtocol')" title="Click to copy link">ipProtocol<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><code class="default-value">TCP</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The IP protocol for this forwarding rule<br><span class="valid-values-label">Valid values: </span><code class="valid-value">TCP</code> <code class="valid-value">UDP</code> <code class="valid-value">ESP</code> <code class="valid-value">AH</code> <code class="valid-value">SCTP</code> <code class="valid-value">ICMP</code></td>
+</tr>
+<tr id="prop-loadBalancingScheme">
+    <td><code class="prop-name" onclick="copyPropLink('loadBalancingScheme')" title="Click to copy link">loadBalancingScheme<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><code class="default-value">EXTERNAL</code></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The load balancing scheme<br><span class="valid-values-label">Valid values: </span><code class="valid-value">EXTERNAL</code> <code class="valid-value">EXTERNAL_MANAGED</code> <code class="valid-value">INTERNAL</code> <code class="valid-value">INTERNAL_MANAGED</code> <code class="valid-value">INTERNAL_SELF_MANAGED</code></td>
+</tr>
+<tr id="prop-network">
+    <td><code class="prop-name" onclick="copyPropLink('network')" title="Click to copy link">network<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The VPC network for internal load balancers</td>
+</tr>
+<tr id="prop-subnetwork">
+    <td><code class="prop-name" onclick="copyPropLink('subnetwork')" title="Click to copy link">subnetwork<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The subnetwork for internal load balancers</td>
+</tr>
+<tr id="prop-region">
+    <td><code class="prop-name" onclick="copyPropLink('region')" title="Click to copy link">region<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The GCP region for this forwarding rule (regional rules only)</td>
+</tr>
+<tr id="prop-labels">
+    <td><code class="prop-name" onclick="copyPropLink('labels')" title="Click to copy link">labels<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">object</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Labels to apply to the forwarding rule</td>
+</tr>
+<tr id="prop-description">
+    <td><code class="prop-name" onclick="copyPropLink('description')" title="Click to copy link">description<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>An optional description</td>
+</tr>
+
+    </tbody>
+</table>
+</div>
+</div>
+<div class="property-content" id="props-cloud">
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-forwardingRuleId">
+    <td><code class="prop-name" onclick="copyPropLink('forwardingRuleId')" title="Click to copy link">forwardingRuleId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The unique ID of the forwarding rule</td>
+</tr>
+<tr id="prop-selfLink">
+    <td><code class="prop-name" onclick="copyPropLink('selfLink')" title="Click to copy link">selfLink<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The self-link URL of the forwarding rule</td>
+</tr>
+<tr id="prop-ipAddress">
+    <td><code class="prop-name" onclick="copyPropLink('ipAddress')" title="Click to copy link">ipAddress<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The IP address assigned to this forwarding rule</td>
+</tr>
+
+    </tbody>
+</table>
+</div>
+</div>
+</section>
+<nav class="resource-nav" aria-label="Resource navigation">
+<span class="nav-placeholder"></span>
+<span class="nav-category-label">Loadbalancing</span>
+<span class="nav-placeholder"></span>
+</nav>
+                <footer class="resource-footer">
+                    <div class="footer-actions">
+                        <div class="share-buttons">
+                            <span class="share-label">Share:</span>
+                            <a href="https://twitter.com/intent/tweet?text=ForwardingRule%20-%20Kite%20Gcp%20Provider&url=https://docs.kitelang.cloud/gcp/ForwardingRule.html" target="_blank" rel="noopener" class="share-btn share-twitter" title="Share on Twitter">
+                                <span>𝕏</span>
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://docs.kitelang.cloud/gcp/ForwardingRule.html" target="_blank" rel="noopener" class="share-btn share-linkedin" title="Share on LinkedIn">
+                                <span>in</span>
+                            </a>
+                        </div>
+                        <a href="https://github.com/kitecorp/kite-providers/issues/new?title=Docs:%20ForwardingRule%20-%20&body=**Resource:** ForwardingRule%0A**Provider:** gcp%0A**Page:** https://docs.kitelang.cloud/gcp/ForwardingRule.html%0A%0A**Issue:**%0A" target="_blank" rel="noopener" class="report-issue">
+                            Report an issue
+                        </a>
+                    </div>
+                    <p class="footer-date">Generated on <time datetime="2026-04-16T19:01:48.308621993">April 16, 2026</time></p>
+                </footer>
+            </article>
+        </main>
+        <aside class="sidebar-right">
+            <div class="toc-header">On this page</div>
+            <nav class="toc" aria-label="Table of contents">
+                <a href="#import">Import</a>
+                <a href="#example">Example</a>
+                <a href="#schema" class="toc-h3">Schema Definition</a>
+                <a href="#properties">Properties</a>
+
+            </nav>
+        </aside>
+    </div>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+</body>
+</html>

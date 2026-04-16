@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ManagedZone | Gcp Provider | Kite</title>
+    <meta name="description" content="Documentation for ManagedZone resource in Gcp provider.">
+    <meta name="keywords" content="kite, infrastructure as code, gcp, cloud, terraform alternative, IaC">
+    <meta name="author" content="Kite">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://docs.kitelang.cloud/gcp/ManagedZone.html">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="../../styles.css" as="style">
+    <link rel="preload" href="../../scripts.js" as="script">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="../../styles.css">
+
+    <!-- Scripts -->
+    <script src="../../scripts.js" defer></script>
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Gcp Provider Resources" href="../../feed.xml">
+
+    <!-- OpenSearch -->
+    <link rel="search" type="application/opensearchdescription+xml" title="Kite Gcp Docs" href="../../opensearch.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ManagedZone | Gcp Provider | Kite">
+    <meta property="og:description" content="Documentation for ManagedZone resource in Gcp provider.">
+    <meta property="og:url" content="https://docs.kitelang.cloud/gcp/ManagedZone.html">
+    <meta property="og:site_name" content="Kite Documentation">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="ManagedZone | Gcp Provider | Kite">
+    <meta name="twitter:description" content="Documentation for ManagedZone resource in Gcp provider.">
+</head>
+<script type="application/ld+json">
+[
+    {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "ManagedZone Resource Documentation",
+        "description": "",
+        "author": {
+            "@type": "Organization",
+            "name": "Kite"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "Kite",
+            "url": "https://kitelang.cloud"
+        },
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://docs.kitelang.cloud/gcp/ManagedZone.html"
+        },
+        "about": {
+            "@type": "SoftwareSourceCode",
+            "name": "ManagedZone",
+            "programmingLanguage": "Kite",
+            "codeRepository": "https://github.com/kitelang/kite"
+        },
+        "articleSection": "Dns",
+        "keywords": ["kite", "gcp", "managedzone", "infrastructure as code", "cloud"]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Gcp Provider",
+                "item": "https://docs.kitelang.cloud/gcp/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Dns",
+                "item": "https://docs.kitelang.cloud/gcp/ManagedZone.html"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "ManagedZone"
+            }
+        ]
+    },
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is ManagedZone in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "ManagedZone is a dns resource in the Gcp provider. Use it to manage your cloud infrastructure."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How do I import ManagedZone in Kite?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Use: import ManagedZone from \"gcp/dns\""
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What properties does ManagedZone have?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "ManagedZone has 4 configurable properties. See the Properties section for details."
+                }
+            }
+        ]
+    }
+]
+</script>
+<body>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div class="layout">
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <div class="header-top">
+                    <a href="../../index.html" class="logo-link">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Google_Cloud_logo.svg" alt="gcp logo" class="provider-logo"><h1>Gcp</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
+                <div class="version-selector">
+                    <select id="version-select" onchange="switchVersion(this.value)" aria-label="Select version">
+                        <option value="0.1.0" selected>v0.1.0</option>
+                    </select>
+                </div>
+                <a href="../../changelog.html" class="whats-new-link">✨ What's New</a>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources">
+                    <kbd class="search-hint">/</kbd>
+                </div>
+            </div>
+            <div id="recently-viewed" class="recently-viewed" style="display: none;">
+                <div class="recently-header">Recently Viewed</div>
+                <ul class="recently-list"></ul>
+            </div>
+            <nav class="nav-tree" aria-label="Resources navigation">
+            <div class="nav-category collapsed" data-domain="networking">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">🌐</span>
+                    <span class="category-name">Networking</span>
+                    <span class="category-count">2</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="subnetwork" data-desc="">
+                    <a href="Subnetwork.html">Subnetwork</a>
+                </li>
+                <li class="nav-item" data-name="vpcnetwork" data-desc="">
+                    <a href="VpcNetwork.html">VpcNetwork</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="compute">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💻</span>
+                    <span class="category-name">Compute</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="computeinstance" data-desc="">
+                    <a href="ComputeInstance.html">ComputeInstance</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="storage">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">💾</span>
+                    <span class="category-name">Storage</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="cloudstoragebucket" data-desc="">
+                    <a href="CloudStorageBucket.html">CloudStorageBucket</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category" data-domain="dns">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="true">
+                    <span class="category-icon" aria-hidden="true">📍</span>
+                    <span class="category-name">Dns</span>
+                    <span class="category-count">2</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item active" data-name="managedzone" data-desc="">
+                    <a href="ManagedZone.html" aria-current="page">ManagedZone</a>
+                </li>
+                <li class="nav-item" data-name="resourcerecordset" data-desc="">
+                    <a href="ResourceRecordSet.html">ResourceRecordSet</a>
+                </li>
+                </ul>
+            </div>
+            <div class="nav-category collapsed" data-domain="loadbalancing">
+                <div class="category-header" onclick="toggleCategory(this)" role="button" aria-expanded="false">
+                    <span class="category-icon" aria-hidden="true">🚦</span>
+                    <span class="category-name">Loadbalancing</span>
+                    <span class="category-count">1</span>
+                    <span class="category-arrow" aria-hidden="true">▾</span>
+                </div>
+                <ul class="category-items">
+                <li class="nav-item" data-name="forwardingrule" data-desc="">
+                    <a href="ForwardingRule.html">ForwardingRule</a>
+                </li>
+                </ul>
+            </div>
+
+            </nav>
+        </aside>
+        <main id="main-content" class="content">
+            <article class="resource-content" itemscope itemtype="https://schema.org/TechArticle">
+                <nav class="breadcrumbs" aria-label="Breadcrumb">
+                    <a href="../../index.html">Home</a>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="domain">📍 Dns</span>
+                    <span class="sep" aria-hidden="true">›</span>
+                    <span class="current" aria-current="page">ManagedZone</span>
+                </nav>
+
+                <header>
+                    <h1 itemprop="name">ManagedZone</h1>
+                    
+                </header>
+                <section id="import">
+                    <h2>Import</h2>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">import</span> <span class="type">ManagedZone</span> <span class="kw">from</span> <span class="str">"gcp/dns"</span></code></pre>
+                    </div>
+                </section>
+                <section id="example">
+                    <h2>Examples</h2>
+                    <div class="example-tabs">
+                        <button class="example-tab active" onclick="showExample(this, 'basic')">Basic</button>
+                        <button class="example-tab" onclick="showExample(this, 'references')">With References</button>
+                        <button class="example-tab" onclick="showExample(this, 'complete')">Complete</button>
+                    </div>
+                    <div class="example-content active" id="example-basic">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code itemprop="text"><span class="kw">resource</span> <span class="type">ManagedZone</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span>        <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">dnsName</span>     <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">description</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">labels</span>      <span class="eq">=</span> <span class="str">"..."</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-references">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Example with resource references</span>
+
+<span class="kw">resource</span> <span class="type">ResourceRecordSet</span> <span class="name">my_resourcerecordset</span> <span class="brace">{</span>
+    <span class="comment">// ... configuration</span>
+<span class="brace">}</span>
+
+<span class="kw">resource</span> <span class="type">ManagedZone</span> <span class="name">example</span> <span class="brace">{</span>
+    <span class="prop">name</span> <span class="eq">=</span> <span class="name">my_resourcerecordset</span>.<span class="prop">id</span>
+    <span class="prop">dnsName</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">description</span> <span class="eq">=</span> <span class="str">"example-value"</span>
+    <span class="prop">labels</span> <span class="eq">=</span> <span class="str">"..."</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                    <div class="example-content" id="example-complete">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// Complete example with all properties</span>
+<span class="kw">resource</span> <span class="type">ManagedZone</span> <span class="name">complete_example</span> <span class="brace">{</span>
+    <span class="prop">name</span>        <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The name of the managed zone (must be...</span>
+    <span class="prop">dnsName</span>     <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// The DNS name of the zone (must end wi...</span>
+    <span class="prop">description</span> <span class="eq">=</span> <span class="str">"example-value"</span>  <span class="comment">// A description for the managed zone</span>
+    <span class="prop">labels</span>      <span class="eq">=</span> <span class="str">"..."</span>  <span class="comment">// Labels to apply to the managed zone</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+                <section id="schema" class="schema-section">
+                    <h3 class="schema-toggle" onclick="toggleSchema(this)" role="button" aria-expanded="false">
+                        <span class="toggle-icon" aria-hidden="true">▶</span> Schema Definition
+                    </h3>
+                    <div class="schema-content">
+                        <div class="code-wrapper">
+                            <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy schema">Copy</button>
+                            <pre class="code-block"><code><span class="comment">// ManagedZone</span>
+<span class="kw">schema</span> <span class="type">ManagedZone</span> <span class="brace">{</span>
+    <span class="type">string</span> <span class="prop">name</span>           <span class="comment">// The name of the managed zone (must be unique within the project)</span>
+    <span class="type">string</span> <span class="prop">dnsName</span>        <span class="comment">// The DNS name of the zone (must end with a dot, e.g., 'example.com.')</span>
+    <span class="type">string</span> <span class="prop">description</span>    <span class="comment">// A description for the managed zone</span>
+    <span class="type">object</span> <span class="prop">labels</span>         <span class="comment">// Labels to apply to the managed zone</span>
+    <span class="decorator">@cloud</span><span class="brace">(</span><span class="name">importable</span><span class="brace">)</span>
+    <span class="type">string</span> <span class="prop">managedZoneId</span>  <span class="comment">// The unique managed zone ID assigned by GCP</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">any[]</span>  <span class="prop">nameServers</span>    <span class="comment">// The name servers assigned to this managed zone</span>
+    <span class="decorator">@cloud</span>
+    <span class="type">string</span> <span class="prop">creationTime</span>   <span class="comment">// The creation time of the managed zone</span>
+<span class="brace">}</span></code></pre>
+                        </div>
+                    </div>
+                </section>
+<section id="properties">
+<h2>Properties</h2>
+<div class="property-tabs">
+<button class="property-tab active" onclick="showPropertyTab(this, 'user')">User Properties</button>
+<button class="property-tab" onclick="showPropertyTab(this, 'cloud')">Cloud Properties</button>
+</div>
+<div class="property-content active" id="props-user">
+<p class="props-desc">Properties you configure when defining the resource.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Default</th>
+            <th scope="col">Required</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-name">
+    <td><code class="prop-name" onclick="copyPropLink('name')" title="Click to copy link">name<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The name of the managed zone (must be unique within the project)</td>
+</tr>
+<tr id="prop-dnsName">
+    <td><code class="prop-name" onclick="copyPropLink('dnsName')" title="Click to copy link">dnsName<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>The DNS name of the zone (must end with a dot, e.g., 'example.com.')</td>
+</tr>
+<tr id="prop-description">
+    <td><code class="prop-name" onclick="copyPropLink('description')" title="Click to copy link">description<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>A description for the managed zone</td>
+</tr>
+<tr id="prop-labels">
+    <td><code class="prop-name" onclick="copyPropLink('labels')" title="Click to copy link">labels<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">object</code></td>
+    <td><span class="no-value">—</span></td>
+    <td><span class="badge badge-optional">No</span></td>
+    <td>Labels to apply to the managed zone</td>
+</tr>
+
+    </tbody>
+</table>
+</div>
+</div>
+<div class="property-content" id="props-cloud">
+<p class="cloud-desc">Read-only properties set by the cloud provider after resource creation.</p>
+<div class="table-wrapper">
+<table>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Type</th>
+            <th scope="col">Description</th>
+        </tr>
+    </thead>
+    <tbody>
+<tr id="prop-managedZoneId">
+    <td><code class="prop-name" onclick="copyPropLink('managedZoneId')" title="Click to copy link">managedZoneId<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The unique managed zone ID assigned by GCP</td>
+</tr>
+<tr id="prop-nameServers">
+    <td><code class="prop-name" onclick="copyPropLink('nameServers')" title="Click to copy link">nameServers<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">any[]</code></td>
+    <td>The name servers assigned to this managed zone</td>
+</tr>
+<tr id="prop-creationTime">
+    <td><code class="prop-name" onclick="copyPropLink('creationTime')" title="Click to copy link">creationTime<span class="link-icon">#</span></code></td>
+    <td><code class="prop-type">string</code></td>
+    <td>The creation time of the managed zone</td>
+</tr>
+
+    </tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="related" class="related-section">
+<h2>Related Resources</h2>
+<p class="related-desc">Other resources in the Dns category:</p>
+<div class="related-grid">
+<a href="ResourceRecordSet.html" class="related-card"><span class="related-icon">📍</span><span class="related-name">ResourceRecordSet</span></a>
+</div>
+</section>
+<nav class="resource-nav" aria-label="Resource navigation">
+<span class="nav-placeholder"></span>
+<span class="nav-category-label">Dns</span>
+<a href="ResourceRecordSet.html" class="nav-next" rel="next" title="Next in Dns">ResourceRecordSet →</a>
+</nav>
+                <footer class="resource-footer">
+                    <div class="footer-actions">
+                        <div class="share-buttons">
+                            <span class="share-label">Share:</span>
+                            <a href="https://twitter.com/intent/tweet?text=ManagedZone%20-%20Kite%20Gcp%20Provider&url=https://docs.kitelang.cloud/gcp/ManagedZone.html" target="_blank" rel="noopener" class="share-btn share-twitter" title="Share on Twitter">
+                                <span>𝕏</span>
+                            </a>
+                            <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://docs.kitelang.cloud/gcp/ManagedZone.html" target="_blank" rel="noopener" class="share-btn share-linkedin" title="Share on LinkedIn">
+                                <span>in</span>
+                            </a>
+                        </div>
+                        <a href="https://github.com/kitecorp/kite-providers/issues/new?title=Docs:%20ManagedZone%20-%20&body=**Resource:** ManagedZone%0A**Provider:** gcp%0A**Page:** https://docs.kitelang.cloud/gcp/ManagedZone.html%0A%0A**Issue:**%0A" target="_blank" rel="noopener" class="report-issue">
+                            Report an issue
+                        </a>
+                    </div>
+                    <p class="footer-date">Generated on <time datetime="2026-04-16T19:01:48.314338189">April 16, 2026</time></p>
+                </footer>
+            </article>
+        </main>
+        <aside class="sidebar-right">
+            <div class="toc-header">On this page</div>
+            <nav class="toc" aria-label="Table of contents">
+                <a href="#import">Import</a>
+                <a href="#example">Example</a>
+                <a href="#schema" class="toc-h3">Schema Definition</a>
+                <a href="#properties">Properties</a>
+                <a href="#related">Related Resources</a>
+
+            </nav>
+        </aside>
+    </div>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+</body>
+</html>

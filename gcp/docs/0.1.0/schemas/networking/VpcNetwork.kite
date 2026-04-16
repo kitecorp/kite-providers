@@ -1,0 +1,14 @@
+// VpcNetwork
+schema VpcNetwork {
+    string  name                          // The name of the network
+    boolean autoCreateSubnetworks = true  // Whether to automatically create subnetworks in each region
+    @allowed(["REGIONAL", "GLOBAL"])
+    string  routingMode = "REGIONAL"      // The network-wide routing mode
+    string  description                   // An optional description of the network
+    @cloud(importable)
+    string  networkId                     // The unique network ID assigned by GCP
+    @cloud
+    string  selfLink                      // The self-link URL of the network
+    @cloud
+    string  creationTimestamp             // The creation timestamp of the network
+}

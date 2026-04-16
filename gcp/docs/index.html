@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gcp Provider Documentation | Kite</title>
+    <meta name="description" content="Complete documentation for Gcp provider resources. Learn how to configure and manage infrastructure resources with Kite.">
+    <meta name="keywords" content="kite, infrastructure as code, gcp, cloud, terraform alternative, IaC">
+    <meta name="author" content="Kite">
+    <meta name="robots" content="index, follow">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://docs.kitelang.cloud/gcp/index.html">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪁</text></svg>">
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="styles.css" as="style">
+    <link rel="preload" href="scripts.js" as="script">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Scripts -->
+    <script src="scripts.js" defer></script>
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="Gcp Provider Resources" href="feed.xml">
+
+    <!-- OpenSearch -->
+    <link rel="search" type="application/opensearchdescription+xml" title="Kite Gcp Docs" href="opensearch.xml">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Gcp Provider Documentation | Kite">
+    <meta property="og:description" content="Complete documentation for Gcp provider resources. Learn how to configure and manage infrastructure resources with Kite.">
+    <meta property="og:url" content="https://docs.kitelang.cloud/gcp/index.html">
+    <meta property="og:site_name" content="Kite Documentation">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Gcp Provider Documentation | Kite">
+    <meta name="twitter:description" content="Complete documentation for Gcp provider resources. Learn how to configure and manage infrastructure resources with Kite.">
+</head>
+<body>
+    <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+        <span class="hamburger-icon"></span>
+    </button>
+    <div class="mobile-overlay" onclick="toggleMobileMenu()"></div>
+    <div class="layout">
+        <aside class="sidebar-left">
+            <div class="sidebar-header">
+                <div class="header-top">
+                    <a href="index.html" class="logo-link">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Google_Cloud_logo.svg" alt="gcp logo" class="provider-logo"><h1>Gcp</h1>
+                    </a>
+                    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light mode" title="Toggle theme">
+                        <span class="theme-icon-light">☀️</span>
+                        <span class="theme-icon-dark">🌙</span>
+                    </button>
+                </div>
+                <div class="version-selector">
+                    <select id="version-select" onchange="switchVersion(this.value)" aria-label="Select version">
+                        <option>Loading...</option>
+                    </select>
+                </div>
+                <a href="changelog.html" class="whats-new-link">✨ What's New</a>
+            </div>
+            <div class="search-wrapper">
+                <div class="search-container">
+                    <input type="search" id="search" placeholder="Search resources..." class="search-input" aria-label="Search resources" oninput="filterResources(this.value)">
+                    <kbd class="search-hint">/</kbd>
+                </div>
+            </div>
+            <nav id="nav-tree" class="nav-tree" aria-label="Resources navigation">
+                <div class="loading">Loading resources...</div>
+            </nav>
+        </aside>
+        <main id="main-content" class="content">
+            <article class="resource-content">
+                <h1>Gcp Provider Documentation</h1>
+                <p class="welcome-text">Infrastructure as code resources for Gcp. Select a resource from the navigation to view its documentation.</p>
+
+                <div class="quick-stats">
+                    <div class="stat-card">
+                        <span class="stat-value" id="resource-count">-</span>
+                        <span class="stat-label">Resources</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-value" id="category-count">-</span>
+                        <span class="stat-label">Categories</span>
+                    </div>
+                </div>
+
+                <h2 id="quick-start">Quick Start</h2>
+                <div class="quick-start-section">
+                    <h3>Installation</h3>
+                    <p>Install the Gcp provider:</p>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">kite</span> <span class="name">providers</span> <span class="str">install</span> gcp@0.1.0</code></pre>
+                    </div>
+
+                    <h3>Use in your .kite file</h3>
+                    <p>Provider types are automatically available after installation - no import needed:</p>
+                    <div class="code-wrapper">
+                        <button class="copy-btn" onclick="copyCode(this)" aria-label="Copy code">Copy</button>
+                        <pre class="code-block"><code><span class="kw">resource</span> <span class="type">CloudStorageBucket</span> <span class="name">myResource</span> <span class="brace">{</span>
+    <span class="comment">// Configure properties here</span>
+<span class="brace">}</span></code></pre>
+                    </div>
+                </div>
+
+                <h2 id="categories">Categories</h2>
+                <div id="category-grid" class="category-grid">
+                    <div class="loading">Loading...</div>
+                </div>
+
+                <h2 id="all-resources">All Resources</h2>
+                <div id="resource-grid" class="resource-grid">
+                    <div class="loading">Loading...</div>
+                </div>
+            </article>
+        </main>
+        <aside class="sidebar-right">
+            <div class="toc-header">On this page</div>
+            <nav class="toc">
+                <a href="#quick-start">Quick Start</a>
+                <a href="#categories">Categories</a>
+                <a href="#all-resources">All Resources</a>
+            </nav>
+        </aside>
+    </div>
+    <button class="back-to-top" onclick="scrollToTop()" aria-label="Back to top" title="Back to top">↑</button>
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+    <script>
+        let currentVersion = null;
+
+        async function initVersionedIndex() {
+            try {
+                const res = await fetch('versions.json');
+                const data = await res.json();
+                const versions = data.versions || [];
+
+                // Check for version query param (from resource page redirect)
+                const params = new URLSearchParams(window.location.search);
+                const requestedVersion = params.get('version');
+                currentVersion = requestedVersion || data.latest || (versions[0] && versions[0].path);
+
+                const select = document.getElementById('version-select');
+                select.innerHTML = versions.map(v =>
+                    `<option value="${v.path}" ${v.path === currentVersion ? 'selected' : ''}>v${v.version}${v.version === data.latest ? ' (latest)' : ''}</option>`
+                ).join('');
+
+                await loadResources(currentVersion);
+
+                // Show toast if provided (from resource page redirect)
+                const toastMsg = params.get('toast');
+                if (toastMsg) {
+                    showToast(toastMsg, 3000);
+                    // Clean up URL
+                    history.replaceState(null, '', window.location.pathname);
+                }
+            } catch (e) {
+                console.error('Failed to load versions', e);
+                document.getElementById('nav-tree').innerHTML = '<div class="error">Failed to load</div>';
+            }
+        }
+
+        function showToast(message, duration = 2000) {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), duration);
+            }
+        }
+
+        async function loadResources(version) {
+            try {
+                // Add cache-busting to ensure fresh content
+                const res = await fetch(version + '/manifest.json?_=' + Date.now());
+                if (!res.ok) throw new Error('Failed to fetch manifest for ' + version);
+                const data = await res.json();
+                const resourcesObj = data.resources || {};
+                const resources = Object.entries(resourcesObj).map(([name, info]) => ({
+                    name,
+                    domain: info.domain || 'general',
+                    propertyCount: Object.keys(info.properties || {}).length
+                }));
+
+                renderNavigation(resources, version);
+                renderCategoryGrid(resources, version);
+                renderResourceGrid(resources, version);
+                updateStats(resources);
+            } catch (e) {
+                console.error('Failed to load resources', e);
+            }
+        }
+
+        function renderNavigation(resources, version) {
+            const byDomain = groupByDomain(resources);
+            let html = '';
+            for (const [domain, items] of Object.entries(byDomain)) {
+                html += `<div class="nav-category" data-domain="${domain}">
+                    <div class="category-header" onclick="toggleCategoryWithHash(this, '${domain}')" role="button" aria-expanded="true">
+                        <span class="category-icon">${getDomainIcon(domain)}</span>
+                        <span class="category-name">${capitalize(domain)}</span>
+                        <span class="category-count">${items.length}</span>
+                        <span class="category-arrow">▾</span>
+                    </div>
+                    <ul class="category-items">
+                        ${items.map(r => `<li class="nav-item" data-name="${r.name.toLowerCase()}"><a href="${version}/html/${r.name}.html" onclick="updateHashBeforeNav('${r.name}')">${r.name}</a></li>`).join('')}
+                    </ul>
+                </div>`;
+            }
+            document.getElementById('nav-tree').innerHTML = html;
+            // Restore state from URL hash
+            restoreFromHash();
+        }
+
+        function toggleCategoryWithHash(header, domain) {
+            toggleCategory(header);
+            // Update URL hash with expanded categories
+            updateUrlHash();
+        }
+
+        function updateHashBeforeNav(resourceName) {
+            // Update hash before navigation so users can copy URL
+            history.replaceState(null, '', '#' + resourceName);
+        }
+
+        function updateUrlHash() {
+            const expanded = [];
+            document.querySelectorAll('.nav-category:not(.collapsed)').forEach(cat => {
+                expanded.push(cat.dataset.domain);
+            });
+            const hash = expanded.length > 0 ? '#categories=' + expanded.join(',') : '';
+            history.replaceState(null, '', window.location.pathname + window.location.search + hash);
+        }
+
+        function restoreFromHash() {
+            const hash = window.location.hash;
+            if (!hash) return;
+
+            // Handle #ResourceName - highlight in nav and scroll to in grid
+            if (!hash.includes('=')) {
+                const resourceName = hash.substring(1);
+                highlightResource(resourceName);
+                return;
+            }
+
+            // Handle #categories=networking,compute
+            if (hash.startsWith('#categories=')) {
+                const categories = hash.substring(12).split(',');
+                document.querySelectorAll('.nav-category').forEach(cat => {
+                    if (categories.includes(cat.dataset.domain)) {
+                        cat.classList.remove('collapsed');
+                    } else {
+                        cat.classList.add('collapsed');
+                    }
+                });
+            }
+        }
+
+        function highlightResource(name) {
+            // Highlight in navigation
+            const navItem = document.querySelector(`.nav-item[data-name="${name.toLowerCase()}"]`);
+            if (navItem) {
+                navItem.classList.add('highlighted');
+                // Expand parent category
+                const category = navItem.closest('.nav-category');
+                if (category) category.classList.remove('collapsed');
+                // Scroll into view
+                navItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            // Highlight in resource grid
+            const card = document.querySelector(`.resource-card .resource-name`);
+            document.querySelectorAll('.resource-card').forEach(c => {
+                if (c.querySelector('.resource-name')?.textContent === name) {
+                    c.classList.add('highlighted');
+                    setTimeout(() => c.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+                }
+            });
+        }
+
+        function renderCategoryGrid(resources, version) {
+            const byDomain = groupByDomain(resources);
+            let html = '';
+            for (const [domain, items] of Object.entries(byDomain)) {
+                const firstResource = items[0];
+                html += `<a href="${version}/html/${firstResource.name}.html" class="category-card">
+                    <span class="card-icon">${getDomainIcon(domain)}</span>
+                    <span class="card-name">${capitalize(domain)}</span>
+                    <span class="card-count">${items.length} resources</span>
+                </a>`;
+            }
+            document.getElementById('category-grid').innerHTML = html;
+        }
+
+        function renderResourceGrid(resources, version) {
+            let html = '';
+            for (const r of resources) {
+                html += `<a href="${version}/html/${r.name}.html" class="resource-card">
+                    <span class="resource-icon">${getDomainIcon(r.domain)}</span>
+                    <span class="resource-name">${r.name}</span>
+                    <span class="resource-props">${r.propertyCount} properties</span>
+                </a>`;
+            }
+            document.getElementById('resource-grid').innerHTML = html;
+        }
+
+        function updateStats(resources) {
+            const domains = new Set(resources.map(r => r.domain));
+            document.getElementById('resource-count').textContent = resources.length;
+            document.getElementById('category-count').textContent = domains.size;
+        }
+
+        function switchVersion(version) {
+            currentVersion = version;
+            loadResources(version);
+        }
+
+        function filterResources(query) {
+            const q = query.toLowerCase();
+            document.querySelectorAll('.nav-item').forEach(item => {
+                const name = item.dataset.name || item.textContent.toLowerCase();
+                item.style.display = name.includes(q) ? '' : 'none';
+            });
+            document.querySelectorAll('.resource-card').forEach(card => {
+                card.style.display = card.textContent.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function groupByDomain(resources) {
+            const groups = {};
+            resources.forEach(r => {
+                if (!groups[r.domain]) groups[r.domain] = [];
+                groups[r.domain].push(r);
+            });
+            return groups;
+        }
+
+        function getDomainIcon(domain) {
+            const icons = {networking:'🌐',compute:'💻',storage:'💾',database:'🗄️',dns:'📍',loadbalancing:'🚦',security:'🔒',iam:'🪪',monitoring:'📊',container:'📦',files:'📁',core:'⚙️'};
+            return icons[domain] || '📄';
+        }
+
+        function capitalize(s) {
+            return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+
+        initVersionedIndex();
+    </script>
+</body>
+</html>

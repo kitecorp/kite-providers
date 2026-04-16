@@ -1,0 +1,13 @@
+// ManagedZone
+schema ManagedZone {
+    string name           // The name of the managed zone (must be unique within the project)
+    string dnsName        // The DNS name of the zone (must end with a dot, e.g., 'example.com.')
+    string description    // A description for the managed zone
+    object labels         // Labels to apply to the managed zone
+    @cloud(importable)
+    string managedZoneId  // The unique managed zone ID assigned by GCP
+    @cloud
+    any[]  nameServers    // The name servers assigned to this managed zone
+    @cloud
+    string creationTime   // The creation time of the managed zone
+}
