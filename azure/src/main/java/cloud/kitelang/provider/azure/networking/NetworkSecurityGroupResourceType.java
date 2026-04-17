@@ -2,10 +2,8 @@ package cloud.kitelang.provider.azure.networking;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import com.azure.core.management.AzureEnvironment;
+import cloud.kitelang.provider.azure.AzureClients;
 import com.azure.core.management.Region;
-import com.azure.core.management.profile.AzureProfile;
-import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.NetworkSecurityGroup;
 import com.azure.resourcemanager.network.models.SecurityRuleAccess;
@@ -25,25 +23,24 @@ import java.util.stream.Collectors;
 @Slf4j
 public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<NetworkSecurityGroupResource> {
 
-    private final NetworkManager networkManager;
+    private volatile NetworkManager networkManager;
 
     public NetworkSecurityGroupResourceType() {
-        var credential = new DefaultAzureCredentialBuilder().build();
-
-        String subscriptionId = System.getenv("AZURE_SUBSCRIPTION_ID");
-        if (subscriptionId == null || subscriptionId.isBlank()) {
-            throw new IllegalStateException(
-                    "AZURE_SUBSCRIPTION_ID environment variable must be set");
-        }
-
-        String tenantId = System.getenv("AZURE_TENANT_ID");
-        var profile = new AzureProfile(tenantId, subscriptionId, AzureEnvironment.AZURE);
-
-        this.networkManager = NetworkManager.authenticate(credential, profile);
+        // Manager resolved lazily via AzureClients on first use.
     }
 
+    /** For tests: inject a pre-authenticated manager. */
     public NetworkSecurityGroupResourceType(NetworkManager networkManager) {
         this.networkManager = networkManager;
+    }
+
+    private NetworkManager network() {
+        var local = networkManager;
+        if (local == null) {
+            local = AzureClients.network();
+            networkManager = local;
+        }
+        return local;
     }
 
     @Override
@@ -51,7 +48,7 @@ public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<Networ
         log.info("Creating Network Security Group '{}' in resource group '{}' at '{}'",
                 resource.getName(), resource.getResourceGroup(), resource.getLocation());
 
-        var definition = networkManager.networkSecurityGroups()
+        var definition = network().networkSecurityGroups()
                 .define(resource.getName())
                 .withRegion(Region.fromName(resource.getLocation()))
                 .withExistingResourceGroup(resource.getResourceGroup());
@@ -158,9 +155,9 @@ public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<Networ
         try {
             NetworkSecurityGroup nsg;
             if (resource.getId() != null) {
-                nsg = networkManager.networkSecurityGroups().getById(resource.getId());
+                nsg = network().networkSecurityGroups().getById(resource.getId());
             } else {
-                nsg = networkManager.networkSecurityGroups()
+                nsg = network().networkSecurityGroups()
                         .getByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 
@@ -188,7 +185,7 @@ public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<Networ
             throw new RuntimeException("Network Security Group not found: " + resource.getName());
         }
 
-        NetworkSecurityGroup nsg = networkManager.networkSecurityGroups()
+        NetworkSecurityGroup nsg = network().networkSecurityGroups()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
         var update = nsg.update();
@@ -277,9 +274,9 @@ public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<Networ
 
         try {
             if (resource.getId() != null) {
-                networkManager.networkSecurityGroups().deleteById(resource.getId());
+                network().networkSecurityGroups().deleteById(resource.getId());
             } else {
-                networkManager.networkSecurityGroups()
+                network().networkSecurityGroups()
                         .deleteByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 

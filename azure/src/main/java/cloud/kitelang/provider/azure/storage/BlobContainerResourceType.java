@@ -2,9 +2,7 @@ package cloud.kitelang.provider.azure.storage;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import com.azure.core.management.AzureEnvironment;
-import com.azure.core.management.profile.AzureProfile;
-import com.azure.identity.DefaultAzureCredentialBuilder;
+import cloud.kitelang.provider.azure.AzureClients;
 import com.azure.resourcemanager.storage.StorageManager;
 import com.azure.resourcemanager.storage.models.BlobContainer;
 import com.azure.resourcemanager.storage.models.PublicAccess;
@@ -23,25 +21,24 @@ public class BlobContainerResourceType extends ResourceTypeHandler<BlobContainer
 
     private static final Set<String> VALID_PUBLIC_ACCESS = Set.of("None", "Blob", "Container");
 
-    private final StorageManager storageManager;
+    private volatile StorageManager storageManager;
 
     public BlobContainerResourceType() {
-        var credential = new DefaultAzureCredentialBuilder().build();
-
-        String subscriptionId = System.getenv("AZURE_SUBSCRIPTION_ID");
-        if (subscriptionId == null || subscriptionId.isBlank()) {
-            throw new IllegalStateException(
-                    "AZURE_SUBSCRIPTION_ID environment variable must be set");
-        }
-
-        String tenantId = System.getenv("AZURE_TENANT_ID");
-        var profile = new AzureProfile(tenantId, subscriptionId, AzureEnvironment.AZURE);
-
-        this.storageManager = StorageManager.authenticate(credential, profile);
+        // Manager resolved lazily via AzureClients on first use.
     }
 
+    /** For tests: inject a pre-authenticated manager. */
     public BlobContainerResourceType(StorageManager storageManager) {
         this.storageManager = storageManager;
+    }
+
+    private StorageManager storage() {
+        var local = storageManager;
+        if (local == null) {
+            local = AzureClients.storage();
+            storageManager = local;
+        }
+        return local;
     }
 
     @Override
@@ -54,7 +51,7 @@ public class BlobContainerResourceType extends ResourceTypeHandler<BlobContainer
                 : PublicAccess.NONE;
 
         // Build container with public access
-        var withPublicAccess = storageManager.blobContainers()
+        var withPublicAccess = storage().blobContainers()
                 .defineContainer(resource.getName())
                 .withExistingStorageAccount(resource.getResourceGroup(), resource.getStorageAccountName())
                 .withPublicAccess(publicAccess);
@@ -83,7 +80,7 @@ public class BlobContainerResourceType extends ResourceTypeHandler<BlobContainer
         log.info("Reading Blob Container: {}", resource.getName());
 
         try {
-            var container = storageManager.blobContainers()
+            var container = storage().blobContainers()
                     .get(resource.getResourceGroup(), resource.getStorageAccountName(), resource.getName());
 
             if (container == null) {
@@ -107,7 +104,7 @@ public class BlobContainerResourceType extends ResourceTypeHandler<BlobContainer
     public BlobContainerResource update(BlobContainerResource resource) {
         log.info("Updating Blob Container: {}", resource.getName());
 
-        var container = storageManager.blobContainers()
+        var container = storage().blobContainers()
                 .get(resource.getResourceGroup(), resource.getStorageAccountName(), resource.getName());
 
         if (container == null) {
@@ -142,7 +139,7 @@ public class BlobContainerResourceType extends ResourceTypeHandler<BlobContainer
         log.info("Deleting Blob Container: {}", resource.getName());
 
         try {
-            storageManager.blobContainers()
+            storage().blobContainers()
                     .delete(resource.getResourceGroup(), resource.getStorageAccountName(), resource.getName());
 
             log.info("Deleted Blob Container: {}", resource.getName());

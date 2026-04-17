@@ -2,10 +2,8 @@ package cloud.kitelang.provider.azure.networking;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import com.azure.core.management.AzureEnvironment;
+import cloud.kitelang.provider.azure.AzureClients;
 import com.azure.core.management.Region;
-import com.azure.core.management.profile.AzureProfile;
-import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.RouteNextHopType;
 import com.azure.resourcemanager.network.models.RouteTable;
@@ -23,25 +21,24 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResource> {
 
-    private final NetworkManager networkManager;
+    private volatile NetworkManager networkManager;
 
     public RouteTableResourceType() {
-        var credential = new DefaultAzureCredentialBuilder().build();
-
-        String subscriptionId = System.getenv("AZURE_SUBSCRIPTION_ID");
-        if (subscriptionId == null || subscriptionId.isBlank()) {
-            throw new IllegalStateException(
-                    "AZURE_SUBSCRIPTION_ID environment variable must be set");
-        }
-
-        String tenantId = System.getenv("AZURE_TENANT_ID");
-        var profile = new AzureProfile(tenantId, subscriptionId, AzureEnvironment.AZURE);
-
-        this.networkManager = NetworkManager.authenticate(credential, profile);
+        // Manager resolved lazily via AzureClients on first use.
     }
 
+    /** For tests: inject a pre-authenticated manager. */
     public RouteTableResourceType(NetworkManager networkManager) {
         this.networkManager = networkManager;
+    }
+
+    private NetworkManager network() {
+        var local = networkManager;
+        if (local == null) {
+            local = AzureClients.network();
+            networkManager = local;
+        }
+        return local;
     }
 
     @Override
@@ -49,7 +46,7 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
         log.info("Creating Route Table '{}' in resource group '{}'",
                 resource.getName(), resource.getResourceGroup());
 
-        var definition = networkManager.routeTables()
+        var definition = network().routeTables()
                 .define(resource.getName())
                 .withRegion(Region.fromName(resource.getLocation()))
                 .withExistingResourceGroup(resource.getResourceGroup());
@@ -105,9 +102,9 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
         try {
             RouteTable routeTable;
             if (resource.getId() != null) {
-                routeTable = networkManager.routeTables().getById(resource.getId());
+                routeTable = network().routeTables().getById(resource.getId());
             } else {
-                routeTable = networkManager.routeTables()
+                routeTable = network().routeTables()
                         .getByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 
@@ -135,7 +132,7 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
             throw new RuntimeException("Route Table not found: " + resource.getName());
         }
 
-        RouteTable routeTable = networkManager.routeTables()
+        RouteTable routeTable = network().routeTables()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
         var update = routeTable.update();
@@ -189,9 +186,9 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
 
         try {
             if (resource.getId() != null) {
-                networkManager.routeTables().deleteById(resource.getId());
+                network().routeTables().deleteById(resource.getId());
             } else {
-                networkManager.routeTables()
+                network().routeTables()
                         .deleteByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 

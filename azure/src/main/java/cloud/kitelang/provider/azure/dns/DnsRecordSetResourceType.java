@@ -2,9 +2,7 @@ package cloud.kitelang.provider.azure.dns;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import com.azure.core.management.AzureEnvironment;
-import com.azure.core.management.profile.AzureProfile;
-import com.azure.identity.DefaultAzureCredentialBuilder;
+import cloud.kitelang.provider.azure.AzureClients;
 import com.azure.resourcemanager.dns.DnsZoneManager;
 import com.azure.resourcemanager.dns.models.*;
 import lombok.extern.slf4j.Slf4j;
@@ -25,32 +23,31 @@ public class DnsRecordSetResourceType extends ResourceTypeHandler<DnsRecordSetRe
             "A", "AAAA", "CNAME", "MX", "TXT", "NS", "SRV", "CAA", "PTR", "SOA"
     );
 
-    private final DnsZoneManager dnsManager;
+    private volatile DnsZoneManager dnsManager;
 
     public DnsRecordSetResourceType() {
-        var credential = new DefaultAzureCredentialBuilder().build();
-
-        String subscriptionId = System.getenv("AZURE_SUBSCRIPTION_ID");
-        if (subscriptionId == null || subscriptionId.isBlank()) {
-            throw new IllegalStateException(
-                    "AZURE_SUBSCRIPTION_ID environment variable must be set");
-        }
-
-        String tenantId = System.getenv("AZURE_TENANT_ID");
-        var profile = new AzureProfile(tenantId, subscriptionId, AzureEnvironment.AZURE);
-
-        this.dnsManager = DnsZoneManager.authenticate(credential, profile);
+        // Manager resolved lazily via AzureClients on first use.
     }
 
+    /** For tests: inject a pre-authenticated manager. */
     public DnsRecordSetResourceType(DnsZoneManager dnsManager) {
         this.dnsManager = dnsManager;
+    }
+
+    private DnsZoneManager dns() {
+        var local = dnsManager;
+        if (local == null) {
+            local = AzureClients.dnsZone();
+            dnsManager = local;
+        }
+        return local;
     }
 
     @Override
     public DnsRecordSetResource create(DnsRecordSetResource resource) {
         log.info("Creating DNS Record Set: {}.{} ({})", resource.getName(), resource.getZoneName(), resource.getType());
 
-        var zone = dnsManager.zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
+        var zone = dns().zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
         if (zone == null) {
             throw new RuntimeException("DNS Zone not found: " + resource.getZoneName());
         }
@@ -73,7 +70,7 @@ public class DnsRecordSetResourceType extends ResourceTypeHandler<DnsRecordSetRe
         log.info("Reading DNS Record Set: {}.{} ({})", resource.getName(), resource.getZoneName(), resource.getType());
 
         try {
-            var zone = dnsManager.zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
+            var zone = dns().zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
             if (zone == null) {
                 return null;
             }
@@ -92,7 +89,7 @@ public class DnsRecordSetResourceType extends ResourceTypeHandler<DnsRecordSetRe
     public DnsRecordSetResource update(DnsRecordSetResource resource) {
         log.info("Updating DNS Record Set: {}.{} ({})", resource.getName(), resource.getZoneName(), resource.getType());
 
-        var zone = dnsManager.zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
+        var zone = dns().zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
         if (zone == null) {
             throw new RuntimeException("DNS Zone not found: " + resource.getZoneName());
         }
@@ -113,7 +110,7 @@ public class DnsRecordSetResourceType extends ResourceTypeHandler<DnsRecordSetRe
         log.info("Deleting DNS Record Set: {}.{} ({})", resource.getName(), resource.getZoneName(), resource.getType());
 
         try {
-            var zone = dnsManager.zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
+            var zone = dns().zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
             if (zone == null) {
                 return false;
             }

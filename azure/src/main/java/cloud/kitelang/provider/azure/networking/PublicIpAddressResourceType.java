@@ -2,10 +2,8 @@ package cloud.kitelang.provider.azure.networking;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import com.azure.core.management.AzureEnvironment;
+import cloud.kitelang.provider.azure.AzureClients;
 import com.azure.core.management.Region;
-import com.azure.core.management.profile.AzureProfile;
-import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.IpAllocationMethod;
 import com.azure.resourcemanager.network.models.IpVersion;
@@ -24,25 +22,24 @@ import java.util.List;
 @Slf4j
 public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAddressResource> {
 
-    private final NetworkManager networkManager;
+    private volatile NetworkManager networkManager;
 
     public PublicIpAddressResourceType() {
-        var credential = new DefaultAzureCredentialBuilder().build();
-
-        String subscriptionId = System.getenv("AZURE_SUBSCRIPTION_ID");
-        if (subscriptionId == null || subscriptionId.isBlank()) {
-            throw new IllegalStateException(
-                    "AZURE_SUBSCRIPTION_ID environment variable must be set");
-        }
-
-        String tenantId = System.getenv("AZURE_TENANT_ID");
-        var profile = new AzureProfile(tenantId, subscriptionId, AzureEnvironment.AZURE);
-
-        this.networkManager = NetworkManager.authenticate(credential, profile);
+        // Manager resolved lazily via AzureClients on first use.
     }
 
+    /** For tests: inject a pre-authenticated manager. */
     public PublicIpAddressResourceType(NetworkManager networkManager) {
         this.networkManager = networkManager;
+    }
+
+    private NetworkManager network() {
+        var local = networkManager;
+        if (local == null) {
+            local = AzureClients.network();
+            networkManager = local;
+        }
+        return local;
     }
 
     @Override
@@ -50,7 +47,7 @@ public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAdd
         log.info("Creating Public IP '{}' in resource group '{}'",
                 resource.getName(), resource.getResourceGroup());
 
-        var definition = networkManager.publicIpAddresses()
+        var definition = network().publicIpAddresses()
                 .define(resource.getName())
                 .withRegion(Region.fromName(resource.getLocation()))
                 .withExistingResourceGroup(resource.getResourceGroup());
@@ -117,7 +114,7 @@ public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAdd
                 resource.getName(), resource.getResourceGroup());
 
         try {
-            var publicIp = networkManager.publicIpAddresses()
+            var publicIp = network().publicIpAddresses()
                     .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
             if (publicIp == null) {
@@ -144,7 +141,7 @@ public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAdd
             throw new RuntimeException("Public IP not found: " + resource.getName());
         }
 
-        var publicIp = networkManager.publicIpAddresses()
+        var publicIp = network().publicIpAddresses()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
         var update = publicIp.update();
@@ -183,7 +180,7 @@ public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAdd
                 resource.getName(), resource.getResourceGroup());
 
         try {
-            networkManager.publicIpAddresses()
+            network().publicIpAddresses()
                     .deleteByResourceGroup(resource.getResourceGroup(), resource.getName());
 
             log.info("Deleted Public IP: {}", resource.getName());

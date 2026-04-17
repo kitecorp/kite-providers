@@ -2,10 +2,8 @@ package cloud.kitelang.provider.azure.compute;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import com.azure.core.management.AzureEnvironment;
+import cloud.kitelang.provider.azure.AzureClients;
 import com.azure.core.management.Region;
-import com.azure.core.management.profile.AzureProfile;
-import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.compute.ComputeManager;
 import com.azure.resourcemanager.compute.models.*;
 import com.azure.resourcemanager.network.NetworkManager;
@@ -25,28 +23,35 @@ import java.util.List;
 @Slf4j
 public class VirtualMachineResourceType extends ResourceTypeHandler<VirtualMachineResource> {
 
-    private final ComputeManager computeManager;
-    private final NetworkManager networkManager;
+    private volatile ComputeManager computeManager;
+    private volatile NetworkManager networkManager;
 
     public VirtualMachineResourceType() {
-        var credential = new DefaultAzureCredentialBuilder().build();
-
-        String subscriptionId = System.getenv("AZURE_SUBSCRIPTION_ID");
-        if (subscriptionId == null || subscriptionId.isBlank()) {
-            throw new IllegalStateException(
-                    "AZURE_SUBSCRIPTION_ID environment variable must be set");
-        }
-
-        String tenantId = System.getenv("AZURE_TENANT_ID");
-        var profile = new AzureProfile(tenantId, subscriptionId, AzureEnvironment.AZURE);
-
-        this.computeManager = ComputeManager.authenticate(credential, profile);
-        this.networkManager = NetworkManager.authenticate(credential, profile);
+        // Managers resolved lazily via AzureClients on first use.
     }
 
+    /** For tests: inject pre-authenticated managers. */
     public VirtualMachineResourceType(ComputeManager computeManager, NetworkManager networkManager) {
         this.computeManager = computeManager;
         this.networkManager = networkManager;
+    }
+
+    private ComputeManager compute() {
+        var local = computeManager;
+        if (local == null) {
+            local = AzureClients.compute();
+            computeManager = local;
+        }
+        return local;
+    }
+
+    private NetworkManager network() {
+        var local = networkManager;
+        if (local == null) {
+            local = AzureClients.network();
+            networkManager = local;
+        }
+        return local;
     }
 
     @Override
@@ -70,7 +75,7 @@ public class VirtualMachineResourceType extends ResourceTypeHandler<VirtualMachi
         var network = getNetworkFromSubnet(resource.getSubnetId());
         String subnetName = getSubnetName(resource.getSubnetId());
 
-        var nicBuilder = networkManager.networkInterfaces()
+        var nicBuilder = network().networkInterfaces()
                 .define(nicName)
                 .withRegion(Region.fromName(resource.getLocation()))
                 .withExistingResourceGroup(resource.getResourceGroup())
@@ -80,14 +85,14 @@ public class VirtualMachineResourceType extends ResourceTypeHandler<VirtualMachi
 
         // Associate public IP if provided
         if (resource.getPublicIpAddressId() != null) {
-            PublicIpAddress pip = networkManager.publicIpAddresses()
+            PublicIpAddress pip = network().publicIpAddresses()
                     .getById(resource.getPublicIpAddressId());
             nicBuilder = nicBuilder.withExistingPrimaryPublicIPAddress(pip);
         }
 
         // Associate NSG if provided
         if (resource.getNetworkSecurityGroupId() != null) {
-            NetworkSecurityGroup nsg = networkManager.networkSecurityGroups()
+            NetworkSecurityGroup nsg = network().networkSecurityGroups()
                     .getById(resource.getNetworkSecurityGroupId());
             nicBuilder = nicBuilder.withExistingNetworkSecurityGroup(nsg);
         }
@@ -135,7 +140,7 @@ public class VirtualMachineResourceType extends ResourceTypeHandler<VirtualMachi
     }
 
     private VirtualMachine createLinuxVM(VirtualMachineResource resource, NetworkInterface nic) {
-        var baseBuilder = computeManager.virtualMachines()
+        var baseBuilder = compute().virtualMachines()
                 .define(resource.getName())
                 .withRegion(Region.fromName(resource.getLocation()))
                 .withExistingResourceGroup(resource.getResourceGroup())
@@ -162,7 +167,7 @@ public class VirtualMachineResourceType extends ResourceTypeHandler<VirtualMachi
     }
 
     private VirtualMachine createWindowsVM(VirtualMachineResource resource, NetworkInterface nic) {
-        var createBuilder = computeManager.virtualMachines()
+        var createBuilder = compute().virtualMachines()
                 .define(resource.getName())
                 .withRegion(Region.fromName(resource.getLocation()))
                 .withExistingResourceGroup(resource.getResourceGroup())
@@ -216,7 +221,7 @@ public class VirtualMachineResourceType extends ResourceTypeHandler<VirtualMachi
             }
         }
 
-        return networkManager.networks().getByResourceGroup(resourceGroup, vnetName);
+        return network().networks().getByResourceGroup(resourceGroup, vnetName);
     }
 
     private String getSubnetName(String subnetId) {
@@ -236,7 +241,7 @@ public class VirtualMachineResourceType extends ResourceTypeHandler<VirtualMachi
                 resource.getName(), resource.getResourceGroup());
 
         try {
-            VirtualMachine vm = computeManager.virtualMachines()
+            VirtualMachine vm = compute().virtualMachines()
                     .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
             if (vm == null) {
@@ -264,7 +269,7 @@ public class VirtualMachineResourceType extends ResourceTypeHandler<VirtualMachi
             throw new RuntimeException("Virtual Machine not found: " + resource.getName());
         }
 
-        VirtualMachine vm = computeManager.virtualMachines()
+        VirtualMachine vm = compute().virtualMachines()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
         var update = vm.update();
@@ -296,7 +301,7 @@ public class VirtualMachineResourceType extends ResourceTypeHandler<VirtualMachi
                 resource.getName(), resource.getResourceGroup());
 
         try {
-            VirtualMachine vm = computeManager.virtualMachines()
+            VirtualMachine vm = compute().virtualMachines()
                     .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
             if (vm == null) {
@@ -308,19 +313,19 @@ public class VirtualMachineResourceType extends ResourceTypeHandler<VirtualMachi
             String osDiskId = vm.osDiskId();
 
             // Delete VM
-            computeManager.virtualMachines()
+            compute().virtualMachines()
                     .deleteByResourceGroup(resource.getResourceGroup(), resource.getName());
             log.info("Deleted Virtual Machine: {}", resource.getName());
 
             // Delete NIC
             if (nicId != null) {
-                networkManager.networkInterfaces().deleteById(nicId);
+                network().networkInterfaces().deleteById(nicId);
                 log.info("Deleted network interface: {}", nicId);
             }
 
             // Delete OS disk
             if (osDiskId != null) {
-                computeManager.disks().deleteById(osDiskId);
+                compute().disks().deleteById(osDiskId);
                 log.info("Deleted OS disk: {}", osDiskId);
             }
 

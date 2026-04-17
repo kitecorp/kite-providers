@@ -2,10 +2,8 @@ package cloud.kitelang.provider.azure.networking;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import com.azure.core.management.AzureEnvironment;
+import cloud.kitelang.provider.azure.AzureClients;
 import com.azure.core.management.Region;
-import com.azure.core.management.profile.AzureProfile;
-import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.Network;
 import lombok.extern.slf4j.Slf4j;
@@ -21,34 +19,25 @@ import java.util.List;
 @Slf4j
 public class VnetResourceType extends ResourceTypeHandler<VnetResource> {
 
-    private final NetworkManager networkManager;
+    private volatile NetworkManager networkManager;
 
     public VnetResourceType() {
-        // Use DefaultAzureCredential which supports multiple auth methods:
-        // - Environment variables (AZURE_CLIENT_ID, AZURE_CLIENT_SECRET, AZURE_TENANT_ID)
-        // - Managed Identity
-        // - Azure CLI
-        // - Visual Studio Code
-        var credential = new DefaultAzureCredentialBuilder().build();
-
-        // Get subscription ID from environment
-        String subscriptionId = System.getenv("AZURE_SUBSCRIPTION_ID");
-        if (subscriptionId == null || subscriptionId.isBlank()) {
-            throw new IllegalStateException(
-                    "AZURE_SUBSCRIPTION_ID environment variable must be set");
-        }
-
-        // Get tenant ID (optional, can be null for most cases)
-        String tenantId = System.getenv("AZURE_TENANT_ID");
-
-        // Create Azure profile
-        var profile = new AzureProfile(tenantId, subscriptionId, AzureEnvironment.AZURE);
-
-        this.networkManager = NetworkManager.authenticate(credential, profile);
+        // Manager resolved lazily via AzureClients on first use, so docgen and
+        // other discovery-time instantiations don't require Azure credentials.
     }
 
+    /** For tests: inject a pre-authenticated manager. */
     public VnetResourceType(NetworkManager networkManager) {
         this.networkManager = networkManager;
+    }
+
+    private NetworkManager network() {
+        var local = networkManager;
+        if (local == null) {
+            local = AzureClients.network();
+            networkManager = local;
+        }
+        return local;
     }
 
     @Override
@@ -57,7 +46,7 @@ public class VnetResourceType extends ResourceTypeHandler<VnetResource> {
                 resource.getName(), resource.getResourceGroup(), resource.getLocation());
 
         // Start building the VNet definition
-        Network.DefinitionStages.WithCreate definition = networkManager.networks()
+        Network.DefinitionStages.WithCreate definition = network().networks()
                 .define(resource.getName())
                 .withRegion(Region.fromName(resource.getLocation()))
                 .withExistingResourceGroup(resource.getResourceGroup())
@@ -100,9 +89,9 @@ public class VnetResourceType extends ResourceTypeHandler<VnetResource> {
         try {
             Network vnet;
             if (resource.getId() != null) {
-                vnet = networkManager.networks().getById(resource.getId());
+                vnet = network().networks().getById(resource.getId());
             } else {
-                vnet = networkManager.networks()
+                vnet = network().networks()
                         .getByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 
@@ -131,7 +120,7 @@ public class VnetResourceType extends ResourceTypeHandler<VnetResource> {
             throw new RuntimeException("VNet not found: " + resource.getName());
         }
 
-        Network vnet = networkManager.networks()
+        Network vnet = network().networks()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
         var update = vnet.update();
@@ -175,9 +164,9 @@ public class VnetResourceType extends ResourceTypeHandler<VnetResource> {
 
         try {
             if (resource.getId() != null) {
-                networkManager.networks().deleteById(resource.getId());
+                network().networks().deleteById(resource.getId());
             } else {
-                networkManager.networks()
+                network().networks()
                         .deleteByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 

@@ -2,10 +2,8 @@ package cloud.kitelang.provider.azure.networking;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import com.azure.core.management.AzureEnvironment;
+import cloud.kitelang.provider.azure.AzureClients;
 import com.azure.core.management.SubResource;
-import com.azure.core.management.profile.AzureProfile;
-import com.azure.identity.DefaultAzureCredentialBuilder;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.fluent.models.NatGatewayInner;
 import com.azure.resourcemanager.network.models.NatGatewaySku;
@@ -26,25 +24,24 @@ import java.util.stream.Collectors;
 @Slf4j
 public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResource> {
 
-    private final NetworkManager networkManager;
+    private volatile NetworkManager networkManager;
 
     public NatGatewayResourceType() {
-        var credential = new DefaultAzureCredentialBuilder().build();
-
-        String subscriptionId = System.getenv("AZURE_SUBSCRIPTION_ID");
-        if (subscriptionId == null || subscriptionId.isBlank()) {
-            throw new IllegalStateException(
-                    "AZURE_SUBSCRIPTION_ID environment variable must be set");
-        }
-
-        String tenantId = System.getenv("AZURE_TENANT_ID");
-        var profile = new AzureProfile(tenantId, subscriptionId, AzureEnvironment.AZURE);
-
-        this.networkManager = NetworkManager.authenticate(credential, profile);
+        // Manager resolved lazily via AzureClients on first use.
     }
 
+    /** For tests: inject a pre-authenticated manager. */
     public NatGatewayResourceType(NetworkManager networkManager) {
         this.networkManager = networkManager;
+    }
+
+    private NetworkManager network() {
+        var local = networkManager;
+        if (local == null) {
+            local = AzureClients.network();
+            networkManager = local;
+        }
+        return local;
     }
 
     @Override
@@ -82,7 +79,7 @@ public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResour
             natGatewayInner.withTags(resource.getTags());
         }
 
-        var result = networkManager.serviceClient().getNatGateways()
+        var result = network().serviceClient().getNatGateways()
                 .createOrUpdate(resource.getResourceGroup(), resource.getName(), natGatewayInner);
 
         log.info("Created NAT Gateway: {}", result.id());
@@ -101,7 +98,7 @@ public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResour
                 resource.getName(), resource.getResourceGroup());
 
         try {
-            var result = networkManager.serviceClient().getNatGateways()
+            var result = network().serviceClient().getNatGateways()
                     .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
             if (result == null) {
@@ -158,7 +155,7 @@ public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResour
             natGatewayInner.withTags(resource.getTags());
         }
 
-        var result = networkManager.serviceClient().getNatGateways()
+        var result = network().serviceClient().getNatGateways()
                 .createOrUpdate(resource.getResourceGroup(), resource.getName(), natGatewayInner);
 
         return mapToResource(result, resource.getResourceGroup());
@@ -175,7 +172,7 @@ public class NatGatewayResourceType extends ResourceTypeHandler<NatGatewayResour
                 resource.getName(), resource.getResourceGroup());
 
         try {
-            networkManager.serviceClient().getNatGateways()
+            network().serviceClient().getNatGateways()
                     .delete(resource.getResourceGroup(), resource.getName());
 
             log.info("Deleted NAT Gateway: {}", resource.getName());
