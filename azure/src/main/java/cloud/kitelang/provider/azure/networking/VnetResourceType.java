@@ -2,7 +2,8 @@ package cloud.kitelang.provider.azure.networking;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import cloud.kitelang.provider.azure.AzureClients;
+import cloud.kitelang.provider.azure.AzureClientAware;
+import cloud.kitelang.provider.azure.AzureManagers;
 import com.azure.core.management.Region;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.Network;
@@ -17,13 +18,12 @@ import java.util.List;
  * Implements CRUD operations for VNets using Azure SDK.
  */
 @Slf4j
-public class VnetResourceType extends ResourceTypeHandler<VnetResource> {
+public class VnetResourceType extends ResourceTypeHandler<VnetResource> implements AzureClientAware {
 
-    private volatile NetworkManager networkManager;
+    private NetworkManager networkManager;
 
     public VnetResourceType() {
-        // Manager resolved lazily via AzureClients on first use, so docgen and
-        // other discovery-time instantiations don't require Azure credentials.
+        // Manager injected by AzureProvider.configure() at runtime.
     }
 
     /** For tests: inject a pre-authenticated manager. */
@@ -31,13 +31,9 @@ public class VnetResourceType extends ResourceTypeHandler<VnetResource> {
         this.networkManager = networkManager;
     }
 
-    private NetworkManager network() {
-        var local = networkManager;
-        if (local == null) {
-            local = AzureClients.network();
-            networkManager = local;
-        }
-        return local;
+    @Override
+    public void setAzureManagers(AzureManagers managers) {
+        this.networkManager = managers.network();
     }
 
     @Override
@@ -46,7 +42,7 @@ public class VnetResourceType extends ResourceTypeHandler<VnetResource> {
                 resource.getName(), resource.getResourceGroup(), resource.getLocation());
 
         // Start building the VNet definition
-        Network.DefinitionStages.WithCreate definition = network().networks()
+        Network.DefinitionStages.WithCreate definition = networkManager.networks()
                 .define(resource.getName())
                 .withRegion(Region.fromName(resource.getLocation()))
                 .withExistingResourceGroup(resource.getResourceGroup())
@@ -89,9 +85,9 @@ public class VnetResourceType extends ResourceTypeHandler<VnetResource> {
         try {
             Network vnet;
             if (resource.getId() != null) {
-                vnet = network().networks().getById(resource.getId());
+                vnet = networkManager.networks().getById(resource.getId());
             } else {
-                vnet = network().networks()
+                vnet = networkManager.networks()
                         .getByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 
@@ -120,7 +116,7 @@ public class VnetResourceType extends ResourceTypeHandler<VnetResource> {
             throw new RuntimeException("VNet not found: " + resource.getName());
         }
 
-        Network vnet = network().networks()
+        Network vnet = networkManager.networks()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
         var update = vnet.update();
@@ -164,9 +160,9 @@ public class VnetResourceType extends ResourceTypeHandler<VnetResource> {
 
         try {
             if (resource.getId() != null) {
-                network().networks().deleteById(resource.getId());
+                networkManager.networks().deleteById(resource.getId());
             } else {
-                network().networks()
+                networkManager.networks()
                         .deleteByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 

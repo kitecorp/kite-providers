@@ -2,7 +2,8 @@ package cloud.kitelang.provider.azure.storage;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import cloud.kitelang.provider.azure.AzureClients;
+import cloud.kitelang.provider.azure.AzureClientAware;
+import cloud.kitelang.provider.azure.AzureManagers;
 import com.azure.resourcemanager.storage.StorageManager;
 import com.azure.resourcemanager.storage.models.*;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
  * Implements CRUD operations using Azure Storage SDK.
  */
 @Slf4j
-public class StorageAccountResourceType extends ResourceTypeHandler<StorageAccountResource> {
+public class StorageAccountResourceType extends ResourceTypeHandler<StorageAccountResource> implements AzureClientAware {
 
     private static final Set<String> VALID_SKUS = Set.of(
             "Standard_LRS", "Standard_GRS", "Standard_RAGRS", "Standard_ZRS",
@@ -30,10 +31,10 @@ public class StorageAccountResourceType extends ResourceTypeHandler<StorageAccou
 
     private static final Set<String> VALID_ACCESS_TIERS = Set.of("Hot", "Cool");
 
-    private volatile StorageManager storageManager;
+    private StorageManager storageManager;
 
     public StorageAccountResourceType() {
-        // Manager resolved lazily via AzureClients on first use.
+        // Manager injected by AzureProvider.configure() at runtime.
     }
 
     /** For tests: inject a pre-authenticated manager. */
@@ -41,13 +42,9 @@ public class StorageAccountResourceType extends ResourceTypeHandler<StorageAccou
         this.storageManager = storageManager;
     }
 
-    private StorageManager storage() {
-        var local = storageManager;
-        if (local == null) {
-            local = AzureClients.storage();
-            storageManager = local;
-        }
-        return local;
+    @Override
+    public void setAzureManagers(AzureManagers managers) {
+        this.storageManager = managers.storage();
     }
 
     @Override
@@ -57,7 +54,7 @@ public class StorageAccountResourceType extends ResourceTypeHandler<StorageAccou
         var sku = resource.getSku() != null ? resource.getSku() : "Standard_LRS";
         var kind = resource.getKind() != null ? resource.getKind() : "StorageV2";
 
-        var definition = storage().storageAccounts()
+        var definition = storageManager.storageAccounts()
                 .define(resource.getName())
                 .withRegion(resource.getLocation())
                 .withExistingResourceGroup(resource.getResourceGroup())
@@ -127,7 +124,7 @@ public class StorageAccountResourceType extends ResourceTypeHandler<StorageAccou
         log.info("Reading Storage Account: {}", resource.getName());
 
         try {
-            var storageAccount = storage().storageAccounts()
+            var storageAccount = storageManager.storageAccounts()
                     .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
             if (storageAccount == null) {
@@ -148,7 +145,7 @@ public class StorageAccountResourceType extends ResourceTypeHandler<StorageAccou
     public StorageAccountResource update(StorageAccountResource resource) {
         log.info("Updating Storage Account: {}", resource.getName());
 
-        var storageAccount = storage().storageAccounts()
+        var storageAccount = storageManager.storageAccounts()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
         if (storageAccount == null) {
@@ -193,7 +190,7 @@ public class StorageAccountResourceType extends ResourceTypeHandler<StorageAccou
         log.info("Deleting Storage Account: {}", resource.getName());
 
         try {
-            storage().storageAccounts()
+            storageManager.storageAccounts()
                     .deleteByResourceGroup(resource.getResourceGroup(), resource.getName());
 
             log.info("Deleted Storage Account: {}", resource.getName());

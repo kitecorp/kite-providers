@@ -2,7 +2,8 @@ package cloud.kitelang.provider.azure.loadbalancing;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import cloud.kitelang.provider.azure.AzureClients;
+import cloud.kitelang.provider.azure.AzureClientAware;
+import cloud.kitelang.provider.azure.AzureManagers;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.*;
 import lombok.extern.slf4j.Slf4j;
@@ -17,17 +18,17 @@ import java.util.stream.Collectors;
  * Implements CRUD operations using Azure Network SDK.
  */
 @Slf4j
-public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerResource> {
+public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerResource> implements AzureClientAware {
 
     private static final Set<String> VALID_SKUS = Set.of("Basic", "Standard");
     private static final Set<String> VALID_TIERS = Set.of("Regional", "Global");
     private static final Set<String> VALID_PROBE_PROTOCOLS = Set.of("Http", "Https", "Tcp");
     private static final Set<String> VALID_RULE_PROTOCOLS = Set.of("Tcp", "Udp", "All");
 
-    private volatile NetworkManager networkManager;
+    private NetworkManager networkManager;
 
     public LoadBalancerResourceType() {
-        // Manager resolved lazily via AzureClients on first use.
+        // Manager injected by AzureProvider.configure() at runtime.
     }
 
     /** For tests: inject a pre-authenticated manager. */
@@ -35,13 +36,9 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
         this.networkManager = networkManager;
     }
 
-    private NetworkManager network() {
-        var local = networkManager;
-        if (local == null) {
-            local = AzureClients.network();
-            networkManager = local;
-        }
-        return local;
+    @Override
+    public void setAzureManagers(AzureManagers managers) {
+        this.networkManager = managers.network();
     }
 
     @Override
@@ -65,7 +62,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
                 : "default-backend";
 
         // Start with a temporary rule to bootstrap the load balancer
-        var definition = network().loadBalancers()
+        var definition = networkManager.loadBalancers()
                 .define(resource.getName())
                 .withRegion(resource.getLocation())
                 .withExistingResourceGroup(resource.getResourceGroup());
@@ -74,7 +71,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
 
         if (firstFrontend.getPublicIpAddressId() != null) {
             // Public load balancer
-            var publicIp = network().publicIpAddresses().getById(firstFrontend.getPublicIpAddressId());
+            var publicIp = networkManager.publicIpAddresses().getById(firstFrontend.getPublicIpAddressId());
             ruleStage = definition
                     .defineLoadBalancingRule("temp-bootstrap-rule")
                     .withProtocol(TransportProtocol.TCP)
@@ -88,7 +85,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
             var vnetId = firstFrontend.getSubnetId().substring(0, firstFrontend.getSubnetId().lastIndexOf("/subnets/"));
             var subnetName = firstFrontend.getSubnetId().substring(
                     firstFrontend.getSubnetId().lastIndexOf("/subnets/") + "/subnets/".length());
-            var vnet = network().networks().getById(vnetId);
+            var vnet = networkManager.networks().getById(vnetId);
 
             ruleStage = definition
                     .defineLoadBalancingRule("temp-bootstrap-rule")
@@ -133,9 +130,9 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
         try {
             LoadBalancer lb;
             if (resource.getId() != null) {
-                lb = network().loadBalancers().getById(resource.getId());
+                lb = networkManager.loadBalancers().getById(resource.getId());
             } else {
-                lb = network().loadBalancers().getByResourceGroup(resource.getResourceGroup(), resource.getName());
+                lb = networkManager.loadBalancers().getByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 
             if (lb == null) {
@@ -156,7 +153,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
     public LoadBalancerResource update(LoadBalancerResource resource) {
         log.info("Updating Load Balancer: {}", resource.getId());
 
-        var lb = network().loadBalancers().getById(resource.getId());
+        var lb = networkManager.loadBalancers().getById(resource.getId());
         if (lb == null) {
             throw new RuntimeException("Load Balancer not found: " + resource.getName());
         }
@@ -289,7 +286,7 @@ public class LoadBalancerResourceType extends ResourceTypeHandler<LoadBalancerRe
         log.info("Deleting Load Balancer: {}", resource.getId());
 
         try {
-            network().loadBalancers().deleteById(resource.getId());
+            networkManager.loadBalancers().deleteById(resource.getId());
             log.info("Deleted Load Balancer: {}", resource.getId());
             return true;
 

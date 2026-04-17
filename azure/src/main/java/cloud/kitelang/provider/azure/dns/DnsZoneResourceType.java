@@ -2,7 +2,8 @@ package cloud.kitelang.provider.azure.dns;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import cloud.kitelang.provider.azure.AzureClients;
+import cloud.kitelang.provider.azure.AzureClientAware;
+import cloud.kitelang.provider.azure.AzureManagers;
 import com.azure.resourcemanager.dns.DnsZoneManager;
 import com.azure.resourcemanager.dns.models.DnsZone;
 import com.azure.resourcemanager.dns.models.ZoneType;
@@ -21,12 +22,12 @@ import java.util.Set;
  * This handler supports public DNS zones.
  */
 @Slf4j
-public class DnsZoneResourceType extends ResourceTypeHandler<DnsZoneResource> {
+public class DnsZoneResourceType extends ResourceTypeHandler<DnsZoneResource> implements AzureClientAware {
 
-    private volatile DnsZoneManager dnsManager;
+    private DnsZoneManager dnsManager;
 
     public DnsZoneResourceType() {
-        // Manager resolved lazily via AzureClients on first use.
+        // Manager injected by AzureProvider.configure() at runtime.
     }
 
     /** For tests: inject a pre-authenticated manager. */
@@ -34,20 +35,16 @@ public class DnsZoneResourceType extends ResourceTypeHandler<DnsZoneResource> {
         this.dnsManager = dnsManager;
     }
 
-    private DnsZoneManager dns() {
-        var local = dnsManager;
-        if (local == null) {
-            local = AzureClients.dnsZone();
-            dnsManager = local;
-        }
-        return local;
+    @Override
+    public void setAzureManagers(AzureManagers managers) {
+        this.dnsManager = managers.dns();
     }
 
     @Override
     public DnsZoneResource create(DnsZoneResource resource) {
         log.info("Creating DNS Zone: {} in {}", resource.getName(), resource.getResourceGroup());
 
-        var definition = dns().zones()
+        var definition = dnsManager.zones()
                 .define(resource.getName())
                 .withExistingResourceGroup(resource.getResourceGroup());
 
@@ -76,9 +73,9 @@ public class DnsZoneResourceType extends ResourceTypeHandler<DnsZoneResource> {
         try {
             DnsZone zone;
             if (resource.getId() != null) {
-                zone = dns().zones().getById(resource.getId());
+                zone = dnsManager.zones().getById(resource.getId());
             } else {
-                zone = dns().zones().getByResourceGroup(resource.getResourceGroup(), resource.getName());
+                zone = dnsManager.zones().getByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 
             if (zone == null) {
@@ -99,7 +96,7 @@ public class DnsZoneResourceType extends ResourceTypeHandler<DnsZoneResource> {
     public DnsZoneResource update(DnsZoneResource resource) {
         log.info("Updating DNS Zone: {}", resource.getId());
 
-        var zone = dns().zones().getById(resource.getId());
+        var zone = dnsManager.zones().getById(resource.getId());
         if (zone == null) {
             throw new RuntimeException("DNS Zone not found: " + resource.getName());
         }
@@ -126,7 +123,7 @@ public class DnsZoneResourceType extends ResourceTypeHandler<DnsZoneResource> {
         log.info("Deleting DNS Zone: {}", resource.getId());
 
         try {
-            dns().zones().deleteById(resource.getId());
+            dnsManager.zones().deleteById(resource.getId());
             log.info("Deleted DNS Zone: {}", resource.getId());
             return true;
 

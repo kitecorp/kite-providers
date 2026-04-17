@@ -2,7 +2,8 @@ package cloud.kitelang.provider.azure.networking;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import cloud.kitelang.provider.azure.AzureClients;
+import cloud.kitelang.provider.azure.AzureClientAware;
+import cloud.kitelang.provider.azure.AzureManagers;
 import com.azure.core.management.Region;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.RouteNextHopType;
@@ -19,12 +20,12 @@ import java.util.stream.Collectors;
  * Implements CRUD operations for Route Tables using Azure SDK.
  */
 @Slf4j
-public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResource> {
+public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResource> implements AzureClientAware {
 
-    private volatile NetworkManager networkManager;
+    private NetworkManager networkManager;
 
     public RouteTableResourceType() {
-        // Manager resolved lazily via AzureClients on first use.
+        // Manager injected by AzureProvider.configure() at runtime.
     }
 
     /** For tests: inject a pre-authenticated manager. */
@@ -32,13 +33,9 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
         this.networkManager = networkManager;
     }
 
-    private NetworkManager network() {
-        var local = networkManager;
-        if (local == null) {
-            local = AzureClients.network();
-            networkManager = local;
-        }
-        return local;
+    @Override
+    public void setAzureManagers(AzureManagers managers) {
+        this.networkManager = managers.network();
     }
 
     @Override
@@ -46,7 +43,7 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
         log.info("Creating Route Table '{}' in resource group '{}'",
                 resource.getName(), resource.getResourceGroup());
 
-        var definition = network().routeTables()
+        var definition = networkManager.routeTables()
                 .define(resource.getName())
                 .withRegion(Region.fromName(resource.getLocation()))
                 .withExistingResourceGroup(resource.getResourceGroup());
@@ -102,9 +99,9 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
         try {
             RouteTable routeTable;
             if (resource.getId() != null) {
-                routeTable = network().routeTables().getById(resource.getId());
+                routeTable = networkManager.routeTables().getById(resource.getId());
             } else {
-                routeTable = network().routeTables()
+                routeTable = networkManager.routeTables()
                         .getByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 
@@ -132,7 +129,7 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
             throw new RuntimeException("Route Table not found: " + resource.getName());
         }
 
-        RouteTable routeTable = network().routeTables()
+        RouteTable routeTable = networkManager.routeTables()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
         var update = routeTable.update();
@@ -186,9 +183,9 @@ public class RouteTableResourceType extends ResourceTypeHandler<RouteTableResour
 
         try {
             if (resource.getId() != null) {
-                network().routeTables().deleteById(resource.getId());
+                networkManager.routeTables().deleteById(resource.getId());
             } else {
-                network().routeTables()
+                networkManager.routeTables()
                         .deleteByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 

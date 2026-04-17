@@ -2,7 +2,8 @@ package cloud.kitelang.provider.azure.networking;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import cloud.kitelang.provider.azure.AzureClients;
+import cloud.kitelang.provider.azure.AzureClientAware;
+import cloud.kitelang.provider.azure.AzureManagers;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.Network;
 import com.azure.resourcemanager.network.models.ServiceEndpointType;
@@ -18,12 +19,12 @@ import java.util.stream.Collectors;
  * Implements CRUD operations for Subnets using Azure SDK.
  */
 @Slf4j
-public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
+public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> implements AzureClientAware {
 
-    private volatile NetworkManager networkManager;
+    private NetworkManager networkManager;
 
     public SubnetResourceType() {
-        // Manager resolved lazily via AzureClients on first use.
+        // Manager injected by AzureProvider.configure() at runtime.
     }
 
     /** For tests: inject a pre-authenticated manager. */
@@ -31,13 +32,9 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
         this.networkManager = networkManager;
     }
 
-    private NetworkManager network() {
-        var local = networkManager;
-        if (local == null) {
-            local = AzureClients.network();
-            networkManager = local;
-        }
-        return local;
+    @Override
+    public void setAzureManagers(AzureManagers managers) {
+        this.networkManager = managers.network();
     }
 
     @Override
@@ -46,7 +43,7 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
                 resource.getName(), resource.getVnetName(), resource.getAddressPrefix());
 
         // Get the parent VNet
-        Network vnet = network().networks()
+        Network vnet = networkManager.networks()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getVnetName());
 
         if (vnet == null) {
@@ -96,7 +93,7 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
         log.info("Reading Subnet '{}' in VNet '{}'", resource.getName(), resource.getVnetName());
 
         try {
-            Network vnet = network().networks()
+            Network vnet = networkManager.networks()
                     .getByResourceGroup(resource.getResourceGroup(), resource.getVnetName());
 
             if (vnet == null) {
@@ -127,7 +124,7 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
             throw new RuntimeException("Subnet not found: " + resource.getName());
         }
 
-        Network vnet = network().networks()
+        Network vnet = networkManager.networks()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getVnetName());
 
         var update = vnet.update()
@@ -164,7 +161,7 @@ public class SubnetResourceType extends ResourceTypeHandler<SubnetResource> {
         log.info("Deleting Subnet '{}' from VNet '{}'", resource.getName(), resource.getVnetName());
 
         try {
-            Network vnet = network().networks()
+            Network vnet = networkManager.networks()
                     .getByResourceGroup(resource.getResourceGroup(), resource.getVnetName());
 
             if (vnet == null) {

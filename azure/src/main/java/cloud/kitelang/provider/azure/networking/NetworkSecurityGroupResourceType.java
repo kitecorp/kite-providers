@@ -2,7 +2,8 @@ package cloud.kitelang.provider.azure.networking;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import cloud.kitelang.provider.azure.AzureClients;
+import cloud.kitelang.provider.azure.AzureClientAware;
+import cloud.kitelang.provider.azure.AzureManagers;
 import com.azure.core.management.Region;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.NetworkSecurityGroup;
@@ -21,12 +22,12 @@ import java.util.stream.Collectors;
  * Implements CRUD operations for NSGs using Azure SDK.
  */
 @Slf4j
-public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<NetworkSecurityGroupResource> {
+public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<NetworkSecurityGroupResource> implements AzureClientAware {
 
-    private volatile NetworkManager networkManager;
+    private NetworkManager networkManager;
 
     public NetworkSecurityGroupResourceType() {
-        // Manager resolved lazily via AzureClients on first use.
+        // Manager injected by AzureProvider.configure() at runtime.
     }
 
     /** For tests: inject a pre-authenticated manager. */
@@ -34,13 +35,9 @@ public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<Networ
         this.networkManager = networkManager;
     }
 
-    private NetworkManager network() {
-        var local = networkManager;
-        if (local == null) {
-            local = AzureClients.network();
-            networkManager = local;
-        }
-        return local;
+    @Override
+    public void setAzureManagers(AzureManagers managers) {
+        this.networkManager = managers.network();
     }
 
     @Override
@@ -48,7 +45,7 @@ public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<Networ
         log.info("Creating Network Security Group '{}' in resource group '{}' at '{}'",
                 resource.getName(), resource.getResourceGroup(), resource.getLocation());
 
-        var definition = network().networkSecurityGroups()
+        var definition = networkManager.networkSecurityGroups()
                 .define(resource.getName())
                 .withRegion(Region.fromName(resource.getLocation()))
                 .withExistingResourceGroup(resource.getResourceGroup());
@@ -155,9 +152,9 @@ public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<Networ
         try {
             NetworkSecurityGroup nsg;
             if (resource.getId() != null) {
-                nsg = network().networkSecurityGroups().getById(resource.getId());
+                nsg = networkManager.networkSecurityGroups().getById(resource.getId());
             } else {
-                nsg = network().networkSecurityGroups()
+                nsg = networkManager.networkSecurityGroups()
                         .getByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 
@@ -185,7 +182,7 @@ public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<Networ
             throw new RuntimeException("Network Security Group not found: " + resource.getName());
         }
 
-        NetworkSecurityGroup nsg = network().networkSecurityGroups()
+        NetworkSecurityGroup nsg = networkManager.networkSecurityGroups()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
         var update = nsg.update();
@@ -274,9 +271,9 @@ public class NetworkSecurityGroupResourceType extends ResourceTypeHandler<Networ
 
         try {
             if (resource.getId() != null) {
-                network().networkSecurityGroups().deleteById(resource.getId());
+                networkManager.networkSecurityGroups().deleteById(resource.getId());
             } else {
-                network().networkSecurityGroups()
+                networkManager.networkSecurityGroups()
                         .deleteByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 

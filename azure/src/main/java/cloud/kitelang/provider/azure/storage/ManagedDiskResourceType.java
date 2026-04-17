@@ -2,7 +2,8 @@ package cloud.kitelang.provider.azure.storage;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import cloud.kitelang.provider.azure.AzureClients;
+import cloud.kitelang.provider.azure.AzureClientAware;
+import cloud.kitelang.provider.azure.AzureManagers;
 import com.azure.core.management.Region;
 import com.azure.resourcemanager.compute.ComputeManager;
 import com.azure.resourcemanager.compute.models.Disk;
@@ -22,17 +23,17 @@ import java.util.Set;
  * Implements CRUD operations for disks using Azure SDK.
  */
 @Slf4j
-public class ManagedDiskResourceType extends ResourceTypeHandler<ManagedDiskResource> {
+public class ManagedDiskResourceType extends ResourceTypeHandler<ManagedDiskResource> implements AzureClientAware {
 
     private static final Set<String> VALID_SKUS = Set.of(
             "Standard_LRS", "Premium_LRS", "StandardSSD_LRS",
             "UltraSSD_LRS", "Premium_ZRS", "StandardSSD_ZRS"
     );
 
-    private volatile ComputeManager computeManager;
+    private ComputeManager computeManager;
 
     public ManagedDiskResourceType() {
-        // Manager resolved lazily via AzureClients on first use.
+        // Manager injected by AzureProvider.configure() at runtime.
     }
 
     /** For tests: inject a pre-authenticated manager. */
@@ -40,13 +41,9 @@ public class ManagedDiskResourceType extends ResourceTypeHandler<ManagedDiskReso
         this.computeManager = computeManager;
     }
 
-    private ComputeManager compute() {
-        var local = computeManager;
-        if (local == null) {
-            local = AzureClients.compute();
-            computeManager = local;
-        }
-        return local;
+    @Override
+    public void setAzureManagers(AzureManagers managers) {
+        this.computeManager = managers.compute();
     }
 
     @Override
@@ -59,7 +56,7 @@ public class ManagedDiskResourceType extends ResourceTypeHandler<ManagedDiskReso
         var diskSku = DiskSkuTypes.fromStorageAccountType(DiskStorageAccountTypes.fromString(skuName));
 
         // Start building the disk definition
-        var definition = compute().disks()
+        var definition = computeManager.disks()
                 .define(resource.getName())
                 .withRegion(Region.fromName(resource.getLocation()))
                 .withExistingResourceGroup(resource.getResourceGroup());
@@ -153,9 +150,9 @@ public class ManagedDiskResourceType extends ResourceTypeHandler<ManagedDiskReso
         try {
             Disk disk;
             if (resource.getId() != null) {
-                disk = compute().disks().getById(resource.getId());
+                disk = computeManager.disks().getById(resource.getId());
             } else {
-                disk = compute().disks()
+                disk = computeManager.disks()
                         .getByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 
@@ -183,7 +180,7 @@ public class ManagedDiskResourceType extends ResourceTypeHandler<ManagedDiskReso
             throw new RuntimeException("Managed Disk not found: " + resource.getName());
         }
 
-        Disk disk = compute().disks()
+        Disk disk = computeManager.disks()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
         var update = disk.update();
@@ -231,9 +228,9 @@ public class ManagedDiskResourceType extends ResourceTypeHandler<ManagedDiskReso
 
         try {
             if (resource.getId() != null) {
-                compute().disks().deleteById(resource.getId());
+                computeManager.disks().deleteById(resource.getId());
             } else {
-                compute().disks()
+                computeManager.disks()
                         .deleteByResourceGroup(resource.getResourceGroup(), resource.getName());
             }
 

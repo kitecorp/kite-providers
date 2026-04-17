@@ -2,7 +2,8 @@ package cloud.kitelang.provider.azure.dns;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import cloud.kitelang.provider.azure.AzureClients;
+import cloud.kitelang.provider.azure.AzureClientAware;
+import cloud.kitelang.provider.azure.AzureManagers;
 import com.azure.resourcemanager.dns.DnsZoneManager;
 import com.azure.resourcemanager.dns.models.*;
 import lombok.extern.slf4j.Slf4j;
@@ -17,16 +18,16 @@ import java.util.stream.Collectors;
  * Implements CRUD operations using Azure DNS SDK.
  */
 @Slf4j
-public class DnsRecordSetResourceType extends ResourceTypeHandler<DnsRecordSetResource> {
+public class DnsRecordSetResourceType extends ResourceTypeHandler<DnsRecordSetResource> implements AzureClientAware {
 
     private static final Set<String> VALID_TYPES = Set.of(
             "A", "AAAA", "CNAME", "MX", "TXT", "NS", "SRV", "CAA", "PTR", "SOA"
     );
 
-    private volatile DnsZoneManager dnsManager;
+    private DnsZoneManager dnsManager;
 
     public DnsRecordSetResourceType() {
-        // Manager resolved lazily via AzureClients on first use.
+        // Manager injected by AzureProvider.configure() at runtime.
     }
 
     /** For tests: inject a pre-authenticated manager. */
@@ -34,20 +35,16 @@ public class DnsRecordSetResourceType extends ResourceTypeHandler<DnsRecordSetRe
         this.dnsManager = dnsManager;
     }
 
-    private DnsZoneManager dns() {
-        var local = dnsManager;
-        if (local == null) {
-            local = AzureClients.dnsZone();
-            dnsManager = local;
-        }
-        return local;
+    @Override
+    public void setAzureManagers(AzureManagers managers) {
+        this.dnsManager = managers.dns();
     }
 
     @Override
     public DnsRecordSetResource create(DnsRecordSetResource resource) {
         log.info("Creating DNS Record Set: {}.{} ({})", resource.getName(), resource.getZoneName(), resource.getType());
 
-        var zone = dns().zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
+        var zone = dnsManager.zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
         if (zone == null) {
             throw new RuntimeException("DNS Zone not found: " + resource.getZoneName());
         }
@@ -70,7 +67,7 @@ public class DnsRecordSetResourceType extends ResourceTypeHandler<DnsRecordSetRe
         log.info("Reading DNS Record Set: {}.{} ({})", resource.getName(), resource.getZoneName(), resource.getType());
 
         try {
-            var zone = dns().zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
+            var zone = dnsManager.zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
             if (zone == null) {
                 return null;
             }
@@ -89,7 +86,7 @@ public class DnsRecordSetResourceType extends ResourceTypeHandler<DnsRecordSetRe
     public DnsRecordSetResource update(DnsRecordSetResource resource) {
         log.info("Updating DNS Record Set: {}.{} ({})", resource.getName(), resource.getZoneName(), resource.getType());
 
-        var zone = dns().zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
+        var zone = dnsManager.zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
         if (zone == null) {
             throw new RuntimeException("DNS Zone not found: " + resource.getZoneName());
         }
@@ -110,7 +107,7 @@ public class DnsRecordSetResourceType extends ResourceTypeHandler<DnsRecordSetRe
         log.info("Deleting DNS Record Set: {}.{} ({})", resource.getName(), resource.getZoneName(), resource.getType());
 
         try {
-            var zone = dns().zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
+            var zone = dnsManager.zones().getByResourceGroup(resource.getResourceGroup(), resource.getZoneName());
             if (zone == null) {
                 return false;
             }

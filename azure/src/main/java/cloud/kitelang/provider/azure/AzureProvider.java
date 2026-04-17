@@ -104,6 +104,28 @@ public class AzureProvider extends KiteProvider {
         log.info("Registered {} standard type adapters", getStandardTypeAdapters().size());
     }
 
+    @Override
+    public void configure(Object configuration) {
+        super.configure(configuration);
+
+        // Create all Azure SDK managers and push to handlers that need them
+        var managers = new AzureManagers(
+                AzureClients.resource(),
+                AzureClients.network(),
+                AzureClients.compute(),
+                AzureClients.storage(),
+                AzureClients.dnsZone()
+        );
+
+        for (var handler : getResourceTypes().values()) {
+            if (handler instanceof AzureClientAware aware) {
+                aware.setAzureManagers(managers);
+            }
+        }
+
+        log.info("Wired Azure managers to {} resource type handlers", getResourceTypes().size());
+    }
+
     public static void main(String[] args) throws Exception {
         log.info("Starting Azure Provider...");
         ProviderServer.serve(new AzureProvider());

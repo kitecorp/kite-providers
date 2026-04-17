@@ -2,7 +2,8 @@ package cloud.kitelang.provider.azure.networking;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import cloud.kitelang.provider.azure.AzureClients;
+import cloud.kitelang.provider.azure.AzureClientAware;
+import cloud.kitelang.provider.azure.AzureManagers;
 import com.azure.core.management.Region;
 import com.azure.resourcemanager.network.NetworkManager;
 import com.azure.resourcemanager.network.models.IpAllocationMethod;
@@ -20,12 +21,12 @@ import java.util.List;
  * Implements CRUD operations for Public IPs using Azure SDK.
  */
 @Slf4j
-public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAddressResource> {
+public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAddressResource> implements AzureClientAware {
 
-    private volatile NetworkManager networkManager;
+    private NetworkManager networkManager;
 
     public PublicIpAddressResourceType() {
-        // Manager resolved lazily via AzureClients on first use.
+        // Manager injected by AzureProvider.configure() at runtime.
     }
 
     /** For tests: inject a pre-authenticated manager. */
@@ -33,13 +34,9 @@ public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAdd
         this.networkManager = networkManager;
     }
 
-    private NetworkManager network() {
-        var local = networkManager;
-        if (local == null) {
-            local = AzureClients.network();
-            networkManager = local;
-        }
-        return local;
+    @Override
+    public void setAzureManagers(AzureManagers managers) {
+        this.networkManager = managers.network();
     }
 
     @Override
@@ -47,7 +44,7 @@ public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAdd
         log.info("Creating Public IP '{}' in resource group '{}'",
                 resource.getName(), resource.getResourceGroup());
 
-        var definition = network().publicIpAddresses()
+        var definition = networkManager.publicIpAddresses()
                 .define(resource.getName())
                 .withRegion(Region.fromName(resource.getLocation()))
                 .withExistingResourceGroup(resource.getResourceGroup());
@@ -114,7 +111,7 @@ public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAdd
                 resource.getName(), resource.getResourceGroup());
 
         try {
-            var publicIp = network().publicIpAddresses()
+            var publicIp = networkManager.publicIpAddresses()
                     .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
             if (publicIp == null) {
@@ -141,7 +138,7 @@ public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAdd
             throw new RuntimeException("Public IP not found: " + resource.getName());
         }
 
-        var publicIp = network().publicIpAddresses()
+        var publicIp = networkManager.publicIpAddresses()
                 .getByResourceGroup(resource.getResourceGroup(), resource.getName());
 
         var update = publicIp.update();
@@ -180,7 +177,7 @@ public class PublicIpAddressResourceType extends ResourceTypeHandler<PublicIpAdd
                 resource.getName(), resource.getResourceGroup());
 
         try {
-            network().publicIpAddresses()
+            networkManager.publicIpAddresses()
                     .deleteByResourceGroup(resource.getResourceGroup(), resource.getName());
 
             log.info("Deleted Public IP: {}", resource.getName());

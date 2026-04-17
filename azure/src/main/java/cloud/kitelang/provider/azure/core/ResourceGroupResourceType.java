@@ -2,7 +2,8 @@ package cloud.kitelang.provider.azure.core;
 
 import cloud.kitelang.provider.Diagnostic;
 import cloud.kitelang.provider.ResourceTypeHandler;
-import cloud.kitelang.provider.azure.AzureClients;
+import cloud.kitelang.provider.azure.AzureClientAware;
+import cloud.kitelang.provider.azure.AzureManagers;
 import com.azure.core.management.Region;
 import com.azure.resourcemanager.resources.ResourceManager;
 import com.azure.resourcemanager.resources.models.ResourceGroup;
@@ -17,12 +18,12 @@ import java.util.List;
  * Implements CRUD operations for Resource Groups using Azure SDK.
  */
 @Slf4j
-public class ResourceGroupResourceType extends ResourceTypeHandler<ResourceGroupResource> {
+public class ResourceGroupResourceType extends ResourceTypeHandler<ResourceGroupResource> implements AzureClientAware {
 
-    private volatile ResourceManager resourceManager;
+    private ResourceManager resourceManager;
 
     public ResourceGroupResourceType() {
-        // Manager resolved lazily via AzureClients on first use.
+        // Manager injected by AzureProvider.configure() at runtime.
     }
 
     /** For tests: inject a pre-authenticated manager. */
@@ -30,13 +31,9 @@ public class ResourceGroupResourceType extends ResourceTypeHandler<ResourceGroup
         this.resourceManager = resourceManager;
     }
 
-    private ResourceManager resourceManager() {
-        var local = resourceManager;
-        if (local == null) {
-            local = AzureClients.resource();
-            resourceManager = local;
-        }
-        return local;
+    @Override
+    public void setAzureManagers(AzureManagers managers) {
+        this.resourceManager = managers.resource();
     }
 
     @Override
@@ -44,7 +41,7 @@ public class ResourceGroupResourceType extends ResourceTypeHandler<ResourceGroup
         log.info("Creating Resource Group '{}' at '{}'",
                 resource.getName(), resource.getLocation());
 
-        var definition = resourceManager().resourceGroups()
+        var definition = resourceManager.resourceGroups()
                 .define(resource.getName())
                 .withRegion(Region.fromName(resource.getLocation()));
 
@@ -69,7 +66,7 @@ public class ResourceGroupResourceType extends ResourceTypeHandler<ResourceGroup
         log.info("Reading Resource Group '{}'", resource.getName());
 
         try {
-            ResourceGroup rg = resourceManager().resourceGroups().getByName(resource.getName());
+            ResourceGroup rg = resourceManager.resourceGroups().getByName(resource.getName());
 
             if (rg == null) {
                 return null;
@@ -94,7 +91,7 @@ public class ResourceGroupResourceType extends ResourceTypeHandler<ResourceGroup
             throw new RuntimeException("Resource Group not found: " + resource.getName());
         }
 
-        ResourceGroup rg = resourceManager().resourceGroups().getByName(resource.getName());
+        ResourceGroup rg = resourceManager.resourceGroups().getByName(resource.getName());
 
         var update = rg.update();
 
@@ -117,7 +114,7 @@ public class ResourceGroupResourceType extends ResourceTypeHandler<ResourceGroup
         log.info("Deleting Resource Group '{}'", resource.getName());
 
         try {
-            resourceManager().resourceGroups().deleteByName(resource.getName());
+            resourceManager.resourceGroups().deleteByName(resource.getName());
             log.info("Deleted Resource Group: {}", resource.getName());
             return true;
 
