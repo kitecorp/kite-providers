@@ -1,7 +1,8 @@
 {
   "provider": "files",
   "version": "0.1.0",
-  "generatedAt": "2026-04-17T04:15:25.318162523",
+  "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1e/System-file-manager.svg",
+  "generatedAt": "2026-04-17T04:29:32.89470761",
   "resources": {
     "File": {
       "domain": "files",
