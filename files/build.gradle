@@ -12,6 +12,7 @@ repositories {
 
 kiteProvider {
     name = 'files'
+    logoUrl = 'https://upload.wikimedia.org/wikipedia/commons/1/1e/System-file-manager.svg'
     // mainClass auto-detected from ProviderServer subclass
 }
 
