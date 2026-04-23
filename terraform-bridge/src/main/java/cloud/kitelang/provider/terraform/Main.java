@@ -14,6 +14,8 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         log.info("Starting Terraform Bridge Provider...");
-        ProviderServer.serve(new TerraformBridgeProvider());
+        var provider = new TerraformBridgeProvider();
+        provider.init();
+        ProviderServer.serve(provider);
     }
 }
