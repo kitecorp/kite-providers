@@ -1,0 +1,8 @@
+# Kite Terraform-bridge Provider Documentation
+# https://docs.kitelang.cloud/terraform-bridge/
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://docs.kitelang.cloud/terraform-bridge/sitemap.xml
