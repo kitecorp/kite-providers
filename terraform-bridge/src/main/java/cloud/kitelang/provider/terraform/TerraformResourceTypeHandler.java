@@ -59,7 +59,7 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
 
         var request = ApplyResourceChange.Request.newBuilder()
                 .setTypeName(tfTypeName)
-                .setPriorState(DynamicValue.getDefaultInstance())
+                .setPriorState(nullDynamicValue())
                 .setPlannedState(encodedState)
                 .setConfig(encodedState)
                 .setPlannedPrivate(privateData)
@@ -155,8 +155,8 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
         var request = ApplyResourceChange.Request.newBuilder()
                 .setTypeName(tfTypeName)
                 .setPriorState(encodedState)
-                .setPlannedState(DynamicValue.getDefaultInstance())
-                .setConfig(DynamicValue.getDefaultInstance())
+                .setPlannedState(nullDynamicValue())
+                .setConfig(nullDynamicValue())
                 .setPlannedPrivate(privateData)
                 .build();
 

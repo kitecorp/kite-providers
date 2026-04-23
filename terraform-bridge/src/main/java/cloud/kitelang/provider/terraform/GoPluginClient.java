@@ -5,6 +5,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.health.v1.HealthCheckRequest;
 import io.grpc.health.v1.HealthCheckResponse.ServingStatus;
 import io.grpc.health.v1.HealthGrpc;
+import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -36,8 +37,18 @@ public class GoPluginClient implements AutoCloseable {
     /** Magic cookie key required by all Terraform providers. */
     static final String MAGIC_COOKIE_KEY = "TF_PLUGIN_MAGIC_COOKIE";
 
-    /** Magic cookie value required by all Terraform providers. */
-    static final String MAGIC_COOKIE_VALUE = "d602bf8f470bc67ca7faa0945738d352";
+    /**
+     * Magic cookie value for providers built with the terraform-plugin-framework.
+     * This is the default value used since most modern providers have migrated.
+     */
+    static final String MAGIC_COOKIE_VALUE =
+            "d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d6991ca9872b2";
+
+    /**
+     * Legacy magic cookie value for providers built with the older terraform-plugin-sdk-v2.
+     * Used as a fallback when the framework value does not match.
+     */
+    static final String LEGACY_MAGIC_COOKIE_VALUE = "d602bf8f470bc67ca7faa0945738d352";
 
     /** Maximum time to wait for the handshake line from the provider process. */
     private static final long HANDSHAKE_TIMEOUT_SECONDS = 30;
@@ -70,6 +81,10 @@ public class GoPluginClient implements AutoCloseable {
     /**
      * Launch a Terraform provider binary and establish a gRPC connection.
      *
+     * <p>Tries the terraform-plugin-framework magic cookie first (modern providers),
+     * then falls back to the legacy terraform-plugin-sdk-v2 value if the process
+     * exits immediately (cookie mismatch).</p>
+     *
      * @param providerBinaryPath path to the provider binary executable
      * @throws GoPluginException if the binary cannot be started, the handshake fails,
      *                           or the health check does not return SERVING
@@ -77,7 +92,8 @@ public class GoPluginClient implements AutoCloseable {
     public GoPluginClient(Path providerBinaryPath) {
         log.info("Launching go-plugin provider: {}", providerBinaryPath);
 
-        this.process = launchProcess(providerBinaryPath);
+        // Try framework cookie first; if the provider exits immediately, retry with legacy
+        this.process = launchWithFallback(providerBinaryPath);
         startStderrCapture(process);
 
         var handshakeLine = readHandshakeLine(process);
@@ -85,8 +101,7 @@ public class GoPluginClient implements AutoCloseable {
         log.info("Handshake successful: appProtocol={}, networkType={}, addr={}",
                 handshake.appProtocol(), handshake.networkType(), handshake.networkAddr());
 
-        var target = buildGrpcTarget(handshake);
-        this.channel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
+        this.channel = buildChannel(handshake);
         this.stub = tfplugin5.ProviderGrpc.newBlockingStub(channel);
 
         verifyHealth();
@@ -233,12 +248,35 @@ public class GoPluginClient implements AutoCloseable {
     }
 
     /**
-     * Builds the environment variable map for the provider subprocess.
+     * Builds the environment variable map using the default (framework) magic cookie.
      *
-     * @return an unmodifiable map containing the magic cookie entry
+     * @return an unmodifiable map containing the required go-plugin environment entries
      */
     static Map<String, String> buildEnvironment() {
-        return Map.of(MAGIC_COOKIE_KEY, MAGIC_COOKIE_VALUE);
+        return buildEnvironment(MAGIC_COOKIE_VALUE);
+    }
+
+    /**
+     * Builds the environment variable map for the provider subprocess.
+     *
+     * <p>Includes the magic cookie and protocol version negotiation env vars required
+     * by the go-plugin framework. Without {@code PLUGIN_PROTOCOL_VERSIONS}, newer
+     * providers reject the handshake with "This binary is a plugin" and exit.</p>
+     *
+     * <p>Forces TCP transport by unsetting {@code PLUGIN_UNIX_SOCKET_DIR}. Without this,
+     * newer go-plugin versions default to Unix domain sockets on Unix-like systems,
+     * which requires platform-specific native transport (kqueue on macOS, epoll on Linux).</p>
+     *
+     * @param cookieValue the magic cookie value to use (framework or legacy)
+     * @return a mutable map containing the required go-plugin environment entries
+     */
+    static Map<String, String> buildEnvironment(String cookieValue) {
+        // Use a mutable map because ProcessBuilder.environment().putAll() needs it
+        // and we need to be able to set empty values to suppress Unix socket mode
+        var env = new java.util.HashMap<String, String>();
+        env.put(MAGIC_COOKIE_KEY, cookieValue);
+        env.put("PLUGIN_PROTOCOL_VERSIONS", "5,6");
+        return java.util.Collections.unmodifiableMap(env);
     }
 
     /**
@@ -256,16 +294,69 @@ public class GoPluginClient implements AutoCloseable {
         };
     }
 
+    /**
+     * Builds a gRPC ManagedChannel from the handshake result.
+     *
+     * <p>For TCP connections, uses the standard {@link ManagedChannelBuilder}.
+     * For Unix domain sockets, uses Netty's {@link NettyChannelBuilder} with
+     * {@link java.net.UnixDomainSocketAddress} (Java 16+).</p>
+     *
+     * @param handshake the parsed handshake result
+     * @return a configured ManagedChannel ready for RPC calls
+     */
+    private static ManagedChannel buildChannel(HandshakeResult handshake) {
+        return switch (handshake.networkType()) {
+            case "unix" -> {
+                var socketAddress = java.net.UnixDomainSocketAddress.of(handshake.networkAddr());
+                var eventLoopGroup = new io.grpc.netty.shaded.io.netty.channel.nio.NioEventLoopGroup();
+                yield NettyChannelBuilder
+                        .forAddress(socketAddress)
+                        .eventLoopGroup(eventLoopGroup)
+                        .channelType(io.grpc.netty.shaded.io.netty.channel.socket.nio.NioDomainSocketChannel.class)
+                        .usePlaintext()
+                        .build();
+            }
+            default -> ManagedChannelBuilder
+                    .forTarget(handshake.networkAddr())
+                    .usePlaintext()
+                    .build();
+        };
+    }
+
     // ---------------------------------------------------------------
     // Private helpers
     // ---------------------------------------------------------------
 
     /**
-     * Launches the provider binary as a subprocess with the required environment.
+     * Attempts to launch the provider with the framework magic cookie value.
+     * If the process exits immediately (cookie mismatch), retries with the
+     * legacy SDK cookie value.
      */
-    private static Process launchProcess(Path binaryPath) {
+    private static Process launchWithFallback(Path binaryPath) {
+        var process = launchProcess(binaryPath, MAGIC_COOKIE_VALUE);
+
+        // Give the process a brief moment to die if the cookie doesn't match
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+        if (process.isAlive()) {
+            return process;
+        }
+
+        log.info("Framework cookie rejected (exit {}), retrying with legacy SDK cookie",
+                process.exitValue());
+        return launchProcess(binaryPath, LEGACY_MAGIC_COOKIE_VALUE);
+    }
+
+    /**
+     * Launches the provider binary as a subprocess with the specified magic cookie value.
+     */
+    private static Process launchProcess(Path binaryPath, String cookieValue) {
         var builder = new ProcessBuilder(binaryPath.toAbsolutePath().toString());
-        builder.environment().putAll(buildEnvironment());
+        builder.environment().putAll(buildEnvironment(cookieValue));
         builder.redirectErrorStream(false);
 
         try {

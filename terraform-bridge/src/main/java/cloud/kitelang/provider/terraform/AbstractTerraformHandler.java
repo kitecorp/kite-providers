@@ -54,6 +54,26 @@ abstract class AbstractTerraformHandler extends ResourceTypeHandler<Map<String, 
     }
 
     /**
+     * Creates a {@link DynamicValue} containing msgpack nil (null cty value).
+     *
+     * <p>Used as the prior state for create operations and planned state for delete.
+     * Terraform providers require a properly encoded nil value rather than an empty
+     * {@code DynamicValue} (which has no data bytes at all).</p>
+     *
+     * @return a {@code DynamicValue} with msgpack nil payload
+     */
+    protected static DynamicValue nullDynamicValue() {
+        try (var packer = org.msgpack.core.MessagePack.newDefaultBufferPacker()) {
+            packer.packNil();
+            return DynamicValue.newBuilder()
+                    .setMsgpack(ByteString.copyFrom(packer.toByteArray()))
+                    .build();
+        } catch (java.io.IOException e) {
+            throw new java.io.UncheckedIOException("Failed to pack nil value", e);
+        }
+    }
+
+    /**
      * Decodes a {@link DynamicValue} response into a camelCase property map.
      *
      * @param dynamicValue the TF response containing msgpack bytes

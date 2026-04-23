@@ -151,11 +151,14 @@ class GoPluginClientTest {
     class EnvironmentSetup {
 
         @Test
-        @DisplayName("should set the magic cookie environment variable")
+        @DisplayName("should set the magic cookie environment variable (framework value)")
         void shouldSetMagicCookieEnvVar() {
             var env = GoPluginClient.buildEnvironment();
 
-            assertEquals("d602bf8f470bc67ca7faa0945738d352", env.get("TF_PLUGIN_MAGIC_COOKIE"));
+            assertEquals(
+                    "d602bf8f470bc67ca7faa0386276bbdd4330efaf76d1a219cb4d6991ca9872b2",
+                    env.get("TF_PLUGIN_MAGIC_COOKIE")
+            );
         }
 
         @Test
@@ -165,6 +168,14 @@ class GoPluginClientTest {
 
             assertTrue(env.containsKey("TF_PLUGIN_MAGIC_COOKIE"),
                     "Environment must contain TF_PLUGIN_MAGIC_COOKIE");
+        }
+
+        @Test
+        @DisplayName("should set PLUGIN_PROTOCOL_VERSIONS for go-plugin handshake")
+        void shouldSetPluginProtocolVersions() {
+            var env = GoPluginClient.buildEnvironment();
+
+            assertEquals("5,6", env.get("PLUGIN_PROTOCOL_VERSIONS"));
         }
     }
 

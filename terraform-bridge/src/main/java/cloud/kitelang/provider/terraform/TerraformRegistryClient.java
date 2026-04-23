@@ -145,8 +145,15 @@ public class TerraformRegistryClient {
             throw new IllegalArgumentException("No versions available to resolve against");
         }
 
+        // Filter out pre-release versions (e.g. "3.7.0-alpha1") unless the constraint
+        // explicitly targets one. Terraform convention: hyphens denote pre-release.
+        var stable = availableVersions.stream()
+                .filter(v -> !v.contains("-"))
+                .toList();
+        var candidates = stable.isEmpty() ? availableVersions : stable;
+
         // Sort descending so we pick the highest match first
-        var sorted = availableVersions.stream()
+        var sorted = candidates.stream()
                 .sorted((a, b) -> compareVersions(b, a))
                 .toList();
 

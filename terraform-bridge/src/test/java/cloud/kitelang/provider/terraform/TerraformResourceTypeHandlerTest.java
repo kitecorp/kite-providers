@@ -110,8 +110,9 @@ class TerraformResourceTypeHandlerTest {
             var request = captor.getValue();
 
             assertEquals(TF_TYPE_NAME, request.getTypeName());
-            // Prior state should be empty (null = create)
-            assertEquals(DynamicValue.getDefaultInstance(), request.getPriorState());
+            // Prior state should be msgpack nil (null cty value for create)
+            assertTrue(request.getPriorState().getMsgpack().size() > 0,
+                    "Prior state should contain msgpack nil, not empty bytes");
             // Planned state should be set
             assertNotEquals(DynamicValue.getDefaultInstance(), request.getPlannedState());
             // Config should be set
@@ -296,10 +297,12 @@ class TerraformResourceTypeHandlerTest {
             assertEquals(TF_TYPE_NAME, request.getTypeName());
             // Prior state should be set (current resource state)
             assertNotEquals(DynamicValue.getDefaultInstance(), request.getPriorState());
-            // Planned state should be empty (null = destroy)
-            assertEquals(DynamicValue.getDefaultInstance(), request.getPlannedState());
-            // Config should be empty for delete
-            assertEquals(DynamicValue.getDefaultInstance(), request.getConfig());
+            // Planned state should be msgpack nil (null cty value for destroy)
+            assertTrue(request.getPlannedState().getMsgpack().size() > 0,
+                    "Planned state should contain msgpack nil, not empty bytes");
+            // Config should be msgpack nil for delete
+            assertTrue(request.getConfig().getMsgpack().size() > 0,
+                    "Config should contain msgpack nil, not empty bytes");
         }
 
         @Test
