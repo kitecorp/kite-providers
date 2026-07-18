@@ -340,6 +340,24 @@ class TerraformBridgeProviderTest {
     }
 
     @Nested
+    @DisplayName("configure() before init()")
+    class ConfigureBeforeInitTests {
+
+        @Test
+        @DisplayName("should fail with a descriptive lifecycle error instead of an NPE")
+        void shouldFailDescriptivelyBeforeInit() {
+            // kitecorp/kite#32: without init() there is no provider schema to
+            // encode against — the failure must say so, not NPE inside CtyCodec.
+            var provider = new TerraformBridgeProvider("aws", client);
+
+            var exception = assertThrows(IllegalStateException.class,
+                    () -> provider.configure(Map.<String, Object>of("region", "us-east-1")));
+
+            assertEquals("init() must be called before configure()", exception.getMessage());
+        }
+    }
+
+    @Nested
     @DisplayName("configure() without a provider config schema")
     class ConfigureWithoutProviderSchemaTests {
 

@@ -68,8 +68,12 @@ public class TerraformBridgeProvider extends KiteProvider {
     /** Cty object type of a provider without any config schema block. */
     private static final String EMPTY_OBJECT_TYPE = "[\"object\",{}]";
 
-    /** JSON-encoded cty object type for the provider config schema (used in configure()). */
-    private String providerConfigSchemaType = EMPTY_OBJECT_TYPE;
+    /**
+     * JSON-encoded cty object type for the provider config schema (used in
+     * configure()). Null until {@link #init()} runs — configure() guards on
+     * this to fail with a lifecycle error instead of an NPE (kitecorp/kite#32).
+     */
+    private String providerConfigSchemaType;
 
     /** snake_case attribute names of the provider config schema (used in configure()). */
     private Set<String> providerConfigAttributeNames = Set.of();
@@ -140,12 +144,18 @@ public class TerraformBridgeProvider extends KiteProvider {
         // Build converter with the provider name as prefix
         this.converter = new TerraformSchemaConverter(providerName);
 
-        // Build the provider-level config schema type (used in configure())
+        // Build the provider-level config schema type (used in configure()).
+        // Providers without a config schema still get Configure — Terraform
+        // core always calls it (env-var-based auth happens there) — so the
+        // absent-schema case is an empty object, not a skipped RPC.
         if (providerSchema.provider() != null) {
             this.providerConfigSchemaType = buildObjectType(providerSchema.provider().block());
             this.providerConfigAttributeNames = providerSchema.provider().block().attributes().stream()
                     .map(TfAttribute::name)
                     .collect(Collectors.toUnmodifiableSet());
+        } else {
+            this.providerConfigSchemaType = EMPTY_OBJECT_TYPE;
+            this.providerConfigAttributeNames = Set.of();
         }
 
         // Register resource types
@@ -184,6 +194,10 @@ public class TerraformBridgeProvider extends KiteProvider {
     @SuppressWarnings("unchecked")
     public void configure(Object configuration) {
         super.configure(configuration);
+
+        if (providerConfigSchemaType == null) {
+            throw new IllegalStateException("init() must be called before configure()");
+        }
 
         var configMap = configuration != null
                 ? (Map<String, Object>) configuration
