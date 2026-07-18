@@ -2,7 +2,6 @@ package cloud.kitelang.provider.terraform;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import tfplugin5.Tfplugin5.Schema;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -16,7 +15,9 @@ import java.util.Map;
  *
  * <p>This is the translation layer between Terraform's schema model (cty types,
  * snake_case names, required/optional/computed flags) and Kite's type system
- * (PascalCase types, camelCase properties, {@code @cloud}/{@code @sensitive} decorators).</p>
+ * (PascalCase types, camelCase properties, {@code @cloud}/{@code @sensitive} decorators).
+ * It consumes the protocol-neutral {@link TfSchema} model, so schemas from
+ * tfplugin5 and tfplugin6 providers convert identically.</p>
  *
  * <h3>Responsibilities</h3>
  * <ul>
@@ -145,7 +146,7 @@ public class TerraformSchemaConverter {
     // ------------------------------------------------------------------
 
     /**
-     * Parse cty type constraint bytes (JSON-encoded) into a Kite type string.
+     * Parse a JSON-encoded cty type constraint into a Kite type string.
      *
      * <p>Mapping:
      * <ul>
@@ -158,12 +159,23 @@ public class TerraformSchemaConverter {
      *   <li>{@code ["object", {...}]} -> {@code Map}</li>
      * </ul>
      *
-     * @param typeBytes JSON-encoded cty type constraint
+     * @param typeJson JSON-encoded cty type constraint
+     * @return the Kite type string
+     */
+    public String ctyTypeToKiteType(String typeJson) {
+        var typeNode = parseTypeJson(typeJson);
+        return resolveKiteType(typeNode);
+    }
+
+    /**
+     * Convenience overload for raw cty type constraint bytes as carried in the
+     * protobuf {@code Schema.Attribute.type} field.
+     *
+     * @param typeBytes UTF-8 JSON-encoded cty type constraint
      * @return the Kite type string
      */
     public String ctyTypeToKiteType(byte[] typeBytes) {
-        var typeNode = parseTypeJson(typeBytes);
-        return resolveKiteType(typeNode);
+        return ctyTypeToKiteType(new String(typeBytes, StandardCharsets.UTF_8));
     }
 
     // ------------------------------------------------------------------
@@ -184,19 +196,30 @@ public class TerraformSchemaConverter {
      * </pre>
      *
      * @param tfTypeName the full Terraform type name (e.g. "aws_instance")
-     * @param schema the Terraform schema from GetProviderSchema response
+     * @param schema the protocol-neutral schema from a GetProviderSchema response
      * @return the Kite schema DSL string
      */
-    public String toKiteSchema(String tfTypeName, Schema schema) {
+    public String toKiteSchema(String tfTypeName, TfSchema schema) {
         var typeName = toKiteTypeName(tfTypeName);
         var sb = new StringBuilder();
         sb.append("schema ").append(typeName).append(" {\n");
 
-        var block = schema.getBlock();
-        appendBlockProperties(sb, block, "    ");
+        appendBlockProperties(sb, schema.block(), "    ");
 
         sb.append("}");
         return sb.toString();
+    }
+
+    /**
+     * Convenience overload for callers holding a raw tfplugin5 schema message
+     * (e.g. protocol-5 raw-RPC tests).
+     *
+     * @param tfTypeName the full Terraform type name (e.g. "aws_instance")
+     * @param schema the tfplugin5 schema from a GetProviderSchema response
+     * @return the Kite schema DSL string
+     */
+    public String toKiteSchema(String tfTypeName, tfplugin5.Tfplugin5.Schema schema) {
+        return toKiteSchema(tfTypeName, Tfplugin5Rpc.toTfSchema(schema));
     }
 
     // ------------------------------------------------------------------
@@ -209,14 +232,14 @@ public class TerraformSchemaConverter {
      * <p>Attributes are rendered as typed properties with decorators.
      * Nested blocks are rendered according to their nesting mode.</p>
      */
-    private void appendBlockProperties(StringBuilder sb, Schema.Block block, String indent) {
+    private void appendBlockProperties(StringBuilder sb, TfBlock block, String indent) {
         // Render attributes
-        for (var attr : block.getAttributesList()) {
+        for (var attr : block.attributes()) {
             appendAttribute(sb, attr, indent);
         }
 
         // Render nested blocks
-        for (var nestedBlock : block.getBlockTypesList()) {
+        for (var nestedBlock : block.blockTypes()) {
             appendNestedBlock(sb, nestedBlock, indent);
         }
     }
@@ -227,24 +250,24 @@ public class TerraformSchemaConverter {
      * <p>Applies decorator rules based on computed/sensitive/writeOnly flags
      * and converts the attribute name from snake_case to camelCase.</p>
      */
-    private void appendAttribute(StringBuilder sb, Schema.Attribute attr, String indent) {
-        var kiteType = ctyTypeToKiteType(attr.getType().toByteArray());
-        var kiteName = TerraformPropertyMapper.toCamelCase(attr.getName());
+    private void appendAttribute(StringBuilder sb, TfAttribute attr, String indent) {
+        var kiteType = ctyTypeToKiteType(attr.typeJson());
+        var kiteName = TerraformPropertyMapper.toCamelCase(attr.name());
 
         sb.append(indent);
 
         // Write-only comment (future: @writeOnly decorator)
-        if (attr.getWriteOnly()) {
+        if (attr.writeOnly()) {
             sb.append("// writeOnly\n").append(indent);
         }
 
         // @sensitive decorator
-        if (attr.getSensitive()) {
+        if (attr.sensitive()) {
             sb.append("@sensitive ");
         }
 
         // @cloud decorator for computed properties
-        if (attr.getComputed()) {
+        if (attr.computed()) {
             sb.append("@cloud ");
         }
 
@@ -261,25 +284,21 @@ public class TerraformSchemaConverter {
      *   <li>{@code GROUP} -> flatten attributes into parent block</li>
      * </ul>
      */
-    private void appendNestedBlock(StringBuilder sb, Schema.NestedBlock nestedBlock, String indent) {
-        var blockName = nestedBlock.getTypeName();
+    private void appendNestedBlock(StringBuilder sb, TfNestedBlock nestedBlock, String indent) {
+        var blockName = nestedBlock.typeName();
         var kiteName = TerraformPropertyMapper.toCamelCase(blockName);
         var nestedTypeName = toPascalCase(blockName);
 
-        switch (nestedBlock.getNesting()) {
-            case GROUP -> {
-                // Flatten: merge nested block's attributes into the parent
-                if (nestedBlock.hasBlock()) {
-                    appendBlockProperties(sb, nestedBlock.getBlock(), indent);
-                }
-            }
+        switch (nestedBlock.nesting()) {
+            // Flatten: merge nested block's attributes into the parent
+            case GROUP -> appendBlockProperties(sb, nestedBlock.block(), indent);
             case SINGLE -> sb.append(indent).append(nestedTypeName).append(' ')
                     .append(kiteName).append('\n');
             case LIST, SET -> sb.append(indent).append(nestedTypeName).append("[] ")
                     .append(kiteName).append('\n');
             case MAP -> sb.append(indent).append("Map ").append(kiteName).append('\n');
             default -> sb.append(indent).append("// unsupported nesting mode: ")
-                    .append(nestedBlock.getNesting()).append('\n');
+                    .append(nestedBlock.nesting()).append('\n');
         }
     }
 
@@ -288,11 +307,11 @@ public class TerraformSchemaConverter {
     // ------------------------------------------------------------------
 
     /**
-     * Parse JSON bytes into a JsonNode tree.
+     * Parse a JSON string into a JsonNode tree.
      */
-    private JsonNode parseTypeJson(byte[] typeBytes) {
+    private JsonNode parseTypeJson(String typeJson) {
         try {
-            return JSON.readTree(new String(typeBytes, StandardCharsets.UTF_8));
+            return JSON.readTree(typeJson);
         } catch (IOException e) {
             throw new UncheckedIOException("Failed to parse cty type JSON", e);
         }

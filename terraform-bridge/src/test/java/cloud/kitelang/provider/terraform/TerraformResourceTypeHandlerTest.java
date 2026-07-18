@@ -49,7 +49,9 @@ class TerraformResourceTypeHandlerTest {
 
     @BeforeEach
     void setUp() {
-        lenient().when(client.getStub()).thenReturn(stub);
+        // A real Tfplugin5Rpc over the mocked stub: the tests keep verifying the
+        // exact tfplugin5 protobuf requests, now including the adapter's mapping
+        lenient().when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
         codec = new CtyCodec();
         handler = new TerraformResourceTypeHandler(TF_TYPE_NAME, KITE_TYPE_NAME, client, SCHEMA_TYPE_JSON,
                 Set.of());

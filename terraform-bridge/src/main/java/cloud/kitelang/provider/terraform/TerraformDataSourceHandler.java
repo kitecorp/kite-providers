@@ -1,8 +1,6 @@
 package cloud.kitelang.provider.terraform;
 
 import lombok.extern.slf4j.Slf4j;
-import tfplugin5.Tfplugin5.DynamicValue;
-import tfplugin5.Tfplugin5.ReadDataSource;
 
 import java.util.Map;
 
@@ -27,7 +25,7 @@ public class TerraformDataSourceHandler extends AbstractTerraformHandler {
      *
      * @param tfTypeName     the original TF data source type name (e.g. {@code "aws_ami"})
      * @param kiteTypeName   the converted Kite type name (e.g. {@code "Ami"})
-     * @param client         the go-plugin gRPC client for making tfplugin5 calls
+     * @param client         the go-plugin gRPC client for making Terraform protocol calls
      * @param schemaTypeJson JSON-encoded cty object type for this data source
      */
     public TerraformDataSourceHandler(String tfTypeName, String kiteTypeName,
@@ -44,18 +42,12 @@ public class TerraformDataSourceHandler extends AbstractTerraformHandler {
     @Override
     public Map<String, Object> read(Map<String, Object> properties) {
         var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
-        var encodedConfig = encodeToDynamicValue(snakeProps);
-
-        var request = ReadDataSource.Request.newBuilder()
-                .setTypeName(tfTypeName)
-                .setConfig(encodedConfig)
-                .build();
 
         log.debug("read data source {} — sending ReadDataSource", tfTypeName);
-        var response = client.getStub().readDataSource(request);
-        checkDiagnostics(response.getDiagnosticsList(), "read");
+        var result = rpc().readDataSource(tfTypeName, encodeToMsgpack(snakeProps));
+        checkDiagnostics(result.diagnostics(), "read");
 
-        return decodeResponse(response.getState());
+        return decodeState(result.state());
     }
 
     /** Data sources are read-only. */

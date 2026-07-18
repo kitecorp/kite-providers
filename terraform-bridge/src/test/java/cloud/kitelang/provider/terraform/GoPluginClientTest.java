@@ -180,7 +180,56 @@ class GoPluginClientTest {
     }
 
     // ---------------------------------------------------------------
-    // 4. gRPC target construction
+    // 4. Protocol-version-based RPC selection
+    // ---------------------------------------------------------------
+    @Nested
+    @DisplayName("RPC implementation selection")
+    class RpcSelection {
+
+        @Test
+        @DisplayName("should select the tfplugin5 implementation for app protocol 5")
+        void shouldSelectTfplugin5ForProtocol5() {
+            withIdleChannel(channel ->
+                    assertInstanceOf(Tfplugin5Rpc.class, GoPluginClient.createRpc(5, channel)));
+        }
+
+        @Test
+        @DisplayName("should select the tfplugin6 implementation for app protocol 6")
+        void shouldSelectTfplugin6ForProtocol6() {
+            withIdleChannel(channel ->
+                    assertInstanceOf(Tfplugin6Rpc.class, GoPluginClient.createRpc(6, channel)));
+        }
+
+        @Test
+        @DisplayName("should reject app protocol versions other than 5 and 6")
+        void shouldRejectUnsupportedProtocolVersion() {
+            withIdleChannel(channel -> {
+                var exception = assertThrows(GoPluginException.class,
+                        () -> GoPluginClient.createRpc(7, channel));
+                assertEquals("Unsupported app protocol version: 7 (supported: 5 and 6)",
+                        exception.getMessage());
+            });
+        }
+
+        /**
+         * Runs the assertion against a lazily-connecting channel (gRPC channels
+         * only dial on the first RPC, so no listener is needed) and always shuts
+         * it down to avoid leaking resources.
+         */
+        private void withIdleChannel(java.util.function.Consumer<io.grpc.ManagedChannel> assertion) {
+            var channel = io.grpc.ManagedChannelBuilder.forTarget("localhost:1")
+                    .usePlaintext()
+                    .build();
+            try {
+                assertion.accept(channel);
+            } finally {
+                channel.shutdownNow();
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // 5. gRPC target construction
     // ---------------------------------------------------------------
     @Nested
     @DisplayName("gRPC target construction")

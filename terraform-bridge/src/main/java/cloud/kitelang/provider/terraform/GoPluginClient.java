@@ -65,6 +65,7 @@ public class GoPluginClient implements AutoCloseable {
     private final Process process;
     private final ManagedChannel channel;
     private final tfplugin5.ProviderGrpc.ProviderBlockingStub stub;
+    private final TerraformProviderRpc rpc;
     private final HandshakeResult handshake;
 
     /**
@@ -103,6 +104,7 @@ public class GoPluginClient implements AutoCloseable {
 
         this.channel = buildChannel(handshake);
         this.stub = tfplugin5.ProviderGrpc.newBlockingStub(channel);
+        this.rpc = createRpc(handshake.appProtocol(), channel);
 
         verifyHealth();
         log.info("Provider is healthy and ready");
@@ -111,10 +113,24 @@ public class GoPluginClient implements AutoCloseable {
     /**
      * Returns the blocking stub for tfplugin5 RPCs.
      *
-     * @return the provider blocking stub
+     * <p>Only valid when the handshake negotiated app protocol 5 — kept for
+     * direct protocol-5 access (e.g. raw-RPC tests). Bridge code must use the
+     * version-agnostic {@link #rpc()} facade instead.</p>
+     *
+     * @return the tfplugin5 provider blocking stub
      */
     public tfplugin5.ProviderGrpc.ProviderBlockingStub getStub() {
         return stub;
+    }
+
+    /**
+     * Returns the version-agnostic RPC facade, selected from the app protocol
+     * version the go-plugin handshake negotiated (tfplugin5 or tfplugin6).
+     *
+     * @return the protocol-appropriate {@link TerraformProviderRpc} implementation
+     */
+    public TerraformProviderRpc rpc() {
+        return rpc;
     }
 
     /**
@@ -151,9 +167,9 @@ public class GoPluginClient implements AutoCloseable {
     public void close() {
         log.info("Shutting down go-plugin provider");
 
-        // 1. Send Stop RPC (best-effort)
+        // 1. Send Stop RPC (best-effort; tfplugin5 Stop / tfplugin6 StopProvider)
         try {
-            stub.stop(tfplugin5.Tfplugin5.Stop.Request.getDefaultInstance());
+            rpc.stop();
         } catch (Exception e) {
             log.warn("Stop RPC failed (process may have already exited): {}", e.getMessage());
         }
@@ -277,6 +293,26 @@ public class GoPluginClient implements AutoCloseable {
         env.put(MAGIC_COOKIE_KEY, cookieValue);
         env.put("PLUGIN_PROTOCOL_VERSIONS", "5,6");
         return java.util.Collections.unmodifiableMap(env);
+    }
+
+    /**
+     * Selects the protocol-appropriate RPC implementation for the negotiated
+     * app protocol version. {@code PLUGIN_PROTOCOL_VERSIONS=5,6} is offered in
+     * the handshake, so the provider only ever answers with 5 or 6; anything
+     * else indicates a protocol the bridge cannot speak.
+     *
+     * @param appProtocol the app protocol version from the handshake
+     * @param channel     the established gRPC channel
+     * @return the matching {@link TerraformProviderRpc} implementation
+     * @throws GoPluginException if the version is neither 5 nor 6
+     */
+    static TerraformProviderRpc createRpc(int appProtocol, io.grpc.Channel channel) {
+        return switch (appProtocol) {
+            case 5 -> new Tfplugin5Rpc(tfplugin5.ProviderGrpc.newBlockingStub(channel));
+            case 6 -> new Tfplugin6Rpc(tfplugin6.ProviderGrpc.newBlockingStub(channel));
+            default -> throw new GoPluginException(
+                    "Unsupported app protocol version: %d (supported: 5 and 6)".formatted(appProtocol));
+        };
     }
 
     /**

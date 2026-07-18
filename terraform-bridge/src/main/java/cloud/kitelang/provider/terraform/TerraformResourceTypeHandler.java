@@ -1,15 +1,8 @@
 package cloud.kitelang.provider.terraform;
 
 import cloud.kitelang.provider.ResourceContext;
-import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
-import tfplugin5.Tfplugin5.ApplyResourceChange;
-import tfplugin5.Tfplugin5.AttributePath;
-import tfplugin5.Tfplugin5.DynamicValue;
-import tfplugin5.Tfplugin5.PlanResourceChange;
-import tfplugin5.Tfplugin5.ReadResource;
 import tfplugin5.Tfplugin5.Schema;
-import tfplugin5.Tfplugin5.ValidateResourceTypeConfig;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -18,11 +11,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Bridges Kite CRUD operations to Terraform's tfplugin5 gRPC protocol.
+ * Bridges Kite CRUD operations to the Terraform plugin protocol.
  *
  * <p>One instance per Terraform resource type. Translates between Kite's camelCase
  * {@code Map<String, Object>} property bags and Terraform's snake_case cty
- * msgpack-encoded {@link DynamicValue} messages.</p>
+ * msgpack-encoded values, and speaks whichever protocol version (tfplugin5 or
+ * tfplugin6) the go-plugin handshake negotiated via the
+ * {@link TerraformProviderRpc} facade.</p>
  *
  * <p>The handler is stateless: prior state and provider-private bytes arrive in
  * the per-operation {@link ResourceContext} (persisted by the engine between
@@ -31,7 +26,7 @@ import java.util.stream.Collectors;
  * created by a previous process instance.</p>
  *
  * <h3>CRUD mapping to Terraform RPCs</h3>
- * <p>Terraform core always calls {@code ValidateResourceTypeConfig} and
+ * <p>Terraform core always validates the resource config and calls
  * {@code PlanResourceChange} before {@code ApplyResourceChange}; providers rely on
  * the plan step to fill in computed values and to flag attributes that force
  * replacement, so the bridge mirrors that sequence:</p>
@@ -67,11 +62,11 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
      *
      * @param tfTypeName             the original TF resource type name (e.g. {@code "aws_instance"})
      * @param kiteTypeName           the converted Kite type name (e.g. {@code "Instance"})
-     * @param client                 the go-plugin gRPC client for making tfplugin5 calls
+     * @param client                 the go-plugin gRPC client for making Terraform protocol calls
      * @param schemaTypeJson         JSON-encoded cty object type for this resource,
      *                               e.g. {@code ["object", {"ami": "string", "instance_type": "string"}]}
      * @param readOnlyAttributeNames snake_case names of computed-only attributes;
-     *                               see {@link #readOnlyAttributeNames(Schema.Block)}
+     *                               see {@link #readOnlyAttributeNames(TfBlock)}
      */
     public TerraformResourceTypeHandler(String tfTypeName, String kiteTypeName,
                                         GoPluginClient client, String schemaTypeJson,
@@ -88,11 +83,22 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
      * @param block the resource's schema block
      * @return immutable set of snake_case attribute names
      */
-    public static Set<String> readOnlyAttributeNames(Schema.Block block) {
-        return block.getAttributesList().stream()
-                .filter(attr -> attr.getComputed() && !attr.getOptional() && !attr.getRequired())
-                .map(Schema.Attribute::getName)
+    public static Set<String> readOnlyAttributeNames(TfBlock block) {
+        return block.attributes().stream()
+                .filter(attr -> attr.computed() && !attr.optional() && !attr.required())
+                .map(TfAttribute::name)
                 .collect(Collectors.toUnmodifiableSet());
+    }
+
+    /**
+     * Convenience overload for callers holding a raw tfplugin5 schema block
+     * (e.g. protocol-5 raw-RPC tests).
+     *
+     * @param block the resource's tfplugin5 schema block
+     * @return immutable set of snake_case attribute names
+     */
+    public static Set<String> readOnlyAttributeNames(Schema.Block block) {
+        return readOnlyAttributeNames(Tfplugin5Rpc.toTfBlock(block));
     }
 
     // ---------------------------------------------------------------
@@ -137,17 +143,16 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     public Map<String, Object> create(Map<String, Object> properties,
                                       ResourceContext<Map<String, Object>> context) {
         var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
-        var proposed = encodeToDynamicValue(snakeProps);
-        var config = encodeToDynamicValue(withoutReadOnlyAttributes(snakeProps));
+        var proposed = encodeToMsgpack(snakeProps);
+        var config = encodeToMsgpack(withoutReadOnlyAttributes(snakeProps));
 
         validateConfig(config, "create");
-        var plan = planChange(nullDynamicValue(), proposed, config,
-                ByteString.copyFrom(context.privateData()), "create");
+        var plan = planChange(nilMsgpack(), proposed, config, context.privateData(), "create");
 
         log.debug("create {} — sending ApplyResourceChange", tfTypeName);
-        var response = applyChange(nullDynamicValue(), config, plan, "create");
-        context.returnPrivateData(response.getPrivate().toByteArray());
-        return decodeResponse(response.getNewState());
+        var result = applyChange(nilMsgpack(), config, plan, "create");
+        context.returnPrivateData(result.privateBytes());
+        return decodeState(result.state());
     }
 
     /**
@@ -162,20 +167,13 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     public Map<String, Object> read(Map<String, Object> properties,
                                     ResourceContext<Map<String, Object>> context) {
         var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
-        var encodedState = encodeToDynamicValue(snakeProps);
-
-        var request = ReadResource.Request.newBuilder()
-                .setTypeName(tfTypeName)
-                .setCurrentState(encodedState)
-                .setPrivate(ByteString.copyFrom(context.privateData()))
-                .build();
 
         log.debug("read {} — sending ReadResource", tfTypeName);
-        var response = client.getStub().readResource(request);
-        checkDiagnostics(response.getDiagnosticsList(), "read");
+        var result = rpc().readResource(tfTypeName, encodeToMsgpack(snakeProps), context.privateData());
+        checkDiagnostics(result.diagnostics(), "read");
 
-        context.returnPrivateData(response.getPrivate().toByteArray());
-        return decodeResponse(response.getNewState());
+        context.returnPrivateData(result.privateBytes());
+        return decodeState(result.state());
     }
 
     /**
@@ -201,27 +199,27 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
         var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
         // Proposed state keeps computed values (mirrors Terraform core, which
         // merges prior computed values into the proposal); config must not.
-        var proposed = encodeToDynamicValue(snakeProps);
-        var config = encodeToDynamicValue(withoutReadOnlyAttributes(snakeProps));
+        var proposed = encodeToMsgpack(snakeProps);
+        var config = encodeToMsgpack(withoutReadOnlyAttributes(snakeProps));
 
         var priorState = context.priorState() != null
-                ? encodeToDynamicValue(TerraformPropertyMapper.toSnakeCase(context.priorState()))
+                ? encodeToMsgpack(TerraformPropertyMapper.toSnakeCase(context.priorState()))
                 : proposed;
-        var priorPrivate = ByteString.copyFrom(context.privateData());
+        var priorPrivate = context.privateData();
 
         validateConfig(config, "update");
         var plan = planChange(priorState, proposed, config, priorPrivate, "update");
 
-        if (plan.getRequiresReplaceCount() > 0) {
+        if (!plan.requiresReplace().isEmpty()) {
             log.info("update {} — plan requires replacement ({}), destroying and recreating",
-                    tfTypeName, describeAttributePaths(plan.getRequiresReplaceList()));
+                    tfTypeName, describeAttributePaths(plan.requiresReplace()));
             return replace(priorState, config, priorPrivate, context);
         }
 
         log.debug("update {} — sending ApplyResourceChange", tfTypeName);
-        var response = applyChange(priorState, config, plan, "update");
-        context.returnPrivateData(response.getPrivate().toByteArray());
-        return decodeResponse(response.getNewState());
+        var result = applyChange(priorState, config, plan, "update");
+        context.returnPrivateData(result.privateBytes());
+        return decodeState(result.state());
     }
 
     /**
@@ -238,18 +236,17 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     public boolean delete(Map<String, Object> properties,
                           ResourceContext<Map<String, Object>> context) {
         var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
-        var priorState = encodeToDynamicValue(snakeProps);
+        var priorState = encodeToMsgpack(snakeProps);
 
         // Validate the last known configurable attributes — a nil config fails
         // required-attribute checks. The destroy plan itself uses the null
         // proposed state and config, matching a resource leaving the config.
-        validateConfig(encodeToDynamicValue(withoutReadOnlyAttributes(snakeProps)), "delete");
-        var plan = planChange(priorState, nullDynamicValue(), nullDynamicValue(),
-                ByteString.copyFrom(context.privateData()), "delete");
+        validateConfig(encodeToMsgpack(withoutReadOnlyAttributes(snakeProps)), "delete");
+        var plan = planChange(priorState, nilMsgpack(), nilMsgpack(), context.privateData(), "delete");
 
         log.debug("delete {} — sending ApplyResourceChange with null planned state", tfTypeName);
-        var response = applyChange(priorState, nullDynamicValue(), plan, "delete");
-        context.returnPrivateData(response.getPrivate().toByteArray());
+        var result = applyChange(priorState, nilMsgpack(), plan, "delete");
+        context.returnPrivateData(result.privateBytes());
         return true;
     }
 
@@ -270,15 +267,15 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     @Override
     public Map<String, Object> plan(Map<String, Object> priorState, Map<String, Object> proposedState) {
         var snakeProps = TerraformPropertyMapper.toSnakeCase(proposedState);
-        var proposed = encodeToDynamicValue(snakeProps);
-        var config = encodeToDynamicValue(withoutReadOnlyAttributes(snakeProps));
+        var proposed = encodeToMsgpack(snakeProps);
+        var config = encodeToMsgpack(withoutReadOnlyAttributes(snakeProps));
         var prior = priorState == null
-                ? nullDynamicValue()
-                : encodeToDynamicValue(TerraformPropertyMapper.toSnakeCase(priorState));
+                ? nilMsgpack()
+                : encodeToMsgpack(TerraformPropertyMapper.toSnakeCase(priorState));
 
         validateConfig(config, "plan");
-        var response = planChange(prior, proposed, config, ByteString.EMPTY, "plan");
-        return decodeResponse(response.getPlannedState());
+        var plan = planChange(prior, proposed, config, new byte[0], "plan");
+        return decodeState(plan.plannedState());
     }
 
     // ---------------------------------------------------------------
@@ -293,21 +290,20 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
      * destroyed resource survives. The recreate's private bytes go back to the
      * engine via the context.
      */
-    private Map<String, Object> replace(DynamicValue priorState, DynamicValue config,
-                                        ByteString priorPrivate,
+    private Map<String, Object> replace(byte[] priorState, byte[] config, byte[] priorPrivate,
                                         ResourceContext<Map<String, Object>> context) {
         // Destroy: proposed state and config are null, mirroring a destroy plan
-        var destroyPlan = planChange(priorState, nullDynamicValue(), nullDynamicValue(),
+        var destroyPlan = planChange(priorState, nilMsgpack(), nilMsgpack(),
                 priorPrivate, "update (plan destroy for replace)");
-        applyChange(priorState, nullDynamicValue(), destroyPlan, "update (destroy for replace)");
+        applyChange(priorState, nilMsgpack(), destroyPlan, "update (destroy for replace)");
 
         // Recreate from scratch with the desired configuration
-        var createPlan = planChange(nullDynamicValue(), config, config,
-                ByteString.EMPTY, "update (plan create for replace)");
-        var response = applyChange(nullDynamicValue(), config, createPlan,
+        var createPlan = planChange(nilMsgpack(), config, config,
+                new byte[0], "update (plan create for replace)");
+        var result = applyChange(nilMsgpack(), config, createPlan,
                 "update (create for replace)");
-        context.returnPrivateData(response.getPrivate().toByteArray());
-        return decodeResponse(response.getNewState());
+        context.returnPrivateData(result.privateBytes());
+        return decodeState(result.state());
     }
 
     /**
@@ -326,100 +322,63 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     }
 
     /**
-     * Calls {@code ValidateResourceTypeConfig} and throws on ERROR diagnostics.
+     * Validates the resource configuration and throws on ERROR diagnostics.
      *
-     * @param config    the cty-encoded configuration to validate
+     * @param config    the cty msgpack configuration to validate
      * @param operation the operation name for error reporting
      */
-    private void validateConfig(DynamicValue config, String operation) {
-        var request = ValidateResourceTypeConfig.Request.newBuilder()
-                .setTypeName(tfTypeName)
-                .setConfig(config)
-                .build();
-
-        log.debug("{} {} — sending ValidateResourceTypeConfig", operation, tfTypeName);
-        var response = client.getStub().validateResourceTypeConfig(request);
-        checkDiagnostics(response.getDiagnosticsList(), operation + " (validate)");
+    private void validateConfig(byte[] config, String operation) {
+        log.debug("{} {} — sending resource config validation", operation, tfTypeName);
+        var diagnostics = rpc().validateResourceConfig(tfTypeName, config);
+        checkDiagnostics(diagnostics, operation + " (validate)");
     }
 
     /**
      * Calls {@code PlanResourceChange} and throws on ERROR diagnostics.
      *
-     * @param priorState       cty-encoded prior state ({@code nil} for create)
-     * @param proposedNewState cty-encoded desired state ({@code nil} for destroy)
-     * @param config           cty-encoded configuration ({@code nil} for destroy)
+     * @param priorState       cty msgpack prior state (nil for create)
+     * @param proposedNewState cty msgpack desired state (nil for destroy)
+     * @param config           cty msgpack configuration (nil for destroy)
      * @param priorPrivate     provider-private bytes recorded at the last apply
      * @param operation        the operation name for error reporting
-     * @return the full plan response (planned state, private bytes, requiresReplace)
+     * @return the full plan result (planned state, private bytes, requiresReplace)
      */
-    private PlanResourceChange.Response planChange(DynamicValue priorState, DynamicValue proposedNewState,
-                                                   DynamicValue config, ByteString priorPrivate,
-                                                   String operation) {
-        var request = PlanResourceChange.Request.newBuilder()
-                .setTypeName(tfTypeName)
-                .setPriorState(priorState)
-                .setProposedNewState(proposedNewState)
-                .setConfig(config)
-                .setPriorPrivate(priorPrivate)
-                .build();
-
+    private TerraformProviderRpc.PlanResult planChange(byte[] priorState, byte[] proposedNewState,
+                                                       byte[] config, byte[] priorPrivate,
+                                                       String operation) {
         log.debug("{} {} — sending PlanResourceChange", operation, tfTypeName);
-        var response = client.getStub().planResourceChange(request);
-        checkDiagnostics(response.getDiagnosticsList(), operation + " (plan)");
-        return response;
+        var plan = rpc().planResourceChange(tfTypeName, priorState, proposedNewState, config, priorPrivate);
+        checkDiagnostics(plan.diagnostics(), operation + " (plan)");
+        return plan;
     }
 
     /**
      * Calls {@code ApplyResourceChange} with the plan's planned state and private
      * bytes and throws on ERROR diagnostics. Callers pull the returned state and
-     * private bytes from the response.
+     * private bytes from the result.
      *
-     * @param priorState cty-encoded prior state
-     * @param config     cty-encoded configuration ({@code nil} for destroy)
-     * @param plan       the plan response whose output drives the apply
+     * @param priorState cty msgpack prior state
+     * @param config     cty msgpack configuration (nil for destroy)
+     * @param plan       the plan result whose output drives the apply
      * @param operation  the operation name for error reporting
-     * @return the apply response
+     * @return the apply result
      */
-    private ApplyResourceChange.Response applyChange(DynamicValue priorState, DynamicValue config,
-                                                     PlanResourceChange.Response plan, String operation) {
-        var request = ApplyResourceChange.Request.newBuilder()
-                .setTypeName(tfTypeName)
-                .setPriorState(priorState)
-                .setPlannedState(plan.getPlannedState())
-                .setConfig(config)
-                .setPlannedPrivate(plan.getPlannedPrivate())
-                .build();
-
-        var response = client.getStub().applyResourceChange(request);
-        checkDiagnostics(response.getDiagnosticsList(), operation);
-        return response;
+    private TerraformProviderRpc.StateResult applyChange(byte[] priorState, byte[] config,
+                                                         TerraformProviderRpc.PlanResult plan,
+                                                         String operation) {
+        var result = rpc().applyResourceChange(tfTypeName, priorState, plan.plannedState(),
+                config, plan.plannedPrivate());
+        checkDiagnostics(result.diagnostics(), operation);
+        return result;
     }
 
     /**
      * Renders requiresReplace attribute paths for log output,
      * e.g. {@code length} or {@code tags["env"]}.
      */
-    private static String describeAttributePaths(List<AttributePath> paths) {
+    private static String describeAttributePaths(List<TfAttributePath> paths) {
         return paths.stream()
-                .map(TerraformResourceTypeHandler::describeAttributePath)
+                .map(TfAttributePath::render)
                 .collect(Collectors.joining(", "));
-    }
-
-    private static String describeAttributePath(AttributePath path) {
-        var rendered = new StringBuilder();
-        for (var step : path.getStepsList()) {
-            switch (step.getSelectorCase()) {
-                case ATTRIBUTE_NAME -> {
-                    if (!rendered.isEmpty()) {
-                        rendered.append('.');
-                    }
-                    rendered.append(step.getAttributeName());
-                }
-                case ELEMENT_KEY_STRING -> rendered.append("[\"").append(step.getElementKeyString()).append("\"]");
-                case ELEMENT_KEY_INT -> rendered.append('[').append(step.getElementKeyInt()).append(']');
-                case SELECTOR_NOT_SET -> rendered.append("<?>");
-            }
-        }
-        return rendered.toString();
     }
 }

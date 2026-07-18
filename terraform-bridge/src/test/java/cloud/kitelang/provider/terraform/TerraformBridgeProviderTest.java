@@ -101,7 +101,7 @@ class TerraformBridgeProviderTest {
                     Map.of("aws_instance", instanceSchema, "aws_s3_bucket", bucketSchema),
                     Map.of()
             );
-            when(client.getStub()).thenReturn(stub);
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
             when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
 
             var provider = new TerraformBridgeProvider("aws", client);
@@ -127,7 +127,7 @@ class TerraformBridgeProviderTest {
                     Map.of(),
                     Map.of("aws_ami", amiDataSource)
             );
-            when(client.getStub()).thenReturn(stub);
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
             when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
 
             var provider = new TerraformBridgeProvider("aws", client);
@@ -152,7 +152,7 @@ class TerraformBridgeProviderTest {
                     Map.of("aws_instance", instanceSchema),
                     Map.of("aws_ami", amiDataSource)
             );
-            when(client.getStub()).thenReturn(stub);
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
             when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
 
             var provider = new TerraformBridgeProvider("aws", client);
@@ -181,7 +181,7 @@ class TerraformBridgeProviderTest {
             // Set up a provider with a minimal schema so init() succeeds
             var providerSchema = buildSchema(Map.of("region", "\"string\""));
             var schemaResponse = buildSchemaResponse(Map.of(), Map.of());
-            when(client.getStub()).thenReturn(stub);
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
             when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
 
             provider = new TerraformBridgeProvider("aws", client);
@@ -246,7 +246,7 @@ class TerraformBridgeProviderTest {
         void shouldCloseClientOnStop() {
             // Given
             var schemaResponse = buildSchemaResponse(Map.of(), Map.of());
-            when(client.getStub()).thenReturn(stub);
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
             when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
 
             var provider = new TerraformBridgeProvider("aws", client);
@@ -277,7 +277,7 @@ class TerraformBridgeProviderTest {
                     Map.of("aws_security_group", sgSchema, "aws_route_table", rtSchema),
                     Map.of()
             );
-            when(client.getStub()).thenReturn(stub);
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
             when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
 
             var provider = new TerraformBridgeProvider("aws", client);
@@ -312,7 +312,7 @@ class TerraformBridgeProviderTest {
                     Map.of("aws_instance", instanceSchema),
                     Map.of()
             );
-            when(client.getStub()).thenReturn(stub);
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
             when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
 
             var provider = new TerraformBridgeProvider("aws", client);
@@ -337,7 +337,7 @@ class TerraformBridgeProviderTest {
                     Map.of("aws_vpc", vpcSchema, "aws_s3_bucket", s3Schema),
                     Map.of()
             );
-            when(client.getStub()).thenReturn(stub);
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
             when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
 
             var provider = new TerraformBridgeProvider("aws", client);
@@ -368,7 +368,7 @@ class TerraformBridgeProviderTest {
                     Map.of("google_compute_network", networkSchema),
                     Map.of()
             );
-            when(client.getStub()).thenReturn(stub);
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
             when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
 
             var provider = new TerraformBridgeProvider("google", client);

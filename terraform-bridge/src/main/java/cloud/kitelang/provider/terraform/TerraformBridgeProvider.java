@@ -1,17 +1,12 @@
 package cloud.kitelang.provider.terraform;
 
 import cloud.kitelang.provider.KiteProvider;
-import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
-import tfplugin5.Tfplugin5.*;
 
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Terraform Bridge Provider for Kite.
@@ -130,35 +125,29 @@ public class TerraformBridgeProvider extends KiteProvider {
      */
     public void init() {
         log.info("Initialising Terraform Bridge Provider: fetching schema from '{}'", providerName);
-        var blockingStub = client.getStub();
 
-        // Fetch the full provider schema
-        var schemaRequest = GetProviderSchema.Request.getDefaultInstance();
-        var schemaResponse = blockingStub.getSchema(schemaRequest);
+        // Fetch the full provider schema via the version-agnostic facade
+        var providerSchema = client.rpc().getProviderSchema();
 
         // Build converter with the provider name as prefix
         this.converter = new TerraformSchemaConverter(providerName);
 
         // Build the provider-level config schema type (used in configure())
-        if (schemaResponse.hasProvider()) {
-            this.providerConfigSchemaType = buildObjectType(schemaResponse.getProvider().getBlock());
+        if (providerSchema.provider() != null) {
+            this.providerConfigSchemaType = buildObjectType(providerSchema.provider().block());
         }
 
         // Register resource types
         var resourceCount = 0;
-        for (var entry : schemaResponse.getResourceSchemasMap().entrySet()) {
-            var tfTypeName = entry.getKey();
-            var schema = entry.getValue();
-            registerResourceHandler(tfTypeName, schema);
+        for (var entry : providerSchema.resourceSchemas().entrySet()) {
+            registerResourceHandler(entry.getKey(), entry.getValue());
             resourceCount++;
         }
 
         // Register data source types
         var dataSourceCount = 0;
-        for (var entry : schemaResponse.getDataSourceSchemasMap().entrySet()) {
-            var tfTypeName = entry.getKey();
-            var schema = entry.getValue();
-            registerDataSourceHandler(tfTypeName, schema);
+        for (var entry : providerSchema.dataSourceSchemas().entrySet()) {
+            registerDataSourceHandler(entry.getKey(), entry.getValue());
             dataSourceCount++;
         }
 
@@ -188,16 +177,9 @@ public class TerraformBridgeProvider extends KiteProvider {
         // Encode config to cty msgpack using the provider schema type
         var codec = new CtyCodec();
         var encoded = codec.encode(snakeCaseConfig, providerConfigSchemaType);
-        var dynamicValue = DynamicValue.newBuilder()
-                .setMsgpack(ByteString.copyFrom(encoded))
-                .build();
 
-        var request = Configure.Request.newBuilder()
-                .setConfig(dynamicValue)
-                .build();
-
-        var response = client.getStub().configure(request);
-        checkDiagnostics(response.getDiagnosticsList(), "configure");
+        var diagnostics = client.rpc().configure(encoded);
+        TerraformDiagnostics.check(diagnostics, "configure", providerName);
 
         log.info("TF provider '{}' configured successfully", providerName);
     }
@@ -243,12 +225,12 @@ public class TerraformBridgeProvider extends KiteProvider {
     /**
      * Registers a resource type handler and stores its schema DSL.
      */
-    private void registerResourceHandler(String tfTypeName, Schema schema) {
+    private void registerResourceHandler(String tfTypeName, TfSchema schema) {
         var kiteTypeName = converter.toKiteTypeName(tfTypeName);
-        var schemaTypeJson = buildObjectType(schema.getBlock());
+        var schemaTypeJson = buildObjectType(schema.block());
 
         var handler = new TerraformResourceTypeHandler(tfTypeName, kiteTypeName, client, schemaTypeJson,
-                TerraformResourceTypeHandler.readOnlyAttributeNames(schema.getBlock()));
+                TerraformResourceTypeHandler.readOnlyAttributeNames(schema.block()));
         registerResource(kiteTypeName, handler);
 
         // Store schema DSL and domain for the schema registry
@@ -263,9 +245,9 @@ public class TerraformBridgeProvider extends KiteProvider {
     /**
      * Registers a data source handler and stores its schema DSL.
      */
-    private void registerDataSourceHandler(String tfTypeName, Schema schema) {
+    private void registerDataSourceHandler(String tfTypeName, TfSchema schema) {
         var kiteTypeName = converter.toKiteTypeName(tfTypeName);
-        var schemaTypeJson = buildObjectType(schema.getBlock());
+        var schemaTypeJson = buildObjectType(schema.block());
 
         var handler = new TerraformDataSourceHandler(tfTypeName, kiteTypeName, client, schemaTypeJson);
         registerResource(kiteTypeName, handler);
@@ -289,56 +271,27 @@ public class TerraformBridgeProvider extends KiteProvider {
      * <p>The result is used by {@link CtyCodec} to correctly encode/decode property values.
      * Format: {@code ["object", {"ami": "string", "instance_type": "string", ...}]}</p>
      *
-     * <p>Each attribute's type bytes are already valid JSON (e.g., {@code "string"} or
-     * {@code ["list", "string"]}), so they are embedded as raw JSON values rather than
+     * <p>Each attribute's {@code typeJson} is already valid JSON (e.g., {@code "string"} or
+     * {@code ["list", "string"]}), so it is embedded as a raw JSON value rather than
      * string-escaped.</p>
      *
      * @param block the TF schema block containing attribute definitions
      * @return JSON string representing the cty object type
      */
-    private String buildObjectType(Schema.Block block) {
+    private String buildObjectType(TfBlock block) {
         var sb = new StringBuilder("[\"object\",{");
         var first = true;
-        for (var attr : block.getAttributesList()) {
+        for (var attr : block.attributes()) {
             if (!first) {
                 sb.append(',');
             }
-            // Key: JSON-escaped attribute name
-            sb.append('"').append(attr.getName()).append("\":");
-            // Value: raw JSON cty type (already valid JSON from protobuf bytes)
-            sb.append(new String(attr.getType().toByteArray(), StandardCharsets.UTF_8));
+            // Key: attribute name (schema names are [a-z0-9_], no escaping needed)
+            sb.append('"').append(attr.name()).append("\":");
+            // Value: raw JSON cty type
+            sb.append(attr.typeJson());
             first = false;
         }
         sb.append("}]");
         return sb.toString();
-    }
-
-    // ---------------------------------------------------------------
-    // Internal: diagnostics check (reuse pattern from AbstractTerraformHandler)
-    // ---------------------------------------------------------------
-
-    /**
-     * Checks TF diagnostics for ERROR-level entries and throws if any are found.
-     *
-     * @param diagnostics the diagnostics list from a TF response
-     * @param operation   the operation name for error reporting
-     * @throws RuntimeException if any ERROR-level diagnostic is present
-     */
-    private void checkDiagnostics(List<Diagnostic> diagnostics, String operation) {
-        diagnostics.stream()
-                .filter(d -> d.getSeverity() == Diagnostic.Severity.WARNING)
-                .forEach(d -> log.warn("Terraform {} warning: {} — {}",
-                        operation, d.getSummary(), d.getDetail()));
-
-        var errors = diagnostics.stream()
-                .filter(d -> d.getSeverity() == Diagnostic.Severity.ERROR)
-                .toList();
-
-        if (!errors.isEmpty()) {
-            var message = errors.stream()
-                    .map(d -> d.getSummary() + ": " + d.getDetail())
-                    .collect(Collectors.joining("; "));
-            throw new RuntimeException("Terraform %s failed: %s".formatted(operation, message));
-        }
     }
 }
