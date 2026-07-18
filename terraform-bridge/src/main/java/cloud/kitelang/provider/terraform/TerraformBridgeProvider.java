@@ -39,6 +39,19 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TerraformBridgeProvider extends KiteProvider {
 
+    /**
+     * Entry point for the bridge process. Lives on the provider class itself —
+     * the kite-provider-gradle-plugin auto-detects the launcher main class by
+     * finding the {@link KiteProvider} subclass, so a separate entry-point
+     * class would produce a start script pointing at a class without a main.
+     */
+    public static void main(String[] args) throws Exception {
+        log.info("Starting Terraform Bridge Provider...");
+        var provider = new TerraformBridgeProvider();
+        provider.init();
+        cloud.kitelang.provider.ProviderServer.serve(provider);
+    }
+
     /** Environment variable for the path to the Terraform provider binary. */
     static final String ENV_PROVIDER_PATH = "KITE_TF_PROVIDER_PATH";
 
