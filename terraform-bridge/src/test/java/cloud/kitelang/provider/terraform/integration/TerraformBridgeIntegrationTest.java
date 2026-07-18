@@ -17,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -349,6 +350,62 @@ class TerraformBridgeIntegrationTest {
         assertNoErrors(deleteResponse.getDiagnosticsList(), "apply (delete)");
     }
 
+    /**
+     * A configured {@link TerraformResourceTypeHandler} for {@code random_string},
+     * plus the schema attribute names needed to build property maps.
+     */
+    private record RandomStringHarness(TerraformResourceTypeHandler handler, List<String> attributeNames) {}
+
+    /**
+     * Launches the provider, sends the (empty) Configure call, and builds a
+     * bridge handler for {@code random_string}. Shared by the handler-level
+     * integration tests so each starts from an identically configured provider.
+     */
+    private RandomStringHarness newRandomStringHarness() {
+        var pluginClient = launchClient();
+        var stub = pluginClient.getStub();
+        var codec = new CtyCodec();
+
+        var schemaResponse = stub.getSchema(GetProviderSchema.Request.getDefaultInstance());
+        var providerConfigType = buildObjectType(schemaResponse.getProvider().getBlock());
+        var emptyConfig = codec.encode(Map.of(), providerConfigType);
+        var configResponse = stub.configure(Configure.Request.newBuilder()
+                .setTerraformVersion("1.9.0")
+                .setConfig(DynamicValue.newBuilder()
+                        .setMsgpack(ByteString.copyFrom(emptyConfig))
+                        .build())
+                .build());
+        assertNoErrors(configResponse.getDiagnosticsList(), "configure");
+
+        var stringSchema = schemaResponse.getResourceSchemasMap().get("random_string");
+        var schemaTypeJson = buildObjectType(stringSchema.getBlock());
+        var attributeNames = stringSchema.getBlock().getAttributesList().stream()
+                .map(Schema.Attribute::getName)
+                .toList();
+        var handler = new TerraformResourceTypeHandler(
+                "random_string", "String", pluginClient, schemaTypeJson,
+                TerraformResourceTypeHandler.readOnlyAttributeNames(stringSchema.getBlock()));
+        return new RandomStringHarness(handler, attributeNames);
+    }
+
+    /**
+     * Builds a camelCase property map for a letters-only {@code random_string}
+     * of the given length, with every schema attribute present (nulls for the
+     * computed/unset ones, as the Kite engine would send them).
+     */
+    private Map<String, Object> lettersOnlyProps(RandomStringHarness harness, int length) {
+        var props = new LinkedHashMap<String, Object>();
+        for (var attrName : harness.attributeNames()) {
+            props.put(TerraformPropertyMapper.toCamelCase(attrName), null);
+        }
+        props.put("length", length);
+        props.put("upper", true);
+        props.put("lower", true);
+        props.put("numeric", false);
+        props.put("special", false);
+        return props;
+    }
+
     // ==================================================================
     // Test 5: Full lifecycle via TerraformResourceTypeHandler (bridge API)
     // ==================================================================
@@ -358,43 +415,10 @@ class TerraformBridgeIntegrationTest {
     @DisplayName("should create, read, and delete random_string via TerraformResourceTypeHandler")
     void fullLifecycleViaBridgeHandler() {
         assumeProviderAvailable();
-        var pluginClient = launchClient();
-        var stub = pluginClient.getStub();
-        var codec = new CtyCodec();
+        var harness = newRandomStringHarness();
+        var handler = harness.handler();
 
-        // 1. Configure the provider
-        var schemaResponse = stub.getSchema(GetProviderSchema.Request.getDefaultInstance());
-        var providerConfigType = buildObjectType(schemaResponse.getProvider().getBlock());
-        var emptyConfig = codec.encode(Map.of(), providerConfigType);
-        var configRequest = Configure.Request.newBuilder()
-                .setTerraformVersion("1.9.0")
-                .setConfig(DynamicValue.newBuilder()
-                        .setMsgpack(ByteString.copyFrom(emptyConfig))
-                        .build())
-                .build();
-        stub.configure(configRequest);
-
-        // 2. Build the handler for random_string
-        var stringSchema = schemaResponse.getResourceSchemasMap().get("random_string");
-        var schemaTypeJson = buildObjectType(stringSchema.getBlock());
-        var handler = new TerraformResourceTypeHandler(
-                "random_string", "String", pluginClient, schemaTypeJson
-        );
-
-        // 3. Create: build camelCase property map
-        var allAttrNames = stringSchema.getBlock().getAttributesList().stream()
-                .map(Schema.Attribute::getName)
-                .toList();
-        var createProps = new LinkedHashMap<String, Object>();
-        for (var attrName : allAttrNames) {
-            createProps.put(TerraformPropertyMapper.toCamelCase(attrName), null);
-        }
-        createProps.put("length", 12);
-        createProps.put("upper", true);
-        createProps.put("lower", true);
-        createProps.put("numeric", false);
-        createProps.put("special", false);
-
+        var createProps = lettersOnlyProps(harness, 12);
         var created = handler.create(createProps);
         assertNotNull(created.get("result"),
                 "Created result should be populated");
@@ -456,6 +480,72 @@ class TerraformBridgeIntegrationTest {
         } finally {
             provider.stop();
         }
+    }
+
+    // ==================================================================
+    // Test 7: requiresReplace — immutable attribute change destroys and recreates
+    // ==================================================================
+
+    @Test
+    @Order(7)
+    @DisplayName("update() with a changed immutable attribute (length) should destroy and recreate")
+    void updateWithImmutableAttributeChangeTriggersReplacement() {
+        assumeProviderAvailable();
+        var harness = newRandomStringHarness();
+        var handler = harness.handler();
+
+        var created = handler.create(lettersOnlyProps(harness, 8));
+        var originalResult = created.get("result").toString();
+        assertEquals(8, originalResult.length(),
+                "Created result should be 8 characters, got: " + originalResult);
+
+        // Every random_string attribute is immutable: the plan must flag
+        // requiresReplace on length and the bridge must destroy + recreate.
+        var updateProps = new LinkedHashMap<>(created);
+        updateProps.put("length", 10);
+        var updated = handler.update(updateProps);
+
+        assertEquals(10, ((Number) updated.get("length")).intValue(),
+                "Updated state should carry the new length");
+        var newResult = updated.get("result").toString();
+        assertEquals(10, newResult.length(),
+                "Replacement should honour the new length, got: " + newResult);
+        assertNotEquals(originalResult, newResult,
+                "Replacement must generate a brand-new random string");
+
+        assertTrue(handler.delete(updated), "Cleanup delete should return true");
+    }
+
+    // ==================================================================
+    // Test 8: computed attribute is unknown at plan time, resolved after apply
+    // ==================================================================
+
+    @Test
+    @Order(8)
+    @DisplayName("plan() should report computed 'result' as unknown, resolved by create()")
+    void planReportsComputedResultAsUnknownUntilApply() {
+        assumeProviderAvailable();
+        var harness = newRandomStringHarness();
+        var handler = harness.handler();
+        var props = lettersOnlyProps(harness, 6);
+
+        // Plan preview: 'result' is computed, so the provider can only promise
+        // it will be "known after apply" — surfaced as the UNKNOWN sentinel.
+        var planned = handler.plan(null, props);
+        assertSame(CtyCodec.UNKNOWN, planned.get("result"),
+                "Computed 'result' should be unknown at plan time, got: " + planned.get("result"));
+        assertEquals(6, ((Number) planned.get("length")).intValue(),
+                "Configured 'length' should already be known at plan time");
+
+        // Apply resolves the unknown into a real value
+        var created = handler.create(props);
+        var resolvedResult = created.get("result").toString();
+        assertEquals(6, resolvedResult.length(),
+                "Resolved result should be 6 characters, got: " + resolvedResult);
+        assertFalse(CtyCodec.isUnknown(created.get("result")),
+                "Result must be a concrete value after apply");
+
+        assertTrue(handler.delete(created), "Cleanup delete should return true");
     }
 
     // ------------------------------------------------------------------

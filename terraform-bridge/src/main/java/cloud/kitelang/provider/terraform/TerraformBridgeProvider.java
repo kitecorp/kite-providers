@@ -234,7 +234,8 @@ public class TerraformBridgeProvider extends KiteProvider {
         var kiteTypeName = converter.toKiteTypeName(tfTypeName);
         var schemaTypeJson = buildObjectType(schema.getBlock());
 
-        var handler = new TerraformResourceTypeHandler(tfTypeName, kiteTypeName, client, schemaTypeJson);
+        var handler = new TerraformResourceTypeHandler(tfTypeName, kiteTypeName, client, schemaTypeJson,
+                TerraformResourceTypeHandler.readOnlyAttributeNames(schema.getBlock()));
         registerResource(kiteTypeName, handler);
 
         // Store schema DSL and domain for the schema registry
