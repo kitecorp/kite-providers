@@ -1,9 +1,12 @@
 package cloud.kitelang.provider.terraform;
 
 import cloud.kitelang.provider.ResourceContext;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import tfplugin5.Tfplugin5.Schema;
 
+import java.io.UncheckedIOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,6 +26,16 @@ import java.util.stream.Collectors;
  * invocations) and the private bytes each apply returns go back out through it.
  * A fresh handler in a fresh process therefore operates correctly on resources
  * created by a previous process instance.</p>
+ *
+ * <p>The engine-persisted private bytes carry a {@link SchemaVersionEnvelope}
+ * recording the resource type's schema version at write time. When a newer
+ * provider release (higher schema version) later operates on that state, the
+ * handler first calls {@code UpgradeResourceState} with the stored state in raw
+ * JSON form — mirroring Terraform core, which upgrades state-file entries whose
+ * recorded {@code schema_version} lags the provider's — and every subsequent
+ * RPC uses the upgraded state (kitecorp/kite-providers#5). The envelope never
+ * reaches the wrapped provider: its own private bytes are extracted before any
+ * TF RPC and re-enveloped on the way back to the engine.</p>
  *
  * <h3>CRUD mapping to Terraform RPCs</h3>
  * <p>Terraform core always validates the resource config and calls
@@ -48,6 +61,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
 
+    /** Serialises stored state maps into the raw JSON form UpgradeResourceState takes. */
+    private static final ObjectMapper JSON = new ObjectMapper();
+
+    /** The resource type's current schema version, from the provider's schema. */
+    private final long schemaVersion;
+
     /**
      * Creates a handler for a single Terraform resource type.
      *
@@ -58,11 +77,14 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
      *                               e.g. {@code ["object", {"ami": "string", "instance_type": "string"}]}
      * @param readOnlyAttributeNames snake_case names of computed-only attributes;
      *                               see {@link #readOnlyAttributeNames(TfBlock)}
+     * @param schemaVersion          the resource type's current schema version
+     *                               ({@code Schema.version} in the TF provider schema)
      */
     public TerraformResourceTypeHandler(String tfTypeName, String kiteTypeName,
                                         GoPluginClient client, String schemaTypeJson,
-                                        Set<String> readOnlyAttributeNames) {
+                                        Set<String> readOnlyAttributeNames, long schemaVersion) {
         super(tfTypeName, kiteTypeName, client, schemaTypeJson, readOnlyAttributeNames);
+        this.schemaVersion = schemaVersion;
     }
 
     /**
@@ -135,13 +157,14 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
         var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
         var proposed = encodeToMsgpack(snakeProps);
         var config = encodeToMsgpack(withoutReadOnlyAttributes(snakeProps));
+        var stored = SchemaVersionEnvelope.unwrap(context.privateData());
 
         validateConfig(config, "create");
-        var plan = planChange(nilMsgpack(), proposed, config, context.privateData(), "create");
+        var plan = planChange(nilMsgpack(), proposed, config, stored.providerBytes(), "create");
 
         log.debug("create {} — sending ApplyResourceChange", tfTypeName);
         var result = applyChange(nilMsgpack(), config, plan, "create");
-        context.returnPrivateData(result.privateBytes());
+        returnPrivateData(context, result.privateBytes());
         return decodeState(result.state());
     }
 
@@ -157,12 +180,14 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     public Map<String, Object> read(Map<String, Object> properties,
                                     ResourceContext<Map<String, Object>> context) {
         var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
+        var stored = SchemaVersionEnvelope.unwrap(context.privateData());
+        var prior = restorePriorState(snakeProps, stored.schemaVersion(), "read");
 
         log.debug("read {} — sending ReadResource", tfTypeName);
-        var result = rpc().readResource(tfTypeName, encodeToMsgpack(snakeProps), context.privateData());
+        var result = rpc().readResource(tfTypeName, prior.msgpack(), stored.providerBytes());
         checkDiagnostics(result.diagnostics(), "read");
 
-        context.returnPrivateData(result.privateBytes());
+        returnPrivateData(context, result.privateBytes());
         return decodeState(result.state());
     }
 
@@ -205,7 +230,7 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
         if (state == null || state.isEmpty()) {
             return null;
         }
-        context.returnPrivateData(refreshed.privateBytes());
+        returnPrivateData(context, refreshed.privateBytes());
         return state;
     }
 
@@ -234,11 +259,13 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
         // merges prior computed values into the proposal); config must not.
         var proposed = encodeToMsgpack(snakeProps);
         var config = encodeToMsgpack(withoutReadOnlyAttributes(snakeProps));
+        var stored = SchemaVersionEnvelope.unwrap(context.privateData());
 
         var priorState = context.priorState() != null
-                ? encodeToMsgpack(TerraformPropertyMapper.toSnakeCase(context.priorState()))
+                ? restorePriorState(TerraformPropertyMapper.toSnakeCase(context.priorState()),
+                        stored.schemaVersion(), "update").msgpack()
                 : proposed;
-        var priorPrivate = context.privateData();
+        var priorPrivate = stored.providerBytes();
 
         validateConfig(config, "update");
         var plan = planChange(priorState, proposed, config, priorPrivate, "update");
@@ -251,7 +278,7 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
 
         log.debug("update {} — sending ApplyResourceChange", tfTypeName);
         var result = applyChange(priorState, config, plan, "update");
-        context.returnPrivateData(result.privateBytes());
+        returnPrivateData(context, result.privateBytes());
         return decodeState(result.state());
     }
 
@@ -268,18 +295,22 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     @Override
     public boolean delete(Map<String, Object> properties,
                           ResourceContext<Map<String, Object>> context) {
-        var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
-        var priorState = encodeToMsgpack(snakeProps);
+        var stored = SchemaVersionEnvelope.unwrap(context.privateData());
+        // The engine passes the stored prior state as the property map; when
+        // that state predates the current schema it may not even encode under
+        // it, so the upgrade must run before any cty encoding happens.
+        var prior = restorePriorState(TerraformPropertyMapper.toSnakeCase(properties),
+                stored.schemaVersion(), "delete");
 
         // Validate the last known configurable attributes — a nil config fails
         // required-attribute checks. The destroy plan itself uses the null
         // proposed state and config, matching a resource leaving the config.
-        validateConfig(encodeToMsgpack(withoutReadOnlyAttributes(snakeProps)), "delete");
-        var plan = planChange(priorState, nilMsgpack(), nilMsgpack(), context.privateData(), "delete");
+        validateConfig(encodeToMsgpack(withoutReadOnlyAttributes(prior.snakeProps())), "delete");
+        var plan = planChange(prior.msgpack(), nilMsgpack(), nilMsgpack(), stored.providerBytes(), "delete");
 
         log.debug("delete {} — sending ApplyResourceChange with null planned state", tfTypeName);
-        var result = applyChange(priorState, nilMsgpack(), plan, "delete");
-        context.returnPrivateData(result.privateBytes());
+        var result = applyChange(prior.msgpack(), nilMsgpack(), plan, "delete");
+        returnPrivateData(context, result.privateBytes());
         return true;
     }
 
@@ -335,8 +366,83 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
                 new byte[0], "update (plan create for replace)");
         var result = applyChange(nilMsgpack(), config, createPlan,
                 "update (create for replace)");
-        context.returnPrivateData(result.privateBytes());
+        returnPrivateData(context, result.privateBytes());
         return decodeState(result.state());
+    }
+
+    // ---------------------------------------------------------------
+    // Internal: schema version envelope + state upgrades
+    // ---------------------------------------------------------------
+
+    /**
+     * Hands the provider's private bytes back to the engine wrapped in the
+     * schema-version envelope, recording that the state persisted alongside
+     * them was written under this handler's current schema version.
+     */
+    private void returnPrivateData(ResourceContext<Map<String, Object>> context, byte[] providerBytes) {
+        context.returnPrivateData(SchemaVersionEnvelope.wrap(schemaVersion, providerBytes));
+    }
+
+    /**
+     * Stored prior state made compliant with the current schema.
+     *
+     * @param msgpack    the cty msgpack encoding to send as prior/current state
+     * @param snakeProps the matching snake_case map, for building config values
+     */
+    private record RestoredPriorState(byte[] msgpack, Map<String, Object> snakeProps) {
+    }
+
+    /**
+     * Restores engine-stored prior state for use under the current schema.
+     *
+     * <p>When the stored schema version lags the current one, the provider
+     * upgrades the state via {@code UpgradeResourceState}; the request carries
+     * the state as raw JSON because no cty schema exists here for the old
+     * version (mirrors Terraform core, which stores state as JSON for exactly
+     * this reason). A matching or {@linkplain SchemaVersionEnvelope#UNKNOWN_VERSION
+     * unknown} version encodes the map directly — unknown means the state
+     * predates version recording, and guessing a version could run the wrong
+     * upgraders. A version <em>newer</em> than the current schema means the
+     * provider binary was downgraded, which Terraform refuses too.</p>
+     *
+     * @param snakeProps    the stored state as a snake_case map
+     * @param storedVersion the schema version recorded with the state
+     * @param operation     the operation name for error reporting
+     * @return the schema-compliant prior state in both encodings
+     */
+    private RestoredPriorState restorePriorState(Map<String, Object> snakeProps, long storedVersion,
+                                                 String operation) {
+        if (storedVersion == SchemaVersionEnvelope.UNKNOWN_VERSION || storedVersion == schemaVersion) {
+            return new RestoredPriorState(encodeToMsgpack(snakeProps), snakeProps);
+        }
+        if (storedVersion > schemaVersion) {
+            throw new IllegalStateException(
+                    ("Stored state for %s was written with schema version %d, but this provider "
+                            + "release supports schema version %d. State downgrades are not supported "
+                            + "- use a provider release with schema version %d or newer.")
+                            .formatted(tfTypeName, storedVersion, schemaVersion, storedVersion));
+        }
+
+        log.info("{} {} — upgrading stored state from schema version {} to {}",
+                operation, tfTypeName, storedVersion, schemaVersion);
+        var result = rpc().upgradeResourceState(tfTypeName, storedVersion, toRawStateJson(snakeProps));
+        checkDiagnostics(result.diagnostics(), operation + " (upgrade state)");
+        var upgraded = result.upgradedState();
+        return new RestoredPriorState(upgraded, codec.decode(upgraded, schemaTypeJson));
+    }
+
+    /**
+     * Serialises a snake_case state map into the raw JSON document form of
+     * {@code UpgradeResourceState.Request.raw_state}. Deliberately schema-free:
+     * the stored state may contain attributes the current schema no longer
+     * knows, and only the provider can interpret them.
+     */
+    private static byte[] toRawStateJson(Map<String, Object> snakeProps) {
+        try {
+            return JSON.writeValueAsBytes(snakeProps);
+        } catch (JsonProcessingException e) {
+            throw new UncheckedIOException("Failed to serialise stored state to JSON for upgrade", e);
+        }
     }
 
     /**

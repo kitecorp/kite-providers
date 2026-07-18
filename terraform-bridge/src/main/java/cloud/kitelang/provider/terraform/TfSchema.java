@@ -9,7 +9,13 @@ package cloud.kitelang.provider.terraform;
  * ({@link TerraformSchemaConverter}, {@link TerraformBridgeProvider}) stay
  * version-agnostic.</p>
  *
- * @param block the top-level configuration block
+ * @param version the schema version — the version resource state written under
+ *                this schema is recorded with, and the trigger for
+ *                {@code UpgradeResourceState} when a newer provider release
+ *                reads older state (kitecorp/kite-providers#5); always 0 for
+ *                provider-config and data-source schemas, which have no
+ *                persisted state to upgrade
+ * @param block   the top-level configuration block
  */
-public record TfSchema(TfBlock block) {
+public record TfSchema(long version, TfBlock block) {
 }

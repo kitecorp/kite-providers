@@ -54,7 +54,7 @@ class TerraformResourceTypeHandlerTest {
         lenient().when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
         codec = new CtyCodec();
         handler = new TerraformResourceTypeHandler(TF_TYPE_NAME, KITE_TYPE_NAME, client, SCHEMA_TYPE_JSON,
-                Set.of());
+                Set.of(), 0);
 
         // Every apply is now preceded by validate + plan (mirrors Terraform core).
         // Default happy-path stubs: validation passes; the plan echoes the proposed
@@ -172,8 +172,11 @@ class TerraformResourceTypeHandlerTest {
             handler.create(input, createContext);
 
             // Then — the engine persists these; supplying them on a later read
-            // (fresh context, as after a process restart) relays them to TF
-            assertArrayEquals("opaque-provider-state".getBytes(StandardCharsets.UTF_8),
+            // (fresh context, as after a process restart) relays them to TF.
+            // The persisted form carries the schema-version envelope; the raw
+            // provider bytes are restored before they reach the provider again.
+            assertArrayEquals(
+                    SchemaVersionEnvelope.wrap(0, "opaque-provider-state".getBytes(StandardCharsets.UTF_8)),
                     createContext.privateDataToReturn());
 
             var readResponse = ReadResource.Response.newBuilder()
@@ -337,7 +340,8 @@ class TerraformResourceTypeHandlerTest {
             assertEquals(plannedPrivate, applyRequest.getPlannedPrivate());
             assertEquals("ami-99999", result.get("ami"));
             assertEquals("t3.large", result.get("instanceType"));
-            assertArrayEquals("post-update-private".getBytes(StandardCharsets.UTF_8),
+            assertArrayEquals(
+                    SchemaVersionEnvelope.wrap(0, "post-update-private".getBytes(StandardCharsets.UTF_8)),
                     context.privateDataToReturn());
         }
 
@@ -392,7 +396,7 @@ class TerraformResourceTypeHandlerTest {
             // providers reject configs that set read-only attributes, so the
             // bridge must strip them exactly like Terraform core does.
             var readOnlyHandler = new TerraformResourceTypeHandler(
-                    TF_TYPE_NAME, KITE_TYPE_NAME, client, SCHEMA_TYPE_JSON, Set.of("instance_type"));
+                    TF_TYPE_NAME, KITE_TYPE_NAME, client, SCHEMA_TYPE_JSON, Set.of("instance_type"), 0);
             var input = camelCaseProps("ami-new", "computed-value");
 
             when(stub.applyResourceChange(any())).thenReturn(ApplyResourceChange.Response.newBuilder()
@@ -624,9 +628,11 @@ class TerraformResourceTypeHandlerTest {
             var firstContext = ResourceContext.<Map<String, Object>>empty();
             handler.read(input, firstContext);
 
-            // Then — the refreshed bytes surface on the context for the engine
-            // to persist; supplying them on a later read relays them to TF
-            assertArrayEquals("updated-private".getBytes(StandardCharsets.UTF_8),
+            // Then — the refreshed bytes surface on the context (enveloped with
+            // the schema version) for the engine to persist; supplying them on
+            // a later read relays the bare provider bytes to TF
+            assertArrayEquals(
+                    SchemaVersionEnvelope.wrap(0, "updated-private".getBytes(StandardCharsets.UTF_8)),
                     firstContext.privateDataToReturn());
 
             handler.read(input, ResourceContext.of(null, firstContext.privateDataToReturn()));
@@ -687,7 +693,8 @@ class TerraformResourceTypeHandlerTest {
             // ...and the caller gets the refreshed camelCase state + private bytes
             assertEquals("ami-adopted", result.get("ami"));
             assertEquals("t2.micro", result.get("instanceType"));
-            assertArrayEquals("refresh-private".getBytes(StandardCharsets.UTF_8),
+            assertArrayEquals(
+                    SchemaVersionEnvelope.wrap(0, "refresh-private".getBytes(StandardCharsets.UTF_8)),
                     context.privateDataToReturn());
         }
 
@@ -1052,7 +1059,252 @@ class TerraformResourceTypeHandlerTest {
     }
 
     // ---------------------------------------------------------------
-    // 9. TerraformDataSourceHandler
+    // 9. Schema version upgrades (UpgradeResourceState) — kitecorp/kite-providers#5
+    // ---------------------------------------------------------------
+    @Nested
+    @DisplayName("Schema version upgrades")
+    class SchemaVersionUpgrades {
+
+        private static final long CURRENT_SCHEMA_VERSION = 2;
+
+        private TerraformResourceTypeHandler versionedHandler;
+
+        @BeforeEach
+        void setUp() {
+            versionedHandler = new TerraformResourceTypeHandler(TF_TYPE_NAME, KITE_TYPE_NAME, client,
+                    SCHEMA_TYPE_JSON, Set.of(), CURRENT_SCHEMA_VERSION);
+        }
+
+        /** Envelope as a version-1-era handler would have persisted it. */
+        private byte[] storedPrivateAtVersion(long schemaVersion, String providerBytes) {
+            return SchemaVersionEnvelope.wrap(schemaVersion,
+                    providerBytes.getBytes(StandardCharsets.UTF_8));
+        }
+
+        /** Stubs UpgradeResourceState to answer with the given snake_case state. */
+        private void stubUpgrade(Map<String, Object> upgradedSnakeState) {
+            when(stub.upgradeResourceState(any())).thenReturn(UpgradeResourceState.Response.newBuilder()
+                    .setUpgradedState(encodeToDynamicValue(upgradedSnakeState))
+                    .build());
+        }
+
+        @Test
+        @DisplayName("update() should upgrade a prior state stored under an older schema version")
+        void updateShouldUpgradeOlderPriorState() {
+            // Given — state persisted by a schema-version-1 provider release
+            var storedPrior = camelCaseProps("ami-old", "t1.micro");
+            var storedPrivate = storedPrivateAtVersion(1, "v1-private");
+            var upgradedState = snakeCaseProps("ami-old", "t2.small");
+            stubUpgrade(upgradedState);
+            when(stub.applyResourceChange(any())).thenReturn(ApplyResourceChange.Response.newBuilder()
+                    .setNewState(encodeToDynamicValue(snakeCaseProps("ami-new", "t2.small")))
+                    .setPrivate(ByteString.copyFromUtf8("v2-private"))
+                    .build());
+
+            // When
+            var context = ResourceContext.of(storedPrior, storedPrivate);
+            var result = versionedHandler.update(camelCaseProps("ami-new", "t2.small"), context);
+
+            // Then — the upgrade request carries the stored version and the
+            // stored state in Terraform's raw JSON form (snake_case keys)
+            var upgradeCaptor = ArgumentCaptor.forClass(UpgradeResourceState.Request.class);
+            verify(stub).upgradeResourceState(upgradeCaptor.capture());
+            var upgradeRequest = upgradeCaptor.getValue();
+            assertEquals(TF_TYPE_NAME, upgradeRequest.getTypeName());
+            assertEquals(1, upgradeRequest.getVersion());
+            assertEquals("{\"ami\":\"ami-old\",\"instance_type\":\"t1.micro\"}",
+                    upgradeRequest.getRawState().getJson().toStringUtf8());
+
+            // ...the plan runs against the UPGRADED prior state, with the
+            // provider's own private bytes stripped of the version envelope
+            var planCaptor = ArgumentCaptor.forClass(PlanResourceChange.Request.class);
+            verify(stub).planResourceChange(planCaptor.capture());
+            assertEquals(encodeToDynamicValue(upgradedState), planCaptor.getValue().getPriorState());
+            assertEquals(ByteString.copyFromUtf8("v1-private"), planCaptor.getValue().getPriorPrivate());
+
+            // ...and the persisted result records the current schema version
+            assertEquals("ami-new", result.get("ami"));
+            assertArrayEquals(storedPrivateAtVersion(CURRENT_SCHEMA_VERSION, "v2-private"),
+                    context.privateDataToReturn());
+        }
+
+        @Test
+        @DisplayName("update() should not call UpgradeResourceState when the stored version matches")
+        void updateShouldSkipUpgradeOnMatchingVersion() {
+            // Given
+            var storedPrior = camelCaseProps("ami-old", "t1.micro");
+            var storedPrivate = storedPrivateAtVersion(CURRENT_SCHEMA_VERSION, "current-private");
+            when(stub.applyResourceChange(any())).thenReturn(ApplyResourceChange.Response.newBuilder()
+                    .setNewState(encodeToDynamicValue(snakeCaseProps("ami-new", "t1.micro")))
+                    .build());
+
+            // When
+            var context = ResourceContext.of(storedPrior, storedPrivate);
+            versionedHandler.update(camelCaseProps("ami-new", "t1.micro"), context);
+
+            // Then — same version means the state is already schema-compliant
+            verify(stub, never()).upgradeResourceState(any());
+            var planCaptor = ArgumentCaptor.forClass(PlanResourceChange.Request.class);
+            verify(stub).planResourceChange(planCaptor.capture());
+            assertEquals(encodeToDynamicValue(snakeCaseProps("ami-old", "t1.micro")),
+                    planCaptor.getValue().getPriorState());
+            assertEquals(ByteString.copyFromUtf8("current-private"),
+                    planCaptor.getValue().getPriorPrivate());
+        }
+
+        @Test
+        @DisplayName("update() should not upgrade legacy private bytes without a version envelope")
+        void updateShouldSkipUpgradeForLegacyPrivateBytes() {
+            // Given — bytes persisted before the envelope existed: the schema
+            // version they were written under is unknowable, so guessing one
+            // could run the wrong upgraders; the pre-#5 behavior is preserved
+            var storedPrior = camelCaseProps("ami-old", "t1.micro");
+            var legacyPrivate = "legacy-private".getBytes(StandardCharsets.UTF_8);
+            when(stub.applyResourceChange(any())).thenReturn(ApplyResourceChange.Response.newBuilder()
+                    .setNewState(encodeToDynamicValue(snakeCaseProps("ami-new", "t1.micro")))
+                    .build());
+
+            // When
+            var context = ResourceContext.of(storedPrior, legacyPrivate);
+            versionedHandler.update(camelCaseProps("ami-new", "t1.micro"), context);
+
+            // Then — the legacy bytes pass through to the provider unchanged
+            verify(stub, never()).upgradeResourceState(any());
+            var planCaptor = ArgumentCaptor.forClass(PlanResourceChange.Request.class);
+            verify(stub).planResourceChange(planCaptor.capture());
+            assertEquals(ByteString.copyFromUtf8("legacy-private"),
+                    planCaptor.getValue().getPriorPrivate());
+        }
+
+        @Test
+        @DisplayName("update() should fail when the stored state was written by a newer schema version")
+        void updateShouldFailOnNewerStoredVersion() {
+            // Given — a provider downgrade: state at version 3, provider at 2
+            var storedPrior = camelCaseProps("ami-old", "t1.micro");
+            var storedPrivate = storedPrivateAtVersion(3, "v3-private");
+
+            // When / Then
+            var context = ResourceContext.of(storedPrior, storedPrivate);
+            var exception = assertThrows(IllegalStateException.class,
+                    () -> versionedHandler.update(camelCaseProps("ami-new", "t1.micro"), context));
+            assertEquals("Stored state for aws_instance was written with schema version 3, "
+                            + "but this provider release supports schema version 2. "
+                            + "State downgrades are not supported - use a provider release "
+                            + "with schema version 3 or newer.",
+                    exception.getMessage());
+            verify(stub, never()).upgradeResourceState(any());
+            verify(stub, never()).planResourceChange(any());
+            verify(stub, never()).applyResourceChange(any());
+        }
+
+        @Test
+        @DisplayName("read() should upgrade the stored state before ReadResource")
+        void readShouldUpgradeStoredStateBeforeRefresh() {
+            // Given — the engine refreshes drift from state stored at version 1
+            var upgradedState = snakeCaseProps("ami-old", "t2.small");
+            stubUpgrade(upgradedState);
+            when(stub.readResource(any())).thenReturn(ReadResource.Response.newBuilder()
+                    .setNewState(encodeToDynamicValue(snakeCaseProps("ami-old", "t2.small")))
+                    .setPrivate(ByteString.copyFromUtf8("refreshed-private"))
+                    .build());
+
+            // When
+            var context = ResourceContext.<Map<String, Object>>of(null,
+                    storedPrivateAtVersion(1, "v1-private"));
+            var result = versionedHandler.read(camelCaseProps("ami-old", "t1.micro"), context);
+
+            // Then — the refresh reads the UPGRADED state with the bare
+            // provider bytes, and persists under the current version
+            var readCaptor = ArgumentCaptor.forClass(ReadResource.Request.class);
+            verify(stub).readResource(readCaptor.capture());
+            assertEquals(encodeToDynamicValue(upgradedState), readCaptor.getValue().getCurrentState());
+            assertEquals(ByteString.copyFromUtf8("v1-private"), readCaptor.getValue().getPrivate());
+
+            assertEquals("ami-old", result.get("ami"));
+            assertEquals("t2.small", result.get("instanceType"));
+            assertArrayEquals(storedPrivateAtVersion(CURRENT_SCHEMA_VERSION, "refreshed-private"),
+                    context.privateDataToReturn());
+        }
+
+        @Test
+        @DisplayName("delete() should upgrade stored state even when it no longer fits the current schema")
+        void deleteShouldUpgradeStoredStateOutsideCurrentSchema() {
+            // Given — the v1 state carries an attribute the v2 schema dropped;
+            // encoding it with the current schema would fail, which is exactly
+            // why the upgrade must run on the raw JSON form first
+            var storedState = new LinkedHashMap<String, Object>();
+            storedState.put("ami", "ami-old");
+            storedState.put("region", "us-east-1");
+            var upgradedState = snakeCaseProps("ami-old", "t2.small");
+            stubUpgrade(upgradedState);
+            when(stub.applyResourceChange(any())).thenReturn(ApplyResourceChange.Response.newBuilder()
+                    .setNewState(DynamicValue.getDefaultInstance())
+                    .build());
+
+            // When
+            var context = ResourceContext.<Map<String, Object>>of(null,
+                    storedPrivateAtVersion(1, "v1-private"));
+            assertTrue(versionedHandler.delete(storedState, context));
+
+            // Then — the upgrade received the dropped attribute intact
+            var upgradeCaptor = ArgumentCaptor.forClass(UpgradeResourceState.Request.class);
+            verify(stub).upgradeResourceState(upgradeCaptor.capture());
+            assertEquals("{\"ami\":\"ami-old\",\"region\":\"us-east-1\"}",
+                    upgradeCaptor.getValue().getRawState().getJson().toStringUtf8());
+
+            // ...validation and the destroy run against the UPGRADED state
+            var validateCaptor = ArgumentCaptor.forClass(ValidateResourceTypeConfig.Request.class);
+            verify(stub).validateResourceTypeConfig(validateCaptor.capture());
+            assertEquals(encodeToDynamicValue(upgradedState), validateCaptor.getValue().getConfig());
+
+            var applyCaptor = ArgumentCaptor.forClass(ApplyResourceChange.Request.class);
+            verify(stub).applyResourceChange(applyCaptor.capture());
+            assertEquals(encodeToDynamicValue(upgradedState), applyCaptor.getValue().getPriorState());
+        }
+
+        @Test
+        @DisplayName("should fail the operation when the upgrade returns an error diagnostic")
+        void shouldFailWhenUpgradeReturnsErrorDiagnostic() {
+            // Given
+            when(stub.upgradeResourceState(any())).thenReturn(UpgradeResourceState.Response.newBuilder()
+                    .addDiagnostics(Diagnostic.newBuilder()
+                            .setSeverity(Diagnostic.Severity.ERROR)
+                            .setSummary("Unsupported state version")
+                            .setDetail("cannot upgrade from version 1"))
+                    .build());
+
+            // When / Then
+            var context = ResourceContext.of(camelCaseProps("ami-old", "t1.micro"),
+                    storedPrivateAtVersion(1, "v1-private"));
+            var exception = assertThrows(RuntimeException.class,
+                    () -> versionedHandler.update(camelCaseProps("ami-new", "t1.micro"), context));
+            assertEquals("Terraform update (upgrade state) failed: "
+                            + "Unsupported state version: cannot upgrade from version 1",
+                    exception.getMessage());
+            verify(stub, never()).planResourceChange(any());
+            verify(stub, never()).applyResourceChange(any());
+        }
+
+        @Test
+        @DisplayName("update() without stored prior state should not attempt an upgrade")
+        void updateWithoutPriorStateShouldSkipUpgrade() {
+            // Given — an enveloped older version but nothing stored to upgrade
+            when(stub.applyResourceChange(any())).thenReturn(ApplyResourceChange.Response.newBuilder()
+                    .setNewState(encodeToDynamicValue(snakeCaseProps("ami-new", "t1.micro")))
+                    .build());
+
+            // When
+            var context = ResourceContext.<Map<String, Object>>of(null,
+                    storedPrivateAtVersion(1, "v1-private"));
+            versionedHandler.update(camelCaseProps("ami-new", "t1.micro"), context);
+
+            // Then
+            verify(stub, never()).upgradeResourceState(any());
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // 10. TerraformDataSourceHandler
     // ---------------------------------------------------------------
     @Nested
     @DisplayName("TerraformDataSourceHandler")

@@ -385,7 +385,8 @@ class TerraformBridgeIntegrationTest {
                 .toList();
         var handler = new TerraformResourceTypeHandler(
                 "random_string", "String", pluginClient, schemaTypeJson,
-                TerraformResourceTypeHandler.readOnlyAttributeNames(stringSchema.getBlock()));
+                TerraformResourceTypeHandler.readOnlyAttributeNames(stringSchema.getBlock()),
+                stringSchema.getVersion());
         return new RandomStringHarness(handler, attributeNames);
     }
 

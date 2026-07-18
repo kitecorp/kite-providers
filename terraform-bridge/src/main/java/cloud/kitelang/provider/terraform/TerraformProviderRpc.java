@@ -16,6 +16,7 @@ import java.util.Map;
  *   <tr><td>{@link #configure(byte[])}</td><td>{@code Configure}</td><td>{@code ConfigureProvider}</td></tr>
  *   <tr><td>{@link #validateResourceConfig}</td><td>{@code ValidateResourceTypeConfig}</td><td>{@code ValidateResourceConfig}</td></tr>
  *   <tr><td>{@link #validateDataSourceConfig}</td><td>{@code ValidateDataSourceConfig}</td><td>{@code ValidateDataResourceConfig}</td></tr>
+ *   <tr><td>{@link #upgradeResourceState}</td><td colspan=2>{@code UpgradeResourceState}</td></tr>
  *   <tr><td>{@link #planResourceChange}</td><td colspan=2>{@code PlanResourceChange}</td></tr>
  *   <tr><td>{@link #applyResourceChange}</td><td colspan=2>{@code ApplyResourceChange}</td></tr>
  *   <tr><td>{@link #readResource}</td><td colspan=2>{@code ReadResource}</td></tr>
@@ -82,6 +83,23 @@ public interface TerraformProviderRpc {
      * @return the response diagnostics
      */
     List<TfDiagnostic> validateDataSourceConfig(String typeName, byte[] configMsgpack);
+
+    /**
+     * Upgrades resource state written under an older schema version to the
+     * provider's current schema — Terraform's {@code UpgradeResourceState},
+     * named identically in tfplugin5 and tfplugin6.
+     *
+     * <p>Unlike every other state payload, the input is <em>JSON</em>, not cty
+     * msgpack: the caller has no schema for the old version, so the provider
+     * interprets the raw JSON itself (the {@code RawState.json} form). The
+     * upgraded result comes back as cty msgpack under the current schema.</p>
+     *
+     * @param typeName            the TF resource type name
+     * @param storedSchemaVersion the schema version the state was written with
+     * @param rawStateJson        the stored state as a JSON object document
+     * @return the upgraded cty msgpack state and diagnostics
+     */
+    UpgradeResult upgradeResourceState(String typeName, long storedSchemaVersion, byte[] rawStateJson);
 
     /**
      * Plans a resource change.
@@ -198,6 +216,16 @@ public interface TerraformProviderRpc {
      * @param diagnostics  the response diagnostics
      */
     record StateResult(byte[] state, byte[] privateBytes, List<TfDiagnostic> diagnostics) {
+    }
+
+    /**
+     * Neutral {@code UpgradeResourceState} response.
+     *
+     * @param upgradedState cty msgpack state equivalent to the input raw state,
+     *                      re-encoded under the current schema
+     * @param diagnostics   the response diagnostics
+     */
+    record UpgradeResult(byte[] upgradedState, List<TfDiagnostic> diagnostics) {
     }
 
     /**

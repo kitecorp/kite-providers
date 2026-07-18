@@ -50,6 +50,9 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testImplementation 'org.mockito:mockito-core:5.14.2'
     testImplementation 'org.mockito:mockito-junit-jupiter:5.14.2'
+    // In-process gRPC transport: acceptance tests drive the real generated
+    // stubs and marshalling against a fake provider service, no subprocess
+    testImplementation "io.grpc:grpc-inprocess:${grpcVersion}"
 }
 
 protobuf {

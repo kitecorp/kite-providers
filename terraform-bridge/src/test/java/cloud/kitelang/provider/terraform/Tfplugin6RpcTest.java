@@ -115,6 +115,21 @@ class Tfplugin6RpcTest {
         }
 
         @Test
+        @DisplayName("should map each resource schema's version")
+        void shouldMapSchemaVersion() {
+            when(stub.getProviderSchema(any())).thenReturn(GetProviderSchema.Response.newBuilder()
+                    .putResourceSchemas(TYPE_NAME, Schema.newBuilder()
+                            .setVersion(4)
+                            .setBlock(Schema.Block.getDefaultInstance())
+                            .build())
+                    .build());
+
+            var schema = newRpc().getProviderSchema();
+
+            assertEquals(4, schema.resourceSchemas().get(TYPE_NAME).version());
+        }
+
+        @Test
         @DisplayName("should map an absent provider block to a null provider schema")
         void shouldMapAbsentProviderToNull() {
             when(stub.getProviderSchema(any())).thenReturn(GetProviderSchema.Response.getDefaultInstance());
@@ -529,7 +544,36 @@ class Tfplugin6RpcTest {
     }
 
     // ---------------------------------------------------------------
-    // 10. Handler wired over tfplugin6 — the version-agnostic seam end to end
+    // 10. UpgradeResourceState — same RPC name in both protocols
+    // ---------------------------------------------------------------
+    @Nested
+    @DisplayName("upgradeResourceState()")
+    class UpgradeResourceStateMapping {
+
+        @Test
+        @DisplayName("should send the stored version and raw JSON state and map the upgraded state back")
+        void shouldMapRequestAndResponse() {
+            var upgradedMsgpack = new byte[]{8, 8};
+            when(stub.upgradeResourceState(any())).thenReturn(UpgradeResourceState.Response.newBuilder()
+                    .setUpgradedState(msgpack(upgradedMsgpack))
+                    .build());
+            var rawStateJson = "{\"ami\":\"ami-1\"}".getBytes(StandardCharsets.UTF_8);
+
+            var result = newRpc().upgradeResourceState(TYPE_NAME, 1, rawStateJson);
+
+            var captor = ArgumentCaptor.forClass(UpgradeResourceState.Request.class);
+            verify(stub).upgradeResourceState(captor.capture());
+            assertEquals(TYPE_NAME, captor.getValue().getTypeName());
+            assertEquals(1, captor.getValue().getVersion());
+            assertEquals(ByteString.copyFrom(rawStateJson), captor.getValue().getRawState().getJson());
+
+            assertArrayEquals(upgradedMsgpack, result.upgradedState());
+            assertEquals(List.of(), result.diagnostics());
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // 11. Handler wired over tfplugin6 — the version-agnostic seam end to end
     // ---------------------------------------------------------------
     @Nested
     @DisplayName("TerraformResourceTypeHandler over tfplugin6")
@@ -547,7 +591,7 @@ class Tfplugin6RpcTest {
             when(client.rpc()).thenReturn(new Tfplugin6Rpc(stub));
             var codec = new CtyCodec();
             var handler = new TerraformResourceTypeHandler(
-                    TYPE_NAME, "Instance", client, SCHEMA_TYPE_JSON, Set.of());
+                    TYPE_NAME, "Instance", client, SCHEMA_TYPE_JSON, Set.of(), 0);
 
             when(stub.validateResourceConfig(any()))
                     .thenReturn(ValidateResourceConfig.Response.getDefaultInstance());
@@ -578,7 +622,8 @@ class Tfplugin6RpcTest {
 
             assertEquals("ami-12345", result.get("ami"));
             assertEquals("t2.micro", result.get("instanceType"));
-            assertArrayEquals("proto6-private".getBytes(StandardCharsets.UTF_8),
+            assertArrayEquals(
+                    SchemaVersionEnvelope.wrap(0, "proto6-private".getBytes(StandardCharsets.UTF_8)),
                     context.privateDataToReturn());
         }
     }

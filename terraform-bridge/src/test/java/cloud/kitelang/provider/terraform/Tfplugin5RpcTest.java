@@ -142,6 +142,48 @@ class Tfplugin5RpcTest {
     }
 
     @Test
+    @DisplayName("getProviderSchema() should map each resource schema's version")
+    void getProviderSchemaShouldMapSchemaVersion() {
+        when(stub.getSchema(any())).thenReturn(GetProviderSchema.Response.newBuilder()
+                .putResourceSchemas("aws_instance", Schema.newBuilder()
+                        .setVersion(4)
+                        .setBlock(Schema.Block.getDefaultInstance())
+                        .build())
+                .build());
+
+        var schema = new Tfplugin5Rpc(stub).getProviderSchema();
+
+        assertEquals(4, schema.resourceSchemas().get("aws_instance").version());
+    }
+
+    @Test
+    @DisplayName("upgradeResourceState() should send the stored version and raw JSON state")
+    void upgradeResourceStateShouldMapRequestAndResponse() {
+        var upgradedMsgpack = new byte[]{8, 8};
+        when(stub.upgradeResourceState(any())).thenReturn(UpgradeResourceState.Response.newBuilder()
+                .setUpgradedState(DynamicValue.newBuilder()
+                        .setMsgpack(ByteString.copyFrom(upgradedMsgpack)))
+                .addDiagnostics(Diagnostic.newBuilder()
+                        .setSeverity(Diagnostic.Severity.WARNING)
+                        .setSummary("Assumed default")
+                        .setDetail("filled a new attribute"))
+                .build());
+        var rawStateJson = "{\"ami\":\"ami-1\"}".getBytes(java.nio.charset.StandardCharsets.UTF_8);
+
+        var result = new Tfplugin5Rpc(stub).upgradeResourceState("aws_instance", 1, rawStateJson);
+
+        var captor = org.mockito.ArgumentCaptor.forClass(UpgradeResourceState.Request.class);
+        verify(stub).upgradeResourceState(captor.capture());
+        assertEquals("aws_instance", captor.getValue().getTypeName());
+        assertEquals(1, captor.getValue().getVersion());
+        assertEquals(ByteString.copyFrom(rawStateJson), captor.getValue().getRawState().getJson());
+
+        assertArrayEquals(upgradedMsgpack, result.upgradedState());
+        assertEquals(List.of(new TfDiagnostic(TfDiagnostic.Severity.WARNING,
+                "Assumed default", "filled a new attribute")), result.diagnostics());
+    }
+
+    @Test
     @DisplayName("planResourceChange() should render an unset path selector as <?>")
     void planShouldRenderUnsetSelector() {
         when(stub.planResourceChange(any())).thenReturn(PlanResourceChange.Response.newBuilder()

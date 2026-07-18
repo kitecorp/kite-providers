@@ -75,6 +75,20 @@ final class Tfplugin5Rpc implements TerraformProviderRpc {
     }
 
     @Override
+    public UpgradeResult upgradeResourceState(String typeName, long storedSchemaVersion, byte[] rawStateJson) {
+        var request = Tfplugin5.UpgradeResourceState.Request.newBuilder()
+                .setTypeName(typeName)
+                .setVersion(storedSchemaVersion)
+                .setRawState(Tfplugin5.RawState.newBuilder()
+                        .setJson(ByteString.copyFrom(rawStateJson)))
+                .build();
+        var response = stub.upgradeResourceState(request);
+        return new UpgradeResult(
+                response.getUpgradedState().getMsgpack().toByteArray(),
+                toDiagnostics(response.getDiagnosticsList()));
+    }
+
+    @Override
     public PlanResult planResourceChange(String typeName, byte[] priorState, byte[] proposedNewState,
                                          byte[] config, byte[] priorPrivate) {
         var request = Tfplugin5.PlanResourceChange.Request.newBuilder()
@@ -163,7 +177,7 @@ final class Tfplugin5Rpc implements TerraformProviderRpc {
     // ---------------------------------------------------------------
 
     static TfSchema toTfSchema(Tfplugin5.Schema schema) {
-        return new TfSchema(toTfBlock(schema.getBlock()));
+        return new TfSchema(schema.getVersion(), toTfBlock(schema.getBlock()));
     }
 
     static TfBlock toTfBlock(Tfplugin5.Schema.Block block) {
