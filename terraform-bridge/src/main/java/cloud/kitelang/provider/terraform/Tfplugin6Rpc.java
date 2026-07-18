@@ -129,6 +129,24 @@ final class Tfplugin6Rpc implements TerraformProviderRpc {
     }
 
     @Override
+    public StateResult importResourceState(String typeName, String importId) {
+        var request = Tfplugin6.ImportResourceState.Request.newBuilder()
+                .setTypeName(typeName)
+                .setId(importId)
+                .build();
+        var response = stub.importResourceState(request);
+        // Providers may import additional resources of other types alongside
+        // the requested one; the bridge adopts exactly the requested type
+        var imported = response.getImportedResourcesList().stream()
+                .filter(resource -> typeName.equals(resource.getTypeName()))
+                .findFirst();
+        return new StateResult(
+                imported.map(resource -> resource.getState().getMsgpack().toByteArray()).orElse(null),
+                imported.map(resource -> resource.getPrivate().toByteArray()).orElse(new byte[0]),
+                toDiagnostics(response.getDiagnosticsList()));
+    }
+
+    @Override
     public DataSourceResult readDataSource(String typeName, byte[] configMsgpack) {
         var request = Tfplugin6.ReadDataSource.Request.newBuilder()
                 .setTypeName(typeName)

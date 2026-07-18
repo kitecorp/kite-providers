@@ -603,6 +603,35 @@ class TerraformBridgeIntegrationTest {
                 "Delete on a previous process's state should succeed");
     }
 
+    // ==================================================================
+    // Test 10: import — adopt a pre-existing string by id over tfplugin5
+    // (kitecorp/kite-providers#4)
+    // ==================================================================
+
+    @Test
+    @Order(10)
+    @DisplayName("importResource() should adopt a string by its value over tfplugin5")
+    void importAdoptsStringByValue() {
+        assumeProviderAvailable();
+        var harness = newRandomStringHarness();
+        var handler = harness.handler();
+
+        // random_string's importer takes the string value itself as the import
+        // id (`terraform import random_string.test test`) and derives every
+        // attribute from it, so the adopted state is fully predictable
+        var context = ResourceContext.<Map<String, Object>>empty();
+        var imported = handler.importResource("adopted-string-value", context);
+
+        assertNotNull(imported, "importResource should adopt the pre-existing string");
+        assertEquals("adopted-string-value", imported.get("result"),
+                "the imported id is the string value itself");
+        assertEquals("adopted-string-value".length(), ((Number) imported.get("length")).intValue(),
+                "length must be derived from the imported value");
+
+        assertTrue(handler.delete(imported, ResourceContext.of(null, context.privateDataToReturn())),
+                "Cleanup delete should return true");
+    }
+
     // ------------------------------------------------------------------
     // Assertion helper: verify no ERROR diagnostics
     // ------------------------------------------------------------------

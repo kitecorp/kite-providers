@@ -409,6 +409,64 @@ class Tfplugin6BridgeIntegrationTest {
         }
     }
 
+    // ==================================================================
+    // Test 9: import — a fresh provider process adopts a resource that was
+    // pre-created by a previous one, by cloud id alone (kitecorp/kite-providers#4)
+    // ==================================================================
+
+    @Test
+    @Order(9)
+    @DisplayName("should import a pre-created resource by id and refresh its full state")
+    void importAdoptsPreCreatedResourceById() throws Exception {
+        assumeProviderAvailable();
+
+        // --- Session 1: create the resource, then stop the provider. Only the
+        // JSON state file in resource_directory survives — the "cloud".
+        var creator = newBridgeProvider();
+        creator.init();
+        creator.configure(providerConfig(creator));
+        var creatorHandler = (TerraformResourceTypeHandler) creator.<Map<String, Object>>getResourceType("SimpleResource");
+        var attributeNames = simpleResourceAttributeNames();
+        var seedProps = propsWithNulls(attributeNames);
+        seedProps.put("id", "pre-created-import");
+        seedProps.put("string", "imported-value");
+        seedProps.put("integer", 7);
+        creatorHandler.create(seedProps, ResourceContext.empty());
+        creator.stop();
+        client = null; // stop() closed the creator's client
+        assertTrue(Files.exists(resourceDirectory.resolve("pre-created-import.json")),
+                "the pre-created resource must exist as a JSON file before the import");
+
+        // --- Session 2: a brand-new provider process adopts it by id alone.
+        // tfcoremock's ImportState is ImportStatePassthroughID on "id", so the
+        // ImportResourceState response carries just the id and the follow-up
+        // ReadResource pulls the full state from the resource_directory file.
+        var adopter = newBridgeProvider();
+        try {
+            adopter.init();
+            adopter.configure(providerConfig(adopter));
+            var adopterHandler = (TerraformResourceTypeHandler) adopter.<Map<String, Object>>getResourceType("SimpleResource");
+
+            var context = ResourceContext.<Map<String, Object>>empty();
+            var imported = adopterHandler.importResource("pre-created-import", context);
+
+            assertNotNull(imported, "importResource should adopt the pre-created resource");
+            assertEquals("pre-created-import", imported.get("id"));
+            assertEquals("imported-value", imported.get("string"),
+                    "the refresh must recover the full pre-created state, not just the id");
+            assertEquals(7, ((Number) imported.get("integer")).intValue());
+
+            // A bogus id passes the passthrough import step but the refresh
+            // discovers no remote object — the handler reports null so the
+            // engine can fail loudly instead of adopting a ghost
+            assertNull(adopterHandler.importResource("never-existed", ResourceContext.empty()),
+                    "importing a non-existent id must yield null, not a ghost state");
+        } finally {
+            adopter.stop();
+            client = null;
+        }
+    }
+
     // ------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------

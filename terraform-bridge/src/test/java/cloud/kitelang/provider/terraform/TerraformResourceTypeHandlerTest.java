@@ -639,6 +639,143 @@ class TerraformResourceTypeHandlerTest {
     }
 
     // ---------------------------------------------------------------
+    // 2b. importResource()
+    // ---------------------------------------------------------------
+    @Nested
+    @DisplayName("importResource()")
+    class Import {
+
+        /** Stubs ImportResourceState to return one imported resource of the given type. */
+        private void stubImport(String typeName, Map<String, Object> snakeCaseState, String privateBytes) {
+            when(stub.importResourceState(any())).thenReturn(ImportResourceState.Response.newBuilder()
+                    .addImportedResources(ImportResourceState.ImportedResource.newBuilder()
+                            .setTypeName(typeName)
+                            .setState(encodeToDynamicValue(snakeCaseState))
+                            .setPrivate(ByteString.copyFromUtf8(privateBytes)))
+                    .build());
+        }
+
+        @Test
+        @DisplayName("should send ImportResourceState then refresh the imported state via ReadResource")
+        void shouldImportThenRefresh() {
+            // Given: the provider imports a minimal state (framework providers
+            // typically fill just the id) and the refresh completes it
+            stubImport(TF_TYPE_NAME, snakeCaseProps("ami-adopted", null), "import-private");
+            when(stub.readResource(any())).thenReturn(ReadResource.Response.newBuilder()
+                    .setNewState(encodeToDynamicValue(snakeCaseProps("ami-adopted", "t2.micro")))
+                    .setPrivate(ByteString.copyFromUtf8("refresh-private"))
+                    .build());
+
+            // When
+            var context = ResourceContext.<Map<String, Object>>empty();
+            var result = handler.importResource("i-0123456789abcdef0", context);
+
+            // Then — the import request carries the type and the cloud id
+            var importCaptor = ArgumentCaptor.forClass(ImportResourceState.Request.class);
+            verify(stub).importResourceState(importCaptor.capture());
+            assertEquals(TF_TYPE_NAME, importCaptor.getValue().getTypeName());
+            assertEquals("i-0123456789abcdef0", importCaptor.getValue().getId());
+
+            // ...the refresh receives the imported state and private bytes
+            var readCaptor = ArgumentCaptor.forClass(ReadResource.Request.class);
+            verify(stub).readResource(readCaptor.capture());
+            assertEquals(TF_TYPE_NAME, readCaptor.getValue().getTypeName());
+            assertEquals(encodeToDynamicValue(snakeCaseProps("ami-adopted", null)),
+                    readCaptor.getValue().getCurrentState());
+            assertEquals(ByteString.copyFromUtf8("import-private"), readCaptor.getValue().getPrivate());
+
+            // ...and the caller gets the refreshed camelCase state + private bytes
+            assertEquals("ami-adopted", result.get("ami"));
+            assertEquals("t2.micro", result.get("instanceType"));
+            assertArrayEquals("refresh-private".getBytes(StandardCharsets.UTF_8),
+                    context.privateDataToReturn());
+        }
+
+        @Test
+        @DisplayName("should adopt only the requested type when the provider imports extra resources")
+        void shouldFilterImportedResourcesToRequestedType() {
+            // Given: an import that also yields a companion resource of another
+            // type (e.g. security group rules alongside the group)
+            when(stub.importResourceState(any())).thenReturn(ImportResourceState.Response.newBuilder()
+                    .addImportedResources(ImportResourceState.ImportedResource.newBuilder()
+                            .setTypeName("aws_instance_companion")
+                            .setState(encodeToDynamicValue(snakeCaseProps("companion", null))))
+                    .addImportedResources(ImportResourceState.ImportedResource.newBuilder()
+                            .setTypeName(TF_TYPE_NAME)
+                            .setState(encodeToDynamicValue(snakeCaseProps("ami-adopted", null))))
+                    .build());
+            when(stub.readResource(any())).thenReturn(ReadResource.Response.newBuilder()
+                    .setNewState(encodeToDynamicValue(snakeCaseProps("ami-adopted", "t2.micro")))
+                    .build());
+
+            // When
+            var result = handler.importResource("i-0123456789abcdef0",
+                    ResourceContext.empty());
+
+            // Then — the refresh starts from the matching type's state
+            var readCaptor = ArgumentCaptor.forClass(ReadResource.Request.class);
+            verify(stub).readResource(readCaptor.capture());
+            assertEquals(encodeToDynamicValue(snakeCaseProps("ami-adopted", null)),
+                    readCaptor.getValue().getCurrentState());
+            assertEquals("ami-adopted", result.get("ami"));
+        }
+
+        @Test
+        @DisplayName("should return null without refreshing when the provider imports nothing")
+        void shouldReturnNullWhenNothingImported() {
+            // Given: an empty import response (unsupported or nothing found)
+            when(stub.importResourceState(any()))
+                    .thenReturn(ImportResourceState.Response.getDefaultInstance());
+
+            // When
+            var result = handler.importResource("i-0123456789abcdef0",
+                    ResourceContext.empty());
+
+            // Then — null signals the caller to fall back; no refresh happens
+            assertNull(result);
+            verify(stub, never()).readResource(any());
+        }
+
+        @Test
+        @DisplayName("should return null when the refresh finds no remote object for the id")
+        void shouldReturnNullWhenRefreshFindsNothing() {
+            // Given: passthrough-style import accepts any id, but the refresh
+            // returns a nil state — "cannot import non-existent remote object"
+            stubImport(TF_TYPE_NAME, snakeCaseProps(null, null), "");
+            when(stub.readResource(any())).thenReturn(ReadResource.Response.newBuilder()
+                    .setNewState(DynamicValue.newBuilder().setMsgpack(MSGPACK_NIL))
+                    .build());
+
+            // When
+            var result = handler.importResource("i-never-existed",
+                    ResourceContext.empty());
+
+            // Then
+            assertNull(result);
+        }
+
+        @Test
+        @DisplayName("should throw naming the operation on import error diagnostics")
+        void shouldThrowOnImportErrorDiagnostics() {
+            // Given
+            when(stub.importResourceState(any())).thenReturn(ImportResourceState.Response.newBuilder()
+                    .addDiagnostics(Diagnostic.newBuilder()
+                            .setSeverity(Diagnostic.Severity.ERROR)
+                            .setSummary("import is not supported")
+                            .build())
+                    .build());
+
+            // When / Then
+            var exception = assertThrows(RuntimeException.class,
+                    () -> handler.importResource("i-0123456789abcdef0", ResourceContext.empty()));
+            assertTrue(exception.getMessage().contains("import"),
+                    "the failure should name the operation, got: " + exception.getMessage());
+            assertTrue(exception.getMessage().contains("import is not supported"),
+                    "the failure should carry the diagnostic summary, got: " + exception.getMessage());
+        }
+    }
+
+    // ---------------------------------------------------------------
     // 3. update()
     // ---------------------------------------------------------------
     @Nested

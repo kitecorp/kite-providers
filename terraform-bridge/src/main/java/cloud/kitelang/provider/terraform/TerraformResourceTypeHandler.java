@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
  * <ul>
  *   <li>{@link #create} &rarr; {@code Validate} + {@code Plan} + {@code Apply} (null prior state)</li>
  *   <li>{@link #read}   &rarr; {@code ReadResource} with the stored private bytes</li>
+ *   <li>{@link #importResource} &rarr; {@code ImportResourceState} + {@code ReadResource}
+ *       refresh — adopts a pre-existing resource by cloud id (Kite's {@code @existing("<id>")})</li>
  *   <li>{@link #update} &rarr; {@code Validate} + {@code Plan} + {@code Apply} using the
  *       engine-stored prior state; when the plan flags {@code requiresReplace} the bridge
  *       destroys and recreates (the Kite provider protocol has no replace concept)</li>
@@ -162,6 +164,49 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
 
         context.returnPrivateData(result.privateBytes());
         return decodeState(result.state());
+    }
+
+    /**
+     * Imports (adopts) a pre-existing resource by its cloud identifier, mirroring
+     * Terraform core's import sequence: {@code ImportResourceState} returns a
+     * minimal state (often just the id) plus private bytes, which a follow-up
+     * {@code ReadResource} refreshes into the full resource state. The refreshed
+     * state and private bytes go back to the engine exactly like a create's,
+     * so an adopted resource persists indistinguishably from a created one.
+     *
+     * @param importId the provider-interpreted identifier (instance id, ARN, ...)
+     * @param context  private bytes out (nothing is stored yet on import)
+     * @return the adopted resource state in camelCase, or null when the provider
+     *         imported nothing or the refresh found no remote object for the id
+     */
+    @Override
+    public Map<String, Object> importResource(String importId,
+                                              ResourceContext<Map<String, Object>> context) {
+        log.debug("import {} — sending ImportResourceState for id {}", tfTypeName, importId);
+        var imported = rpc().importResourceState(tfTypeName, importId);
+        checkDiagnostics(imported.diagnostics(), "import");
+        if (imported.state() == null) {
+            // The provider imported nothing of this type for the id
+            return null;
+        }
+
+        log.debug("import {} — refreshing imported state via ReadResource", tfTypeName);
+        var refreshed = rpc().readResource(tfTypeName, imported.state(), imported.privateBytes());
+        checkDiagnostics(refreshed.diagnostics(), "import (refresh)");
+
+        // A nil/absent refreshed state means no remote object exists for the
+        // id — "cannot import non-existent remote object" in Terraform terms.
+        // Passthrough-style providers accept any id at the import step, so the
+        // refresh is where a bogus id actually surfaces.
+        if (refreshed.state() == null || refreshed.state().length == 0) {
+            return null;
+        }
+        var state = decodeState(refreshed.state());
+        if (state == null || state.isEmpty()) {
+            return null;
+        }
+        context.returnPrivateData(refreshed.privateBytes());
+        return state;
     }
 
     /**

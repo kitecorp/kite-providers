@@ -19,6 +19,7 @@ import java.util.Map;
  *   <tr><td>{@link #planResourceChange}</td><td colspan=2>{@code PlanResourceChange}</td></tr>
  *   <tr><td>{@link #applyResourceChange}</td><td colspan=2>{@code ApplyResourceChange}</td></tr>
  *   <tr><td>{@link #readResource}</td><td colspan=2>{@code ReadResource}</td></tr>
+ *   <tr><td>{@link #importResourceState}</td><td colspan=2>{@code ImportResourceState}</td></tr>
  *   <tr><td>{@link #readDataSource}</td><td colspan=2>{@code ReadDataSource}</td></tr>
  *   <tr><td>{@link #stop()}</td><td>{@code Stop}</td><td>{@code StopProvider}</td></tr>
  * </table>
@@ -117,6 +118,26 @@ public interface TerraformProviderRpc {
      * @return the refreshed state, private bytes, and diagnostics
      */
     StateResult readResource(String typeName, byte[] currentState, byte[] privateBytes);
+
+    /**
+     * Imports (adopts) a pre-existing resource by its cloud identifier —
+     * Terraform's {@code ImportResourceState}, named identically in tfplugin5
+     * and tfplugin6.
+     *
+     * <p>Providers may return several imported resources (e.g. an AWS security
+     * group import also yields its rules); the facade keeps only the one whose
+     * type matches {@code typeName}, since the bridge adopts a single Kite
+     * resource per call. The imported state is typically minimal (often just
+     * the id) — callers refresh it with a follow-up
+     * {@link #readResource(String, byte[], byte[])} before use, exactly like
+     * Terraform core.</p>
+     *
+     * @param typeName the TF resource type name (e.g. {@code "aws_instance"})
+     * @param importId the provider-interpreted identifier (instance id, ARN, ...)
+     * @return the imported state, private bytes, and diagnostics; the state is
+     *         {@code null} when the provider imported nothing of this type
+     */
+    StateResult importResourceState(String typeName, String importId);
 
     /**
      * Reads a data source.
