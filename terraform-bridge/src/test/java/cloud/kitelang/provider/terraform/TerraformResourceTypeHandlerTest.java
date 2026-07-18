@@ -1,5 +1,6 @@
 package cloud.kitelang.provider.terraform;
 
+import cloud.kitelang.provider.ResourceContext;
 import com.google.protobuf.ByteString;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import tfplugin5.ProviderGrpc;
 import tfplugin5.Tfplugin5.*;
 
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,8 +152,8 @@ class TerraformResourceTypeHandlerTest {
         }
 
         @Test
-        @DisplayName("should store private data from create response")
-        void shouldStorePrivateDataFromResponse() {
+        @DisplayName("should return private data from create response through the context")
+        void shouldReturnPrivateDataThroughContext() {
             // Given
             var input = camelCaseProps("ami-12345", "t2.micro");
             var privateBytes = ByteString.copyFromUtf8("opaque-provider-state");
@@ -162,18 +164,23 @@ class TerraformResourceTypeHandlerTest {
                     .build();
             when(stub.applyResourceChange(any())).thenReturn(response);
 
-            // When
-            handler.create(input);
+            // When — the context is the only channel for private bytes now;
+            // the handler holds no in-memory copy across operations
+            var createContext = ResourceContext.<Map<String, Object>>empty();
+            handler.create(input, createContext);
 
-            // Then — verify private data is relayed on subsequent read
-            var readResponseState = encodeToDynamicValue(snakeCaseProps("ami-12345", "t2.micro"));
+            // Then — the engine persists these; supplying them on a later read
+            // (fresh context, as after a process restart) relays them to TF
+            assertArrayEquals("opaque-provider-state".getBytes(StandardCharsets.UTF_8),
+                    createContext.privateDataToReturn());
+
             var readResponse = ReadResource.Response.newBuilder()
-                    .setNewState(readResponseState)
+                    .setNewState(encodeToDynamicValue(snakeCaseProps("ami-12345", "t2.micro")))
                     .setPrivate(privateBytes)
                     .build();
             when(stub.readResource(any())).thenReturn(readResponse);
 
-            handler.read(input);
+            handler.read(input, ResourceContext.of(null, createContext.privateDataToReturn()));
 
             var readCaptor = ArgumentCaptor.forClass(ReadResource.Request.class);
             verify(stub).readResource(readCaptor.capture());
@@ -286,13 +293,12 @@ class TerraformResourceTypeHandlerTest {
         @Test
         @DisplayName("update() should apply in place with the plan's planned state and private when no replacement is required")
         void updateShouldApplyInPlaceWithPlannedState() {
-            // Given
+            // Given — the engine supplies the stored prior state and private
+            // bytes; the bridge must not reconstruct them via ReadResource
             var input = camelCaseProps("ami-99999", "t3.large");
+            var storedPrior = camelCaseProps("ami-12345", "t2.micro");
+            var storedPrivate = "stored-private".getBytes(StandardCharsets.UTF_8);
             var priorState = encodeToDynamicValue(snakeCaseProps("ami-12345", "t2.micro"));
-            var readResponse = ReadResource.Response.newBuilder()
-                    .setNewState(priorState)
-                    .build();
-            when(stub.readResource(any())).thenReturn(readResponse);
 
             var plannedState = encodeToDynamicValue(snakeCaseProps("ami-99999", "t3.large"));
             var plannedPrivate = ByteString.copyFromUtf8("update-plan-private");
@@ -304,15 +310,22 @@ class TerraformResourceTypeHandlerTest {
 
             var applyResponse = ApplyResourceChange.Response.newBuilder()
                     .setNewState(plannedState)
+                    .setPrivate(ByteString.copyFromUtf8("post-update-private"))
                     .build();
             when(stub.applyResourceChange(any())).thenReturn(applyResponse);
 
             // When
-            var result = handler.update(input);
+            var context = ResourceContext.of(storedPrior, storedPrivate);
+            var result = handler.update(input, context);
 
-            // Then — one validate, one plan, one apply (no destroy/recreate)
+            // Then — no ReadResource; one validate, one plan, one apply
+            verify(stub, never()).readResource(any());
             verify(stub).validateResourceTypeConfig(any());
-            verify(stub).planResourceChange(any());
+            var planCaptor = ArgumentCaptor.forClass(PlanResourceChange.Request.class);
+            verify(stub).planResourceChange(planCaptor.capture());
+            assertEquals(priorState, planCaptor.getValue().getPriorState());
+            assertEquals(ByteString.copyFromUtf8("stored-private"), planCaptor.getValue().getPriorPrivate());
+
             var applyCaptor = ArgumentCaptor.forClass(ApplyResourceChange.Request.class);
             verify(stub).applyResourceChange(applyCaptor.capture());
             var applyRequest = applyCaptor.getValue();
@@ -322,13 +335,17 @@ class TerraformResourceTypeHandlerTest {
             assertEquals(plannedPrivate, applyRequest.getPlannedPrivate());
             assertEquals("ami-99999", result.get("ami"));
             assertEquals("t3.large", result.get("instanceType"));
+            assertArrayEquals("post-update-private".getBytes(StandardCharsets.UTF_8),
+                    context.privateDataToReturn());
         }
 
         @Test
-        @DisplayName("delete() should validate and plan the destroy before applying with the plan's output")
+        @DisplayName("delete() should validate and plan the destroy with stored private bytes before applying")
         void deleteShouldValidateAndPlanDestroy() {
-            // Given
+            // Given — the engine passes the stored prior state as the property
+            // map and the stored private bytes through the context
             var input = camelCaseProps("ami-12345", "t2.micro");
+            var storedPrivate = "stored-private".getBytes(StandardCharsets.UTF_8);
             var plannedPrivate = ByteString.copyFromUtf8("destroy-plan-private");
             var planResponse = PlanResourceChange.Response.newBuilder()
                     .setPlannedState(DynamicValue.newBuilder().setMsgpack(MSGPACK_NIL).build())
@@ -341,7 +358,7 @@ class TerraformResourceTypeHandlerTest {
             when(stub.applyResourceChange(any())).thenReturn(applyResponse);
 
             // When
-            var result = handler.delete(input);
+            var result = handler.delete(input, ResourceContext.of(null, storedPrivate));
 
             // Then
             assertTrue(result);
@@ -352,10 +369,11 @@ class TerraformResourceTypeHandlerTest {
             inOrder.verify(stub).planResourceChange(planCaptor.capture());
             inOrder.verify(stub).applyResourceChange(applyCaptor.capture());
 
-            // Destroy plan: prior = current state, proposed/config = nil
+            // Destroy plan: prior = stored state + stored private, proposed/config = nil
             var expectedPrior = encodeToDynamicValue(snakeCaseProps("ami-12345", "t2.micro"));
             var planRequest = planCaptor.getValue();
             assertEquals(expectedPrior, planRequest.getPriorState());
+            assertEquals(ByteString.copyFromUtf8("stored-private"), planRequest.getPriorPrivate());
             assertEquals(MSGPACK_NIL, planRequest.getProposedNewState().getMsgpack());
             assertEquals(MSGPACK_NIL, planRequest.getConfig().getMsgpack());
 
@@ -375,16 +393,13 @@ class TerraformResourceTypeHandlerTest {
                     TF_TYPE_NAME, KITE_TYPE_NAME, client, SCHEMA_TYPE_JSON, Set.of("instance_type"));
             var input = camelCaseProps("ami-new", "computed-value");
 
-            var priorState = encodeToDynamicValue(snakeCaseProps("ami-old", "computed-value"));
-            when(stub.readResource(any())).thenReturn(ReadResource.Response.newBuilder()
-                    .setNewState(priorState)
-                    .build());
             when(stub.applyResourceChange(any())).thenReturn(ApplyResourceChange.Response.newBuilder()
                     .setNewState(encodeToDynamicValue(snakeCaseProps("ami-new", "computed-value")))
                     .build());
 
-            // When
-            readOnlyHandler.update(input);
+            // When — prior state comes from the engine, not a ReadResource round-trip
+            readOnlyHandler.update(input,
+                    ResourceContext.of(camelCaseProps("ami-old", "computed-value"), null));
 
             // Then — the config sent to validate and plan nulls the read-only attribute
             var validateCaptor = ArgumentCaptor.forClass(ValidateResourceTypeConfig.Request.class);
@@ -418,13 +433,11 @@ class TerraformResourceTypeHandlerTest {
         @Test
         @DisplayName("update() should destroy then recreate when the plan flags requiresReplace")
         void updateShouldDestroyAndRecreateOnRequiresReplace() {
-            // Given — prior state differs from desired on an immutable attribute
+            // Given — engine-stored prior state differs from desired on an
+            // immutable attribute; no ReadResource reconstruction happens
             var input = camelCaseProps("ami-new", "t2.micro");
+            var storedPrior = camelCaseProps("ami-old", "t2.micro");
             var priorState = encodeToDynamicValue(snakeCaseProps("ami-old", "t2.micro"));
-            var readResponse = ReadResource.Response.newBuilder()
-                    .setNewState(priorState)
-                    .build();
-            when(stub.readResource(any())).thenReturn(readResponse);
 
             var desiredState = encodeToDynamicValue(snakeCaseProps("ami-new", "t2.micro"));
             var createPlannedPrivate = ByteString.copyFromUtf8("recreate-private");
@@ -465,15 +478,27 @@ class TerraformResourceTypeHandlerTest {
                         .build();
             });
 
-            // When
-            var result = handler.update(input);
+            // When — prior state and private bytes come from the engine
+            var context = ResourceContext.of(storedPrior,
+                    "stored-private".getBytes(StandardCharsets.UTF_8));
+            var result = handler.update(input, context);
 
-            // Then — plan sequence: update plan, destroy plan, create plan
-            verify(stub, times(3)).planResourceChange(any());
+            // Then — no ReadResource; plan sequence: update plan, destroy plan, create plan
+            verify(stub, never()).readResource(any());
+            var planCaptor = ArgumentCaptor.forClass(PlanResourceChange.Request.class);
+            verify(stub, times(3)).planResourceChange(planCaptor.capture());
+            // Update and destroy plans carry the stored private bytes; the
+            // recreate plan starts from scratch with empty private
+            assertEquals(ByteString.copyFromUtf8("stored-private"),
+                    planCaptor.getAllValues().get(0).getPriorPrivate());
+            assertEquals(ByteString.copyFromUtf8("stored-private"),
+                    planCaptor.getAllValues().get(1).getPriorPrivate());
+            assertEquals(ByteString.EMPTY, planCaptor.getAllValues().get(2).getPriorPrivate());
+
             var applyCaptor = ArgumentCaptor.forClass(ApplyResourceChange.Request.class);
             verify(stub, times(2)).applyResourceChange(applyCaptor.capture());
 
-            // First apply destroys the old resource: prior = read state, planned = nil
+            // First apply destroys the old resource: prior = engine-stored state, planned = nil
             var destroyRequest = applyCaptor.getAllValues().get(0);
             assertEquals(priorState, destroyRequest.getPriorState());
             assertEquals(MSGPACK_NIL, destroyRequest.getPlannedState().getMsgpack());
@@ -581,8 +606,8 @@ class TerraformResourceTypeHandlerTest {
         }
 
         @Test
-        @DisplayName("should update private data from read response")
-        void shouldUpdatePrivateDataFromReadResponse() {
+        @DisplayName("should return refreshed private data through the context")
+        void shouldReturnRefreshedPrivateDataThroughContext() {
             // Given
             var input = camelCaseProps("ami-12345", "t2.micro");
             var newPrivateBytes = ByteString.copyFromUtf8("updated-private");
@@ -594,15 +619,15 @@ class TerraformResourceTypeHandlerTest {
             when(stub.readResource(any())).thenReturn(response);
 
             // When
-            handler.read(input);
+            var firstContext = ResourceContext.<Map<String, Object>>empty();
+            handler.read(input, firstContext);
 
-            // Then — read again and verify the updated private bytes are sent
-            var secondResponse = ReadResource.Response.newBuilder()
-                    .setNewState(responseState)
-                    .build();
-            when(stub.readResource(any())).thenReturn(secondResponse);
+            // Then — the refreshed bytes surface on the context for the engine
+            // to persist; supplying them on a later read relays them to TF
+            assertArrayEquals("updated-private".getBytes(StandardCharsets.UTF_8),
+                    firstContext.privateDataToReturn());
 
-            handler.read(input);
+            handler.read(input, ResourceContext.of(null, firstContext.privateDataToReturn()));
 
             var captor = ArgumentCaptor.forClass(ReadResource.Request.class);
             verify(stub, times(2)).readResource(captor.capture());
@@ -619,19 +644,12 @@ class TerraformResourceTypeHandlerTest {
     class Update {
 
         @Test
-        @DisplayName("should call ReadResource for prior state then ApplyResourceChange with both states")
-        void shouldReadPriorStateThenApply() {
+        @DisplayName("should apply with the engine-supplied prior state and never call ReadResource")
+        void shouldUseEngineSuppliedPriorState() {
             // Given
             var input = camelCaseProps("ami-99999", "t3.large");
+            var storedPrior = camelCaseProps("ami-12345", "t2.micro");
 
-            // Mock the read call (to fetch prior state)
-            var priorState = encodeToDynamicValue(snakeCaseProps("ami-12345", "t2.micro"));
-            var readResponse = ReadResource.Response.newBuilder()
-                    .setNewState(priorState)
-                    .build();
-            when(stub.readResource(any())).thenReturn(readResponse);
-
-            // Mock the apply call
             var newState = encodeToDynamicValue(snakeCaseProps("ami-99999", "t3.large"));
             var applyResponse = ApplyResourceChange.Response.newBuilder()
                     .setNewState(newState)
@@ -639,17 +657,17 @@ class TerraformResourceTypeHandlerTest {
             when(stub.applyResourceChange(any())).thenReturn(applyResponse);
 
             // When
-            var result = handler.update(input);
+            var result = handler.update(input, ResourceContext.of(storedPrior, null));
 
-            // Then
-            verify(stub).readResource(any());
+            // Then — the prior state comes straight from the engine
+            verify(stub, never()).readResource(any());
             var applyCaptor = ArgumentCaptor.forClass(ApplyResourceChange.Request.class);
             verify(stub).applyResourceChange(applyCaptor.capture());
             var request = applyCaptor.getValue();
 
             assertEquals(TF_TYPE_NAME, request.getTypeName());
-            // Prior state should be the read result
-            assertNotEquals(DynamicValue.getDefaultInstance(), request.getPriorState());
+            assertEquals(encodeToDynamicValue(snakeCaseProps("ami-12345", "t2.micro")),
+                    request.getPriorState());
             // Planned state should be the desired state
             assertNotEquals(DynamicValue.getDefaultInstance(), request.getPlannedState());
             // Config should be set
@@ -698,9 +716,11 @@ class TerraformResourceTypeHandlerTest {
         }
 
         @Test
-        @DisplayName("should relay private data on delete")
+        @DisplayName("should relay engine-stored private data on delete")
         void shouldRelayPrivateDataOnDelete() {
-            // Given — first create with private data
+            // Given — create returned private bytes that the engine persisted;
+            // the delete happens later (possibly in a fresh process), so the
+            // bytes arrive through the context, not an in-memory field
             var input = camelCaseProps("ami-12345", "t2.micro");
             var privateBytes = ByteString.copyFromUtf8("secret-state");
             var createState = encodeToDynamicValue(snakeCaseProps("ami-12345", "t2.micro"));
@@ -709,17 +729,19 @@ class TerraformResourceTypeHandlerTest {
                     .setPrivate(privateBytes)
                     .build();
             when(stub.applyResourceChange(any())).thenReturn(createResponse);
-            handler.create(input);
+            var createContext = ResourceContext.<Map<String, Object>>empty();
+            handler.create(input, createContext);
 
-            // Now delete
+            // Now delete with the bytes the engine persisted after the create
             var deleteResponse = ApplyResourceChange.Response.newBuilder()
                     .setNewState(DynamicValue.getDefaultInstance())
                     .build();
             when(stub.applyResourceChange(any())).thenReturn(deleteResponse);
 
-            handler.delete(input);
+            handler.delete(input, ResourceContext.of(null, createContext.privateDataToReturn()));
 
-            // Then
+            // Then — the destroy plan carries them; its planned private (echoed
+            // by the default plan stub) is what the apply relays
             var captor = ArgumentCaptor.forClass(ApplyResourceChange.Request.class);
             verify(stub, times(2)).applyResourceChange(captor.capture());
             var deleteRequest = captor.getAllValues().get(1);

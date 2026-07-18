@@ -1,5 +1,6 @@
 package cloud.kitelang.provider.terraform.integration;
 
+import cloud.kitelang.provider.ResourceContext;
 import cloud.kitelang.provider.terraform.CtyCodec;
 import cloud.kitelang.provider.terraform.GoPluginClient;
 import cloud.kitelang.provider.terraform.TerraformBridgeProvider;
@@ -494,16 +495,18 @@ class TerraformBridgeIntegrationTest {
         var harness = newRandomStringHarness();
         var handler = harness.handler();
 
-        var created = handler.create(lettersOnlyProps(harness, 8));
+        var createContext = ResourceContext.<Map<String, Object>>empty();
+        var created = handler.create(lettersOnlyProps(harness, 8), createContext);
         var originalResult = created.get("result").toString();
         assertEquals(8, originalResult.length(),
                 "Created result should be 8 characters, got: " + originalResult);
 
-        // Every random_string attribute is immutable: the plan must flag
-        // requiresReplace on length and the bridge must destroy + recreate.
-        var updateProps = new LinkedHashMap<>(created);
-        updateProps.put("length", 10);
-        var updated = handler.update(updateProps);
+        // Every random_string attribute is immutable: planned against the
+        // engine-stored prior state, the plan must flag requiresReplace on
+        // length and the bridge must destroy + recreate.
+        var desired = lettersOnlyProps(harness, 10);
+        var updateContext = ResourceContext.of(created, createContext.privateDataToReturn());
+        var updated = handler.update(desired, updateContext);
 
         assertEquals(10, ((Number) updated.get("length")).intValue(),
                 "Updated state should carry the new length");
@@ -513,7 +516,9 @@ class TerraformBridgeIntegrationTest {
         assertNotEquals(originalResult, newResult,
                 "Replacement must generate a brand-new random string");
 
-        assertTrue(handler.delete(updated), "Cleanup delete should return true");
+        assertTrue(handler.delete(updated,
+                        ResourceContext.of(null, updateContext.privateDataToReturn())),
+                "Cleanup delete should return true");
     }
 
     // ==================================================================
@@ -546,6 +551,56 @@ class TerraformBridgeIntegrationTest {
                 "Result must be a concrete value after apply");
 
         assertTrue(handler.delete(created), "Cleanup delete should return true");
+    }
+
+    // ==================================================================
+    // Test 9: cross-process lifecycle — update/delete on state created by
+    // a PREVIOUS provider process instance (kitecorp/kite-providers#2)
+    // ==================================================================
+
+    @Test
+    @Order(9)
+    @DisplayName("update and delete should operate on state created by a previous provider process instance")
+    void crossProcessLifecycleWithStoredState() {
+        assumeProviderAvailable();
+
+        // --- Invocation 1: create, then persist state + private bytes like the engine would
+        var createHarness = newRandomStringHarness();
+        var createContext = ResourceContext.<Map<String, Object>>empty();
+        var created = createHarness.handler().create(lettersOnlyProps(createHarness, 8), createContext);
+        var originalResult = created.get("result").toString();
+        assertEquals(8, originalResult.length(),
+                "Created result should be 8 characters, got: " + originalResult);
+        var storedState = created;
+        var storedPrivate = createContext.privateDataToReturn();
+        client.close();
+        client = null; // provider process 1 is gone — nothing in-memory survives
+
+        // --- Invocation 2: fresh process + fresh handler; update 8 -> 10 with ONLY stored state.
+        // Every random_string attribute forces replacement, so a correct plan against the
+        // stored prior state must destroy the old string and generate a new one. A handler
+        // that lost the prior state would see no diff and return the old string unchanged.
+        var updateHarness = newRandomStringHarness();
+        var desired = lettersOnlyProps(updateHarness, 10);
+        var updateContext = ResourceContext.of(storedState, storedPrivate);
+        var updated = updateHarness.handler().update(desired, updateContext);
+        var newResult = updated.get("result").toString();
+        assertEquals(10, ((Number) updated.get("length")).intValue(),
+                "Updated state should carry the new length");
+        assertEquals(10, newResult.length(),
+                "Replacement should honour the new length, got: " + newResult);
+        assertNotEquals(originalResult, newResult,
+                "Replacement must generate a brand-new random string");
+        var stateAfterUpdate = updated;
+        var privateAfterUpdate = updateContext.privateDataToReturn();
+        client.close();
+        client = null; // provider process 2 is gone
+
+        // --- Invocation 3: fresh process; delete using only the stored state
+        var deleteHarness = newRandomStringHarness();
+        var deleteContext = ResourceContext.<Map<String, Object>>of(null, privateAfterUpdate);
+        assertTrue(deleteHarness.handler().delete(stateAfterUpdate, deleteContext),
+                "Delete on a previous process's state should succeed");
     }
 
     // ------------------------------------------------------------------

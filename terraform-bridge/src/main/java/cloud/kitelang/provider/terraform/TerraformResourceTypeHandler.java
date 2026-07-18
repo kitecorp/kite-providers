@@ -1,5 +1,6 @@
 package cloud.kitelang.provider.terraform;
 
+import cloud.kitelang.provider.ResourceContext;
 import com.google.protobuf.ByteString;
 import lombok.extern.slf4j.Slf4j;
 import tfplugin5.Tfplugin5.ApplyResourceChange;
@@ -23,6 +24,12 @@ import java.util.stream.Collectors;
  * {@code Map<String, Object>} property bags and Terraform's snake_case cty
  * msgpack-encoded {@link DynamicValue} messages.</p>
  *
+ * <p>The handler is stateless: prior state and provider-private bytes arrive in
+ * the per-operation {@link ResourceContext} (persisted by the engine between
+ * invocations) and the private bytes each apply returns go back out through it.
+ * A fresh handler in a fresh process therefore operates correctly on resources
+ * created by a previous process instance.</p>
+ *
  * <h3>CRUD mapping to Terraform RPCs</h3>
  * <p>Terraform core always calls {@code ValidateResourceTypeConfig} and
  * {@code PlanResourceChange} before {@code ApplyResourceChange}; providers rely on
@@ -30,10 +37,10 @@ import java.util.stream.Collectors;
  * replacement, so the bridge mirrors that sequence:</p>
  * <ul>
  *   <li>{@link #create} &rarr; {@code Validate} + {@code Plan} + {@code Apply} (null prior state)</li>
- *   <li>{@link #read}   &rarr; {@code ReadResource}</li>
- *   <li>{@link #update} &rarr; {@code ReadResource} + {@code Validate} + {@code Plan} + {@code Apply};
- *       when the plan flags {@code requiresReplace} the bridge destroys and recreates
- *       (the Kite provider protocol has no replace concept)</li>
+ *   <li>{@link #read}   &rarr; {@code ReadResource} with the stored private bytes</li>
+ *   <li>{@link #update} &rarr; {@code Validate} + {@code Plan} + {@code Apply} using the
+ *       engine-stored prior state; when the plan flags {@code requiresReplace} the bridge
+ *       destroys and recreates (the Kite provider protocol has no replace concept)</li>
  *   <li>{@link #delete} &rarr; {@code Validate} + {@code Plan} + {@code Apply} (null planned state)</li>
  *   <li>{@link #plan}   &rarr; {@code Validate} + {@code Plan} only — diff preview where
  *       computed values surface as {@link CtyCodec#UNKNOWN} ("known after apply")</li>
@@ -44,20 +51,6 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
-
-    /** Opaque provider-private state — stored across operations, never interpreted. */
-    private ByteString privateData = ByteString.EMPTY;
-
-    /**
-     * Last state returned by the provider for this resource, or null before create.
-     *
-     * <p>Used as the prior state when planning updates so the plan sees the real
-     * diff (desired vs. last applied) instead of desired vs. desired. In-memory
-     * only, like {@link #privateData} — persisting both through the engine across
-     * CLI invocations is tracked separately (docs/todo.md P1, prior-state
-     * persistence).</p>
-     */
-    private DynamicValue lastKnownState;
 
     /**
      * snake_case names of read-only (computed-only) attributes, e.g. {@code id}.
@@ -102,110 +95,148 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
                 .collect(Collectors.toUnmodifiableSet());
     }
 
+    // ---------------------------------------------------------------
+    // Legacy single-argument entry points — no stored state available
+    // ---------------------------------------------------------------
+
+    @Override
+    public Map<String, Object> create(Map<String, Object> properties) {
+        return create(properties, ResourceContext.empty());
+    }
+
+    @Override
+    public Map<String, Object> read(Map<String, Object> properties) {
+        return read(properties, ResourceContext.empty());
+    }
+
+    @Override
+    public Map<String, Object> update(Map<String, Object> properties) {
+        return update(properties, ResourceContext.empty());
+    }
+
+    @Override
+    public boolean delete(Map<String, Object> properties) {
+        return delete(properties, ResourceContext.empty());
+    }
+
+    // ---------------------------------------------------------------
+    // Context-carrying CRUD — engine-stored prior state + private bytes
+    // ---------------------------------------------------------------
+
     /**
      * Creates a new resource: validate + plan + {@code ApplyResourceChange} with
      * null prior state. The apply uses the plan's planned state and private bytes
-     * so computed values the provider filled in at plan time are honoured.
+     * so computed values the provider filled in at plan time are honoured. The
+     * private bytes the provider returns go back to the engine via the context.
      *
      * @param properties camelCase property map from Kite
+     * @param context    private bytes in (normally empty for create) and out
      * @return the created resource state in camelCase
      */
     @Override
-    public Map<String, Object> create(Map<String, Object> properties) {
+    public Map<String, Object> create(Map<String, Object> properties,
+                                      ResourceContext<Map<String, Object>> context) {
         var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
         var proposed = encodeToDynamicValue(snakeProps);
         var config = encodeToDynamicValue(withoutReadOnlyAttributes(snakeProps));
 
         validateConfig(config, "create");
-        var plan = planChange(nullDynamicValue(), proposed, config, "create");
+        var plan = planChange(nullDynamicValue(), proposed, config,
+                ByteString.copyFrom(context.privateData()), "create");
 
         log.debug("create {} — sending ApplyResourceChange", tfTypeName);
         var response = applyChange(nullDynamicValue(), config, plan, "create");
+        context.returnPrivateData(response.getPrivate().toByteArray());
         return decodeResponse(response.getNewState());
     }
 
     /**
-     * Reads the current state via {@code ReadResource}.
+     * Reads the current state via {@code ReadResource}, passing the engine-stored
+     * private bytes and returning the refreshed ones via the context.
      *
      * @param properties camelCase property map identifying the resource
+     * @param context    private bytes in and out
      * @return the current resource state in camelCase
      */
     @Override
-    public Map<String, Object> read(Map<String, Object> properties) {
+    public Map<String, Object> read(Map<String, Object> properties,
+                                    ResourceContext<Map<String, Object>> context) {
         var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
         var encodedState = encodeToDynamicValue(snakeProps);
 
         var request = ReadResource.Request.newBuilder()
                 .setTypeName(tfTypeName)
                 .setCurrentState(encodedState)
-                .setPrivate(privateData)
+                .setPrivate(ByteString.copyFrom(context.privateData()))
                 .build();
 
         log.debug("read {} — sending ReadResource", tfTypeName);
         var response = client.getStub().readResource(request);
         checkDiagnostics(response.getDiagnosticsList(), "read");
 
-        privateData = response.getPrivate();
-        lastKnownState = response.getNewState();
+        context.returnPrivateData(response.getPrivate().toByteArray());
         return decodeResponse(response.getNewState());
     }
 
     /**
-     * Updates a resource: refresh the prior state via {@code ReadResource}, then
-     * validate + plan the change. When the plan flags {@code requiresReplace} the
-     * bridge destroys the old resource and recreates it (Terraform core semantics —
-     * the Kite provider protocol has no replace concept, so the bridge owns this);
-     * otherwise the change is applied in place with the plan's planned state.
+     * Updates a resource using the engine-stored prior state: validate + plan the
+     * change against what was actually applied last time. When the plan flags
+     * {@code requiresReplace} the bridge destroys the old resource and recreates
+     * it (Terraform core semantics — the Kite provider protocol has no replace
+     * concept, so the bridge owns this); otherwise the change is applied in place
+     * with the plan's planned state.
+     *
+     * <p>Without engine-supplied prior state (direct handler invocation) the
+     * desired properties are the only available approximation, which degenerates
+     * the plan to a no-diff; correct diffs require the engine to supply the
+     * stored state.</p>
      *
      * @param properties the desired camelCase property map
+     * @param context    prior state + private bytes in, updated private bytes out
      * @return the updated resource state in camelCase
      */
     @Override
-    public Map<String, Object> update(Map<String, Object> properties) {
+    public Map<String, Object> update(Map<String, Object> properties,
+                                      ResourceContext<Map<String, Object>> context) {
         var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
         // Proposed state keeps computed values (mirrors Terraform core, which
         // merges prior computed values into the proposal); config must not.
         var proposed = encodeToDynamicValue(snakeProps);
         var config = encodeToDynamicValue(withoutReadOnlyAttributes(snakeProps));
 
-        // Refresh the prior state from the provider. Prefer the last applied state
-        // as the read input; without it (fresh process) the desired props are the
-        // only available approximation until prior-state persistence lands.
-        var readRequest = ReadResource.Request.newBuilder()
-                .setTypeName(tfTypeName)
-                .setCurrentState(lastKnownState != null ? lastKnownState : proposed)
-                .setPrivate(privateData)
-                .build();
-
-        log.debug("update {} — refreshing prior state via ReadResource", tfTypeName);
-        var readResponse = client.getStub().readResource(readRequest);
-        checkDiagnostics(readResponse.getDiagnosticsList(), "update (read prior)");
-        privateData = readResponse.getPrivate();
-        var priorState = readResponse.getNewState();
+        var priorState = context.priorState() != null
+                ? encodeToDynamicValue(TerraformPropertyMapper.toSnakeCase(context.priorState()))
+                : proposed;
+        var priorPrivate = ByteString.copyFrom(context.privateData());
 
         validateConfig(config, "update");
-        var plan = planChange(priorState, proposed, config, "update");
+        var plan = planChange(priorState, proposed, config, priorPrivate, "update");
 
         if (plan.getRequiresReplaceCount() > 0) {
             log.info("update {} — plan requires replacement ({}), destroying and recreating",
                     tfTypeName, describeAttributePaths(plan.getRequiresReplaceList()));
-            return replace(priorState, config);
+            return replace(priorState, config, priorPrivate, context);
         }
 
         log.debug("update {} — sending ApplyResourceChange", tfTypeName);
         var response = applyChange(priorState, config, plan, "update");
+        context.returnPrivateData(response.getPrivate().toByteArray());
         return decodeResponse(response.getNewState());
     }
 
     /**
      * Deletes a resource: validate + plan the destroy (null proposed state and
-     * config), then {@code ApplyResourceChange} with the plan's output.
+     * config) with the engine-stored private bytes, then {@code ApplyResourceChange}
+     * with the plan's output. The engine passes the stored prior state as the
+     * property map, so the destroy operates on what was actually applied.
      *
-     * @param properties camelCase property map identifying the resource to delete
+     * @param properties camelCase prior state identifying the resource to delete
+     * @param context    private bytes in, post-destroy private bytes out
      * @return {@code true} always (TF indicates failure via diagnostics/exceptions)
      */
     @Override
-    public boolean delete(Map<String, Object> properties) {
+    public boolean delete(Map<String, Object> properties,
+                          ResourceContext<Map<String, Object>> context) {
         var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
         var priorState = encodeToDynamicValue(snakeProps);
 
@@ -213,11 +244,12 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
         // required-attribute checks. The destroy plan itself uses the null
         // proposed state and config, matching a resource leaving the config.
         validateConfig(encodeToDynamicValue(withoutReadOnlyAttributes(snakeProps)), "delete");
-        var plan = planChange(priorState, nullDynamicValue(), nullDynamicValue(), "delete");
+        var plan = planChange(priorState, nullDynamicValue(), nullDynamicValue(),
+                ByteString.copyFrom(context.privateData()), "delete");
 
         log.debug("delete {} — sending ApplyResourceChange with null planned state", tfTypeName);
-        applyChange(priorState, nullDynamicValue(), plan, "delete");
-        lastKnownState = null;
+        var response = applyChange(priorState, nullDynamicValue(), plan, "delete");
+        context.returnPrivateData(response.getPrivate().toByteArray());
         return true;
     }
 
@@ -226,7 +258,9 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
      *
      * <p>Computed attributes the provider cannot resolve until apply time come back
      * as the {@link CtyCodec#UNKNOWN} sentinel ("known after apply" in Terraform
-     * terms), so {@code kite plan} output can distinguish them from real values.</p>
+     * terms), so {@code kite plan} output can distinguish them from real values.
+     * The preview runs without stored private bytes — the engine computes diffs
+     * itself and only calls this dormant path without persistence involved.</p>
      *
      * @param priorState    the current camelCase state, or null for a create preview
      * @param proposedState the desired camelCase state
@@ -243,7 +277,7 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
                 : encodeToDynamicValue(TerraformPropertyMapper.toSnakeCase(priorState));
 
         validateConfig(config, "plan");
-        var response = planChange(prior, proposed, config, "plan");
+        var response = planChange(prior, proposed, config, ByteString.EMPTY, "plan");
         return decodeResponse(response.getPlannedState());
     }
 
@@ -255,19 +289,24 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
      * Destroys the old resource and creates a replacement with the desired config.
      * Each step is planned before it is applied, exactly like two separate
      * Terraform operations. The recreate proposes the bare config (no computed
-     * values carried over) so the provider derives everything fresh.
+     * values carried over) and starts from empty private bytes — nothing of the
+     * destroyed resource survives. The recreate's private bytes go back to the
+     * engine via the context.
      */
-    private Map<String, Object> replace(DynamicValue priorState, DynamicValue config) {
+    private Map<String, Object> replace(DynamicValue priorState, DynamicValue config,
+                                        ByteString priorPrivate,
+                                        ResourceContext<Map<String, Object>> context) {
         // Destroy: proposed state and config are null, mirroring a destroy plan
         var destroyPlan = planChange(priorState, nullDynamicValue(), nullDynamicValue(),
-                "update (plan destroy for replace)");
+                priorPrivate, "update (plan destroy for replace)");
         applyChange(priorState, nullDynamicValue(), destroyPlan, "update (destroy for replace)");
 
         // Recreate from scratch with the desired configuration
         var createPlan = planChange(nullDynamicValue(), config, config,
-                "update (plan create for replace)");
+                ByteString.EMPTY, "update (plan create for replace)");
         var response = applyChange(nullDynamicValue(), config, createPlan,
                 "update (create for replace)");
+        context.returnPrivateData(response.getPrivate().toByteArray());
         return decodeResponse(response.getNewState());
     }
 
@@ -304,23 +343,24 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     }
 
     /**
-     * Calls {@code PlanResourceChange} with the handler's current private state
-     * and throws on ERROR diagnostics.
+     * Calls {@code PlanResourceChange} and throws on ERROR diagnostics.
      *
      * @param priorState       cty-encoded prior state ({@code nil} for create)
      * @param proposedNewState cty-encoded desired state ({@code nil} for destroy)
      * @param config           cty-encoded configuration ({@code nil} for destroy)
+     * @param priorPrivate     provider-private bytes recorded at the last apply
      * @param operation        the operation name for error reporting
      * @return the full plan response (planned state, private bytes, requiresReplace)
      */
     private PlanResourceChange.Response planChange(DynamicValue priorState, DynamicValue proposedNewState,
-                                                   DynamicValue config, String operation) {
+                                                   DynamicValue config, ByteString priorPrivate,
+                                                   String operation) {
         var request = PlanResourceChange.Request.newBuilder()
                 .setTypeName(tfTypeName)
                 .setPriorState(priorState)
                 .setProposedNewState(proposedNewState)
                 .setConfig(config)
-                .setPriorPrivate(privateData)
+                .setPriorPrivate(priorPrivate)
                 .build();
 
         log.debug("{} {} — sending PlanResourceChange", operation, tfTypeName);
@@ -331,8 +371,8 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
 
     /**
      * Calls {@code ApplyResourceChange} with the plan's planned state and private
-     * bytes, throws on ERROR diagnostics, and records the returned private and
-     * new state for subsequent operations.
+     * bytes and throws on ERROR diagnostics. Callers pull the returned state and
+     * private bytes from the response.
      *
      * @param priorState cty-encoded prior state
      * @param config     cty-encoded configuration ({@code nil} for destroy)
@@ -352,9 +392,6 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
 
         var response = client.getStub().applyResourceChange(request);
         checkDiagnostics(response.getDiagnosticsList(), operation);
-
-        privateData = response.getPrivate();
-        lastKnownState = response.getNewState();
         return response;
     }
 
