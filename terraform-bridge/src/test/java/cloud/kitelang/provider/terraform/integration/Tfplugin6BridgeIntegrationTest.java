@@ -148,17 +148,7 @@ class Tfplugin6BridgeIntegrationTest {
             provider.init();
             provider.configure(providerConfig(provider));
 
-            // Built directly from the fetched schema (same pattern as the
-            // tfplugin5 harness): tfcoremock mirrors every resource as a
-            // same-named data source, and the registry keeps only the handler
-            // registered last (kitecorp/kite-providers#13), so
-            // getResourceType("SimpleResource") yields the data source handler.
-            var simpleSchema = client.rpc().getProviderSchema()
-                    .resourceSchemas().get("tfcoremock_simple_resource");
-            var handler = new TerraformResourceTypeHandler(
-                    "tfcoremock_simple_resource", "SimpleResource", client,
-                    buildObjectType(simpleSchema.block()),
-                    TerraformResourceTypeHandler.readOnlyAttributeNames(simpleSchema.block()));
+            var handler = simpleResourceHandler();
             var attributeNames = simpleResourceAttributeNames(provider);
             assertTrue(attributeNames.containsAll(java.util.List.of("string", "integer", "bool", "id")),
                     "tfcoremock_simple_resource should have string/integer/bool/id attributes, found: "
@@ -207,6 +197,116 @@ class Tfplugin6BridgeIntegrationTest {
         }
     }
 
+    // ==================================================================
+    // Test 4: provider config schema exposes tfcoremock's real attributes
+    // ==================================================================
+
+    @Test
+    @Order(4)
+    @DisplayName("should expose tfcoremock's provider config schema attributes")
+    void providerConfigSchemaExposesRealAttributes() throws Exception {
+        assumeProviderAvailable();
+        newBridgeProvider().init();
+
+        try {
+            var providerSchema = client.rpc().getProviderSchema().provider();
+            assertNotNull(providerSchema, "tfcoremock should expose a provider config schema");
+
+            var attributeNames = providerSchema.block().attributes().stream()
+                    .map(cloud.kitelang.provider.terraform.TfAttribute::name)
+                    .sorted()
+                    .toList();
+            // Pinned to tfcoremock 0.5.0's published provider block
+            assertEquals(java.util.List.of(
+                            "data_directory", "fail_on_create", "fail_on_delete",
+                            "fail_on_read", "fail_on_update",
+                            "resource_directory", "use_only_state"),
+                    attributeNames);
+        } finally {
+            client.close();
+            client = null;
+        }
+    }
+
+    // ==================================================================
+    // Test 5: provider config demonstrably reaches Configure — the
+    // provider's observable behaviour changes based on the config values
+    // ==================================================================
+
+    @Test
+    @Order(5)
+    @DisplayName("should change provider behaviour through Configure: state directory and forced create failures")
+    void providerConfigReachesConfigure() throws Exception {
+        assumeProviderAvailable();
+        var provider = newBridgeProvider();
+
+        try {
+            provider.init();
+
+            // Fresh directory so the file assertion below can only be satisfied
+            // by tfcoremock honouring the resource_directory we configure now.
+            var configuredDirectory = Files.createTempDirectory("kite-config-proof");
+            var config = providerConfig(provider);
+            config.put("resourceDirectory", configuredDirectory.toString());
+            config.put("failOnCreate", java.util.List.of("fail-me"));
+            provider.configure(config);
+
+            var handler = simpleResourceHandler();
+            var attributeNames = simpleResourceAttributeNames(provider);
+
+            // Config value 1 (resource_directory): the created resource's state
+            // file lands in the directory the config named.
+            var createProps = propsWithNulls(attributeNames);
+            createProps.put("id", "kite-config-proof");
+            createProps.put("string", "configured");
+            var created = handler.create(createProps, ResourceContext.empty());
+            assertEquals("kite-config-proof", created.get("id"));
+            assertTrue(Files.exists(configuredDirectory.resolve("kite-config-proof.json")),
+                    "tfcoremock should persist the resource JSON in the configured resource_directory");
+
+            // Config value 2 (fail_on_create): tfcoremock force-fails creates
+            // for ids listed in the config.
+            var failProps = propsWithNulls(attributeNames);
+            failProps.put("id", "fail-me");
+            var exception = assertThrows(RuntimeException.class,
+                    () -> handler.create(failProps, ResourceContext.empty()));
+            assertTrue(exception.getMessage().contains("forced failure"),
+                    "fail_on_create should force a create failure, got: " + exception.getMessage());
+        } finally {
+            provider.stop();
+            client = null;
+        }
+    }
+
+    // ==================================================================
+    // Test 6: invalid provider config is rejected naming the attribute
+    // ==================================================================
+
+    @Test
+    @Order(6)
+    @DisplayName("should reject a config attribute the provider schema does not define, naming it")
+    void unknownProviderConfigAttributeIsRejected() throws Exception {
+        assumeProviderAvailable();
+        var provider = newBridgeProvider();
+
+        try {
+            provider.init();
+
+            var config = providerConfig(provider);
+            config.put("notARealAttribute", "some-value");
+
+            var exception = assertThrows(IllegalArgumentException.class,
+                    () -> provider.configure(config));
+            assertTrue(exception.getMessage().contains("not_a_real_attribute"),
+                    "rejection should name the offending attribute, got: " + exception.getMessage());
+            assertTrue(exception.getMessage().contains("resource_directory"),
+                    "rejection should list the valid attributes, got: " + exception.getMessage());
+        } finally {
+            provider.stop();
+            client = null;
+        }
+    }
+
     // ------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------
@@ -241,6 +341,22 @@ class Tfplugin6BridgeIntegrationTest {
                 "tfcoremock provider config should have resource_directory, found: " + config.keySet());
         config.put("resourceDirectory", resourceDirectory.toString());
         return config;
+    }
+
+    /**
+     * Builds a handler for {@code tfcoremock_simple_resource} directly from the
+     * fetched schema (same pattern as the tfplugin5 harness): tfcoremock mirrors
+     * every resource as a same-named data source, and the registry keeps only the
+     * handler registered last (kitecorp/kite-providers#13), so
+     * {@code getResourceType("SimpleResource")} yields the data source handler.
+     */
+    private TerraformResourceTypeHandler simpleResourceHandler() {
+        var simpleSchema = client.rpc().getProviderSchema()
+                .resourceSchemas().get("tfcoremock_simple_resource");
+        return new TerraformResourceTypeHandler(
+                "tfcoremock_simple_resource", "SimpleResource", client,
+                buildObjectType(simpleSchema.block()),
+                TerraformResourceTypeHandler.readOnlyAttributeNames(simpleSchema.block()));
     }
 
     /** snake_case attribute names of {@code tfcoremock_simple_resource}, from the live schema. */

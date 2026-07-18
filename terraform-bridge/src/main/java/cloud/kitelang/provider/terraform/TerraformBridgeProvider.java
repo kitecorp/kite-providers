@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Terraform Bridge Provider for Kite.
@@ -63,8 +65,14 @@ public class TerraformBridgeProvider extends KiteProvider {
     /** Domain classification keyed by Kite type name (e.g., "Vpc" -> "networking"). */
     private final Map<String, String> schemaDomains = new HashMap<>();
 
+    /** Cty object type of a provider without any config schema block. */
+    private static final String EMPTY_OBJECT_TYPE = "[\"object\",{}]";
+
     /** JSON-encoded cty object type for the provider config schema (used in configure()). */
-    private String providerConfigSchemaType;
+    private String providerConfigSchemaType = EMPTY_OBJECT_TYPE;
+
+    /** snake_case attribute names of the provider config schema (used in configure()). */
+    private Set<String> providerConfigAttributeNames = Set.of();
 
     /**
      * Creates the bridge provider from environment variables.
@@ -135,6 +143,9 @@ public class TerraformBridgeProvider extends KiteProvider {
         // Build the provider-level config schema type (used in configure())
         if (providerSchema.provider() != null) {
             this.providerConfigSchemaType = buildObjectType(providerSchema.provider().block());
+            this.providerConfigAttributeNames = providerSchema.provider().block().attributes().stream()
+                    .map(TfAttribute::name)
+                    .collect(Collectors.toUnmodifiableSet());
         }
 
         // Register resource types
@@ -158,19 +169,27 @@ public class TerraformBridgeProvider extends KiteProvider {
     /**
      * Configures the TF provider with runtime credentials/settings.
      *
-     * <p>Converts camelCase config keys to snake_case, encodes as cty msgpack,
-     * and sends the {@code Configure} RPC to the TF provider.</p>
+     * <p>Converts camelCase config keys to snake_case, rejects keys that are not
+     * in the provider's config schema (silently dropping them would configure the
+     * provider with different settings than the user wrote), encodes as cty
+     * msgpack, validates via the protocol's provider-config validation RPC, and
+     * sends the validated config to the {@code Configure} RPC.</p>
      *
-     * @param configuration a {@code Map<String, Object>} with provider configuration
-     * @throws RuntimeException if the TF provider returns ERROR diagnostics
+     * @param configuration a {@code Map<String, Object>} with provider configuration,
+     *                      or null for an empty configuration
+     * @throws IllegalArgumentException if a config key is not a provider config attribute
+     * @throws RuntimeException         if the TF provider returns ERROR diagnostics
      */
     @Override
     @SuppressWarnings("unchecked")
     public void configure(Object configuration) {
         super.configure(configuration);
 
-        var configMap = (Map<String, Object>) configuration;
+        var configMap = configuration != null
+                ? (Map<String, Object>) configuration
+                : Map.<String, Object>of();
         var snakeCaseConfig = TerraformPropertyMapper.toSnakeCase(configMap);
+        rejectUnknownAttributes(snakeCaseConfig.keySet());
 
         log.debug("Configuring TF provider '{}' with {} properties", providerName, snakeCaseConfig.size());
 
@@ -178,10 +197,34 @@ public class TerraformBridgeProvider extends KiteProvider {
         var codec = new CtyCodec();
         var encoded = codec.encode(snakeCaseConfig, providerConfigSchemaType);
 
-        var diagnostics = client.rpc().configure(encoded);
+        // Terraform core validates provider config before configuring; on
+        // tfplugin5 the validation additionally rewrites the config (defaults),
+        // so Configure must receive the prepared bytes.
+        var validation = client.rpc().validateProviderConfig(encoded);
+        TerraformDiagnostics.check(validation.diagnostics(), "provider config validation", providerName);
+
+        var diagnostics = client.rpc().configure(validation.preparedConfig());
         TerraformDiagnostics.check(diagnostics, "configure", providerName);
 
         log.info("TF provider '{}' configured successfully", providerName);
+    }
+
+    /**
+     * Rejects config keys that do not exist in the provider's config schema,
+     * naming the offending attribute(s) — mirrors Terraform core's
+     * "Unsupported argument" check, which also happens client-side.
+     */
+    private void rejectUnknownAttributes(Set<String> snakeCaseKeys) {
+        var unknown = snakeCaseKeys.stream()
+                .filter(key -> !providerConfigAttributeNames.contains(key))
+                .sorted()
+                .toList();
+        if (!unknown.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Unknown provider configuration attribute(s) %s for provider '%s'. Valid attributes: %s"
+                            .formatted(unknown, providerName,
+                                    providerConfigAttributeNames.stream().sorted().toList()));
+        }
     }
 
     /**

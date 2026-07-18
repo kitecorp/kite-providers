@@ -35,6 +35,20 @@ final class Tfplugin5Rpc implements TerraformProviderRpc {
     }
 
     @Override
+    public ProviderConfigValidation validateProviderConfig(byte[] configMsgpack) {
+        var request = Tfplugin5.PrepareProviderConfig.Request.newBuilder()
+                .setConfig(dynamicValue(configMsgpack))
+                .build();
+        var response = stub.prepareProviderConfig(request);
+        // Legacy SDKs fill defaults into prepared_config; an empty prepared
+        // config means "unchanged", so Configure gets the original bytes.
+        var prepared = response.getPreparedConfig().getMsgpack().toByteArray();
+        return new ProviderConfigValidation(
+                prepared.length > 0 ? prepared : configMsgpack,
+                toDiagnostics(response.getDiagnosticsList()));
+    }
+
+    @Override
     public List<TfDiagnostic> configure(byte[] configMsgpack) {
         var request = Tfplugin5.Configure.Request.newBuilder()
                 .setConfig(dynamicValue(configMsgpack))
@@ -179,7 +193,8 @@ final class Tfplugin5Rpc implements TerraformProviderRpc {
 
     private static List<TfDiagnostic> toDiagnostics(List<Tfplugin5.Diagnostic> diagnostics) {
         return diagnostics.stream()
-                .map(d -> new TfDiagnostic(toSeverity(d.getSeverity()), d.getSummary(), d.getDetail()))
+                .map(d -> new TfDiagnostic(toSeverity(d.getSeverity()), d.getSummary(), d.getDetail(),
+                        d.hasAttribute() ? toAttributePath(d.getAttribute()) : null))
                 .toList();
     }
 

@@ -284,6 +284,49 @@ class Tfplugin6RpcTest {
         }
     }
 
+    @Nested
+    @DisplayName("validateProviderConfig()")
+    class ValidateProviderConfigMapping {
+
+        @Test
+        @DisplayName("should call the ValidateProviderConfig RPC and pass the config through unchanged")
+        void shouldCallValidateProviderConfig() {
+            // Protocol 6 dropped tfplugin5's prepare semantics: the response carries
+            // no prepared config, so the input must pass through to Configure as-is.
+            when(stub.validateProviderConfig(any()))
+                    .thenReturn(ValidateProviderConfig.Response.getDefaultInstance());
+
+            var validation = newRpc().validateProviderConfig(CONFIG);
+
+            assertArrayEquals(CONFIG, validation.preparedConfig());
+            assertEquals(List.of(), validation.diagnostics());
+            var captor = ArgumentCaptor.forClass(ValidateProviderConfig.Request.class);
+            verify(stub).validateProviderConfig(captor.capture());
+            assertEquals(ByteString.copyFrom(CONFIG), captor.getValue().getConfig().getMsgpack());
+        }
+
+        @Test
+        @DisplayName("should map an ERROR diagnostic with its attribute path")
+        void shouldMapDiagnosticAttributePath() {
+            when(stub.validateProviderConfig(any())).thenReturn(ValidateProviderConfig.Response.newBuilder()
+                    .addDiagnostics(Diagnostic.newBuilder()
+                            .setSeverity(Diagnostic.Severity.ERROR)
+                            .setSummary("Invalid directory")
+                            .setDetail("not a directory")
+                            .setAttribute(AttributePath.newBuilder()
+                                    .addSteps(AttributePath.Step.newBuilder()
+                                            .setAttributeName("resource_directory"))))
+                    .build());
+
+            var validation = newRpc().validateProviderConfig(CONFIG);
+
+            assertEquals(1, validation.diagnostics().size());
+            var diagnostic = validation.diagnostics().get(0);
+            assertEquals(TfDiagnostic.Severity.ERROR, diagnostic.severity());
+            assertEquals("resource_directory", diagnostic.attributePath().render());
+        }
+    }
+
     // ---------------------------------------------------------------
     // 4. ValidateResourceConfig (renamed from ValidateResourceTypeConfig)
     // ---------------------------------------------------------------

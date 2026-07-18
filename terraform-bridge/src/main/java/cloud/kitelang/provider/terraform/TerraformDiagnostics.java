@@ -27,8 +27,8 @@ final class TerraformDiagnostics {
     static void check(List<TfDiagnostic> diagnostics, String operation, String subject) {
         diagnostics.stream()
                 .filter(d -> d.severity() == TfDiagnostic.Severity.WARNING)
-                .forEach(d -> log.warn("Terraform {} warning for {}: {} — {}",
-                        operation, subject, d.summary(), d.detail()));
+                .forEach(d -> log.warn("Terraform {} warning for {}: {}",
+                        operation, subject, render(d)));
 
         var errors = diagnostics.stream()
                 .filter(d -> d.severity() == TfDiagnostic.Severity.ERROR)
@@ -36,9 +36,21 @@ final class TerraformDiagnostics {
 
         if (!errors.isEmpty()) {
             var message = errors.stream()
-                    .map(d -> d.summary() + ": " + d.detail())
+                    .map(TerraformDiagnostics::render)
                     .collect(Collectors.joining("; "));
             throw new RuntimeException("Terraform %s failed: %s".formatted(operation, message));
         }
+    }
+
+    /**
+     * Renders one diagnostic, naming the offending attribute when the provider
+     * attached a path — config rejections are useless without it.
+     */
+    private static String render(TfDiagnostic diagnostic) {
+        var message = diagnostic.summary() + ": " + diagnostic.detail();
+        if (diagnostic.attributePath() != null && !diagnostic.attributePath().steps().isEmpty()) {
+            message += " (attribute: " + diagnostic.attributePath().render() + ")";
+        }
+        return message;
     }
 }

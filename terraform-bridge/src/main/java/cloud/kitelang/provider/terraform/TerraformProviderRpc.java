@@ -12,6 +12,7 @@ import java.util.Map;
  * <table>
  *   <tr><th>Operation</th><th>tfplugin5 RPC</th><th>tfplugin6 RPC</th></tr>
  *   <tr><td>{@link #getProviderSchema()}</td><td>{@code GetSchema}</td><td>{@code GetProviderSchema}</td></tr>
+ *   <tr><td>{@link #validateProviderConfig(byte[])}</td><td>{@code PrepareProviderConfig}</td><td>{@code ValidateProviderConfig}</td></tr>
  *   <tr><td>{@link #configure(byte[])}</td><td>{@code Configure}</td><td>{@code ConfigureProvider}</td></tr>
  *   <tr><td>{@link #validateResourceConfig}</td><td>{@code ValidateResourceTypeConfig}</td><td>{@code ValidateResourceConfig}</td></tr>
  *   <tr><td>{@link #planResourceChange}</td><td colspan=2>{@code PlanResourceChange}</td></tr>
@@ -40,6 +41,19 @@ public interface TerraformProviderRpc {
      * @return the provider, resource, and data source schemas in neutral form
      */
     ProviderSchema getProviderSchema();
+
+    /**
+     * Validates the provider configuration before {@link #configure(byte[])}.
+     *
+     * <p>tfplugin5's {@code PrepareProviderConfig} may additionally rewrite the
+     * config (legacy SDKs fill defaults there); the returned prepared config is
+     * what must be sent to Configure. tfplugin6 dropped the prepare semantics,
+     * so its implementation passes the input config through unchanged.</p>
+     *
+     * @param configMsgpack cty msgpack-encoded provider configuration
+     * @return the config to send to Configure plus the response diagnostics
+     */
+    ProviderConfigValidation validateProviderConfig(byte[] configMsgpack);
 
     /**
      * Configures the provider with runtime credentials/settings.
@@ -121,6 +135,16 @@ public interface TerraformProviderRpc {
             resourceSchemas = Map.copyOf(resourceSchemas);
             dataSourceSchemas = Map.copyOf(dataSourceSchemas);
         }
+    }
+
+    /**
+     * Neutral provider-config validation response.
+     *
+     * @param preparedConfig cty msgpack config to send to Configure — tfplugin5's
+     *                       prepared rewrite when present, otherwise the input config
+     * @param diagnostics    the response diagnostics
+     */
+    record ProviderConfigValidation(byte[] preparedConfig, List<TfDiagnostic> diagnostics) {
     }
 
     /**

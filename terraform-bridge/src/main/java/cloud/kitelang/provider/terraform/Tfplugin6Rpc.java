@@ -49,6 +49,18 @@ final class Tfplugin6Rpc implements TerraformProviderRpc {
     }
 
     @Override
+    public ProviderConfigValidation validateProviderConfig(byte[] configMsgpack) {
+        var request = Tfplugin6.ValidateProviderConfig.Request.newBuilder()
+                .setConfig(dynamicValue(configMsgpack))
+                .build();
+        var response = stub.validateProviderConfig(request);
+        // Protocol 6 dropped tfplugin5's prepare semantics: validation never
+        // rewrites the config, so the input passes through to Configure.
+        return new ProviderConfigValidation(configMsgpack,
+                toDiagnostics(response.getDiagnosticsList()));
+    }
+
+    @Override
     public List<TfDiagnostic> validateResourceConfig(String typeName, byte[] configMsgpack) {
         var request = Tfplugin6.ValidateResourceConfig.Request.newBuilder()
                 .setTypeName(typeName)
@@ -221,7 +233,8 @@ final class Tfplugin6Rpc implements TerraformProviderRpc {
 
     private static List<TfDiagnostic> toDiagnostics(List<Tfplugin6.Diagnostic> diagnostics) {
         return diagnostics.stream()
-                .map(d -> new TfDiagnostic(toSeverity(d.getSeverity()), d.getSummary(), d.getDetail()))
+                .map(d -> new TfDiagnostic(toSeverity(d.getSeverity()), d.getSummary(), d.getDetail(),
+                        d.hasAttribute() ? toAttributePath(d.getAttribute()) : null))
                 .toList();
     }
 
