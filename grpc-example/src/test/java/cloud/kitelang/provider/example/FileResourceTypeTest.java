@@ -1,12 +1,14 @@
 package cloud.kitelang.provider.example;
 
 import cloud.kitelang.provider.Diagnostic;
+import cloud.kitelang.provider.ResourceContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -117,6 +119,42 @@ class FileResourceTypeTest {
         boolean deleted = resourceType.delete(resource);
 
         assertFalse(deleted);
+    }
+
+    @Test
+    void createReturnsChecksumAsPrivateData() {
+        var resource = new FileResource();
+        resource.setPath(tempDir.resolve("private.txt").toString());
+        resource.setContent("Hello, World!");
+
+        var context = ResourceContext.<FileResource>empty();
+        var created = resourceType.create(resource, context);
+
+        // Private bytes carry the applied content checksum so a later operation
+        // (possibly in a fresh provider process) can prove state round-tripped
+        assertEquals("sha256:dffd6021bb2bd5b0af676290809ec3a53191dd81c7f70a4b28688a362182986f",
+                new String(context.privateDataToReturn(), StandardCharsets.UTF_8));
+        assertEquals("dffd6021bb2bd5b0af676290809ec3a53191dd81c7f70a4b28688a362182986f",
+                created.getChecksum());
+    }
+
+    @Test
+    void updateReturnsRefreshedChecksumAsPrivateData() throws IOException {
+        var filePath = tempDir.resolve("private-update.txt");
+        Files.writeString(filePath, "Hello, World!");
+
+        var resource = new FileResource();
+        resource.setPath(filePath.toString());
+        resource.setContent("updated content");
+
+        // The engine supplies the private bytes stored at create time
+        var context = ResourceContext.<FileResource>of(null,
+                "sha256:dffd6021bb2bd5b0af676290809ec3a53191dd81c7f70a4b28688a362182986f"
+                        .getBytes(StandardCharsets.UTF_8));
+        resourceType.update(resource, context);
+
+        assertEquals("sha256:5c27d032a4fb58bbcf2271429b03b77e91876487da355ee2d406e8b30fb5076e",
+                new String(context.privateDataToReturn(), StandardCharsets.UTF_8));
     }
 
     @Test

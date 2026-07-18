@@ -1,6 +1,7 @@
 package cloud.kitelang.provider.example;
 
 import cloud.kitelang.provider.Diagnostic;
+import cloud.kitelang.provider.ResourceContext;
 import cloud.kitelang.provider.ResourceTypeHandler;
 import lombok.extern.slf4j.Slf4j;
 
@@ -121,6 +122,37 @@ public class FileResourceType extends ResourceTypeHandler<FileResource> {
         } catch (IOException e) {
             throw new RuntimeException("Failed to delete file: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * Creates the file and hands the applied checksum back as provider-private
+     * bytes ({@code sha256:<hex>}). Demonstrates the {@link ResourceContext}
+     * round-trip: the engine persists the bytes and supplies them on later
+     * operations, so a fresh provider process can prove state survived.
+     */
+    @Override
+    public FileResource create(FileResource resource, ResourceContext<FileResource> context) {
+        var created = create(resource);
+        context.returnPrivateData(privateDataFor(created));
+        return created;
+    }
+
+    /**
+     * Updates the file and refreshes the private bytes to the new checksum.
+     */
+    @Override
+    public FileResource update(FileResource resource, ResourceContext<FileResource> context) {
+        var updated = update(resource);
+        context.returnPrivateData(privateDataFor(updated));
+        return updated;
+    }
+
+    /**
+     * Private bytes for a resource: the applied content checksum, tagged so
+     * tests can assert the exact round-tripped value.
+     */
+    private byte[] privateDataFor(FileResource resource) {
+        return ("sha256:" + resource.getChecksum()).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
