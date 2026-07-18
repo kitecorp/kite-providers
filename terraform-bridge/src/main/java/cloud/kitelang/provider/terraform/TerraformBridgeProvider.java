@@ -141,6 +141,21 @@ public class TerraformBridgeProvider extends KiteProvider {
         // Fetch the full provider schema via the version-agnostic facade
         var providerSchema = client.rpc().getProviderSchema();
 
+        // A provider can answer GetProviderSchema with error diagnostics
+        // INSTEAD of schemas (e.g. tfcoremock rejecting its dynamic resources
+        // file). Continuing would silently register zero types — fail loudly
+        // with the provider's own explanation instead (kitecorp/kite-providers#6).
+        if (providerSchema.hasErrors()) {
+            var details = providerSchema.diagnostics().stream()
+                    .filter(TfDiagnostic::isError)
+                    .map(diagnostic -> diagnostic.summary()
+                            + (diagnostic.detail() == null || diagnostic.detail().isBlank()
+                               ? "" : ": " + diagnostic.detail()))
+                    .collect(java.util.stream.Collectors.joining("; "));
+            throw new IllegalStateException(
+                    "Terraform provider '%s' failed GetProviderSchema: %s".formatted(providerName, details));
+        }
+
         // Build converter with the provider name as prefix
         this.converter = new TerraformSchemaConverter(providerName);
 

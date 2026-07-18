@@ -175,14 +175,26 @@ public interface TerraformProviderRpc {
      * @param provider          the provider config schema, or null when absent
      * @param resourceSchemas   resource schemas keyed by TF type name
      * @param dataSourceSchemas data source schemas keyed by TF type name
+     * @param diagnostics       the response diagnostics — a provider can answer
+     *                          with an error INSTEAD of schemas (e.g. tfcoremock
+     *                          rejecting its dynamic resources file), and
+     *                          dropping them turns that into a silent
+     *                          zero-types init (kitecorp/kite-providers#6)
      */
     record ProviderSchema(TfSchema provider,
                           Map<String, TfSchema> resourceSchemas,
-                          Map<String, TfSchema> dataSourceSchemas) {
+                          Map<String, TfSchema> dataSourceSchemas,
+                          List<TfDiagnostic> diagnostics) {
 
         public ProviderSchema {
             resourceSchemas = Map.copyOf(resourceSchemas);
             dataSourceSchemas = Map.copyOf(dataSourceSchemas);
+            diagnostics = List.copyOf(diagnostics);
+        }
+
+        /** True when any diagnostic is an error — the schemas cannot be trusted. */
+        public boolean hasErrors() {
+            return diagnostics.stream().anyMatch(TfDiagnostic::isError);
         }
     }
 

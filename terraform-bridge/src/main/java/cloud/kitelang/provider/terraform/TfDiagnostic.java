@@ -26,4 +26,9 @@ public record TfDiagnostic(Severity severity, String summary, String detail,
         ERROR,
         WARNING
     }
+
+    /** True for error-severity diagnostics — the operation's result cannot be trusted. */
+    public boolean isError() {
+        return severity == Severity.ERROR;
+    }
 }

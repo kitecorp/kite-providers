@@ -31,7 +31,8 @@ final class Tfplugin5Rpc implements TerraformProviderRpc {
         return new ProviderSchema(
                 response.hasProvider() ? toTfSchema(response.getProvider()) : null,
                 toTfSchemaMap(response.getResourceSchemasMap()),
-                toTfSchemaMap(response.getDataSourceSchemasMap()));
+                toTfSchemaMap(response.getDataSourceSchemasMap()),
+                toDiagnostics(response.getDiagnosticsList()));
     }
 
     @Override
