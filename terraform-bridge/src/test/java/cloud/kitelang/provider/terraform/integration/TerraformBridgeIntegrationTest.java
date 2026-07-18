@@ -227,6 +227,49 @@ class TerraformBridgeIntegrationTest {
     }
 
     // ==================================================================
+    // Test 3b: Sensitive attribute flags from a real provider schema
+    // ==================================================================
+
+    @Test
+    @Order(11)
+    @DisplayName("random_password.result is sensitive in the real schema and survives every conversion")
+    void randomPasswordResultIsSensitive() {
+        assumeProviderAvailable();
+        var pluginClient = launchClient();
+        var stub = pluginClient.getStub();
+
+        var response = stub.getSchema(GetProviderSchema.Request.getDefaultInstance());
+        var passwordSchema = response.getResourceSchemasMap().get("random_password");
+        assertTrue(passwordSchema != null,
+                "random provider must expose random_password, got: " + response.getResourceSchemasMap().keySet());
+
+        // The real provider marks result (and bcrypt_hash) sensitive
+        var attributes = passwordSchema.getBlock().getAttributesList().stream()
+                .collect(java.util.stream.Collectors.toMap(Schema.Attribute::getName, a -> a));
+        System.out.println("random_password.result: sensitive=" + attributes.get("result").getSensitive()
+                + " computed=" + attributes.get("result").getComputed()
+                + "; length: sensitive=" + attributes.get("length").getSensitive());
+        assertTrue(attributes.get("result").getSensitive(),
+                "random_password.result is documented sensitive; the fetched schema must agree");
+        assertTrue(attributes.get("result").getComputed(), "result is provider-computed");
+        assertTrue(!attributes.get("length").getSensitive(), "length is not sensitive");
+
+        // ...into the Kite DSL...
+        var converter = new TerraformSchemaConverter("random");
+        var dsl = converter.toKiteSchema("random_password", passwordSchema);
+        assertTrue(dsl.contains("@sensitive @cloud string result"),
+                "DSL must decorate result with @sensitive and @cloud, got:\n" + dsl);
+
+        // ...and into the api schema served to the engine over GetProviderSchema
+        var apiSchema = converter.toApiSchema("Password", passwordSchema);
+        var result = apiSchema.getProperties().stream()
+                .filter(p -> "result".equals(p.name()))
+                .findFirst().orElseThrow();
+        assertTrue(result.isSensitive(),
+                "the api schema must carry result's sensitivity to the engine");
+    }
+
+    // ==================================================================
     // Test 4: Full CRUD lifecycle with random_string via raw gRPC
     // ==================================================================
 

@@ -53,6 +53,19 @@ public class TerraformDataSourceHandler extends AbstractTerraformHandler {
     }
 
     /**
+     * @param apiSchema the structured schema served over {@code GetProviderSchema}
+     *                  so per-property flags (notably {@code sensitive}) reach
+     *                  the engine (kitecorp/kite-providers#6); null falls back
+     *                  to the SDK shell schema
+     */
+    public TerraformDataSourceHandler(String tfTypeName, String kiteTypeName,
+                                      GoPluginClient client, String schemaTypeJson,
+                                      Set<String> readOnlyAttributeNames,
+                                      cloud.kitelang.api.schema.Schema apiSchema) {
+        super(tfTypeName, kiteTypeName, client, schemaTypeJson, readOnlyAttributeNames, apiSchema);
+    }
+
+    /**
      * Reads a data source: validate + {@code ReadDataSource}.
      *
      * @param properties camelCase property map with query parameters

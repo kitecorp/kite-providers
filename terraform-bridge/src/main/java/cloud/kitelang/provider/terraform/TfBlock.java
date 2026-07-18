@@ -14,4 +14,15 @@ public record TfBlock(List<TfAttribute> attributes, List<TfNestedBlock> blockTyp
         attributes = List.copyOf(attributes);
         blockTypes = List.copyOf(blockTypes);
     }
+
+    /**
+     * True when any attribute in this block — or in a nested block at any
+     * depth — is sensitive. A nested block surfaces as a single property, so
+     * this is the sensitivity of that property: masking cannot reach
+     * individual leaves inside the rendered value (kitecorp/kite-providers#6).
+     */
+    public boolean hasSensitiveValues() {
+        return attributes.stream().anyMatch(TfAttribute::sensitive)
+               || blockTypes.stream().anyMatch(nested -> nested.block().hasSensitiveValues());
+    }
 }

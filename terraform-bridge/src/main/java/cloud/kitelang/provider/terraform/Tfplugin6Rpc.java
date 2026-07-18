@@ -203,8 +203,20 @@ final class Tfplugin6Rpc implements TerraformProviderRpc {
                 attribute.getRequired(),
                 attribute.getOptional(),
                 attribute.getComputed(),
-                attribute.getSensitive(),
+                attribute.getSensitive() || hasSensitiveNestedAttribute(attribute),
                 attribute.getWriteOnly());
+    }
+
+    /**
+     * The synthesized cty type JSON ({@link #nestedTypeJson}) has no slot for
+     * per-leaf sensitivity, so a sensitive attribute anywhere inside a
+     * {@code nested_type} must surface on the containing attribute — masking
+     * happens at top-level property granularity, and dropping the flag here
+     * would leak the nested value in rendered plans (kitecorp/kite-providers#6).
+     */
+    private static boolean hasSensitiveNestedAttribute(Tfplugin6.Schema.Attribute attribute) {
+        return attribute.hasNestedType() && attribute.getNestedType().getAttributesList().stream()
+                .anyMatch(nested -> nested.getSensitive() || hasSensitiveNestedAttribute(nested));
     }
 
     /**

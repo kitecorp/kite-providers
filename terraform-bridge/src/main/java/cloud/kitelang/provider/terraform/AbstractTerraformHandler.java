@@ -36,6 +36,13 @@ abstract class AbstractTerraformHandler extends ResourceTypeHandler<Map<String, 
     protected final Set<String> readOnlyAttributeNames;
 
     /**
+     * Structured schema served to the engine over {@code GetProviderSchema}
+     * (built by {@link TerraformSchemaConverter#toApiSchema}); null falls back
+     * to the SDK's shell schema for handlers built without one.
+     */
+    private final cloud.kitelang.api.schema.Schema apiSchema;
+
+    /**
      * @param tfTypeName             the original TF type name (e.g. {@code "aws_instance"})
      * @param kiteTypeName           the converted Kite type name (e.g. {@code "Instance"})
      * @param client                 the go-plugin gRPC client
@@ -46,12 +53,37 @@ abstract class AbstractTerraformHandler extends ResourceTypeHandler<Map<String, 
     protected AbstractTerraformHandler(String tfTypeName, String kiteTypeName,
                                        GoPluginClient client, String schemaTypeJson,
                                        Set<String> readOnlyAttributeNames) {
+        this(tfTypeName, kiteTypeName, client, schemaTypeJson, readOnlyAttributeNames, null);
+    }
+
+    /**
+     * @param apiSchema the structured schema to serve over {@code GetProviderSchema};
+     *                  carries per-property flags (notably {@code sensitive},
+     *                  which the engine needs for plan masking) that the SDK's
+     *                  shell schema cannot express (kitecorp/kite-providers#6)
+     */
+    protected AbstractTerraformHandler(String tfTypeName, String kiteTypeName,
+                                       GoPluginClient client, String schemaTypeJson,
+                                       Set<String> readOnlyAttributeNames,
+                                       cloud.kitelang.api.schema.Schema apiSchema) {
         super(Map.class, kiteTypeName);
         this.tfTypeName = tfTypeName;
         this.client = client;
         this.schemaTypeJson = schemaTypeJson;
         this.codec = new CtyCodec();
         this.readOnlyAttributeNames = Set.copyOf(readOnlyAttributeNames);
+        this.apiSchema = apiSchema;
+    }
+
+    /**
+     * Serves the real Terraform-derived schema instead of the shell the
+     * {@code Map}-based constructor installs — the SDK converts this into the
+     * {@code GetProviderSchema} response, the engine's only source of
+     * per-property sensitivity for bridged types.
+     */
+    @Override
+    public cloud.kitelang.api.schema.Schema getSchema() {
+        return apiSchema != null ? apiSchema : super.getSchema();
     }
 
     /**

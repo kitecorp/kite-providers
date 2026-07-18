@@ -262,6 +262,51 @@ class Tfplugin6RpcTest {
         }
 
         @Test
+        @DisplayName("a sensitive leaf inside nested_type should mark the whole attribute sensitive")
+        void nestedSensitiveLeafShouldMarkAttributeSensitive() {
+            // cty type JSON has no per-leaf sensitivity slot, so a sensitive
+            // nested attribute must surface on the containing attribute or the
+            // flag is silently dropped (kitecorp/kite-providers#6)
+            var attribute = Schema.Attribute.newBuilder()
+                    .setName("credentials")
+                    .setNestedType(nestedObject(Schema.Object.NestingMode.SINGLE,
+                            typedAttribute("username", "\"string\""),
+                            Schema.Attribute.newBuilder()
+                                    .setName("password")
+                                    .setType(utf8("\"string\""))
+                                    .setSensitive(true)
+                                    .build()))
+                    .setOptional(true)
+                    .build();
+
+            assertEquals(new TfAttribute("credentials",
+                            "[\"object\",{\"username\":\"string\",\"password\":\"string\"}]",
+                            false, true, false, true, false),
+                    convert(attribute));
+        }
+
+        @Test
+        @DisplayName("a sensitive leaf nested two levels deep should still mark the attribute sensitive")
+        void deeplyNestedSensitiveLeafShouldMarkAttributeSensitive() {
+            var inner = Schema.Attribute.newBuilder()
+                    .setName("inner")
+                    .setNestedType(nestedObject(Schema.Object.NestingMode.SINGLE,
+                            Schema.Attribute.newBuilder()
+                                    .setName("token")
+                                    .setType(utf8("\"string\""))
+                                    .setSensitive(true)
+                                    .build()))
+                    .build();
+            var attribute = Schema.Attribute.newBuilder()
+                    .setName("outer")
+                    .setNestedType(nestedObject(Schema.Object.NestingMode.LIST, inner))
+                    .build();
+
+            assertTrue(convert(attribute).sensitive(),
+                    "sensitivity must propagate through every nested_type level");
+        }
+
+        @Test
         @DisplayName("an attribute with neither type nor nested_type should fall back to dynamic")
         void attributeWithoutAnyTypeShouldFallBackToDynamic() {
             var attribute = Schema.Attribute.newBuilder()

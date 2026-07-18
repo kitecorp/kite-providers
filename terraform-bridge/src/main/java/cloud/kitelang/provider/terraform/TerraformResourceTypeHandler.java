@@ -83,7 +83,20 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     public TerraformResourceTypeHandler(String tfTypeName, String kiteTypeName,
                                         GoPluginClient client, String schemaTypeJson,
                                         Set<String> readOnlyAttributeNames, long schemaVersion) {
-        super(tfTypeName, kiteTypeName, client, schemaTypeJson, readOnlyAttributeNames);
+        this(tfTypeName, kiteTypeName, client, schemaTypeJson, readOnlyAttributeNames, schemaVersion, null);
+    }
+
+    /**
+     * @param apiSchema the structured schema served over {@code GetProviderSchema}
+     *                  so per-property flags (notably {@code sensitive}) reach
+     *                  the engine (kitecorp/kite-providers#6); null falls back
+     *                  to the SDK shell schema
+     */
+    public TerraformResourceTypeHandler(String tfTypeName, String kiteTypeName,
+                                        GoPluginClient client, String schemaTypeJson,
+                                        Set<String> readOnlyAttributeNames, long schemaVersion,
+                                        cloud.kitelang.api.schema.Schema apiSchema) {
+        super(tfTypeName, kiteTypeName, client, schemaTypeJson, readOnlyAttributeNames, apiSchema);
         this.schemaVersion = schemaVersion;
     }
 

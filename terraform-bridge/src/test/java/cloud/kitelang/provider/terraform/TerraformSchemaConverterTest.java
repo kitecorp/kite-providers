@@ -602,6 +602,39 @@ class TerraformSchemaConverterTest {
         }
 
         @Test
+        @DisplayName("should add @sensitive to a nested block property containing a sensitive attribute")
+        void shouldMarkNestedBlockContainingSensitiveAttribute() {
+            // A nested block renders as a single property line, so a sensitive
+            // attribute anywhere inside it can only surface on that line —
+            // otherwise the flag is dropped (kitecorp/kite-providers#6)
+            var credentialBlock = Schema.NestedBlock.newBuilder()
+                    .setTypeName("master_auth")
+                    .setBlock(Schema.Block.newBuilder()
+                            .addAttributes(attribute("username", "\"string\"", false, true, false, false, false))
+                            .addAttributes(attribute("password", "\"string\"", false, true, false, true, false)))
+                    .setNesting(Schema.NestedBlock.NestingMode.SINGLE)
+                    .build();
+            var ruleBlock = Schema.NestedBlock.newBuilder()
+                    .setTypeName("ingress")
+                    .setBlock(Schema.Block.newBuilder()
+                            .addAttributes(attribute("from_port", "\"number\"", false, true, false, false, false)))
+                    .setNesting(Schema.NestedBlock.NestingMode.SET)
+                    .build();
+            var schema = Schema.newBuilder()
+                    .setBlock(Schema.Block.newBuilder()
+                            .addBlockTypes(credentialBlock)
+                            .addBlockTypes(ruleBlock))
+                    .build();
+
+            var actual = converter.toKiteSchema("aws_thing", schema);
+
+            assertTrue(actual.contains("@sensitive MasterAuth masterAuth"),
+                    "Sensitive-bearing block must carry @sensitive, got: " + actual);
+            assertTrue(actual.contains("    Ingress[] ingress"),
+                    "Non-sensitive sibling block must stay undecorated, got: " + actual);
+        }
+
+        @Test
         @DisplayName("should produce schema with @sensitive and @cloud decorators together")
         void shouldProduceSchemaWithMultipleDecorators() {
             var schema = buildSchema(
@@ -626,6 +659,99 @@ class TerraformSchemaConverterTest {
 
             assertTrue(actual.contains("schema Instance {"), "Should have declaration");
             assertTrue(actual.trim().endsWith("}"), "Should have closing brace");
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // toApiSchema — structured schema for the provider-SDK wire
+    // ---------------------------------------------------------------
+    @Nested
+    @DisplayName("toApiSchema")
+    class ApiSchemaConversion {
+
+        private cloud.kitelang.api.schema.Schema convert(Schema schema) {
+            return converter.toApiSchema("Instance", Tfplugin5Rpc.toTfSchema(schema));
+        }
+
+        private cloud.kitelang.api.resource.Property property(cloud.kitelang.api.schema.Schema schema, String name) {
+            return schema.getProperties().stream()
+                    .filter(p -> name.equals(p.name()))
+                    .findFirst()
+                    .orElseThrow(() -> new AssertionError(
+                            "property '" + name + "' missing from " + schema.getProperties()));
+        }
+
+        @Test
+        @DisplayName("should carry camelCase names, kite types, and cloud/sensitive flags")
+        void shouldCarryNamesTypesAndFlags() {
+            var schema = buildSchema(
+                    attribute("keepers_count", "\"number\"", false, true, false, false, false),
+                    attribute("result", "\"string\"", false, false, true, true, false)
+            );
+
+            var apiSchema = convert(schema);
+
+            assertEquals("Instance", apiSchema.getName());
+            var keepers = property(apiSchema, "keepersCount");
+            assertEquals("number", keepers.type());
+            assertFalse(keepers.isCloud());
+            assertFalse(keepers.isSensitive());
+            var result = property(apiSchema, "result");
+            assertEquals("string", result.type());
+            assertTrue(result.isCloud(), "computed attribute maps to cloud");
+            assertTrue(result.isSensitive(), "sensitive flag must survive into the api schema");
+        }
+
+        @Test
+        @DisplayName("should map nested blocks to properties, sensitive when the block holds a sensitive attribute")
+        void shouldMapNestedBlocksWithSensitivity() {
+            var authBlock = Schema.NestedBlock.newBuilder()
+                    .setTypeName("master_auth")
+                    .setBlock(Schema.Block.newBuilder()
+                            .addAttributes(attribute("password", "\"string\"", false, true, false, true, false)))
+                    .setNesting(Schema.NestedBlock.NestingMode.SINGLE)
+                    .build();
+            var ruleBlock = Schema.NestedBlock.newBuilder()
+                    .setTypeName("ingress")
+                    .setBlock(Schema.Block.newBuilder()
+                            .addAttributes(attribute("from_port", "\"number\"", false, true, false, false, false)))
+                    .setNesting(Schema.NestedBlock.NestingMode.LIST)
+                    .build();
+            var schema = Schema.newBuilder()
+                    .setBlock(Schema.Block.newBuilder()
+                            .addBlockTypes(authBlock)
+                            .addBlockTypes(ruleBlock))
+                    .build();
+
+            var apiSchema = convert(schema);
+
+            var auth = property(apiSchema, "masterAuth");
+            assertEquals("MasterAuth", auth.type());
+            assertTrue(auth.isSensitive(), "block holding a sensitive attribute must be sensitive");
+            var ingress = property(apiSchema, "ingress");
+            assertEquals("Ingress[]", ingress.type());
+            assertFalse(ingress.isSensitive());
+        }
+
+        @Test
+        @DisplayName("should flatten GROUP blocks into the parent, keeping per-attribute sensitivity")
+        void shouldFlattenGroupBlocks() {
+            var groupBlock = Schema.NestedBlock.newBuilder()
+                    .setTypeName("timeouts")
+                    .setBlock(Schema.Block.newBuilder()
+                            .addAttributes(attribute("api_token", "\"string\"", false, true, false, true, false))
+                            .addAttributes(attribute("create", "\"string\"", false, true, false, false, false)))
+                    .setNesting(Schema.NestedBlock.NestingMode.GROUP)
+                    .build();
+            var schema = Schema.newBuilder()
+                    .setBlock(Schema.Block.newBuilder().addBlockTypes(groupBlock))
+                    .build();
+
+            var apiSchema = convert(schema);
+
+            assertTrue(property(apiSchema, "apiToken").isSensitive(),
+                    "flattened GROUP attribute keeps its own sensitivity");
+            assertFalse(property(apiSchema, "create").isSensitive());
         }
     }
 

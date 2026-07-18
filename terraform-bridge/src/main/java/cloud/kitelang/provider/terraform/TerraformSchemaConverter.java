@@ -1,13 +1,16 @@
 package cloud.kitelang.provider.terraform;
 
+import cloud.kitelang.api.resource.Property;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Converts Terraform provider schemas (from {@code GetProviderSchema} gRPC responses)
@@ -257,6 +260,71 @@ public class TerraformSchemaConverter {
         return toKiteSchema(tfTypeName, Tfplugin5Rpc.toTfSchema(schema));
     }
 
+    /**
+     * Convert a Terraform schema into the structured {@code kite-api} schema the
+     * SDK serves over {@code GetProviderSchema}. This — not the DSL string — is
+     * how per-property flags (notably {@code sensitive}, which the engine needs
+     * for plan masking, kitecorp/kite-providers#6) reach the engine process.
+     *
+     * <p>Nested blocks map to a single property each; a sensitive attribute
+     * anywhere inside one marks that property sensitive, mirroring
+     * {@link #appendNestedBlock}. GROUP blocks flatten into the parent.</p>
+     *
+     * @param kiteTypeName the Kite type name to declare (e.g. "Password")
+     * @param schema the protocol-neutral schema from a GetProviderSchema response
+     * @return the structured api schema with per-property flags
+     */
+    public cloud.kitelang.api.schema.Schema toApiSchema(String kiteTypeName, TfSchema schema) {
+        var properties = new LinkedHashSet<Property>();
+        collectApiProperties(properties, schema.block());
+        return cloud.kitelang.api.schema.Schema.builder()
+                .name(kiteTypeName)
+                .properties(properties)
+                .build();
+    }
+
+    /**
+     * Convenience overload for callers holding a raw tfplugin5 schema message,
+     * mirroring {@link #toKiteSchema(String, tfplugin5.Tfplugin5.Schema)}.
+     *
+     * @param kiteTypeName the Kite type name to declare (e.g. "Password")
+     * @param schema the tfplugin5 schema from a GetProviderSchema response
+     * @return the structured api schema with per-property flags
+     */
+    public cloud.kitelang.api.schema.Schema toApiSchema(String kiteTypeName, tfplugin5.Tfplugin5.Schema schema) {
+        return toApiSchema(kiteTypeName, Tfplugin5Rpc.toTfSchema(schema));
+    }
+
+    /** Collect api properties for a block: attributes first, then nested blocks. */
+    private void collectApiProperties(Set<Property> properties, TfBlock block) {
+        for (var attr : block.attributes()) {
+            properties.add(Property.builder()
+                    .name(TerraformPropertyMapper.toCamelCase(attr.name()))
+                    .type(ctyTypeToKiteType(attr.typeJson()))
+                    .cloud(attr.computed())
+                    .sensitive(attr.sensitive())
+                    .build());
+        }
+        for (var nestedBlock : block.blockTypes()) {
+            if (nestedBlock.nesting() == TfNestedBlock.Nesting.GROUP) {
+                collectApiProperties(properties, nestedBlock.block());
+                continue;
+            }
+            var nestedTypeName = toPascalCase(nestedBlock.typeName());
+            var kiteType = switch (nestedBlock.nesting()) {
+                case SINGLE -> nestedTypeName;
+                case LIST, SET -> nestedTypeName + "[]";
+                case MAP -> "Map";
+                default -> "any";
+            };
+            properties.add(Property.builder()
+                    .name(TerraformPropertyMapper.toCamelCase(nestedBlock.typeName()))
+                    .type(kiteType)
+                    .sensitive(nestedBlock.block().hasSensitiveValues())
+                    .build());
+        }
+    }
+
     // ------------------------------------------------------------------
     // Internal: block and attribute rendering
     // ------------------------------------------------------------------
@@ -324,14 +392,22 @@ public class TerraformSchemaConverter {
         var kiteName = TerraformPropertyMapper.toCamelCase(blockName);
         var nestedTypeName = toPascalCase(blockName);
 
+        // A nested block renders as one property line, so a sensitive attribute
+        // anywhere inside it can only surface here — GROUP flattens attributes
+        // into the parent, where each keeps its own @sensitive
+        var sensitivePrefix = nestedBlock.nesting() != TfNestedBlock.Nesting.GROUP
+                              && nestedBlock.block().hasSensitiveValues()
+                ? "@sensitive "
+                : "";
+
         switch (nestedBlock.nesting()) {
             // Flatten: merge nested block's attributes into the parent
             case GROUP -> appendBlockProperties(sb, nestedBlock.block(), indent);
-            case SINGLE -> sb.append(indent).append(nestedTypeName).append(' ')
+            case SINGLE -> sb.append(indent).append(sensitivePrefix).append(nestedTypeName).append(' ')
                     .append(kiteName).append('\n');
-            case LIST, SET -> sb.append(indent).append(nestedTypeName).append("[] ")
+            case LIST, SET -> sb.append(indent).append(sensitivePrefix).append(nestedTypeName).append("[] ")
                     .append(kiteName).append('\n');
-            case MAP -> sb.append(indent).append("Map ").append(kiteName).append('\n');
+            case MAP -> sb.append(indent).append(sensitivePrefix).append("Map ").append(kiteName).append('\n');
             default -> sb.append(indent).append("// unsupported nesting mode: ")
                     .append(nestedBlock.nesting()).append('\n');
         }

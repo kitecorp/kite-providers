@@ -130,6 +130,42 @@ class TerraformBridgeProviderTest {
         }
 
         @Test
+        @DisplayName("registered handlers should serve a real schema carrying the sensitive flag")
+        void shouldServeRealSchemaWithSensitiveFlag() {
+            // The SDK serves getSchema() over GetProviderSchema — a shell schema
+            // there means the engine can never learn which bridged attributes to
+            // mask (kitecorp/kite-providers#6)
+            var passwordSchema = Schema.newBuilder()
+                    .setBlock(Schema.Block.newBuilder()
+                            .addAttributes(Schema.Attribute.newBuilder()
+                                    .setName("length")
+                                    .setType(ByteString.copyFrom("\"number\"".getBytes(StandardCharsets.UTF_8)))
+                                    .setRequired(true))
+                            .addAttributes(Schema.Attribute.newBuilder()
+                                    .setName("result")
+                                    .setType(ByteString.copyFrom("\"string\"".getBytes(StandardCharsets.UTF_8)))
+                                    .setComputed(true)
+                                    .setSensitive(true)))
+                    .build();
+            var schemaResponse = buildSchemaResponse(Map.of("aws_password", passwordSchema), Map.of());
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
+            when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
+
+            var provider = new TerraformBridgeProvider("aws", client);
+            provider.init();
+
+            var schema = provider.getResourceType("Password").getSchema();
+            assertEquals("Password", schema.getName());
+            var byName = schema.getProperties().stream()
+                    .collect(java.util.stream.Collectors.toMap(
+                            cloud.kitelang.api.resource.Property::name, p -> p));
+            assertEquals(Set.of("length", "result"), byName.keySet());
+            assertTrue(byName.get("result").isSensitive(), "result is declared sensitive by the TF schema");
+            assertTrue(byName.get("result").isCloud(), "computed maps to cloud");
+            assertFalse(byName.get("length").isSensitive());
+        }
+
+        @Test
         @DisplayName("should register data source handlers under the Data-suffixed type name")
         void shouldRegisterDataSourceHandlers() {
             // Given

@@ -287,7 +287,8 @@ public class TerraformBridgeProvider extends KiteProvider {
         var schemaTypeJson = buildObjectType(schema.block());
 
         var handler = new TerraformResourceTypeHandler(tfTypeName, kiteTypeName, client, schemaTypeJson,
-                TerraformResourceTypeHandler.readOnlyAttributeNames(schema.block()), schema.version());
+                TerraformResourceTypeHandler.readOnlyAttributeNames(schema.block()), schema.version(),
+                converter.toApiSchema(kiteTypeName, schema));
         registerResource(kiteTypeName, handler);
 
         // Store schema DSL and domain for the schema registry
@@ -322,7 +323,8 @@ public class TerraformBridgeProvider extends KiteProvider {
         var schemaTypeJson = buildObjectType(schema.block());
 
         var handler = new TerraformDataSourceHandler(tfTypeName, kiteTypeName, client, schemaTypeJson,
-                TerraformResourceTypeHandler.readOnlyAttributeNames(schema.block()));
+                TerraformResourceTypeHandler.readOnlyAttributeNames(schema.block()),
+                converter.toApiSchema(kiteTypeName, schema));
         registerResource(kiteTypeName, handler);
 
         // Store schema DSL and domain for the schema registry, keyed by the
