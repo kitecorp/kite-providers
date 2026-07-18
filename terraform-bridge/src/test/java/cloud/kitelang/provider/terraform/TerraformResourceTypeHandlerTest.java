@@ -922,7 +922,7 @@ class TerraformResourceTypeHandlerTest {
     class DataSource {
 
         private static final String DS_TF_TYPE = "aws_ami";
-        private static final String DS_KITE_TYPE = "Ami";
+        private static final String DS_KITE_TYPE = "AmiData";
         private static final String DS_SCHEMA = """
                 ["object", {"name": "string", "owner_id": "string"}]""";
 
@@ -930,7 +930,7 @@ class TerraformResourceTypeHandlerTest {
 
         @BeforeEach
         void setUp() {
-            dataSourceHandler = new TerraformDataSourceHandler(DS_TF_TYPE, DS_KITE_TYPE, client, DS_SCHEMA);
+            dataSourceHandler = new TerraformDataSourceHandler(DS_TF_TYPE, DS_KITE_TYPE, client, DS_SCHEMA, Set.of());
         }
 
         @Test

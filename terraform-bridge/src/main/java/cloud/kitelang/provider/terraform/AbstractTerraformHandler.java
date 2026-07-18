@@ -3,8 +3,10 @@ package cloud.kitelang.provider.terraform;
 import cloud.kitelang.provider.ResourceTypeHandler;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Shared base class for Terraform resource and data source handlers.
@@ -24,18 +26,47 @@ abstract class AbstractTerraformHandler extends ResourceTypeHandler<Map<String, 
     protected final CtyCodec codec;
 
     /**
-     * @param tfTypeName     the original TF type name (e.g. {@code "aws_instance"})
-     * @param kiteTypeName   the converted Kite type name (e.g. {@code "Instance"})
-     * @param client         the go-plugin gRPC client
-     * @param schemaTypeJson JSON-encoded cty object type for encode/decode
+     * snake_case names of read-only (computed-only) attributes, e.g. {@code id}.
+     *
+     * <p>Terraform core never puts these in the {@code config} it sends to
+     * validate/plan/read-data-source — providers reject non-null values for them
+     * with "Invalid Configuration for Read-Only Attribute". The bridge nulls
+     * them out the same way before building a config value.</p>
+     */
+    protected final Set<String> readOnlyAttributeNames;
+
+    /**
+     * @param tfTypeName             the original TF type name (e.g. {@code "aws_instance"})
+     * @param kiteTypeName           the converted Kite type name (e.g. {@code "Instance"})
+     * @param client                 the go-plugin gRPC client
+     * @param schemaTypeJson         JSON-encoded cty object type for encode/decode
+     * @param readOnlyAttributeNames snake_case names of computed-only attributes;
+     *                               see {@link TerraformResourceTypeHandler#readOnlyAttributeNames(TfBlock)}
      */
     protected AbstractTerraformHandler(String tfTypeName, String kiteTypeName,
-                                       GoPluginClient client, String schemaTypeJson) {
+                                       GoPluginClient client, String schemaTypeJson,
+                                       Set<String> readOnlyAttributeNames) {
         super(Map.class, kiteTypeName);
         this.tfTypeName = tfTypeName;
         this.client = client;
         this.schemaTypeJson = schemaTypeJson;
         this.codec = new CtyCodec();
+        this.readOnlyAttributeNames = Set.copyOf(readOnlyAttributeNames);
+    }
+
+    /**
+     * Returns a copy of the property map with read-only (computed-only)
+     * attributes nulled, making it a legal Terraform configuration value.
+     * Terraform core strips these before validate/plan; providers reject
+     * configs that set them.
+     */
+    protected Map<String, Object> withoutReadOnlyAttributes(Map<String, Object> snakeProps) {
+        if (readOnlyAttributeNames.isEmpty()) {
+            return snakeProps;
+        }
+        var configProps = new LinkedHashMap<>(snakeProps);
+        readOnlyAttributeNames.forEach(attribute -> configProps.put(attribute, null));
+        return configProps;
     }
 
     /**

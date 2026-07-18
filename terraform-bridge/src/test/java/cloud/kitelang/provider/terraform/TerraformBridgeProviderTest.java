@@ -15,6 +15,7 @@ import tfplugin5.Tfplugin5.*;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -129,7 +130,7 @@ class TerraformBridgeProviderTest {
         }
 
         @Test
-        @DisplayName("should register data source handlers separately from resource types")
+        @DisplayName("should register data source handlers under the Data-suffixed type name")
         void shouldRegisterDataSourceHandlers() {
             // Given
             var amiDataSource = buildSchema(Map.of(
@@ -149,10 +150,12 @@ class TerraformBridgeProviderTest {
             provider.init();
 
             // Then
-            var handler = provider.getResourceType("Ami");
-            assertNotNull(handler, "Data source handler should be registered");
+            var handler = provider.getResourceType("AmiData");
+            assertNotNull(handler, "Data source handler should be registered as AmiData");
             assertInstanceOf(TerraformDataSourceHandler.class, handler,
                     "Data source should use TerraformDataSourceHandler, not TerraformResourceTypeHandler");
+            assertNull(provider.getResourceType("Ami"),
+                    "The unsuffixed name belongs to the resource namespace and must stay free");
         }
 
         @Test
@@ -176,7 +179,71 @@ class TerraformBridgeProviderTest {
             // Then
             assertEquals(2, provider.getResourceTypes().size());
             assertInstanceOf(TerraformResourceTypeHandler.class, provider.getResourceType("Instance"));
-            assertInstanceOf(TerraformDataSourceHandler.class, provider.getResourceType("Ami"));
+            assertInstanceOf(TerraformDataSourceHandler.class, provider.getResourceType("AmiData"));
+        }
+
+        @Test
+        @DisplayName("should register a same-named resource and data source without collision")
+        void shouldRegisterSameNamedResourceAndDataSource() {
+            // The common TF pattern (aws_instance, every tfcoremock_* type):
+            // one TF type name exposed as BOTH a resource and a data source.
+            // Before kitecorp/kite-providers#13 the data source silently
+            // overwrote the resource handler in the registry.
+            var resourceSchema = buildSchema(Map.of("ami", "\"string\""));
+            var dataSourceSchema = buildSchema(Map.of("instance_id", "\"string\""));
+            var schemaResponse = buildSchemaResponse(
+                    Map.of("aws_instance", resourceSchema),
+                    Map.of("aws_instance", dataSourceSchema)
+            );
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
+            when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
+
+            var provider = new TerraformBridgeProvider("aws", client);
+
+            // When
+            provider.init();
+
+            // Then — both registered, each addressable under its own name
+            assertEquals(2, provider.getResourceTypes().size());
+            assertInstanceOf(TerraformResourceTypeHandler.class, provider.getResourceType("Instance"),
+                    "The resource handler must keep the plain type name");
+            assertInstanceOf(TerraformDataSourceHandler.class, provider.getResourceType("InstanceData"),
+                    "The data source handler must be addressable under the Data suffix");
+
+            // Schema DSL strings for both variants are preserved with their own bodies
+            assertEquals(Set.of("Instance", "InstanceData"), provider.getSchemaStrings().keySet());
+            assertTrue(provider.getSchemaStrings().get("Instance").startsWith("schema Instance {"),
+                    "Resource DSL should declare Instance, got: " + provider.getSchemaStrings().get("Instance"));
+            assertTrue(provider.getSchemaStrings().get("Instance").contains("ami"),
+                    "Resource DSL should carry the resource attributes");
+            assertTrue(provider.getSchemaStrings().get("InstanceData").startsWith("schema InstanceData {"),
+                    "Data source DSL should declare InstanceData, got: "
+                            + provider.getSchemaStrings().get("InstanceData"));
+            assertTrue(provider.getSchemaStrings().get("InstanceData").contains("instanceId"),
+                    "Data source DSL should carry the data source attributes");
+            assertEquals(Set.of("Instance", "InstanceData"), provider.getSchemaDomains().keySet());
+        }
+
+        @Test
+        @DisplayName("should fail init loudly when a resource already claims the suffixed data source name")
+        void shouldFailOnResidualDataSourceNameClash() {
+            // Pathological but possible: a provider with a resource literally
+            // named <x>_data next to a data source <x> — both convert to XData.
+            // Silent overwrite is the #13 defect; a residual clash must be loud.
+            var schemaResponse = buildSchemaResponse(
+                    Map.of("aws_instance_data", buildSchema(Map.of("ami", "\"string\""))),
+                    Map.of("aws_instance", buildSchema(Map.of("instance_id", "\"string\"")))
+            );
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
+            when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
+
+            var provider = new TerraformBridgeProvider("aws", client);
+
+            var exception = assertThrows(IllegalStateException.class, provider::init);
+            assertTrue(exception.getMessage().contains("aws_instance"),
+                    "Clash error should name the data source, got: " + exception.getMessage());
+            assertTrue(exception.getMessage().contains("InstanceData"),
+                    "Clash error should name the clashing Kite type, got: " + exception.getMessage());
         }
     }
 

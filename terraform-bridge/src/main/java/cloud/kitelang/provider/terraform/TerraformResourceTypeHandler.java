@@ -4,7 +4,6 @@ import cloud.kitelang.provider.ResourceContext;
 import lombok.extern.slf4j.Slf4j;
 import tfplugin5.Tfplugin5.Schema;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -48,16 +47,6 @@ import java.util.stream.Collectors;
 public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
 
     /**
-     * snake_case names of read-only (computed-only) attributes, e.g. {@code id}.
-     *
-     * <p>Terraform core never puts these in the {@code config} it sends to
-     * validate/plan — providers reject non-null values for them with "Invalid
-     * Configuration for Read-Only Attribute". The bridge nulls them out the
-     * same way before building a config value.</p>
-     */
-    private final Set<String> readOnlyAttributeNames;
-
-    /**
      * Creates a handler for a single Terraform resource type.
      *
      * @param tfTypeName             the original TF resource type name (e.g. {@code "aws_instance"})
@@ -71,8 +60,7 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     public TerraformResourceTypeHandler(String tfTypeName, String kiteTypeName,
                                         GoPluginClient client, String schemaTypeJson,
                                         Set<String> readOnlyAttributeNames) {
-        super(tfTypeName, kiteTypeName, client, schemaTypeJson);
-        this.readOnlyAttributeNames = Set.copyOf(readOnlyAttributeNames);
+        super(tfTypeName, kiteTypeName, client, schemaTypeJson, readOnlyAttributeNames);
     }
 
     /**
@@ -304,21 +292,6 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
                 "update (create for replace)");
         context.returnPrivateData(result.privateBytes());
         return decodeState(result.state());
-    }
-
-    /**
-     * Returns a copy of the property map with read-only (computed-only)
-     * attributes nulled, making it a legal Terraform configuration value.
-     * Terraform core strips these before validate/plan; providers reject
-     * configs that set them.
-     */
-    private Map<String, Object> withoutReadOnlyAttributes(Map<String, Object> snakeProps) {
-        if (readOnlyAttributeNames.isEmpty()) {
-            return snakeProps;
-        }
-        var configProps = new LinkedHashMap<>(snakeProps);
-        readOnlyAttributeNames.forEach(attribute -> configProps.put(attribute, null));
-        return configProps;
     }
 
     /**

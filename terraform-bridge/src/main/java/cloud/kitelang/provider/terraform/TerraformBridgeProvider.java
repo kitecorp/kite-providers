@@ -301,17 +301,33 @@ public class TerraformBridgeProvider extends KiteProvider {
 
     /**
      * Registers a data source handler and stores its schema DSL.
+     *
+     * <p>Terraform keeps resources and data sources in separate namespaces and
+     * providers commonly expose both under one TF type name ({@code aws_instance},
+     * every {@code tfcoremock_*} type). Kite's registry is keyed by a single flat
+     * type name, so data sources register under the deterministic {@code Data}
+     * suffix ({@code aws_ami} -> {@code AmiData}) to coexist with the same-named
+     * resource (kitecorp/kite-providers#13). A residual clash — a genuine resource
+     * whose converted name already ends in the suffixed name — fails init loudly
+     * rather than silently overwriting either handler.</p>
      */
     private void registerDataSourceHandler(String tfTypeName, TfSchema schema) {
-        var kiteTypeName = converter.toKiteTypeName(tfTypeName);
+        var kiteTypeName = converter.toKiteDataSourceTypeName(tfTypeName);
+        if (getResourceType(kiteTypeName) != null) {
+            throw new IllegalStateException(
+                    "Data source '%s' maps to Kite type name '%s', which is already registered for a resource type. "
+                            .formatted(tfTypeName, kiteTypeName)
+                    + "Resource and data source names must stay distinct after the 'Data' suffix is applied.");
+        }
         var schemaTypeJson = buildObjectType(schema.block());
 
-        var handler = new TerraformDataSourceHandler(tfTypeName, kiteTypeName, client, schemaTypeJson);
+        var handler = new TerraformDataSourceHandler(tfTypeName, kiteTypeName, client, schemaTypeJson,
+                TerraformResourceTypeHandler.readOnlyAttributeNames(schema.block()));
         registerResource(kiteTypeName, handler);
 
-        // Store schema DSL and domain for the schema registry
-        var schemaDsl = converter.toKiteSchema(tfTypeName, schema);
-        schemaStrings.put(kiteTypeName, schemaDsl);
+        // Store schema DSL and domain for the schema registry, keyed by the
+        // suffixed name so the resource variant's entries are preserved
+        schemaStrings.put(kiteTypeName, converter.toKiteSchemaNamed(kiteTypeName, schema));
         schemaDomains.put(kiteTypeName, converter.getDomain(tfTypeName));
 
         log.debug("Registered data source: {} -> {} (domain: {})",

@@ -3,6 +3,7 @@ package cloud.kitelang.provider.terraform.integration;
 import cloud.kitelang.provider.ResourceContext;
 import cloud.kitelang.provider.terraform.GoPluginClient;
 import cloud.kitelang.provider.terraform.TerraformBridgeProvider;
+import cloud.kitelang.provider.terraform.TerraformDataSourceHandler;
 import cloud.kitelang.provider.terraform.TerraformPropertyMapper;
 import cloud.kitelang.provider.terraform.TerraformRegistryClient;
 import cloud.kitelang.provider.terraform.TerraformResourceTypeHandler;
@@ -148,8 +149,10 @@ class Tfplugin6BridgeIntegrationTest {
             provider.init();
             provider.configure(providerConfig(provider));
 
-            var handler = simpleResourceHandler();
-            var attributeNames = simpleResourceAttributeNames(provider);
+            // Registry lookup — a same-named data source no longer overwrites
+            // the resource handler (kitecorp/kite-providers#13)
+            var handler = (TerraformResourceTypeHandler) provider.<Map<String, Object>>getResourceType("SimpleResource");
+            var attributeNames = simpleResourceAttributeNames();
             assertTrue(attributeNames.containsAll(java.util.List.of("string", "integer", "bool", "id")),
                     "tfcoremock_simple_resource should have string/integer/bool/id attributes, found: "
                             + attributeNames);
@@ -251,8 +254,8 @@ class Tfplugin6BridgeIntegrationTest {
             config.put("failOnCreate", java.util.List.of("fail-me"));
             provider.configure(config);
 
-            var handler = simpleResourceHandler();
-            var attributeNames = simpleResourceAttributeNames(provider);
+            var handler = (TerraformResourceTypeHandler) provider.<Map<String, Object>>getResourceType("SimpleResource");
+            var attributeNames = simpleResourceAttributeNames();
 
             // Config value 1 (resource_directory): the created resource's state
             // file lands in the directory the config named.
@@ -307,6 +310,46 @@ class Tfplugin6BridgeIntegrationTest {
         }
     }
 
+    // ==================================================================
+    // Test 7: same-named resource and data source coexist in the registry
+    // ==================================================================
+
+    @Test
+    @Order(7)
+    @DisplayName("should register tfcoremock's mirrored resource and data source under distinct names")
+    void sameNamedResourceAndDataSourceCoexist() throws Exception {
+        assumeProviderAvailable();
+        var provider = newBridgeProvider();
+
+        try {
+            provider.init();
+
+            // tfcoremock mirrors every resource as a same-named data source —
+            // assert that from the live schema rather than assuming it
+            var schema = client.rpc().getProviderSchema();
+            assertTrue(schema.resourceSchemas().containsKey("tfcoremock_simple_resource"),
+                    "tfcoremock should expose tfcoremock_simple_resource as a resource");
+            assertTrue(schema.dataSourceSchemas().containsKey("tfcoremock_simple_resource"),
+                    "tfcoremock should expose tfcoremock_simple_resource as a data source, found: "
+                            + schema.dataSourceSchemas().keySet());
+
+            // Both are registered and addressable distinctly (kitecorp/kite-providers#13)
+            assertInstanceOf(TerraformResourceTypeHandler.class, provider.getResourceType("SimpleResource"),
+                    "The plain name must resolve to the resource handler");
+            assertInstanceOf(TerraformDataSourceHandler.class, provider.getResourceType("SimpleResourceData"),
+                    "The Data-suffixed name must resolve to the data source handler");
+
+            // Schema DSL strings for both variants are preserved
+            assertTrue(provider.getSchemaStrings().get("SimpleResource").startsWith("schema SimpleResource {"),
+                    "Resource DSL should survive data source registration");
+            assertTrue(provider.getSchemaStrings().get("SimpleResourceData").startsWith("schema SimpleResourceData {"),
+                    "Data source DSL should be stored under the suffixed name");
+        } finally {
+            provider.stop();
+            client = null;
+        }
+    }
+
     // ------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------
@@ -343,24 +386,8 @@ class Tfplugin6BridgeIntegrationTest {
         return config;
     }
 
-    /**
-     * Builds a handler for {@code tfcoremock_simple_resource} directly from the
-     * fetched schema (same pattern as the tfplugin5 harness): tfcoremock mirrors
-     * every resource as a same-named data source, and the registry keeps only the
-     * handler registered last (kitecorp/kite-providers#13), so
-     * {@code getResourceType("SimpleResource")} yields the data source handler.
-     */
-    private TerraformResourceTypeHandler simpleResourceHandler() {
-        var simpleSchema = client.rpc().getProviderSchema()
-                .resourceSchemas().get("tfcoremock_simple_resource");
-        return new TerraformResourceTypeHandler(
-                "tfcoremock_simple_resource", "SimpleResource", client,
-                buildObjectType(simpleSchema.block()),
-                TerraformResourceTypeHandler.readOnlyAttributeNames(simpleSchema.block()));
-    }
-
     /** snake_case attribute names of {@code tfcoremock_simple_resource}, from the live schema. */
-    private java.util.List<String> simpleResourceAttributeNames(TerraformBridgeProvider provider) {
+    private java.util.List<String> simpleResourceAttributeNames() {
         return client.rpc().getProviderSchema()
                 .resourceSchemas().get("tfcoremock_simple_resource")
                 .block().attributes().stream()
@@ -375,16 +402,5 @@ class Tfplugin6BridgeIntegrationTest {
             props.put(TerraformPropertyMapper.toCamelCase(attrName), null);
         }
         return props;
-    }
-
-    /**
-     * Builds the cty object type JSON for a schema block, e.g.
-     * {@code ["object",{"string":"string","integer":"number"}]}. Replicates the
-     * bridge-internal logic so the test can construct a handler independently.
-     */
-    private String buildObjectType(cloud.kitelang.provider.terraform.TfBlock block) {
-        return block.attributes().stream()
-                .map(attr -> "\"%s\":%s".formatted(attr.name(), attr.typeJson()))
-                .collect(java.util.stream.Collectors.joining(",", "[\"object\",{", "}]"));
     }
 }

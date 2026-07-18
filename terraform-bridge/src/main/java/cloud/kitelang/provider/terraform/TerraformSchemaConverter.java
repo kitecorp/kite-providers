@@ -105,6 +105,29 @@ public class TerraformSchemaConverter {
         return sb.toString();
     }
 
+    /**
+     * Convert a Terraform data source type name to its Kite PascalCase type name.
+     *
+     * <p>Terraform keeps resources and data sources in separate namespaces (a
+     * provider commonly exposes both under one TF type name, addressed via the
+     * {@code data.} prefix). Kite's registry and engine lookup are keyed by a
+     * single flat type name, so data sources get a deterministic {@code Data}
+     * suffix to coexist with the same-named resource
+     * (kitecorp/kite-providers#13).</p>
+     *
+     * <p>Examples with prefix "aws":
+     * <ul>
+     *   <li>data source {@code aws_ami} -> {@code AmiData}</li>
+     *   <li>data source {@code aws_instance} -> {@code InstanceData}</li>
+     * </ul>
+     *
+     * @param tfTypeName the full Terraform data source type name (e.g. "aws_ami")
+     * @return the PascalCase Kite type name with the {@code Data} suffix
+     */
+    public String toKiteDataSourceTypeName(String tfTypeName) {
+        return toKiteTypeName(tfTypeName) + "Data";
+    }
+
     // ------------------------------------------------------------------
     // Domain grouping
     // ------------------------------------------------------------------
@@ -200,9 +223,21 @@ public class TerraformSchemaConverter {
      * @return the Kite schema DSL string
      */
     public String toKiteSchema(String tfTypeName, TfSchema schema) {
-        var typeName = toKiteTypeName(tfTypeName);
+        return toKiteSchemaNamed(toKiteTypeName(tfTypeName), schema);
+    }
+
+    /**
+     * Convert a Terraform Schema to a Kite schema DSL string under an explicit
+     * Kite type name — used for data sources, whose registered name carries the
+     * {@code Data} suffix rather than the plain conversion of the TF type name.
+     *
+     * @param kiteTypeName the Kite type name to declare (e.g. "AmiData")
+     * @param schema the protocol-neutral schema from a GetProviderSchema response
+     * @return the Kite schema DSL string
+     */
+    public String toKiteSchemaNamed(String kiteTypeName, TfSchema schema) {
         var sb = new StringBuilder();
-        sb.append("schema ").append(typeName).append(" {\n");
+        sb.append("schema ").append(kiteTypeName).append(" {\n");
 
         appendBlockProperties(sb, schema.block(), "    ");
 
