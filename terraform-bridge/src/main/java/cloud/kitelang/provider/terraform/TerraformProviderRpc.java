@@ -15,6 +15,7 @@ import java.util.Map;
  *   <tr><td>{@link #validateProviderConfig(byte[])}</td><td>{@code PrepareProviderConfig}</td><td>{@code ValidateProviderConfig}</td></tr>
  *   <tr><td>{@link #configure(byte[])}</td><td>{@code Configure}</td><td>{@code ConfigureProvider}</td></tr>
  *   <tr><td>{@link #validateResourceConfig}</td><td>{@code ValidateResourceTypeConfig}</td><td>{@code ValidateResourceConfig}</td></tr>
+ *   <tr><td>{@link #validateDataSourceConfig}</td><td>{@code ValidateDataSourceConfig}</td><td>{@code ValidateDataResourceConfig}</td></tr>
  *   <tr><td>{@link #planResourceChange}</td><td colspan=2>{@code PlanResourceChange}</td></tr>
  *   <tr><td>{@link #applyResourceChange}</td><td colspan=2>{@code ApplyResourceChange}</td></tr>
  *   <tr><td>{@link #readResource}</td><td colspan=2>{@code ReadResource}</td></tr>
@@ -71,6 +72,15 @@ public interface TerraformProviderRpc {
      * @return the response diagnostics
      */
     List<TfDiagnostic> validateResourceConfig(String typeName, byte[] configMsgpack);
+
+    /**
+     * Validates a data source configuration.
+     *
+     * @param typeName      the TF data source type name (e.g. {@code "aws_ami"})
+     * @param configMsgpack cty msgpack-encoded configuration
+     * @return the response diagnostics
+     */
+    List<TfDiagnostic> validateDataSourceConfig(String typeName, byte[] configMsgpack);
 
     /**
      * Plans a resource change.

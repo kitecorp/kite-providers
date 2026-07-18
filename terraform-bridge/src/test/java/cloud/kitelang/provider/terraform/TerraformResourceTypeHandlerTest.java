@@ -924,68 +924,142 @@ class TerraformResourceTypeHandlerTest {
         private static final String DS_TF_TYPE = "aws_ami";
         private static final String DS_KITE_TYPE = "AmiData";
         private static final String DS_SCHEMA = """
-                ["object", {"name": "string", "owner_id": "string"}]""";
+                ["object", {"name": "string", "owner_id": "string", "arn": "string"}]""";
 
         private TerraformDataSourceHandler dataSourceHandler;
 
         @BeforeEach
         void setUp() {
-            dataSourceHandler = new TerraformDataSourceHandler(DS_TF_TYPE, DS_KITE_TYPE, client, DS_SCHEMA, Set.of());
+            // "arn" plays the computed-only result attribute — nulled out of the
+            // config the bridge sends, exactly as Terraform core strips it.
+            dataSourceHandler = new TerraformDataSourceHandler(DS_TF_TYPE, DS_KITE_TYPE, client, DS_SCHEMA,
+                    Set.of("arn"));
+
+            // Every lookup validates the data source config first (mirrors
+            // Terraform core). Individual tests re-stub to exercise failures.
+            lenient().when(stub.validateDataSourceConfig(any()))
+                    .thenReturn(ValidateDataSourceConfig.Response.getDefaultInstance());
+        }
+
+        /** Stubs ReadDataSource to answer with the given snake_case state. */
+        private void stubReadDataSource(Map<String, Object> snakeCaseState) {
+            var responseBytes = codec.encode(snakeCaseState, DS_SCHEMA);
+            when(stub.readDataSource(any())).thenReturn(ReadDataSource.Response.newBuilder()
+                    .setState(DynamicValue.newBuilder()
+                            .setMsgpack(ByteString.copyFrom(responseBytes)))
+                    .build());
+        }
+
+        /** The canonical lookup result: query params plus the provider-resolved arn. */
+        private Map<String, Object> amiState() {
+            var state = new LinkedHashMap<String, Object>();
+            state.put("name", "my-ami");
+            state.put("owner_id", "123456");
+            state.put("arn", "arn:aws:ec2::ami/my-ami");
+            return state;
         }
 
         @Test
-        @DisplayName("read() should call ReadDataSource with encoded config")
-        void shouldCallReadDataSource() {
+        @DisplayName("read() should validate the config and call ReadDataSource with computed attributes nulled")
+        void shouldValidateAndCallReadDataSource() {
             // Given
             var input = new LinkedHashMap<String, Object>();
             input.put("name", "my-ami");
             input.put("ownerId", "123456");
-
-            var responseSnake = new LinkedHashMap<String, Object>();
-            responseSnake.put("name", "my-ami");
-            responseSnake.put("owner_id", "123456");
-            var responseBytes = codec.encode(responseSnake, DS_SCHEMA);
-            var responseDv = DynamicValue.newBuilder()
-                    .setMsgpack(ByteString.copyFrom(responseBytes))
-                    .build();
-            var response = ReadDataSource.Response.newBuilder()
-                    .setState(responseDv)
-                    .build();
-            when(stub.readDataSource(any())).thenReturn(response);
+            input.put("arn", "stale-arn-from-previous-read");
+            stubReadDataSource(amiState());
 
             // When
             var result = dataSourceHandler.read(input);
 
-            // Then
-            var captor = ArgumentCaptor.forClass(ReadDataSource.Request.class);
-            verify(stub).readDataSource(captor.capture());
-            var request = captor.getValue();
+            // Then — validation precedes the read, both on the same config bytes
+            var validateCaptor = ArgumentCaptor.forClass(ValidateDataSourceConfig.Request.class);
+            verify(stub).validateDataSourceConfig(validateCaptor.capture());
+            assertEquals(DS_TF_TYPE, validateCaptor.getValue().getTypeName());
+
+            var readCaptor = ArgumentCaptor.forClass(ReadDataSource.Request.class);
+            verify(stub).readDataSource(readCaptor.capture());
+            var request = readCaptor.getValue();
             assertEquals(DS_TF_TYPE, request.getTypeName());
-            assertNotEquals(DynamicValue.getDefaultInstance(), request.getConfig());
+            assertEquals(validateCaptor.getValue().getConfig(), request.getConfig());
+
+            // The computed-only attribute is nulled in the config, mirroring core
+            var sentConfig = codec.decode(request.getConfig().getMsgpack().toByteArray(), DS_SCHEMA);
+            assertEquals("my-ami", sentConfig.get("name"));
+            assertNull(sentConfig.get("arn"),
+                    "Computed-only attributes must be nulled out of the ReadDataSource config");
 
             assertEquals("my-ami", result.get("name"));
             assertEquals("123456", result.get("ownerId"));
+            assertEquals("arn:aws:ec2::ami/my-ami", result.get("arn"));
         }
 
         @Test
-        @DisplayName("create() should throw UnsupportedOperationException")
-        void createShouldThrow() {
-            var input = Map.<String, Object>of("name", "test");
-            assertThrows(UnsupportedOperationException.class, () -> dataSourceHandler.create(input));
+        @DisplayName("create() should perform the lookup — the read result becomes the stored state")
+        void createShouldPerformRead() {
+            var input = Map.<String, Object>of("name", "my-ami", "ownerId", "123456");
+            stubReadDataSource(amiState());
+
+            var result = dataSourceHandler.create(input);
+
+            verify(stub).readDataSource(any());
+            verify(stub, never()).applyResourceChange(any());
+            assertEquals("arn:aws:ec2::ami/my-ami", result.get("arn"),
+                    "create() must return the provider's read result, not echo the input");
         }
 
         @Test
-        @DisplayName("update() should throw UnsupportedOperationException")
-        void updateShouldThrow() {
-            var input = Map.<String, Object>of("name", "test");
-            assertThrows(UnsupportedOperationException.class, () -> dataSourceHandler.update(input));
+        @DisplayName("update() should re-run the lookup with the new query config")
+        void updateShouldPerformRead() {
+            var input = Map.<String, Object>of("name", "my-ami", "ownerId", "123456");
+            stubReadDataSource(amiState());
+
+            var result = dataSourceHandler.update(input);
+
+            verify(stub).readDataSource(any());
+            verify(stub, never()).applyResourceChange(any());
+            assertEquals("arn:aws:ec2::ami/my-ami", result.get("arn"));
         }
 
         @Test
-        @DisplayName("delete() should throw UnsupportedOperationException")
-        void deleteShouldThrow() {
+        @DisplayName("delete() should drop state without any provider RPC")
+        void deleteShouldDropStateWithoutRpc() {
             var input = Map.<String, Object>of("name", "test");
-            assertThrows(UnsupportedOperationException.class, () -> dataSourceHandler.delete(input));
+
+            assertTrue(dataSourceHandler.delete(input),
+                    "Removing a data source from configuration always succeeds");
+
+            verifyNoInteractions(stub);
+        }
+
+        @Test
+        @DisplayName("plan() should resolve the lookup so values are known at plan time")
+        void planShouldPerformRead() {
+            var proposed = Map.<String, Object>of("name", "my-ami", "ownerId", "123456");
+            stubReadDataSource(amiState());
+
+            var planned = dataSourceHandler.plan(null, proposed);
+
+            verify(stub).readDataSource(any());
+            assertEquals("arn:aws:ec2::ami/my-ami", planned.get("arn"),
+                    "plan() must surface the actual read values, not 'known after apply'");
+        }
+
+        @Test
+        @DisplayName("should throw on ERROR diagnostics from data source config validation")
+        void shouldThrowOnValidationErrorDiagnostics() {
+            var input = Map.<String, Object>of("name", "bad-ami");
+            when(stub.validateDataSourceConfig(any()))
+                    .thenReturn(ValidateDataSourceConfig.Response.newBuilder()
+                            .addDiagnostics(Diagnostic.newBuilder()
+                                    .setSeverity(Diagnostic.Severity.ERROR)
+                                    .setSummary("Invalid query")
+                                    .setDetail("name must not be empty"))
+                            .build());
+
+            var exception = assertThrows(RuntimeException.class, () -> dataSourceHandler.read(input));
+            assertTrue(exception.getMessage().contains("Invalid query"));
+            verify(stub, never()).readDataSource(any());
         }
 
         @Test

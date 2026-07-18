@@ -480,6 +480,37 @@ class Tfplugin6RpcTest {
     }
 
     // ---------------------------------------------------------------
+    // 8b. ValidateDataResourceConfig (renamed from tfplugin5's
+    //     ValidateDataSourceConfig)
+    // ---------------------------------------------------------------
+    @Nested
+    @DisplayName("validateDataSourceConfig()")
+    class ValidateDataSourceConfigMapping {
+
+        @Test
+        @DisplayName("should call the ValidateDataResourceConfig RPC and map diagnostics")
+        void shouldCallRenamedProtocol6Rpc() {
+            when(stub.validateDataResourceConfig(any()))
+                    .thenReturn(ValidateDataResourceConfig.Response.newBuilder()
+                            .addDiagnostics(Diagnostic.newBuilder()
+                                    .setSeverity(Diagnostic.Severity.ERROR)
+                                    .setSummary("Missing name")
+                                    .setDetail("name is required"))
+                            .build());
+
+            var diagnostics = newRpc().validateDataSourceConfig("aws_ami", CONFIG);
+
+            assertEquals(List.of(new TfDiagnostic(
+                            TfDiagnostic.Severity.ERROR, "Missing name", "name is required")),
+                    diagnostics);
+            var captor = ArgumentCaptor.forClass(ValidateDataResourceConfig.Request.class);
+            verify(stub).validateDataResourceConfig(captor.capture());
+            assertEquals("aws_ami", captor.getValue().getTypeName());
+            assertEquals(ByteString.copyFrom(CONFIG), captor.getValue().getConfig().getMsgpack());
+        }
+    }
+
+    // ---------------------------------------------------------------
     // 9. StopProvider (renamed from tfplugin5's Stop)
     // ---------------------------------------------------------------
     @Nested

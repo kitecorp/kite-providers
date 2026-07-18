@@ -66,6 +66,15 @@ final class Tfplugin5Rpc implements TerraformProviderRpc {
     }
 
     @Override
+    public List<TfDiagnostic> validateDataSourceConfig(String typeName, byte[] configMsgpack) {
+        var request = Tfplugin5.ValidateDataSourceConfig.Request.newBuilder()
+                .setTypeName(typeName)
+                .setConfig(dynamicValue(configMsgpack))
+                .build();
+        return toDiagnostics(stub.validateDataSourceConfig(request).getDiagnosticsList());
+    }
+
+    @Override
     public PlanResult planResourceChange(String typeName, byte[] priorState, byte[] proposedNewState,
                                          byte[] config, byte[] priorPrivate) {
         var request = Tfplugin5.PlanResourceChange.Request.newBuilder()

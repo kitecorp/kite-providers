@@ -122,6 +122,26 @@ class Tfplugin5RpcTest {
     }
 
     @Test
+    @DisplayName("validateDataSourceConfig() should call the ValidateDataSourceConfig RPC and map diagnostics")
+    void validateDataSourceConfigShouldCallProtocol5Rpc() {
+        when(stub.validateDataSourceConfig(any())).thenReturn(ValidateDataSourceConfig.Response.newBuilder()
+                .addDiagnostics(Diagnostic.newBuilder()
+                        .setSeverity(Diagnostic.Severity.ERROR)
+                        .setSummary("Missing name")
+                        .setDetail("name is required"))
+                .build());
+
+        var diagnostics = new Tfplugin5Rpc(stub).validateDataSourceConfig("aws_ami", new byte[]{5});
+
+        assertEquals(List.of(new TfDiagnostic(TfDiagnostic.Severity.ERROR, "Missing name", "name is required")),
+                diagnostics);
+        var captor = org.mockito.ArgumentCaptor.forClass(ValidateDataSourceConfig.Request.class);
+        verify(stub).validateDataSourceConfig(captor.capture());
+        assertEquals("aws_ami", captor.getValue().getTypeName());
+        assertEquals(ByteString.copyFrom(new byte[]{5}), captor.getValue().getConfig().getMsgpack());
+    }
+
+    @Test
     @DisplayName("planResourceChange() should render an unset path selector as <?>")
     void planShouldRenderUnsetSelector() {
         when(stub.planResourceChange(any())).thenReturn(PlanResourceChange.Response.newBuilder()

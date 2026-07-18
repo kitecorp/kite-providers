@@ -10,12 +10,25 @@ import java.util.Set;
  *
  * <p>Data sources in Terraform are read-only — they fetch existing infrastructure state
  * without creating, updating, or deleting anything. The Kite provider protocol has no
- * separate data-source concept, so the bridge registers each TF data source as a
- * resource type under a {@code Data}-suffixed Kite type name (e.g. {@code AmiData}),
- * letting it coexist with a same-named resource (kitecorp/kite-providers#13).</p>
+ * separate data-source concept, so the bridge surfaces each TF data source as a resource
+ * type whose whole lifecycle degenerates to the lookup — mirroring how Terraform itself
+ * stores data sources in state:</p>
+ * <ul>
+ *   <li>{@link #create} — first appearance in the configuration: perform the read; the
+ *       result becomes the stored state (TF stores data sources in state after reading)</li>
+ *   <li>{@link #read}   — refresh: re-run the lookup</li>
+ *   <li>{@link #update} — query changed: re-run the lookup with the new config</li>
+ *   <li>{@link #delete} — removal from configuration only drops the stored state; there is
+ *       nothing to destroy, so no provider RPC is made</li>
+ *   <li>{@link #plan}   — plan-time resolution: run the lookup and return actual values,
+ *       so downstream references resolve during planning (Terraform core reads data
+ *       sources during plan whenever their configuration is fully known)</li>
+ * </ul>
  *
- * <p>Only {@link #read} is meaningful. {@link #create}, {@link #update}, and {@link #delete}
- * throw {@link UnsupportedOperationException} since data sources are inherently read-only.</p>
+ * <p>Every lookup mirrors Terraform core's sequence: the data source config is validated
+ * (t5 {@code ValidateDataSourceConfig} / t6 {@code ValidateDataResourceConfig}) before
+ * {@code ReadDataSource}, and computed-only attributes are nulled out of the config the
+ * same way core strips them.</p>
  *
  * @see CtyCodec
  * @see TerraformPropertyMapper
@@ -40,40 +53,79 @@ public class TerraformDataSourceHandler extends AbstractTerraformHandler {
     }
 
     /**
-     * Reads a data source via {@code ReadDataSource}.
+     * Reads a data source: validate + {@code ReadDataSource}.
      *
      * @param properties camelCase property map with query parameters
      * @return the data source state in camelCase
      */
     @Override
     public Map<String, Object> read(Map<String, Object> properties) {
-        var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
-
-        log.debug("read data source {} — sending ReadDataSource", tfTypeName);
-        var result = rpc().readDataSource(tfTypeName, encodeToMsgpack(snakeProps));
-        checkDiagnostics(result.diagnostics(), "read");
-
-        return decodeState(result.state());
+        return readDataSource(properties, "read");
     }
 
-    /** Data sources are read-only. */
+    /**
+     * A data source entering the configuration is just its first read — the
+     * result is what the engine persists as this "resource"'s state.
+     */
     @Override
     public Map<String, Object> create(Map<String, Object> properties) {
-        throw new UnsupportedOperationException(
-                "Data source '%s' is read-only — create is not supported".formatted(tfTypeName));
+        return readDataSource(properties, "create");
     }
 
-    /** Data sources are read-only. */
+    /**
+     * A changed data source query re-runs the lookup; nothing in the cloud is
+     * mutated.
+     */
     @Override
     public Map<String, Object> update(Map<String, Object> properties) {
-        throw new UnsupportedOperationException(
-                "Data source '%s' is read-only — update is not supported".formatted(tfTypeName));
+        return readDataSource(properties, "update");
     }
 
-    /** Data sources are read-only. */
+    /**
+     * Removing a data source from the configuration only forgets its stored
+     * state — there is nothing to destroy, so no provider RPC is made.
+     */
     @Override
     public boolean delete(Map<String, Object> properties) {
-        throw new UnsupportedOperationException(
-                "Data source '%s' is read-only — delete is not supported".formatted(tfTypeName));
+        log.debug("delete data source {} — dropping state only, no provider call", tfTypeName);
+        return true;
+    }
+
+    /**
+     * Plan-time resolution: performs the actual lookup so the planned state
+     * carries real values (not "known after apply"), making the result
+     * referenceable by downstream resources during planning.
+     *
+     * @param priorState    the previously read state, unused — a lookup is always re-run
+     * @param proposedState the desired camelCase query configuration
+     * @return the freshly read data source state in camelCase
+     */
+    @Override
+    public Map<String, Object> plan(Map<String, Object> priorState, Map<String, Object> proposedState) {
+        return readDataSource(proposedState, "plan");
+    }
+
+    /**
+     * Runs the full lookup sequence Terraform core uses for data sources:
+     * config validation followed by {@code ReadDataSource}, with computed-only
+     * attributes nulled out of the config value.
+     *
+     * @param properties camelCase property map with query parameters
+     * @param operation  the operation name for error reporting
+     * @return the data source state in camelCase
+     */
+    private Map<String, Object> readDataSource(Map<String, Object> properties, String operation) {
+        var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
+        var config = encodeToMsgpack(withoutReadOnlyAttributes(snakeProps));
+
+        log.debug("{} data source {} — sending data source config validation", operation, tfTypeName);
+        var validation = rpc().validateDataSourceConfig(tfTypeName, config);
+        checkDiagnostics(validation, operation + " (validate)");
+
+        log.debug("{} data source {} — sending ReadDataSource", operation, tfTypeName);
+        var result = rpc().readDataSource(tfTypeName, config);
+        checkDiagnostics(result.diagnostics(), operation);
+
+        return decodeState(result.state());
     }
 }

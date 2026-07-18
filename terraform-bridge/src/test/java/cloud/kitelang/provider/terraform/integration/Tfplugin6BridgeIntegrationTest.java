@@ -350,6 +350,65 @@ class Tfplugin6BridgeIntegrationTest {
         }
     }
 
+    // ==================================================================
+    // Test 8: data source read via the registry, consumed by a resource
+    // ==================================================================
+
+    @Test
+    @Order(8)
+    @DisplayName("should read a data source through the registry handler and consume the result in a resource")
+    void dataSourceReadIsConsumedByResource() throws Exception {
+        assumeProviderAvailable();
+        var provider = newBridgeProvider();
+
+        try {
+            provider.init();
+
+            var dataDirectory = Files.createTempDirectory("kite-tfplugin6-test-data");
+            var config = providerConfig(provider);
+            config.put("dataDirectory", dataDirectory.toString());
+            provider.configure(config);
+
+            var resourceHandler = (TerraformResourceTypeHandler) provider.<Map<String, Object>>getResourceType("SimpleResource");
+            var resourceAttributes = simpleResourceAttributeNames();
+
+            // Seed the data source with a file in the exact format tfcoremock
+            // itself persists: create a resource, then copy its JSON state file
+            // from resource_directory into data_directory.
+            var seedProps = propsWithNulls(resourceAttributes);
+            seedProps.put("id", "seeded-lookup");
+            seedProps.put("string", "value-from-data-source");
+            resourceHandler.create(seedProps, ResourceContext.empty());
+            Files.copy(resourceDirectory.resolve("seeded-lookup.json"),
+                    dataDirectory.resolve("seeded-lookup.json"));
+
+            // Read through the registry data source handler — validate + ReadDataSource
+            var dataSourceHandler = (TerraformDataSourceHandler) provider.<Map<String, Object>>getResourceType("SimpleResourceData");
+            var query = propsWithNulls(simpleResourceDataSourceAttributeNames());
+            query.put("id", "seeded-lookup");
+            var read = dataSourceHandler.read(query);
+            assertEquals("value-from-data-source", read.get("string"),
+                    "The data source read should return the seeded value");
+
+            // Plan-time resolution: plan() performs the actual lookup, so the
+            // value is already known during planning, not "known after apply"
+            var planned = dataSourceHandler.plan(null, query);
+            assertEquals("value-from-data-source", planned.get("string"),
+                    "plan() should resolve the lookup at plan time");
+
+            // Downstream consumption: the read result feeds a resource create
+            var consumerProps = propsWithNulls(resourceAttributes);
+            consumerProps.put("id", "consumer-of-lookup");
+            consumerProps.put("string", read.get("string"));
+            var created = resourceHandler.create(consumerProps, ResourceContext.empty());
+            assertEquals("value-from-data-source", created.get("string"),
+                    "The consuming resource should carry the data source's value");
+        } finally {
+            provider.stop();
+            client = null;
+        }
+    }
+
     // ------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------
@@ -390,6 +449,15 @@ class Tfplugin6BridgeIntegrationTest {
     private java.util.List<String> simpleResourceAttributeNames() {
         return client.rpc().getProviderSchema()
                 .resourceSchemas().get("tfcoremock_simple_resource")
+                .block().attributes().stream()
+                .map(cloud.kitelang.provider.terraform.TfAttribute::name)
+                .toList();
+    }
+
+    /** snake_case attribute names of the {@code tfcoremock_simple_resource} data source. */
+    private java.util.List<String> simpleResourceDataSourceAttributeNames() {
+        return client.rpc().getProviderSchema()
+                .dataSourceSchemas().get("tfcoremock_simple_resource")
                 .block().attributes().stream()
                 .map(cloud.kitelang.provider.terraform.TfAttribute::name)
                 .toList();
