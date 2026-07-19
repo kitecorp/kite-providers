@@ -84,6 +84,12 @@ public final class TerraformPropertyMapper {
      * followed by an uppercase letter. This handles embedded numbers
      * naturally: {@code ipv6CidrBlock} becomes {@code ipv6_cidr_block}.</p>
      *
+     * <p>Runs of consecutive uppercase letters are treated as a single acronym,
+     * not one word per letter, so acronym-heavy AWS/GCP names convert correctly:
+     * {@code vpcID} and {@code VPCId} both become {@code vpc_id}, {@code myARN}
+     * becomes {@code my_arn}, {@code IAMRole} becomes {@code iam_role}. The final
+     * letter of a run only starts a new word when a lowercase letter follows it.</p>
+     *
      * @param camelCase the camelCase name, may be {@code null}
      * @return the snake_case equivalent, or empty string if input is null/empty
      */
@@ -98,8 +104,7 @@ public final class TerraformPropertyMapper {
             var ch = camelCase.charAt(i);
 
             if (Character.isUpperCase(ch)) {
-                // Insert underscore before uppercase if preceded by lowercase/digit
-                if (i > 0) {
+                if (startsNewWord(camelCase, i)) {
                     sb.append('_');
                 }
                 sb.append(Character.toLowerCase(ch));
@@ -109,6 +114,36 @@ public final class TerraformPropertyMapper {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * Decides whether the uppercase letter at {@code index} begins a new word,
+     * so that exactly one underscore is inserted per word boundary.
+     *
+     * <p>Two boundary shapes exist:
+     * <ul>
+     *   <li>a camelCase hump — the previous character is lowercase or a digit
+     *       (the {@code T} in {@code instanceType}, the {@code B} in {@code s3Bucket});</li>
+     *   <li>the end of an acronym run — the previous character is uppercase but a
+     *       lowercase letter follows this one, so this letter starts the next word
+     *       (the {@code I} in {@code VPCId} → {@code vpc_id}).</li>
+     * </ul>
+     * Interior letters of an acronym run (upper preceded and followed by upper, or
+     * ending the string) are not boundaries, so {@code myARN} stays {@code my_arn}.
+     * The first character is never a boundary.</p>
+     */
+    private static boolean startsNewWord(String name, int index) {
+        if (index == 0) {
+            return false;
+        }
+        var previous = name.charAt(index - 1);
+        if (!Character.isUpperCase(previous)) {
+            return true; // lowercase/digit -> uppercase: camelCase hump
+        }
+        // Previous letter is uppercase: only a boundary when a new lowercase word starts here.
+        var hasLowercaseSuccessor = index + 1 < name.length()
+                && Character.isLowerCase(name.charAt(index + 1));
+        return hasLowercaseSuccessor;
     }
 
     // ------------------------------------------------------------------

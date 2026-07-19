@@ -122,6 +122,31 @@ class TerraformPropertyMapperTest {
         }
 
         @Test
+        @DisplayName("should treat a trailing uppercase acronym as one word (kitecorp/kite#30)")
+        void shouldCollapseTrailingAcronym() {
+            // A run of uppercase letters is one acronym, not one word per letter:
+            // "vpcID" is vpc + id, so "vpc_id" — never "vpc_i_d".
+            assertEquals("vpc_id", TerraformPropertyMapper.toSnakeCase("vpcID"));
+            assertEquals("my_arn", TerraformPropertyMapper.toSnakeCase("myARN"));
+        }
+
+        @Test
+        @DisplayName("should split a leading acronym before the next word (kitecorp/kite#30)")
+        void shouldSplitLeadingAcronym() {
+            // The last uppercase letter of a run starts the next word when a
+            // lowercase letter follows: "VPCId" is vpc + id, "IAMRole" is iam + role.
+            assertEquals("vpc_id", TerraformPropertyMapper.toSnakeCase("VPCId"));
+            assertEquals("iam_role", TerraformPropertyMapper.toSnakeCase("IAMRole"));
+        }
+
+        @Test
+        @DisplayName("should treat a leading PascalCase acronym-word as one word (kitecorp/kite#30)")
+        void shouldHandlePascalCaseAcronymWord() {
+            // "S3Bucket" (PascalCase, digit inside the acronym) is s3 + bucket.
+            assertEquals("s3_bucket", TerraformPropertyMapper.toSnakeCase("S3Bucket"));
+        }
+
+        @Test
         @DisplayName("should be idempotent for already snake_case names")
         void shouldBeIdempotent() {
             assertEquals("instance_type", TerraformPropertyMapper.toSnakeCase("instance_type"));
@@ -335,6 +360,18 @@ class TerraformPropertyMapperTest {
             var snake = TerraformPropertyMapper.toSnakeCase(original);
             var backToCamel = TerraformPropertyMapper.toCamelCase(snake);
             assertEquals(original, backToCamel);
+        }
+
+        @Test
+        @DisplayName("real acronym-bearing TF names survive snake -> camel -> snake (kitecorp/kite#30)")
+        void shouldRoundtripAcronymTfNames() {
+            // TF attribute names are already snake_case with lowercased acronyms;
+            // the fixed acronym handling must not disturb their wire round-trip.
+            for (var tfName : List.of("vpc_id", "iam_role", "kms_key_id", "ipv6_cidr_block")) {
+                var camel = TerraformPropertyMapper.toCamelCase(tfName);
+                assertEquals(tfName, TerraformPropertyMapper.toSnakeCase(camel),
+                        "round-trip failed for " + tfName + " (camel=" + camel + ")");
+            }
         }
 
         @Test
