@@ -4,8 +4,10 @@ import cloud.kitelang.provider.KiteProvider;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -358,30 +360,70 @@ public class TerraformBridgeProvider extends KiteProvider {
     /**
      * Builds a JSON-encoded cty object type string from a TF schema block.
      *
-     * <p>The result is used by {@link CtyCodec} to correctly encode/decode property values.
-     * Format: {@code ["object", {"ami": "string", "instance_type": "string", ...}]}</p>
+     * <p>The result feeds {@link CtyCodec} to encode/decode a resource's property
+     * values, so it MUST mirror Terraform's own {@code Block.ImpliedType()}: the
+     * object's fields are the block's attributes <em>and</em> its nested blocks.
+     * Dropping nested blocks left the cty type missing the block keys the provider
+     * always includes in the wire object, so {@code CtyCodec.decode} threw on the
+     * first such key — breaking most real AWS/GCP resources (kitecorp/kite#25).</p>
      *
-     * <p>Each attribute's {@code typeJson} is already valid JSON (e.g., {@code "string"} or
-     * {@code ["list", "string"]}), so it is embedded as a raw JSON value rather than
-     * string-escaped.</p>
+     * <p>Each field's cty type:
+     * <ul>
+     *   <li>attribute &rarr; its {@code typeJson} (proto6 {@code nested_type} is
+     *       already synthesised into that JSON by {@link Tfplugin6Rpc}, so nested
+     *       attributes need no special handling here)</li>
+     *   <li>nested block SINGLE &rarr; the nested object type</li>
+     *   <li>nested block LIST/SET/MAP &rarr; {@code ["list"|"set"|"map", objectType]}</li>
+     *   <li>nested block GROUP &rarr; its attributes flattened into this object,
+     *       matching the DSL/api-schema rendering ({@code appendNestedBlock},
+     *       {@code collectApiProperties}) so all three representations describe the
+     *       same property set</li>
+     * </ul>
      *
-     * @param block the TF schema block containing attribute definitions
+     * <p>Package-private and static so the synthesised JSON can be asserted
+     * directly; it depends only on its {@code block} argument.</p>
+     *
+     * @param block the TF schema block
      * @return JSON string representing the cty object type
      */
-    private String buildObjectType(TfBlock block) {
-        var sb = new StringBuilder("[\"object\",{");
-        var first = true;
+    static String buildObjectType(TfBlock block) {
+        var fields = new ArrayList<String>();
+        collectFieldTypes(block, fields);
+        return "[\"object\",{" + String.join(",", fields) + "}]";
+    }
+
+    /**
+     * Appends {@code "name":ctyType} entries for a block's attributes and nested
+     * blocks, recursing so a GROUP block's attributes flatten into the parent.
+     * Attribute and block names are provider-supplied {@code [a-z0-9_]}, so no
+     * JSON escaping is needed (the same assumption the cty type bytes rely on).
+     */
+    private static void collectFieldTypes(TfBlock block, List<String> fields) {
         for (var attr : block.attributes()) {
-            if (!first) {
-                sb.append(',');
-            }
-            // Key: attribute name (schema names are [a-z0-9_], no escaping needed)
-            sb.append('"').append(attr.name()).append("\":");
-            // Value: raw JSON cty type
-            sb.append(attr.typeJson());
-            first = false;
+            fields.add('"' + attr.name() + "\":" + attr.typeJson());
         }
-        sb.append("}]");
-        return sb.toString();
+        for (var nested : block.blockTypes()) {
+            if (nested.nesting() == TfNestedBlock.Nesting.GROUP) {
+                collectFieldTypes(nested.block(), fields);
+            } else {
+                fields.add('"' + nested.typeName() + "\":" + nestedBlockType(nested));
+            }
+        }
+    }
+
+    /**
+     * Wraps a nested block's object type per its nesting mode, mirroring the cty
+     * implied type of a Terraform nested block. GROUP is handled by the caller
+     * (flattened); INVALID cannot occur for a well-formed schema and falls back to
+     * the bare object rather than emitting invalid JSON.
+     */
+    private static String nestedBlockType(TfNestedBlock nested) {
+        var objectType = buildObjectType(nested.block());
+        return switch (nested.nesting()) {
+            case LIST -> "[\"list\"," + objectType + "]";
+            case SET -> "[\"set\"," + objectType + "]";
+            case MAP -> "[\"map\"," + objectType + "]";
+            default -> objectType; // SINGLE (and defensively INVALID)
+        };
     }
 }

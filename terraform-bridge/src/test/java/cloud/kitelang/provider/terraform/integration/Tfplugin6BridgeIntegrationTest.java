@@ -467,6 +467,92 @@ class Tfplugin6BridgeIntegrationTest {
         }
     }
 
+    // ==================================================================
+    // Test 10: a resource with real nested BLOCKS round-trips create->read
+    // (kitecorp/kite#25). tfcoremock_complex_resource's schema carries
+    // block_types (list_block LIST, set_block SET, recursively nested) —
+    // before the fix buildObjectType dropped them, so CtyCodec.decode threw
+    // on the block key the provider always returns in the wire object.
+    // ==================================================================
+
+    @Test
+    @Order(10)
+    @DisplayName("should create and read a resource whose schema has nested blocks (list_block/set_block)")
+    void nestedBlockResourceRoundTrips() throws Exception {
+        assumeProviderAvailable();
+        var provider = newBridgeProvider();
+
+        try {
+            provider.init();
+            provider.configure(providerConfig(provider));
+
+            var handler = (TerraformResourceTypeHandler) provider.<Map<String, Object>>getResourceType("ComplexResource");
+
+            // Every top-level field is optional (id is optional+computed); the
+            // nested blocks list_block/set_block are filled as nil by the codec.
+            // Reaching read() at all proves the nested-block cty type round-trips:
+            // without list_block/set_block in the synthesised type, decoding the
+            // provider's response would throw on the first block key.
+            var createProps = propsWithNulls(complexResourceAttributeNames());
+            createProps.put("id", "kite-nested-block");
+            createProps.put("string", "nested-block-value");
+
+            var createContext = ResourceContext.<Map<String, Object>>empty();
+            var created = handler.create(createProps, createContext);
+            assertEquals("kite-nested-block", created.get("id"));
+            assertEquals("nested-block-value", created.get("string"));
+
+            var readContext = ResourceContext.<Map<String, Object>>of(null, createContext.privateDataToReturn());
+            var read = handler.read(created, readContext);
+            assertEquals("kite-nested-block", read.get("id"),
+                    "read must round-trip the nested-block resource, not throw on a dropped block key");
+            assertEquals("nested-block-value", read.get("string"));
+        } finally {
+            provider.stop();
+            client = null;
+        }
+    }
+
+    // ==================================================================
+    // Test 11: nested attributes AND nested blocks render as first-class
+    // Kite types in the generated DSL (kitecorp/kite-providers#12 + #25),
+    // asserted against the real tfcoremock_complex_resource schema.
+    // ==================================================================
+
+    @Test
+    @Order(11)
+    @DisplayName("should render nested attributes and nested blocks as first-class types in the ComplexResource DSL")
+    void complexResourceDslRendersNestedTypesFirstClass() throws Exception {
+        assumeProviderAvailable();
+        var provider = newBridgeProvider();
+
+        try {
+            provider.init();
+
+            var dsl = provider.getSchemaStrings().get("ComplexResource");
+            assertNotNull(dsl, "ComplexResource DSL should be registered");
+
+            // nested_type attributes (kitecorp/kite-providers#12): object=SINGLE,
+            // list=LIST, set=SET — first-class, no longer the bare `Map` they
+            // used to collapse to.
+            assertTrue(dsl.contains("Object object"),
+                    "SINGLE nested attribute must render as a first-class type, got: " + dsl);
+            assertTrue(dsl.contains("List[] list"),
+                    "LIST nested attribute must render as an array, got: " + dsl);
+            assertTrue(dsl.contains("Set[] set"),
+                    "SET nested attribute must render as an array, got: " + dsl);
+
+            // nested blocks (kitecorp/kite#25): list_block=LIST, set_block=SET
+            assertTrue(dsl.contains("ListBlock[] listBlock"),
+                    "LIST nested block must render as an array, got: " + dsl);
+            assertTrue(dsl.contains("SetBlock[] setBlock"),
+                    "SET nested block must render as an array, got: " + dsl);
+        } finally {
+            provider.stop();
+            client = null;
+        }
+    }
+
     // ------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------
@@ -507,6 +593,15 @@ class Tfplugin6BridgeIntegrationTest {
     private java.util.List<String> simpleResourceAttributeNames() {
         return client.rpc().getProviderSchema()
                 .resourceSchemas().get("tfcoremock_simple_resource")
+                .block().attributes().stream()
+                .map(cloud.kitelang.provider.terraform.TfAttribute::name)
+                .toList();
+    }
+
+    /** snake_case attribute names of {@code tfcoremock_complex_resource}, from the live schema. */
+    private java.util.List<String> complexResourceAttributeNames() {
+        return client.rpc().getProviderSchema()
+                .resourceSchemas().get("tfcoremock_complex_resource")
                 .block().attributes().stream()
                 .map(cloud.kitelang.provider.terraform.TfAttribute::name)
                 .toList();

@@ -14,6 +14,7 @@ import tfplugin5.Tfplugin5.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -626,6 +627,133 @@ class TerraformBridgeProviderTest {
             var domains = provider.getSchemaDomains();
             assertEquals("networking", domains.get("Vpc"));
             assertEquals("storage", domains.get("S3Bucket"));
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // 7. buildObjectType — cty type synthesis (kitecorp/kite#25)
+    // ---------------------------------------------------------------
+    @Nested
+    @DisplayName("buildObjectType — cty type synthesis")
+    class BuildObjectType {
+
+        private static TfAttribute attr(String name, String typeJson) {
+            return new TfAttribute(name, typeJson, false, true, false, false, false);
+        }
+
+        private static TfBlock block(List<TfAttribute> attributes, List<TfNestedBlock> blockTypes) {
+            return new TfBlock(attributes, blockTypes);
+        }
+
+        @Test
+        @DisplayName("attributes only synthesise a flat cty object (unchanged behaviour)")
+        void attributesOnly() {
+            var block = block(List.of(attr("ami", "\"string\""), attr("count", "\"number\"")), List.of());
+
+            assertEquals("[\"object\",{\"ami\":\"string\",\"count\":\"number\"}]",
+                    TerraformBridgeProvider.buildObjectType(block));
+        }
+
+        @Test
+        @DisplayName("a proto6 nested_type attribute is embedded via its synthesised typeJson")
+        void nestedAttributeViaTypeJson() {
+            // The nested_type -> cty JSON synthesis happens in Tfplugin6Rpc; here
+            // it must pass through as a raw JSON value alongside the block keys.
+            var settings = attr("settings", "[\"object\",{\"endpoint\":\"string\"}]");
+            var block = block(List.of(attr("id", "\"string\""), settings), List.of());
+
+            assertEquals("[\"object\",{\"id\":\"string\",\"settings\":[\"object\",{\"endpoint\":\"string\"}]}]",
+                    TerraformBridgeProvider.buildObjectType(block));
+        }
+
+        @Test
+        @DisplayName("SINGLE nested block synthesises a nested cty object")
+        void singleBlock() {
+            var inner = block(List.of(attr("volume_size", "\"number\"")), List.of());
+            var nested = new TfNestedBlock("root_block_device", inner, TfNestedBlock.Nesting.SINGLE);
+            var block = block(List.of(attr("ami", "\"string\"")), List.of(nested));
+
+            assertEquals(
+                    "[\"object\",{\"ami\":\"string\",\"root_block_device\":[\"object\",{\"volume_size\":\"number\"}]}]",
+                    TerraformBridgeProvider.buildObjectType(block));
+        }
+
+        @Test
+        @DisplayName("LIST nested block wraps the object type in a cty list")
+        void listBlock() {
+            var inner = block(List.of(attr("from_port", "\"number\"")), List.of());
+            var nested = new TfNestedBlock("ingress", inner, TfNestedBlock.Nesting.LIST);
+            var block = block(List.of(), List.of(nested));
+
+            assertEquals("[\"object\",{\"ingress\":[\"list\",[\"object\",{\"from_port\":\"number\"}]]}]",
+                    TerraformBridgeProvider.buildObjectType(block));
+        }
+
+        @Test
+        @DisplayName("SET nested block wraps the object type in a cty set")
+        void setBlock() {
+            var inner = block(List.of(attr("cidr_block", "\"string\"")), List.of());
+            var nested = new TfNestedBlock("egress", inner, TfNestedBlock.Nesting.SET);
+            var block = block(List.of(), List.of(nested));
+
+            assertEquals("[\"object\",{\"egress\":[\"set\",[\"object\",{\"cidr_block\":\"string\"}]]}]",
+                    TerraformBridgeProvider.buildObjectType(block));
+        }
+
+        @Test
+        @DisplayName("MAP nested block wraps the object type in a cty map")
+        void mapBlock() {
+            var inner = block(List.of(attr("value", "\"string\"")), List.of());
+            var nested = new TfNestedBlock("setting", inner, TfNestedBlock.Nesting.MAP);
+            var block = block(List.of(), List.of(nested));
+
+            assertEquals("[\"object\",{\"setting\":[\"map\",[\"object\",{\"value\":\"string\"}]]}]",
+                    TerraformBridgeProvider.buildObjectType(block));
+        }
+
+        @Test
+        @DisplayName("GROUP nested block flattens its attributes into the parent object")
+        void groupBlock() {
+            // GROUP matches the DSL/api-schema flattening so the cty type, the
+            // api schema, and the DSL all describe the same property set.
+            var inner = block(List.of(attr("iops", "\"number\"")), List.of());
+            var nested = new TfNestedBlock("performance", inner, TfNestedBlock.Nesting.GROUP);
+            var block = block(List.of(attr("ami", "\"string\"")), List.of(nested));
+
+            assertEquals("[\"object\",{\"ami\":\"string\",\"iops\":\"number\"}]",
+                    TerraformBridgeProvider.buildObjectType(block));
+        }
+
+        @Test
+        @DisplayName("nested blocks inside nested blocks synthesise recursively")
+        void recursiveBlocks() {
+            var deepest = block(List.of(attr("x", "\"bool\"")), List.of());
+            var mid = block(List.of(), List.of(new TfNestedBlock("inner", deepest, TfNestedBlock.Nesting.LIST)));
+            var block = block(List.of(), List.of(new TfNestedBlock("outer", mid, TfNestedBlock.Nesting.SET)));
+
+            assertEquals(
+                    "[\"object\",{\"outer\":[\"set\",[\"object\",{\"inner\":[\"list\",[\"object\",{\"x\":\"bool\"}]]}]]}]",
+                    TerraformBridgeProvider.buildObjectType(block));
+        }
+
+        @Test
+        @DisplayName("the synthesised nested-block type round-trips a value through CtyCodec")
+        void roundTripsThroughCodec() {
+            // The whole point of #25: the provider always includes the block key in
+            // the wire object, so a type missing it makes CtyCodec.decode throw.
+            var inner = block(List.of(attr("from_port", "\"number\"")), List.of());
+            var nested = new TfNestedBlock("ingress", inner, TfNestedBlock.Nesting.LIST);
+            var type = TerraformBridgeProvider.buildObjectType(
+                    block(List.of(attr("name", "\"string\"")), List.of(nested)));
+
+            var value = new LinkedHashMap<String, Object>();
+            value.put("name", "sg");
+            value.put("ingress", List.of(Map.of("from_port", 443)));
+
+            var codec = new CtyCodec();
+            var decoded = codec.decode(codec.encode(value, type), type);
+
+            assertEquals(Map.of("name", "sg", "ingress", List.of(Map.of("from_port", 443))), decoded);
         }
     }
 
