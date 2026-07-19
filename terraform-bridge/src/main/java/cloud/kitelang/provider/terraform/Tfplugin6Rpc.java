@@ -17,8 +17,10 @@ import java.util.stream.Collectors;
  * are encoded exactly like the corresponding cty object/list/set/map-of-object
  * type, so {@link #attributeTypeJson} synthesises that cty type JSON and the rest
  * of the bridge (encoding, decoding, schema conversion) works unchanged.
- * First-class rendering of nested attributes in the Kite schema DSL is tracked
- * separately (kitecorp/kite-providers#12).</p>
+ * Alongside that cty JSON, the structured {@code nested_type} (members + nesting
+ * mode) is carried on the neutral {@link TfAttribute#nestedType()} so
+ * {@link TerraformSchemaConverter} can render nested attributes as first-class
+ * Kite schema types (kitecorp/kite-providers#12).</p>
  *
  * <p>The near-duplicate in {@link Tfplugin5Rpc} is intentional: the two
  * protocols generate distinct Java classes with no common supertype.</p>
@@ -205,7 +207,36 @@ final class Tfplugin6Rpc implements TerraformProviderRpc {
                 attribute.getOptional(),
                 attribute.getComputed(),
                 attribute.getSensitive() || hasSensitiveNestedAttribute(attribute),
-                attribute.getWriteOnly());
+                attribute.getWriteOnly(),
+                attribute.hasNestedType() ? toTfObjectType(attribute.getNestedType()) : null);
+    }
+
+    /**
+     * Structured form of a {@code nested_type} object, carried alongside the
+     * synthesised cty {@code typeJson} ({@link #attributeTypeJson}) so the DSL
+     * converter can render nested attributes as first-class Kite types
+     * (kitecorp/kite-providers#12). Recurses through {@link #toTfAttribute} so
+     * members that are themselves nested attributes keep their structure.
+     */
+    private static TfObjectType toTfObjectType(Tfplugin6.Schema.Object object) {
+        return new TfObjectType(
+                object.getAttributesList().stream().map(Tfplugin6Rpc::toTfAttribute).toList(),
+                toObjectNesting(object.getNesting()));
+    }
+
+    /**
+     * Maps a {@code Schema.Object.NestingMode} onto the shared nesting enum.
+     * Nested attributes never use GROUP (a nested-block-only mode), so an
+     * unrecognised value maps to INVALID rather than being forced onto a shape.
+     */
+    private static TfNestedBlock.Nesting toObjectNesting(Tfplugin6.Schema.Object.NestingMode mode) {
+        return switch (mode) {
+            case SINGLE -> TfNestedBlock.Nesting.SINGLE;
+            case LIST -> TfNestedBlock.Nesting.LIST;
+            case SET -> TfNestedBlock.Nesting.SET;
+            case MAP -> TfNestedBlock.Nesting.MAP;
+            default -> TfNestedBlock.Nesting.INVALID;
+        };
     }
 
     /**

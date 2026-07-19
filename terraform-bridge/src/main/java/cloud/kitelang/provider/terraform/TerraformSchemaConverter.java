@@ -28,6 +28,8 @@ import java.util.Set;
  *   <li>Parse cty type constraint bytes into Kite type strings</li>
  *   <li>Map TF attribute flags to Kite property decorators</li>
  *   <li>Handle nested blocks (SINGLE, LIST, SET, MAP, GROUP)</li>
+ *   <li>Render tfplugin6 nested attributes ({@code nested_type}) as first-class
+ *       nested types rather than a bare {@code Map} (kitecorp/kite-providers#12)</li>
  *   <li>Classify TF types into Kite import domains via heuristics</li>
  * </ul>
  *
@@ -300,7 +302,7 @@ public class TerraformSchemaConverter {
         for (var attr : block.attributes()) {
             properties.add(Property.builder()
                     .name(TerraformPropertyMapper.toCamelCase(attr.name()))
-                    .type(ctyTypeToKiteType(attr.typeJson()))
+                    .type(attributeKiteType(attr))
                     .cloud(attr.computed())
                     .sensitive(attr.sensitive())
                     .build());
@@ -354,7 +356,7 @@ public class TerraformSchemaConverter {
      * and converts the attribute name from snake_case to camelCase.</p>
      */
     private void appendAttribute(StringBuilder sb, TfAttribute attr, String indent) {
-        var kiteType = ctyTypeToKiteType(attr.typeJson());
+        var kiteType = attributeKiteType(attr);
         var kiteName = TerraformPropertyMapper.toCamelCase(attr.name());
 
         sb.append(indent);
@@ -375,6 +377,39 @@ public class TerraformSchemaConverter {
         }
 
         sb.append(kiteType).append(' ').append(kiteName).append('\n');
+    }
+
+    /**
+     * The Kite type for an attribute. A tfplugin6 {@code nested_type} attribute
+     * renders as a first-class nested type (mirroring nested blocks) instead of
+     * the bare {@code Map} its synthesised cty object type would otherwise map to
+     * (kitecorp/kite-providers#12); every other attribute maps its cty type.
+     */
+    private String attributeKiteType(TfAttribute attr) {
+        return attr.nestedType() != null
+                ? nestedAttributeKiteType(attr.name(), attr.nestedType())
+                : ctyTypeToKiteType(attr.typeJson());
+    }
+
+    /**
+     * The Kite type for a nested attribute, mirroring {@link #appendNestedBlock}:
+     * the attribute's own name becomes the nested type name and the nesting mode
+     * picks the shape.
+     *
+     * <p>MAP renders as the untyped {@code Map} — as nested blocks do — because
+     * the Kite grammar has no typed-map syntax ({@code typeIdentifier} offers only
+     * an array suffix). The element structure survives in the cty type used for
+     * CRUD; it simply cannot be spelled in the DSL until the language gains a
+     * typed-map form (follow-up: kitecorp/kite-language).</p>
+     */
+    private static String nestedAttributeKiteType(String attributeName, TfObjectType nested) {
+        var typeName = toPascalCase(attributeName);
+        return switch (nested.nesting()) {
+            case SINGLE -> typeName;
+            case LIST, SET -> typeName + "[]";
+            case MAP -> "Map";
+            default -> "any";
+        };
     }
 
     /**

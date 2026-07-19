@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import tfplugin5.Tfplugin5.Schema;
 
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -394,6 +395,118 @@ class TerraformSchemaConverterTest {
                     "Expected flattened 'number iops' but got: " + actual);
             assertFalse(actual.contains("Performance"),
                     "Should not contain nested type name for GROUP");
+        }
+    }
+
+    // ---------------------------------------------------------------
+    // 4b. Nested attribute handling (kitecorp/kite-providers#12)
+    // ---------------------------------------------------------------
+    @Nested
+    @DisplayName("Nested attribute (nested_type) rendering in toKiteSchema")
+    class NestedAttributeHandling {
+
+        private static TfAttribute member(String name, String typeJson) {
+            return new TfAttribute(name, typeJson, false, true, false, false, false);
+        }
+
+        /** A tfplugin6 nested attribute: the cty typeJson is unused for rendering when nestedType is set. */
+        private static TfAttribute nestedAttribute(String name, TfNestedBlock.Nesting nesting,
+                                                   boolean computed, boolean sensitive, TfAttribute... members) {
+            return new TfAttribute(name, "[\"object\",{}]", false, true, computed, sensitive, false,
+                    new TfObjectType(List.of(members), nesting));
+        }
+
+        private static TfSchema schemaOf(TfAttribute... attributes) {
+            return new TfSchema(0, new TfBlock(List.of(attributes), List.of()));
+        }
+
+        @Test
+        @DisplayName("SINGLE nested attribute renders as a first-class type, not Map")
+        void singleNestingRendersFirstClassType() {
+            var schema = schemaOf(nestedAttribute("settings", TfNestedBlock.Nesting.SINGLE, false, false,
+                    member("endpoint", "\"string\"")));
+
+            var actual = converter.toKiteSchema("aws_thing", schema);
+
+            assertTrue(actual.contains("Settings settings"),
+                    "Expected 'Settings settings' but got: " + actual);
+            assertFalse(actual.contains("Map settings"),
+                    "SINGLE nested attribute must not collapse to Map, got: " + actual);
+        }
+
+        @Test
+        @DisplayName("LIST nested attribute renders as an array of the nested type")
+        void listNestingRendersArray() {
+            var schema = schemaOf(nestedAttribute("rules", TfNestedBlock.Nesting.LIST, false, false,
+                    member("action", "\"string\"")));
+
+            var actual = converter.toKiteSchema("aws_thing", schema);
+
+            assertTrue(actual.contains("Rules[] rules"),
+                    "Expected 'Rules[] rules' but got: " + actual);
+        }
+
+        @Test
+        @DisplayName("SET nested attribute renders as an array of the nested type")
+        void setNestingRendersArray() {
+            var schema = schemaOf(nestedAttribute("tags", TfNestedBlock.Nesting.SET, false, false,
+                    member("key", "\"string\"")));
+
+            var actual = converter.toKiteSchema("aws_thing", schema);
+
+            assertTrue(actual.contains("Tags[] tags"),
+                    "Expected 'Tags[] tags' but got: " + actual);
+        }
+
+        @Test
+        @DisplayName("MAP nested attribute renders as Map (Kite grammar has no typed-map syntax)")
+        void mapNestingRendersMap() {
+            var schema = schemaOf(nestedAttribute("environments", TfNestedBlock.Nesting.MAP, false, false,
+                    member("url", "\"string\"")));
+
+            var actual = converter.toKiteSchema("aws_thing", schema);
+
+            assertTrue(actual.contains("Map environments"),
+                    "Expected 'Map environments' but got: " + actual);
+        }
+
+        @Test
+        @DisplayName("a computed nested attribute carries the @cloud decorator")
+        void computedNestedAttributeIsCloud() {
+            var schema = schemaOf(nestedAttribute("config", TfNestedBlock.Nesting.SINGLE, true, false,
+                    member("value", "\"string\"")));
+
+            var actual = converter.toKiteSchema("aws_thing", schema);
+
+            assertTrue(actual.contains("@cloud Config config"),
+                    "Expected '@cloud Config config' but got: " + actual);
+        }
+
+        @Test
+        @DisplayName("a sensitive nested attribute carries the @sensitive decorator")
+        void sensitiveNestedAttributeIsSensitive() {
+            var schema = schemaOf(nestedAttribute("credentials", TfNestedBlock.Nesting.SINGLE, false, true,
+                    member("token", "\"string\"")));
+
+            var actual = converter.toKiteSchema("aws_thing", schema);
+
+            assertTrue(actual.contains("@sensitive Credentials credentials"),
+                    "Expected '@sensitive Credentials credentials' but got: " + actual);
+        }
+
+        @Test
+        @DisplayName("the api schema also carries the nested type, not Map")
+        void apiSchemaCarriesNestedType() {
+            var schema = schemaOf(nestedAttribute("settings", TfNestedBlock.Nesting.LIST, false, false,
+                    member("endpoint", "\"string\"")));
+
+            var apiSchema = converter.toApiSchema("Thing", schema);
+
+            var settings = apiSchema.getProperties().stream()
+                    .filter(p -> "settings".equals(p.name()))
+                    .findFirst()
+                    .orElseThrow(() -> new AssertionError("property 'settings' missing"));
+            assertEquals("Settings[]", settings.type());
         }
     }
 

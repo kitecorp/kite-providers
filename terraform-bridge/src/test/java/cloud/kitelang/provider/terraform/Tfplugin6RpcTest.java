@@ -204,8 +204,37 @@ class Tfplugin6RpcTest {
 
             assertEquals(new TfAttribute("settings",
                             "[\"object\",{\"endpoint\":\"string\",\"ports\":[\"list\",\"number\"]}]",
-                            false, true, false, false, false),
+                            false, true, false, false, false,
+                            new TfObjectType(List.of(
+                                    new TfAttribute("endpoint", "\"string\"", false, false, false, false, false),
+                                    new TfAttribute("ports", "[\"list\",\"number\"]", false, false, false, false, false)),
+                                    TfNestedBlock.Nesting.SINGLE)),
                     convert(attribute));
+        }
+
+        @Test
+        @DisplayName("the structured nested_type (members + nesting) is carried on the neutral attribute")
+        void nestedTypeStructureIsCarried() {
+            // #12 needs the structure, not just the synthesised cty JSON, to
+            // render nested attributes as first-class Kite types.
+            var attribute = Schema.Attribute.newBuilder()
+                    .setName("rules")
+                    .setNestedType(nestedObject(Schema.Object.NestingMode.LIST,
+                            typedAttribute("action", "\"string\""),
+                            typedAttribute("ports", "[\"list\",\"number\"]")))
+                    .build();
+
+            assertEquals(new TfObjectType(List.of(
+                            new TfAttribute("action", "\"string\"", false, false, false, false, false),
+                            new TfAttribute("ports", "[\"list\",\"number\"]", false, false, false, false, false)),
+                            TfNestedBlock.Nesting.LIST),
+                    convert(attribute).nestedType());
+        }
+
+        @Test
+        @DisplayName("a plain (cty-typed) attribute carries a null nested_type")
+        void plainAttributeHasNullNestedType() {
+            assertNull(convert(typedAttribute("region", "\"string\"")).nestedType());
         }
 
         @Test
@@ -281,7 +310,11 @@ class Tfplugin6RpcTest {
 
             assertEquals(new TfAttribute("credentials",
                             "[\"object\",{\"username\":\"string\",\"password\":\"string\"}]",
-                            false, true, false, true, false),
+                            false, true, false, true, false,
+                            new TfObjectType(List.of(
+                                    new TfAttribute("username", "\"string\"", false, false, false, false, false),
+                                    new TfAttribute("password", "\"string\"", false, false, false, true, false)),
+                                    TfNestedBlock.Nesting.SINGLE)),
                     convert(attribute));
         }
 
