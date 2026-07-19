@@ -14,9 +14,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Bidirectional codec between Java Maps and Terraform's cty msgpack encoding.
@@ -235,16 +237,49 @@ public class CtyCodec {
      * the type of each attribute.
      */
     private void encodeObject(MessagePacker packer, Map<String, Object> value, JsonNode attrTypes) throws IOException {
-        // Include all attributes from the schema, even if absent from the map (as nil)
+        // A cty object has a fixed, schema-declared attribute set. Collect it once;
+        // it drives both the unknown-property check and the packed field order.
         var fieldNames = attrTypes.fieldNames();
         var fields = new ArrayList<String>();
         fieldNames.forEachRemaining(fields::add);
 
+        rejectUnknownProperties(value.keySet(), fields);
+
+        // Include all attributes from the schema, even if absent from the map (as nil)
         packer.packMapHeader(fields.size());
         for (var field : fields) {
             packer.packString(field);
             var attrValue = value.get(field);
             encodeValue(packer, attrValue, attrTypes.get(field));
+        }
+    }
+
+    /**
+     * Fail by name on any map key the object schema does not declare — the
+     * encode-side mirror of the provider-config "Unsupported argument" check
+     * ({@link TerraformBridgeProvider#configure}). Historically these keys were
+     * silently skipped (only schema fields were read), which hid user typos in
+     * {@code .kite} files: a mistyped property simply vanished from the request
+     * instead of failing loudly (kitecorp/kite#31). Applies at every object level,
+     * so typos inside nested blocks are caught too. Free-form {@code map(...)}
+     * values are not objects and never reach here, so their arbitrary keys pass
+     * through untouched.
+     *
+     * @param providedKeys the keys actually present in the value map
+     * @param schemaFields  the attribute names the schema declares (packing order)
+     */
+    private void rejectUnknownProperties(Set<String> providedKeys, List<String> schemaFields) {
+        var schema = new HashSet<>(schemaFields);
+        var unknown = providedKeys.stream()
+                .filter(key -> !schema.contains(key))
+                .sorted()
+                .map(key -> "'" + key + "'")
+                .toList();
+        if (!unknown.isEmpty()) {
+            var valid = schemaFields.stream().sorted().map(name -> "'" + name + "'").toList();
+            throw new IllegalArgumentException(
+                    "Unknown resource property %s not in schema. Valid properties: %s"
+                            .formatted(String.join(", ", unknown), valid));
         }
     }
 

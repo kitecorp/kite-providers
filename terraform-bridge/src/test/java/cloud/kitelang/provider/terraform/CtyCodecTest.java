@@ -471,6 +471,83 @@ class CtyCodecTest {
     }
 
     // ---------------------------------------------------------------
+    // 9b. Unknown properties (kitecorp/kite#31)
+    // ---------------------------------------------------------------
+    @Nested
+    @DisplayName("Unknown properties (kitecorp/kite#31)")
+    class UnknownProperties {
+
+        @Test
+        @DisplayName("should reject an unknown top-level property by name instead of dropping it")
+        void shouldRejectUnknownPropertyByName() {
+            var schema = """
+                    ["object", {"ami": "string", "instance_type": "string"}]""";
+            // "instance_typ" is a typo the schema does not declare; silently dropping it
+            // would send the provider a resource missing instance_type with no warning.
+            var props = Map.<String, Object>of(
+                    "ami", "ami-123",
+                    "instance_typ", "t3.micro");
+
+            var thrown = assertThrows(IllegalArgumentException.class,
+                    () -> codec.encode(props, schema));
+
+            assertTrue(thrown.getMessage().contains("instance_typ"),
+                    "message must name the unknown property: " + thrown.getMessage());
+            assertTrue(thrown.getMessage().contains("ami")
+                            && thrown.getMessage().contains("instance_type"),
+                    "message must list the valid properties: " + thrown.getMessage());
+        }
+
+        @Test
+        @DisplayName("should reject an unknown property nested inside a block")
+        void shouldRejectUnknownNestedProperty() {
+            var schema = """
+                    ["object", {"root_block_device": ["object", {"volume_size": "number"}]}]""";
+            var props = Map.<String, Object>of(
+                    "root_block_device", Map.of("volume_sze", 50)); // typo inside the block
+
+            var thrown = assertThrows(IllegalArgumentException.class,
+                    () -> codec.encode(props, schema));
+
+            assertTrue(thrown.getMessage().contains("volume_sze"),
+                    "message must name the nested unknown property: " + thrown.getMessage());
+        }
+
+        @Test
+        @DisplayName("should still encode when a schema attribute is absent from the map")
+        void shouldEncodeWithAbsentSchemaAttribute() {
+            // Computed/read-only attributes (e.g. id) are legitimately absent or null —
+            // absence is never an unknown-property error, only an extra key is.
+            var schema = """
+                    ["object", {"ami": "string", "id": "string"}]""";
+            var props = Map.<String, Object>of("ami", "ami-123"); // "id" absent
+
+            var decoded = codec.decode(codec.encode(props, schema), schema);
+
+            assertEquals("ami-123", decoded.get("ami"));
+            assertNull(decoded.get("id"));
+        }
+
+        @Test
+        @DisplayName("should allow arbitrary keys inside a map-typed attribute")
+        void shouldAllowArbitraryMapKeys() {
+            // A cty map (unlike an object) has no fixed key set, so tags and other
+            // free-form maps must pass through untouched.
+            var schema = """
+                    ["object", {"tags": ["map", "string"]}]""";
+            var props = Map.<String, Object>of(
+                    "tags", Map.of("Any", "value", "Custom", "key"));
+
+            var decoded = codec.decode(codec.encode(props, schema), schema);
+
+            @SuppressWarnings("unchecked")
+            var tags = (Map<String, Object>) decoded.get("tags");
+            assertEquals("value", tags.get("Any"));
+            assertEquals("key", tags.get("Custom"));
+        }
+    }
+
+    // ---------------------------------------------------------------
     // 10. Full round-trip with realistic schema
     // ---------------------------------------------------------------
     @Nested

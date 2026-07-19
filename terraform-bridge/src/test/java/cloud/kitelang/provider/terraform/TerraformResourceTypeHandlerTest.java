@@ -191,6 +191,25 @@ class TerraformResourceTypeHandlerTest {
             verify(stub).readResource(readCaptor.capture());
             assertEquals(privateBytes, readCaptor.getValue().getPrivate());
         }
+
+        @Test
+        @DisplayName("should reject a create with an unknown property by name (kitecorp/kite#31)")
+        void shouldRejectUnknownPropertyOnCreate() {
+            // A typo in a .kite resource — camelCase "instanceTyp" — snake-converts to
+            // "instance_typ", which the schema does not declare. The create must fail
+            // by name rather than silently dropping the property and applying a
+            // different resource than the user wrote (kitecorp/kite#31).
+            var input = camelCaseProps("ami-12345", "t2.micro");
+            input.put("instanceTyp", "t2.micro");
+
+            var thrown = assertThrows(IllegalArgumentException.class,
+                    () -> handler.create(input));
+
+            assertTrue(thrown.getMessage().contains("instance_typ"),
+                    "message must name the unknown property: " + thrown.getMessage());
+            // The apply must never fire once the config is known to be invalid.
+            verify(stub, never()).applyResourceChange(any());
+        }
     }
 
     // ---------------------------------------------------------------
