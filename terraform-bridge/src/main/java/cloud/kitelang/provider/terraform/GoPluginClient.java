@@ -9,11 +9,17 @@ import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Client that manages a Terraform provider Go binary via the HashiCorp go-plugin protocol.
@@ -50,8 +56,17 @@ public class GoPluginClient implements AutoCloseable {
      */
     static final String LEGACY_MAGIC_COOKIE_VALUE = "d602bf8f470bc67ca7faa0945738d352";
 
-    /** Maximum time to wait for the handshake line from the provider process. */
-    private static final long HANDSHAKE_TIMEOUT_SECONDS = 30;
+    /** Default maximum time to wait for the handshake line from the provider process. */
+    private static final Duration DEFAULT_HANDSHAKE_TIMEOUT = Duration.ofSeconds(30);
+
+    /**
+     * How long a fresh process is given to reveal an immediate cookie-mismatch exit
+     * before it is treated as accepted — see {@link #launchWithFallback(Path)}.
+     */
+    private static final Duration COOKIE_PROBE_TIMEOUT = Duration.ofMillis(500);
+
+    /** Grace period for the provider process to exit after a destroy signal. */
+    private static final Duration PROCESS_EXIT_GRACE = Duration.ofSeconds(5);
 
     /** Expected core protocol version. */
     private static final int SUPPORTED_CORE_PROTOCOL = 1;
@@ -63,6 +78,7 @@ public class GoPluginClient implements AutoCloseable {
     private static final int HANDSHAKE_FIELD_COUNT = 5;
 
     private final Process process;
+    private final Thread stderrPump;
     private final ManagedChannel channel;
     private final tfplugin5.ProviderGrpc.ProviderBlockingStub stub;
     private final TerraformProviderRpc rpc;
@@ -91,22 +107,45 @@ public class GoPluginClient implements AutoCloseable {
      *                           or the health check does not return SERVING
      */
     public GoPluginClient(Path providerBinaryPath) {
-        log.info("Launching go-plugin provider: {}", providerBinaryPath);
+        this(providerBinaryPath, DEFAULT_HANDSHAKE_TIMEOUT, RpcDeadlines.fromEnvironment());
+    }
 
-        // Try framework cookie first; if the provider exits immediately, retry with legacy
-        this.process = launchWithFallback(providerBinaryPath);
-        startStderrCapture(process);
+    /**
+     * Package-private seam: launches the binary, then wires the connection with the
+     * given handshake timeout and per-call deadlines. Used by tests to drive a fast
+     * handshake timeout.
+     */
+    GoPluginClient(Path providerBinaryPath, Duration handshakeTimeout, RpcDeadlines deadlines) {
+        this(launchWithFallback(providerBinaryPath), handshakeTimeout, deadlines);
+    }
 
-        var handshakeLine = readHandshakeLine(process);
-        this.handshake = parseHandshake(handshakeLine);
-        log.info("Handshake successful: appProtocol={}, networkType={}, addr={}",
-                handshake.appProtocol(), handshake.networkType(), handshake.networkAddr());
+    /**
+     * Package-private seam: wires up an already-launched process. Any failure during
+     * wiring (handshake timeout, unsupported protocol, unhealthy provider) reaps the
+     * half-started process and stderr pump before rethrowing, so a failed startup
+     * never leaks a subprocess or a thread (kitecorp/kite#28).
+     */
+    GoPluginClient(Process launchedProcess, Duration handshakeTimeout, RpcDeadlines deadlines) {
+        this.process = launchedProcess;
+        this.stderrPump = startStderrCapture(launchedProcess);
 
-        this.channel = buildChannel(handshake);
-        this.stub = tfplugin5.ProviderGrpc.newBlockingStub(channel);
-        this.rpc = createRpc(handshake.appProtocol(), channel);
+        ManagedChannel openedChannel = null;
+        try {
+            var handshakeLine = readHandshakeLine(launchedProcess, handshakeTimeout);
+            this.handshake = parseHandshake(handshakeLine);
+            log.info("Handshake successful: appProtocol={}, networkType={}, addr={}",
+                    handshake.appProtocol(), handshake.networkType(), handshake.networkAddr());
 
-        verifyHealth();
+            openedChannel = buildChannel(handshake, new RpcDeadlineInterceptor(deadlines));
+            this.channel = openedChannel;
+            this.stub = tfplugin5.ProviderGrpc.newBlockingStub(openedChannel);
+            this.rpc = createRpc(handshake.appProtocol(), openedChannel);
+
+            verifyHealth();
+        } catch (RuntimeException | Error e) {
+            reapFailedStart(launchedProcess, stderrPump, openedChannel);
+            throw e;
+        }
         log.info("Provider is healthy and ready");
     }
 
@@ -186,21 +225,66 @@ public class GoPluginClient implements AutoCloseable {
             channel.shutdownNow();
         }
 
-        // 3. Destroy the process
-        if (process.isAlive()) {
-            process.destroy();
-            try {
-                if (!process.waitFor(5, TimeUnit.SECONDS)) {
-                    log.warn("Provider process did not exit gracefully, forcing destruction");
-                    process.destroyForcibly();
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                process.destroyForcibly();
-            }
-        }
+        // 3. Destroy the process and let the stderr pump terminate (destroying the
+        //    process closes its stderr, so the pump's readLine returns and exits).
+        terminateProcess(process);
+        joinStderrPump(stderrPump);
 
         log.info("Provider shutdown complete");
+    }
+
+    /**
+     * Reaps a half-started provider after the constructor failed: shuts the channel
+     * (if one was opened), destroys the process, and joins the stderr pump — so a
+     * failed startup leaks neither the subprocess nor the pump thread (kitecorp/kite#28).
+     */
+    static void reapFailedStart(Process process, Thread stderrPump, ManagedChannel channel) {
+        log.warn("Provider startup failed; reaping half-started process and threads");
+        if (channel != null) {
+            channel.shutdownNow();
+        }
+        terminateProcess(process);
+        joinStderrPump(stderrPump);
+    }
+
+    /**
+     * Destroys the provider process and waits for it, escalating to a forcible
+     * destroy if it does not exit within the grace period. No-op if already dead.
+     */
+    static void terminateProcess(Process process) {
+        if (!process.isAlive()) {
+            return;
+        }
+        process.destroy();
+        try {
+            if (!process.waitFor(PROCESS_EXIT_GRACE.toMillis(), TimeUnit.MILLISECONDS)) {
+                log.warn("Provider process did not exit gracefully, forcing destruction");
+                process.destroyForcibly();
+                process.waitFor(PROCESS_EXIT_GRACE.toMillis(), TimeUnit.MILLISECONDS);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            process.destroyForcibly();
+        }
+    }
+
+    /**
+     * Joins the stderr pump thread briefly to confirm it terminated. The pump exits
+     * on its own once the process dies (its {@code readLine} returns at stream EOF);
+     * the join is a guard that it is not left blocked on a dead stream.
+     */
+    static void joinStderrPump(Thread stderrPump) {
+        if (stderrPump == null) {
+            return;
+        }
+        try {
+            stderrPump.join(PROCESS_EXIT_GRACE);
+            if (stderrPump.isAlive()) {
+                log.warn("stderr pump thread did not terminate after process teardown");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     // ---------------------------------------------------------------
@@ -337,10 +421,15 @@ public class GoPluginClient implements AutoCloseable {
      * For Unix domain sockets, uses Netty's {@link NettyChannelBuilder} with
      * {@link java.net.UnixDomainSocketAddress} (Java 16+).</p>
      *
-     * @param handshake the parsed handshake result
+     * <p>The {@code deadlineInterceptor} is attached to the channel, so every stub
+     * built from it (protocol facade, raw stub, health stub) carries a per-call
+     * deadline (kitecorp/kite#33).</p>
+     *
+     * @param handshake           the parsed handshake result
+     * @param deadlineInterceptor the per-call deadline interceptor
      * @return a configured ManagedChannel ready for RPC calls
      */
-    private static ManagedChannel buildChannel(HandshakeResult handshake) {
+    private static ManagedChannel buildChannel(HandshakeResult handshake, RpcDeadlineInterceptor deadlineInterceptor) {
         return switch (handshake.networkType()) {
             case "unix" -> {
                 var socketAddress = java.net.UnixDomainSocketAddress.of(handshake.networkAddr());
@@ -349,11 +438,13 @@ public class GoPluginClient implements AutoCloseable {
                         .forAddress(socketAddress)
                         .eventLoopGroup(eventLoopGroup)
                         .channelType(io.grpc.netty.shaded.io.netty.channel.socket.nio.NioDomainSocketChannel.class)
+                        .intercept(deadlineInterceptor)
                         .usePlaintext()
                         .build();
             }
             default -> ManagedChannelBuilder
                     .forTarget(handshake.networkAddr())
+                    .intercept(deadlineInterceptor)
                     .usePlaintext()
                     .build();
         };
@@ -371,15 +462,17 @@ public class GoPluginClient implements AutoCloseable {
     private static Process launchWithFallback(Path binaryPath) {
         var process = launchProcess(binaryPath, MAGIC_COOKIE_VALUE);
 
-        // Give the process a brief moment to die if the cookie doesn't match
+        // Detect an immediate cookie-mismatch exit: waitFor returns the instant the
+        // process dies (so a rejected cookie is retried without delay) and otherwise
+        // caps the wait, unlike a fixed sleep that always burned the full interval.
         try {
-            Thread.sleep(200);
+            if (!process.waitFor(COOKIE_PROBE_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS)) {
+                return process; // still alive -> cookie accepted
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-        }
-
-        if (process.isAlive()) {
-            return process;
+            process.destroyForcibly();
+            throw new GoPluginException("Interrupted while waiting for provider startup", e);
         }
 
         log.info("Framework cookie rejected (exit {}), retrying with legacy SDK cookie",
@@ -404,51 +497,70 @@ public class GoPluginClient implements AutoCloseable {
     }
 
     /**
-     * Reads a single handshake line from the provider process stdout, with a timeout.
+     * Reads a single handshake line from the provider process stdout, bounded by
+     * {@code timeout}.
+     *
+     * <p>{@code readLine()} has no timeout, so it runs on a virtual thread and the
+     * caller waits on the future. On timeout the reader is stuck in a native read
+     * that ignores interruption, so the stdout stream is closed to force it to
+     * return — otherwise the reader thread (and the per-task executor) would leak,
+     * holding the process's stdout open forever (kitecorp/kite#28).</p>
      */
-    private static String readHandshakeLine(Process process) {
+    private static String readHandshakeLine(Process process, Duration timeout) {
+        var reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        var executor = Executors.newVirtualThreadPerTaskExecutor();
         try {
-            var reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
-            // Use a virtual thread to read with a timeout
-            var readTask = Thread.ofVirtual().start(() -> {
-                // Reading is done in the calling thread via Future below
-            });
-
-            var future = java.util.concurrent.CompletableFuture.supplyAsync(() -> {
+            var future = CompletableFuture.supplyAsync(() -> {
                 try {
                     return reader.readLine();
                 } catch (IOException e) {
                     throw new GoPluginException("Failed to read handshake line from provider stdout", e);
                 }
-            }, java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor());
+            }, executor);
 
-            var line = future.get(HANDSHAKE_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-
-            if (line == null) {
-                var stderr = captureStderr(process);
+            try {
+                var line = future.get(timeout.toMillis(), TimeUnit.MILLISECONDS);
+                if (line == null) {
+                    var stderr = captureStderr(process);
+                    throw new GoPluginException(
+                            "Provider process exited before sending handshake line. Stderr: " + stderr);
+                }
+                return line;
+            } catch (TimeoutException e) {
+                // Unblock the reader so its virtual thread (and the executor) can
+                // terminate; the process itself is reaped by the constructor's
+                // failure handler.
+                closeQuietly(process.getInputStream());
+                future.cancel(true);
                 throw new GoPluginException(
-                        "Provider process exited before sending handshake line. Stderr: " + stderr);
+                        "Handshake timeout: provider did not send handshake within %d ms"
+                                .formatted(timeout.toMillis()));
             }
-
-            return line;
         } catch (GoPluginException e) {
             throw e;
-        } catch (java.util.concurrent.TimeoutException e) {
-            process.destroyForcibly();
-            throw new GoPluginException(
-                    "Handshake timeout: provider did not send handshake within %d seconds"
-                            .formatted(HANDSHAKE_TIMEOUT_SECONDS));
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new GoPluginException("Interrupted while reading handshake line", e);
+        } catch (ExecutionException e) {
+            var cause = e.getCause();
+            if (cause instanceof GoPluginException goPluginException) {
+                throw goPluginException;
+            }
             throw new GoPluginException("Failed to read handshake line: " + e.getMessage(), e);
+        } finally {
+            // The reader task has finished (success) or been unblocked (timeout, via
+            // the stream close above), so this does not block; without it the
+            // per-task executor leaks (kitecorp/kite#28).
+            executor.shutdownNow();
         }
     }
 
     /**
-     * Starts a background virtual thread that drains stderr and logs it.
+     * Starts a background virtual thread that drains stderr and logs it, returning
+     * the thread so the lifecycle can confirm it terminates on teardown.
      */
-    private static void startStderrCapture(Process process) {
-        Thread.ofVirtual().name("go-plugin-stderr").start(() -> {
+    static Thread startStderrCapture(Process process) {
+        return Thread.ofVirtual().name("go-plugin-stderr").start(() -> {
             try (var reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -458,6 +570,15 @@ public class GoPluginClient implements AutoCloseable {
                 log.warn("Error reading provider stderr: {}", e.getMessage());
             }
         });
+    }
+
+    /** Closes a stream, swallowing any {@link IOException} — best-effort unblock. */
+    private static void closeQuietly(Closeable closeable) {
+        try {
+            closeable.close();
+        } catch (IOException ignored) {
+            // Best-effort: closing only serves to unblock the stuck reader.
+        }
     }
 
     /**
