@@ -1,4 +1,10 @@
 package cloud.kitelang.provider.terraform;
+import cloud.kitelang.tfplugin.TfAttribute;
+import cloud.kitelang.tfplugin.TfBlock;
+import cloud.kitelang.tfplugin.TfNestedBlock;
+import cloud.kitelang.tfplugin.TfObjectType;
+import cloud.kitelang.tfplugin.TfSchema;
+import cloud.kitelang.tfplugin.Tfplugin5Rpc;
 
 import com.google.protobuf.ByteString;
 import org.junit.jupiter.api.BeforeEach;

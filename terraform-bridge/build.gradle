@@ -1,6 +1,5 @@
 plugins {
     id 'cloud.kitelang.provider' version '0.3.1'
-    id 'com.google.protobuf' version '0.9.4'
 }
 
 group = 'cloud.kitelang'
@@ -23,26 +22,21 @@ dependencies {
     implementation 'cloud.kitelang:kite-provider-sdk:0.2.4'
     annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.2.4'
 
-    // gRPC and Protobuf (for tfplugin5/tfplugin6 protocol stubs)
-    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    // Terraform plugin protocol client — the extracted standalone library. Provides the
+    // go-plugin client, cty codec, tfplugin5/6 RPC facade + generated stubs, neutral schema
+    // model, and registry download + OpenPGP signature verification. Its grpc-netty transport,
+    // gRPC health service, and (reflectively-loaded) BouncyCastle OpenPGP deps arrive
+    // transitively; the shadowJar minimize below keeps BouncyCastle.
+    implementation 'cloud.kitelang:tfplugin-jvm:0.1.0'
+
+    // gRPC + Protobuf: the bridge's handlers and tests name the generated tfplugin5/6 stubs
+    // and protobuf messages directly. tfplugin-jvm re-exposes these as 'api', but the bridge
+    // declares the ones it uses itself.
     implementation "io.grpc:grpc-stub:${grpcVersion}"
-    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
-    implementation "io.grpc:grpc-services:${grpcVersion}"
     implementation "com.google.protobuf:protobuf-java:${protobufVersion}"
 
-    // Required for @Generated annotation in protoc output
-    compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
-
-    // MessagePack (for Terraform DynamicValue msgpack encoding)
+    // MessagePack: the real-provider integration tests build DynamicValue payloads directly.
     implementation 'org.msgpack:msgpack-core:0.9.8'
-
-    // BouncyCastle OpenPGP — verifies the detached GPG signature over a provider's
-    // SHA256SUMS file against the registry-advertised public key (see OpenPgpSignatureVerifier).
-    // bcprov MUST be pinned to the SAME release as bcpg: bcpg's POM depends on bcprov via the loose
-    // range [1.80,1.81), which otherwise resolves to a patch (1.80.2) that relocated internal ASN.1
-    // classes and breaks bcpg 1.80's PGPUtil at runtime (NoClassDefFoundError CryptlibObjectIdentifiers).
-    implementation 'org.bouncycastle:bcpg-jdk18on:1.80.2'
-    implementation 'org.bouncycastle:bcprov-jdk18on:1.80.2'
 
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.44'
@@ -63,22 +57,6 @@ dependencies {
     testImplementation "io.grpc:grpc-inprocess:${grpcVersion}"
 }
 
-protobuf {
-    protoc {
-        artifact = "com.google.protobuf:protoc:${protobufVersion}"
-    }
-    plugins {
-        grpc {
-            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
-        }
-    }
-    generateProtoTasks {
-        all()*.plugins {
-            grpc {}
-        }
-    }
-}
-
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(21))
@@ -89,16 +67,6 @@ test {
     useJUnitPlatform()
 }
 
-// Make generated protobuf/gRPC sources available to IDE
-sourceSets {
-    main {
-        java {
-            srcDirs 'build/generated/source/proto/main/grpc'
-            srcDirs 'build/generated/source/proto/main/java'
-        }
-    }
-}
-
 shadowJar {
     minimize {
         exclude(dependency('org.slf4j:.*'))
@@ -106,9 +74,10 @@ shadowJar {
         exclude(dependency('com.google.protobuf:.*'))
         exclude(dependency('org.msgpack:.*'))
         exclude(dependency('cloud.kitelang:.*'))
-        // BouncyCastle loads algorithm implementations reflectively via the JCA provider, so
-        // minimize's static reachability analysis would strip classes needed at runtime for
-        // OpenPGP signature verification. Keep the whole library.
+        // BouncyCastle (transitive via tfplugin-jvm) loads algorithm implementations
+        // reflectively via the JCA provider, so minimize's static reachability analysis would
+        // strip classes needed at runtime for OpenPGP signature verification (tfplugin-jvm's
+        // TerraformRegistryClient/OpenPgpSignatureVerifier). Keep the whole library.
         exclude(dependency('org.bouncycastle:.*'))
     }
 }

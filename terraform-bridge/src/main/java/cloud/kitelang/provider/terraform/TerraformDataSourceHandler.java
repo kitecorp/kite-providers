@@ -1,4 +1,7 @@
 package cloud.kitelang.provider.terraform;
+import cloud.kitelang.tfplugin.CtyCodec;
+import cloud.kitelang.tfplugin.GoPluginClient;
+import cloud.kitelang.tfplugin.TfBlock;
 
 import lombok.extern.slf4j.Slf4j;
 

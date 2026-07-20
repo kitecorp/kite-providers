@@ -1,11 +1,11 @@
 package cloud.kitelang.provider.terraform.integration;
 
 import cloud.kitelang.provider.ResourceContext;
-import cloud.kitelang.provider.terraform.GoPluginClient;
+import cloud.kitelang.tfplugin.GoPluginClient;
 import cloud.kitelang.provider.terraform.TerraformBridgeProvider;
 import cloud.kitelang.provider.terraform.TerraformDataSourceHandler;
 import cloud.kitelang.provider.terraform.TerraformPropertyMapper;
-import cloud.kitelang.provider.terraform.TerraformRegistryClient;
+import cloud.kitelang.tfplugin.TerraformRegistryClient;
 import cloud.kitelang.provider.terraform.TerraformResourceTypeHandler;
 import org.junit.jupiter.api.*;
 
@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>If the provider binary cannot be downloaded (e.g. network issues in CI),
  * all tests in this class are skipped gracefully via {@code Assumptions}.</p>
  *
- * @see cloud.kitelang.provider.terraform.Tfplugin6Rpc
+ * @see cloud.kitelang.tfplugin.Tfplugin6Rpc
  */
 @Tag("integration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -216,7 +216,7 @@ class Tfplugin6BridgeIntegrationTest {
             assertNotNull(providerSchema, "tfcoremock should expose a provider config schema");
 
             var attributeNames = providerSchema.block().attributes().stream()
-                    .map(cloud.kitelang.provider.terraform.TfAttribute::name)
+                    .map(cloud.kitelang.tfplugin.TfAttribute::name)
                     .sorted()
                     .toList();
             // Pinned to tfcoremock 0.5.0's published provider block
@@ -594,7 +594,7 @@ class Tfplugin6BridgeIntegrationTest {
         return client.rpc().getProviderSchema()
                 .resourceSchemas().get("tfcoremock_simple_resource")
                 .block().attributes().stream()
-                .map(cloud.kitelang.provider.terraform.TfAttribute::name)
+                .map(cloud.kitelang.tfplugin.TfAttribute::name)
                 .toList();
     }
 
@@ -603,7 +603,7 @@ class Tfplugin6BridgeIntegrationTest {
         return client.rpc().getProviderSchema()
                 .resourceSchemas().get("tfcoremock_complex_resource")
                 .block().attributes().stream()
-                .map(cloud.kitelang.provider.terraform.TfAttribute::name)
+                .map(cloud.kitelang.tfplugin.TfAttribute::name)
                 .toList();
     }
 
@@ -612,7 +612,7 @@ class Tfplugin6BridgeIntegrationTest {
         return client.rpc().getProviderSchema()
                 .dataSourceSchemas().get("tfcoremock_simple_resource")
                 .block().attributes().stream()
-                .map(cloud.kitelang.provider.terraform.TfAttribute::name)
+                .map(cloud.kitelang.tfplugin.TfAttribute::name)
                 .toList();
     }
 

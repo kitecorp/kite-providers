@@ -1,4 +1,5 @@
 package cloud.kitelang.provider.terraform;
+import cloud.kitelang.tfplugin.TfDiagnostic;
 
 import lombok.extern.slf4j.Slf4j;
 

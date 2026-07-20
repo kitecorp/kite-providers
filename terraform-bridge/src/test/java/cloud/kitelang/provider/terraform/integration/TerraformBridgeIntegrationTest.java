@@ -1,11 +1,11 @@
 package cloud.kitelang.provider.terraform.integration;
 
 import cloud.kitelang.provider.ResourceContext;
-import cloud.kitelang.provider.terraform.CtyCodec;
-import cloud.kitelang.provider.terraform.GoPluginClient;
+import cloud.kitelang.tfplugin.CtyCodec;
+import cloud.kitelang.tfplugin.GoPluginClient;
 import cloud.kitelang.provider.terraform.TerraformBridgeProvider;
 import cloud.kitelang.provider.terraform.TerraformPropertyMapper;
-import cloud.kitelang.provider.terraform.TerraformRegistryClient;
+import cloud.kitelang.tfplugin.TerraformRegistryClient;
 import cloud.kitelang.provider.terraform.TerraformResourceTypeHandler;
 import cloud.kitelang.provider.terraform.TerraformSchemaConverter;
 import com.google.protobuf.ByteString;

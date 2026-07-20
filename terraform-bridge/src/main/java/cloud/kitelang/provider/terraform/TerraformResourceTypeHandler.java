@@ -1,4 +1,11 @@
 package cloud.kitelang.provider.terraform;
+import cloud.kitelang.tfplugin.CtyCodec;
+import cloud.kitelang.tfplugin.GoPluginClient;
+import cloud.kitelang.tfplugin.TerraformProviderRpc;
+import cloud.kitelang.tfplugin.TfAttribute;
+import cloud.kitelang.tfplugin.TfAttributePath;
+import cloud.kitelang.tfplugin.TfBlock;
+import cloud.kitelang.tfplugin.Tfplugin5Rpc;
 
 import cloud.kitelang.provider.ResourceContext;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -1,4 +1,7 @@
 package cloud.kitelang.provider.terraform;
+import cloud.kitelang.tfplugin.CtyCodec;
+import cloud.kitelang.tfplugin.GoPluginClient;
+import cloud.kitelang.tfplugin.Tfplugin6Rpc;
 
 import cloud.kitelang.provider.ResourceContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
