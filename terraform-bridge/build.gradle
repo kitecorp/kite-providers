@@ -36,6 +36,14 @@ dependencies {
     // MessagePack (for Terraform DynamicValue msgpack encoding)
     implementation 'org.msgpack:msgpack-core:0.9.8'
 
+    // BouncyCastle OpenPGP — verifies the detached GPG signature over a provider's
+    // SHA256SUMS file against the registry-advertised public key (see OpenPgpSignatureVerifier).
+    // bcprov MUST be pinned to the SAME release as bcpg: bcpg's POM depends on bcprov via the loose
+    // range [1.80,1.81), which otherwise resolves to a patch (1.80.2) that relocated internal ASN.1
+    // classes and breaks bcpg 1.80's PGPUtil at runtime (NoClassDefFoundError CryptlibObjectIdentifiers).
+    implementation 'org.bouncycastle:bcpg-jdk18on:1.80.2'
+    implementation 'org.bouncycastle:bcprov-jdk18on:1.80.2'
+
     // Lombok
     compileOnly 'org.projectlombok:lombok:1.18.44'
     annotationProcessor 'org.projectlombok:lombok:1.18.44'
@@ -98,5 +106,9 @@ shadowJar {
         exclude(dependency('com.google.protobuf:.*'))
         exclude(dependency('org.msgpack:.*'))
         exclude(dependency('cloud.kitelang:.*'))
+        // BouncyCastle loads algorithm implementations reflectively via the JCA provider, so
+        // minimize's static reachability analysis would strip classes needed at runtime for
+        // OpenPGP signature verification. Keep the whole library.
+        exclude(dependency('org.bouncycastle:.*'))
     }
 }

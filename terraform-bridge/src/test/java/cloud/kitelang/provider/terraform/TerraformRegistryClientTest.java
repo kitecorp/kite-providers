@@ -434,4 +434,53 @@ class TerraformRegistryClientTest {
             assertEquals(0, TerraformRegistryClient.compareVersions("5.0", "5.0.0"));
         }
     }
+
+    // ---------------------------------------------------------------
+    // 6. SHA256SUMS parsing (checksum read from the signed sums file)
+    // ---------------------------------------------------------------
+    @Nested
+    @DisplayName("SHA256SUMS checksum parsing")
+    class Sha256SumsParsing {
+
+        // Two entries in coreutils double-space format, exactly as HashiCorp publishes them.
+        private static final String SUMS = """
+                e2699bc9116447f96c53d55f2a00570f982e6f9935038c3810603572693712d0  terraform-provider-random_3.6.0_darwin_amd64.zip
+                6f24a2b3f0b3d3c6f1b3b9a9d5f8e7c6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0  terraform-provider-random_3.6.0_linux_amd64.zip
+                """;
+
+        @Test
+        @DisplayName("should return the checksum matching the requested filename")
+        void shouldReturnChecksumForFilename() {
+            var sha = TerraformRegistryClient.parseExpectedChecksum(
+                    SUMS, "terraform-provider-random_3.6.0_linux_amd64.zip");
+
+            assertEquals("6f24a2b3f0b3d3c6f1b3b9a9d5f8e7c6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0", sha.orElseThrow());
+        }
+
+        @Test
+        @DisplayName("should pick the correct line when several are present")
+        void shouldPickCorrectLineAmongMany() {
+            var sha = TerraformRegistryClient.parseExpectedChecksum(
+                    SUMS, "terraform-provider-random_3.6.0_darwin_amd64.zip");
+
+            assertEquals("e2699bc9116447f96c53d55f2a00570f982e6f9935038c3810603572693712d0", sha.orElseThrow());
+        }
+
+        @Test
+        @DisplayName("should return empty when the filename is not listed")
+        void shouldReturnEmptyWhenFilenameAbsent() {
+            var sha = TerraformRegistryClient.parseExpectedChecksum(SUMS, "terraform-provider-random_3.6.0_windows_amd64.zip");
+
+            assertTrue(sha.isEmpty());
+        }
+
+        @Test
+        @DisplayName("should tolerate the binary-mode '*' filename marker")
+        void shouldTolerateBinaryModeMarker() {
+            var sha = TerraformRegistryClient.parseExpectedChecksum(
+                    "abc123  *some-file.zip\n", "some-file.zip");
+
+            assertEquals("abc123", sha.orElseThrow());
+        }
+    }
 }

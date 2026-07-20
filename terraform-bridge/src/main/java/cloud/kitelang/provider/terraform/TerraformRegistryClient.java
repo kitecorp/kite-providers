@@ -1,6 +1,7 @@
 package cloud.kitelang.provider.terraform;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,6 +11,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -17,9 +19,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Optional;
 import java.util.zip.ZipInputStream;
 
 /**
@@ -43,21 +45,39 @@ import java.util.zip.ZipInputStream;
 @Slf4j
 public class TerraformRegistryClient {
 
-    private static final String REGISTRY_BASE = "https://registry.terraform.io/v1/providers";
+    private static final String DEFAULT_REGISTRY_BASE = "https://registry.terraform.io/v1/providers";
     private static final Duration HTTP_TIMEOUT = Duration.ofSeconds(30);
     private static final ObjectMapper JSON = new ObjectMapper();
 
     private final Path cacheDir;
+    private final String registryBase;
     private final HttpClient httpClient;
+    private final OpenPgpSignatureVerifier signatureVerifier = new OpenPgpSignatureVerifier();
 
     /**
-     * Creates a new registry client with the given local cache directory.
+     * Creates a new registry client with the given local cache directory, talking to the
+     * public Terraform Registry.
      *
      * @param cacheDir root directory for cached provider binaries
      *                 (e.g. {@code ~/.kite/providers/tf/})
      */
     public TerraformRegistryClient(Path cacheDir) {
+        this(cacheDir, DEFAULT_REGISTRY_BASE);
+    }
+
+    /**
+     * Creates a registry client pointed at an explicit registry base URL.
+     *
+     * <p>Package-private: production code uses the public constructor against the real registry;
+     * this overload lets tests point the client at a local server serving captured fixtures so the
+     * full download-and-verify flow can be exercised without external network access.
+     *
+     * @param cacheDir     root directory for cached provider binaries
+     * @param registryBase base URL of the provider registry (no trailing slash)
+     */
+    TerraformRegistryClient(Path cacheDir, String registryBase) {
         this.cacheDir = cacheDir;
+        this.registryBase = registryBase;
         this.httpClient = HttpClient.newBuilder()
                 .followRedirects(HttpClient.Redirect.NORMAL)
                 .connectTimeout(HTTP_TIMEOUT)
@@ -117,7 +137,7 @@ public class TerraformRegistryClient {
      * @throws IOException if the HTTP call fails
      */
     public List<String> listVersions(String namespace, String type) throws IOException {
-        var url = "%s/%s/%s/versions".formatted(REGISTRY_BASE, namespace, type);
+        var url = "%s/%s/%s/versions".formatted(registryBase, namespace, type);
         log.debug("Fetching provider versions from {}", url);
 
         var responseBody = httpGet(url);
@@ -447,8 +467,12 @@ public class TerraformRegistryClient {
     // ---------------------------------------------------------------
 
     /**
-     * Downloads a provider binary from the Terraform Registry, verifies its checksum,
-     * extracts it from the zip archive, and caches it locally.
+     * Downloads a provider binary from the Terraform Registry, verifies it against a
+     * GPG-signed checksum, extracts it from the zip archive, and caches it locally.
+     *
+     * <p>Verification is fail-closed: the binary is only cached once the registry-advertised GPG
+     * signature over the {@code SHA256SUMS} file is valid <em>and</em> the binary matches the
+     * authenticated checksum (see {@link #verifyAndResolveChecksum(DownloadMetadata)}).
      */
     private Path downloadProvider(String namespace, String type, String version) throws IOException {
         var os = detectOs();
@@ -457,7 +481,7 @@ public class TerraformRegistryClient {
 
         // 1. Get download metadata
         var downloadUrl = "%s/%s/%s/%s/download/%s/%s".formatted(
-                REGISTRY_BASE, namespace, type, version, os, arch);
+                registryBase, namespace, type, version, os, arch);
         var metadataBody = httpGet(downloadUrl);
         var metadata = JSON.readValue(metadataBody, DownloadMetadata.class);
 
@@ -466,10 +490,12 @@ public class TerraformRegistryClient {
         try {
             downloadFile(metadata.downloadUrl(), tempZip);
 
-            // 3. Verify SHA256 checksum
-            if (metadata.shasum() != null && !metadata.shasum().isBlank()) {
-                verifySha256(tempZip, metadata.shasum());
-            }
+            // 3. Establish an AUTHENTICATED checksum, then verify the binary against it.
+            //    Verifying only the checksum the registry hands back in JSON is not enough — the
+            //    SHA256SUMS file is fetched over the network (often from a mirror) and is only
+            //    trustworthy once its detached GPG signature is checked against the provider's key.
+            var expectedSha = verifyAndResolveChecksum(metadata);
+            verifySha256(tempZip, expectedSha);
 
             // 4. Extract the binary from the zip
             var binaryPath = getCachedPath(namespace, type, version);
@@ -485,6 +511,141 @@ public class TerraformRegistryClient {
             return binaryPath;
         } finally {
             Files.deleteIfExists(tempZip);
+        }
+    }
+
+    /**
+     * Verifies the GPG signature over the provider's {@code SHA256SUMS} file and returns the
+     * authenticated SHA256 checksum for the artifact being installed.
+     *
+     * <p><b>Trust chain (mirrors Terraform's own).</b> The registry download response advertises,
+     * for the release, a {@code SHA256SUMS} URL, a detached {@code SHA256SUMS.<keyid>.sig} URL, and
+     * the ASCII-armored GPG public key(s) that signed the sums file. We:
+     * <ol>
+     *   <li>download the {@code SHA256SUMS} file and its detached signature;</li>
+     *   <li>verify the signature against the advertised public key(s) — this is the trust anchor;</li>
+     *   <li>read the artifact's expected checksum from the now-trusted {@code SHA256SUMS}.</li>
+     * </ol>
+     * The caller then confirms the downloaded binary hashes to that checksum. Doing the checksum
+     * check <em>without</em> first verifying the sums file's signature is the hole this closes: a
+     * compromised mirror could otherwise serve a matching checksum for a malicious binary.
+     *
+     * <p><b>Trust assumption (a real security boundary).</b> We trust whatever GPG key the registry
+     * advertises for the provider's namespace. This is exactly Terraform's model: HashiCorp's own
+     * providers are signed by HashiCorp's key, while third-party providers advertise their own key
+     * via the registry. The registry (reached over TLS) is therefore the root of trust for which key
+     * is authoritative for a namespace; we do not pin keys out-of-band.
+     *
+     * <p><b>Fail closed.</b> A missing key, missing sums/signature URL, a signature that does not
+     * verify, or an artifact absent from the signed sums all abort the install with an error — never
+     * a warning-and-continue.
+     *
+     * @param metadata the registry download metadata
+     * @return the hex-encoded SHA256 checksum, proven to come from a signed {@code SHA256SUMS}
+     * @throws IOException if any part of the trust chain cannot be established
+     */
+    private String verifyAndResolveChecksum(DownloadMetadata metadata) throws IOException {
+        var publicKeys = advertisedPublicKeys(metadata);
+        if (publicKeys.isEmpty()) {
+            throw new IOException(
+                    "Refusing to install %s: registry advertised no GPG signing key to verify the SHA256SUMS"
+                            .formatted(metadata.filename()));
+        }
+        if (isBlank(metadata.shasumsUrl()) || isBlank(metadata.shasumsSignatureUrl())) {
+            throw new IOException(
+                    "Refusing to install %s: registry response is missing the SHA256SUMS or signature URL"
+                            .formatted(metadata.filename()));
+        }
+
+        var shasums = httpGetBytes(metadata.shasumsUrl());
+        var signature = httpGetBytes(metadata.shasumsSignatureUrl());
+
+        if (!signatureVerifier.isValidAgainstAny(shasums, signature, publicKeys)) {
+            throw new IOException(
+                    "GPG signature verification FAILED for the SHA256SUMS of %s — refusing to install "
+                            .formatted(metadata.filename())
+                            + "(the checksums file is not authentic; a mirror may be compromised)");
+        }
+        log.info("GPG signature verified for {} against the registry-advertised signing key",
+                metadata.filename());
+
+        var sumsContent = new String(shasums, StandardCharsets.UTF_8);
+        return parseExpectedChecksum(sumsContent, metadata.filename())
+                .orElseThrow(() -> new IOException(
+                        "The signed SHA256SUMS does not list artifact %s".formatted(metadata.filename())));
+    }
+
+    /**
+     * Extracts the ASCII-armored GPG public keys the registry advertises for the provider, or an
+     * empty list if none are present.
+     */
+    private static List<String> advertisedPublicKeys(DownloadMetadata metadata) {
+        if (metadata.signingKeys() == null || metadata.signingKeys().gpgPublicKeys() == null) {
+            return List.of();
+        }
+        return metadata.signingKeys().gpgPublicKeys().stream()
+                .map(GpgPublicKey::asciiArmor)
+                .filter(armor -> armor != null && !armor.isBlank())
+                .toList();
+    }
+
+    /**
+     * Finds the expected SHA256 checksum for a given filename inside a {@code SHA256SUMS} file.
+     *
+     * <p>Each line is {@code <hex-sha256>  <filename>} (coreutils format; the filename may carry a
+     * leading {@code *} binary-mode marker). Returns empty if the filename is not listed.
+     *
+     * @param sha256sumsContent the full text of the SHA256SUMS file
+     * @param filename          the artifact filename to look up
+     * @return the hex checksum for that filename, if present
+     */
+    static Optional<String> parseExpectedChecksum(String sha256sumsContent, String filename) {
+        if (sha256sumsContent == null || filename == null || filename.isBlank()) {
+            return Optional.empty();
+        }
+        for (var line : sha256sumsContent.split("\\R")) {
+            var parts = line.strip().split("\\s+", 2);
+            if (parts.length != 2) {
+                continue;
+            }
+            var entryName = parts[1].startsWith("*") ? parts[1].substring(1) : parts[1];
+            if (entryName.equals(filename)) {
+                return Optional.of(parts[0]);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.isBlank();
+    }
+
+    /**
+     * Sends an HTTP GET request and returns the raw response body bytes.
+     *
+     * <p>Used for binary/opaque payloads (the SHA256SUMS signature) and content whose exact bytes
+     * matter for cryptographic verification (the SHA256SUMS file itself).
+     *
+     * @param url the URL to fetch
+     * @return the response body bytes
+     * @throws IOException if the request fails or returns a non-2xx status
+     */
+    private byte[] httpGetBytes(String url) throws IOException {
+        var request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .timeout(HTTP_TIMEOUT)
+                .GET()
+                .build();
+
+        try {
+            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofByteArray());
+            if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                throw new IOException("HTTP %d from %s".formatted(response.statusCode(), url));
+            }
+            return response.body();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IOException("HTTP request interrupted: " + url, e);
         }
     }
 
@@ -617,14 +778,35 @@ public class TerraformRegistryClient {
     @JsonIgnoreProperties(ignoreUnknown = true)
     record PlatformEntry(String os, String arch) {}
 
-    /** Response from the download URL API endpoint. */
+    /**
+     * Response from the download URL API endpoint.
+     *
+     * <p>{@code shasum} is the per-artifact checksum echoed in the JSON; we do NOT trust it directly
+     * for verification. The authoritative checksum is read from the {@code SHA256SUMS} file (at
+     * {@code shasumsUrl}) only after its detached signature (at {@code shasumsSignatureUrl}) is
+     * verified against one of the advertised {@link #signingKeys() signing keys}.
+     */
     @JsonIgnoreProperties(ignoreUnknown = true)
     record DownloadMetadata(
             String os,
             String arch,
             String filename,
-            @com.fasterxml.jackson.annotation.JsonProperty("download_url") String downloadUrl,
+            @JsonProperty("download_url") String downloadUrl,
+            @JsonProperty("shasums_url") String shasumsUrl,
+            @JsonProperty("shasums_signature_url") String shasumsSignatureUrl,
             String shasum,
+            @JsonProperty("signing_keys") SigningKeys signingKeys,
             List<String> protocols
+    ) {}
+
+    /** The {@code signing_keys} object of a download response. */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    record SigningKeys(@JsonProperty("gpg_public_keys") List<GpgPublicKey> gpgPublicKeys) {}
+
+    /** A single advertised GPG public key. */
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    record GpgPublicKey(
+            @JsonProperty("key_id") String keyId,
+            @JsonProperty("ascii_armor") String asciiArmor
     ) {}
 }
