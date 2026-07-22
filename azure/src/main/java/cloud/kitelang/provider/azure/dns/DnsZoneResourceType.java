@@ -37,7 +37,7 @@ public class DnsZoneResourceType extends ResourceTypeHandler<DnsZoneResource> im
 
     @Override
     public void setAzureManagers(AzureManagers managers) {
-        this.dnsManager = managers.dns();
+        this.dnsManager = managers.dnsZone();
     }
 
     @Override
