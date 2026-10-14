@@ -12,6 +12,10 @@ repositories {
 
 kiteProvider {
     name = 'terraform-bridge'
+    // Types come from the bridged Terraform provider at runtime, so there are no
+    // static docs or schemas to generate (and the provider class cannot even be
+    // created without KITE_TF_PROVIDER_PATH).
+    docsEnabled = false
 }
 
 def grpcVersion = '1.77.0'
