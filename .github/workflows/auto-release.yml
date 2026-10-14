@@ -150,7 +150,8 @@ jobs:
         working-directory: ${{ matrix.provider }}
         run: |
           chmod +x gradlew
-          ./gradlew installDist --no-daemon
+          # generateProviderDocs rewrites the tracked docs/ that a later step commits
+          ./gradlew installDist generateProviderDocs --no-daemon
 
       - name: Create distribution zip
         working-directory: ${{ matrix.provider }}
