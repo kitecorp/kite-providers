@@ -86,39 +86,18 @@ public class AwsProvider extends KiteProvider {
      */
     @SuppressWarnings("unchecked")
     private void registerStandardTypeAdapters() {
-        var ec2Handler = getResourceTypes().get("Ec2Instance");
-        if (ec2Handler instanceof Ec2InstanceResourceType typed) {
-            registerAdapter(new ServerAdapter(typed));
-        }
-
-        var vpcHandler = getResourceTypes().get("Vpc");
-        if (vpcHandler instanceof VpcResourceType typed) {
-            registerAdapter(new NetworkAdapter(typed));
-        }
-
-        var subnetHandler = getResourceTypes().get("Subnet");
-        if (subnetHandler instanceof SubnetResourceType typed) {
-            registerAdapter(new SubnetAdapter(typed));
-        }
-
-        var s3Handler = getResourceTypes().get("S3Bucket");
-        if (s3Handler instanceof S3BucketResourceType typed) {
-            registerAdapter(new BucketAdapter(typed));
-        }
-
-        var lbHandler = getResourceTypes().get("LoadBalancer");
-        if (lbHandler instanceof LoadBalancerResourceType typed) {
-            registerAdapter(new LoadBalancerAdapter(typed));
-        }
-
-        var hostedZoneHandler = getResourceTypes().get("HostedZone");
-        if (hostedZoneHandler instanceof HostedZoneResourceType typed) {
-            registerAdapter(new DnsZoneAdapter(typed));
-        }
-
-        var recordSetHandler = getResourceTypes().get("RecordSet");
-        if (recordSetHandler instanceof RecordSetResourceType typed) {
-            registerAdapter(new DnsRecordAdapter(typed));
+        for (var type : getResourceTypes().values()) {
+            switch (type) {
+                case Ec2InstanceResourceType typed -> registerAdapter(new ServerAdapter(typed));
+                case VpcResourceType type1 -> registerAdapter(new NetworkAdapter(type1));
+                case SubnetResourceType type2 -> registerAdapter(new SubnetAdapter(type2));
+                case LoadBalancerResourceType type3 -> registerAdapter(new LoadBalancerAdapter(type3));
+                case S3BucketResourceType type4 -> registerAdapter(new BucketAdapter(type4));
+                case HostedZoneResourceType type5 -> registerAdapter(new DnsZoneAdapter(type5));
+                case RecordSetResourceType type6 -> registerAdapter(new DnsRecordAdapter(type6));
+                default -> {
+                }
+            }
         }
 
         log.info("Registered {} standard type adapters", getStandardTypeAdapters().size());
