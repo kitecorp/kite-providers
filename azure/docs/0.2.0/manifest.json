@@ -2,7 +2,7 @@
   "provider": "azure",
   "version": "0.2.0",
   "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Microsoft_Azure.svg",
-  "generatedAt": "2026-04-17T04:15:24.182348049",
+  "generatedAt": "2026-10-14T22:21:08.791823189",
   "resources": {
     "BlobContainer": {
       "domain": "storage",

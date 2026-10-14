@@ -1,7 +1,7 @@
 {
   "fromVersion": "0.1.1",
   "toVersion": "0.2.0",
-  "generatedAt": "2026-04-17",
+  "generatedAt": "2026-10-14",
   "addedResources": ["BlobContainer", "DnsRecordSet", "DnsZone", "LoadBalancer", "ManagedDisk", "NatGateway", "NetworkSecurityGroup", "PublicIpAddress", "ResourceGroup", "RouteTable", "StorageAccount", "Subnet", "VirtualMachine", "Vnet"],
   "removedResources": [],
   "changedResources": {
