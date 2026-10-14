@@ -24,6 +24,11 @@
       "name": "grpc-example",
       "latestVersion": "0.1.0",
       "resourceCount": 1
+    },
+    {
+      "name": "terraform-bridge",
+      "latestVersion": "0.1.0",
+      "resourceCount": 0
     }
   ]
 }
