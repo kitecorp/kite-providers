@@ -162,19 +162,38 @@ class TerraformSchemaConverterTest {
             assertEquals("number[]", actual);
         }
 
+        /*
+         * Every type the converter renders must be one the Kite language resolves: an
+         * undeclared name such as Map fails the import with "Variable not found: Map"
+         * (kitecorp/kite#109). Terraform maps are always keyed by strings.
+         */
         @Test
-        @DisplayName("should convert map of strings to Map")
+        @DisplayName("should convert map of strings to map<string, string>")
         void shouldConvertMapOfStrings() {
             var actual = converter.ctyTypeToKiteType(jsonBytes("[\"map\", \"string\"]"));
-            assertEquals("Map", actual);
+            assertEquals("map<string, string>", actual);
         }
 
         @Test
-        @DisplayName("should convert object type to Map")
+        @DisplayName("should convert map of lists to map<string, T[]>")
+        void shouldConvertMapOfLists() {
+            var actual = converter.ctyTypeToKiteType(jsonBytes("[\"map\", [\"list\", \"number\"]]"));
+            assertEquals("map<string, number[]>", actual);
+        }
+
+        @Test
+        @DisplayName("should convert object type to object")
         void shouldConvertObjectType() {
             var actual = converter.ctyTypeToKiteType(
                     jsonBytes("[\"object\", {\"name\": \"string\", \"port\": \"number\"}]"));
-            assertEquals("Map", actual);
+            assertEquals("object", actual);
+        }
+
+        @Test
+        @DisplayName("should convert list of objects to object[]")
+        void shouldConvertListOfObjects() {
+            var actual = converter.ctyTypeToKiteType(jsonBytes("[\"list\", [\"object\", {\"name\": \"string\"}]]"));
+            assertEquals("object[]", actual);
         }
 
         @Test
@@ -312,8 +331,8 @@ class TerraformSchemaConverterTest {
 
             var actual = converter.toKiteSchema("aws_instance", schema);
 
-            assertTrue(actual.contains("RootBlockDevice rootBlockDevice"),
-                    "Expected 'RootBlockDevice rootBlockDevice' but got: " + actual);
+            // Nested types have no declaration the language could resolve, so a block is an object
+            assertEquals("schema Instance {\n    object rootBlockDevice\n}", actual);
         }
 
         @Test
@@ -333,8 +352,7 @@ class TerraformSchemaConverterTest {
 
             var actual = converter.toKiteSchema("aws_security_group", schema);
 
-            assertTrue(actual.contains("Ingress[] ingress"),
-                    "Expected 'Ingress[] ingress' but got: " + actual);
+            assertEquals("schema SecurityGroup {\n    object[] ingress\n}", actual);
         }
 
         @Test
@@ -354,12 +372,11 @@ class TerraformSchemaConverterTest {
 
             var actual = converter.toKiteSchema("aws_security_group", schema);
 
-            assertTrue(actual.contains("Egress[] egress"),
-                    "Expected 'Egress[] egress' but got: " + actual);
+            assertEquals("schema SecurityGroup {\n    object[] egress\n}", actual);
         }
 
         @Test
-        @DisplayName("should produce Map for MAP nesting mode")
+        @DisplayName("should produce a string-keyed map of objects for MAP nesting mode")
         void shouldHandleMapNesting() {
             var innerBlock = Schema.Block.newBuilder()
                     .addAttributes(attribute("value", "\"string\"", true, false, false, false, false))
@@ -375,8 +392,7 @@ class TerraformSchemaConverterTest {
 
             var actual = converter.toKiteSchema("aws_elastic_beanstalk_environment", schema);
 
-            assertTrue(actual.contains("Map setting"),
-                    "Expected 'Map setting' but got: " + actual);
+            assertEquals("schema ElasticBeanstalkEnvironment {\n    map<string, object> setting\n}", actual);
         }
 
         @Test
@@ -426,54 +442,53 @@ class TerraformSchemaConverterTest {
             return new TfSchema(0, new TfBlock(List.of(attributes), List.of()));
         }
 
+        /*
+         * A nested type has no declaration the language could resolve: rendered as its own
+         * name (Settings) the import failed with "Variable not found: Settings"
+         * (kitecorp/kite#109). Its members are still checked by the provider's own schema.
+         */
         @Test
-        @DisplayName("SINGLE nested attribute renders as a first-class type, not Map")
-        void singleNestingRendersFirstClassType() {
+        @DisplayName("SINGLE nested attribute renders as object")
+        void singleNestingRendersObject() {
             var schema = schemaOf(nestedAttribute("settings", TfNestedBlock.Nesting.SINGLE, false, false,
                     member("endpoint", "\"string\"")));
 
             var actual = converter.toKiteSchema("aws_thing", schema);
 
-            assertTrue(actual.contains("Settings settings"),
-                    "Expected 'Settings settings' but got: " + actual);
-            assertFalse(actual.contains("Map settings"),
-                    "SINGLE nested attribute must not collapse to Map, got: " + actual);
+            assertEquals("schema Thing {\n    object settings\n}", actual);
         }
 
         @Test
-        @DisplayName("LIST nested attribute renders as an array of the nested type")
+        @DisplayName("LIST nested attribute renders as an array of objects")
         void listNestingRendersArray() {
             var schema = schemaOf(nestedAttribute("rules", TfNestedBlock.Nesting.LIST, false, false,
                     member("action", "\"string\"")));
 
             var actual = converter.toKiteSchema("aws_thing", schema);
 
-            assertTrue(actual.contains("Rules[] rules"),
-                    "Expected 'Rules[] rules' but got: " + actual);
+            assertEquals("schema Thing {\n    object[] rules\n}", actual);
         }
 
         @Test
-        @DisplayName("SET nested attribute renders as an array of the nested type")
+        @DisplayName("SET nested attribute renders as an array of objects")
         void setNestingRendersArray() {
             var schema = schemaOf(nestedAttribute("tags", TfNestedBlock.Nesting.SET, false, false,
                     member("key", "\"string\"")));
 
             var actual = converter.toKiteSchema("aws_thing", schema);
 
-            assertTrue(actual.contains("Tags[] tags"),
-                    "Expected 'Tags[] tags' but got: " + actual);
+            assertEquals("schema Thing {\n    object[] tags\n}", actual);
         }
 
         @Test
-        @DisplayName("MAP nested attribute renders as Map (Kite grammar has no typed-map syntax)")
+        @DisplayName("MAP nested attribute renders as a string-keyed map of objects")
         void mapNestingRendersMap() {
             var schema = schemaOf(nestedAttribute("environments", TfNestedBlock.Nesting.MAP, false, false,
                     member("url", "\"string\"")));
 
             var actual = converter.toKiteSchema("aws_thing", schema);
 
-            assertTrue(actual.contains("Map environments"),
-                    "Expected 'Map environments' but got: " + actual);
+            assertEquals("schema Thing {\n    map<string, object> environments\n}", actual);
         }
 
         @Test
@@ -484,8 +499,7 @@ class TerraformSchemaConverterTest {
 
             var actual = converter.toKiteSchema("aws_thing", schema);
 
-            assertTrue(actual.contains("@cloud Config config"),
-                    "Expected '@cloud Config config' but got: " + actual);
+            assertEquals("schema Thing {\n    @cloud object config\n}", actual);
         }
 
         @Test
@@ -496,12 +510,11 @@ class TerraformSchemaConverterTest {
 
             var actual = converter.toKiteSchema("aws_thing", schema);
 
-            assertTrue(actual.contains("@sensitive Credentials credentials"),
-                    "Expected '@sensitive Credentials credentials' but got: " + actual);
+            assertEquals("schema Thing {\n    @sensitive object credentials\n}", actual);
         }
 
         @Test
-        @DisplayName("the api schema also carries the nested type, not Map")
+        @DisplayName("the api schema carries the same type as the DSL")
         void apiSchemaCarriesNestedType() {
             var schema = schemaOf(nestedAttribute("settings", TfNestedBlock.Nesting.LIST, false, false,
                     member("endpoint", "\"string\"")));
@@ -512,7 +525,7 @@ class TerraformSchemaConverterTest {
                     .filter(p -> "settings".equals(p.name()))
                     .findFirst()
                     .orElseThrow(() -> new AssertionError("property 'settings' missing"));
-            assertEquals("Settings[]", settings.type());
+            assertEquals("object[]", settings.type());
         }
     }
 
@@ -715,9 +728,7 @@ class TerraformSchemaConverterTest {
 
             var actual = converter.toKiteSchema("aws_instance", schema);
 
-            assertTrue(actual.contains("string ami"), "Should have ami attribute");
-            assertTrue(actual.contains("RootBlockDevice rootBlockDevice"),
-                    "Should have nested block property: " + actual);
+            assertEquals("schema Instance {\n    string ami\n    object rootBlockDevice\n}", actual);
         }
 
         @Test
@@ -747,10 +758,8 @@ class TerraformSchemaConverterTest {
 
             var actual = converter.toKiteSchema("aws_thing", schema);
 
-            assertTrue(actual.contains("@sensitive MasterAuth masterAuth"),
-                    "Sensitive-bearing block must carry @sensitive, got: " + actual);
-            assertTrue(actual.contains("    Ingress[] ingress"),
-                    "Non-sensitive sibling block must stay undecorated, got: " + actual);
+            // The sensitive-bearing block carries @sensitive; its sibling stays undecorated
+            assertEquals("schema Thing {\n    @sensitive object masterAuth\n    object[] ingress\n}", actual);
         }
 
         @Test
@@ -845,10 +854,10 @@ class TerraformSchemaConverterTest {
             var apiSchema = convert(schema);
 
             var auth = property(apiSchema, "masterAuth");
-            assertEquals("MasterAuth", auth.type());
+            assertEquals("object", auth.type());
             assertTrue(auth.isSensitive(), "block holding a sensitive attribute must be sensitive");
             var ingress = property(apiSchema, "ingress");
-            assertEquals("Ingress[]", ingress.type());
+            assertEquals("object[]", ingress.type());
             assertFalse(ingress.isSensitive());
         }
 

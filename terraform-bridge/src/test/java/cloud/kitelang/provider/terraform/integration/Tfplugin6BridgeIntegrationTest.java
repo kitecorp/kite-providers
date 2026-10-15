@@ -514,15 +514,15 @@ class Tfplugin6BridgeIntegrationTest {
     }
 
     // ==================================================================
-    // Test 11: nested attributes AND nested blocks render as first-class
-    // Kite types in the generated DSL (kitecorp/kite-providers#12 + #25),
+    // Test 11: nested attributes AND nested blocks render as Kite types the
+    // language resolves (kitecorp/kite-providers#12 + #25, kitecorp/kite#109),
     // asserted against the real tfcoremock_complex_resource schema.
     // ==================================================================
 
     @Test
     @Order(11)
-    @DisplayName("should render nested attributes and nested blocks as first-class types in the ComplexResource DSL")
-    void complexResourceDslRendersNestedTypesFirstClass() throws Exception {
+    @DisplayName("should render nested attributes and nested blocks as objects in the ComplexResource DSL")
+    void complexResourceDslRendersNestedTypesAsObjects() throws Exception {
         assumeProviderAvailable();
         var provider = newBridgeProvider();
 
@@ -530,23 +530,26 @@ class Tfplugin6BridgeIntegrationTest {
             provider.init();
 
             var dsl = provider.getSchemaStrings().get("ComplexResource");
-            assertNotNull(dsl, "ComplexResource DSL should be registered");
 
             // nested_type attributes (kitecorp/kite-providers#12): object=SINGLE,
-            // list=LIST, set=SET — first-class, no longer the bare `Map` they
-            // used to collapse to.
-            assertTrue(dsl.contains("Object object"),
-                    "SINGLE nested attribute must render as a first-class type, got: " + dsl);
-            assertTrue(dsl.contains("List[] list"),
-                    "LIST nested attribute must render as an array, got: " + dsl);
-            assertTrue(dsl.contains("Set[] set"),
-                    "SET nested attribute must render as an array, got: " + dsl);
-
-            // nested blocks (kitecorp/kite#25): list_block=LIST, set_block=SET
-            assertTrue(dsl.contains("ListBlock[] listBlock"),
-                    "LIST nested block must render as an array, got: " + dsl);
-            assertTrue(dsl.contains("SetBlock[] setBlock"),
-                    "SET nested block must render as an array, got: " + dsl);
+            // list=LIST, set=SET, map=MAP; nested blocks (kitecorp/kite#25):
+            // list_block=LIST, set_block=SET. A nested type has no declaration the
+            // language could resolve, so each instance is an object.
+            assertEquals("""
+                    schema ComplexResource {
+                        boolean bool
+                        number float
+                        @cloud string id
+                        number integer
+                        object[] list
+                        map<string, object> map
+                        number number
+                        object object
+                        object[] set
+                        string string
+                        object[] listBlock
+                        object[] setBlock
+                    }""", dsl);
         } finally {
             provider.stop();
             client = null;

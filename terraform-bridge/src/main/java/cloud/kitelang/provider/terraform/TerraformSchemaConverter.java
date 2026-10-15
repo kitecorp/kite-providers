@@ -2,7 +2,6 @@ package cloud.kitelang.provider.terraform;
 import cloud.kitelang.tfplugin.TfAttribute;
 import cloud.kitelang.tfplugin.TfBlock;
 import cloud.kitelang.tfplugin.TfNestedBlock;
-import cloud.kitelang.tfplugin.TfObjectType;
 import cloud.kitelang.tfplugin.TfSchema;
 import cloud.kitelang.tfplugin.Tfplugin5Rpc;
 
@@ -34,8 +33,8 @@ import java.util.Set;
  *   <li>Parse cty type constraint bytes into Kite type strings</li>
  *   <li>Map TF attribute flags to Kite property decorators</li>
  *   <li>Handle nested blocks (SINGLE, LIST, SET, MAP, GROUP)</li>
- *   <li>Render tfplugin6 nested attributes ({@code nested_type}) as first-class
- *       nested types rather than a bare {@code Map} (kitecorp/kite-providers#12)</li>
+ *   <li>Render nested blocks and tfplugin6 nested attributes ({@code nested_type})
+ *       as {@code object}s, since the language has no declaration for their members</li>
  *   <li>Classify TF types into Kite import domains via heuristics</li>
  * </ul>
  *
@@ -189,9 +188,12 @@ public class TerraformSchemaConverter {
      *   <li>{@code "bool"} -> {@code boolean}</li>
      *   <li>{@code "dynamic"} -> {@code any}</li>
      *   <li>{@code ["list", T]} or {@code ["set", T]} -> {@code T[]}</li>
-     *   <li>{@code ["map", T]} -> {@code Map}</li>
-     *   <li>{@code ["object", {...}]} -> {@code Map}</li>
+     *   <li>{@code ["map", T]} -> {@code map<string, T>} (Terraform map keys are always strings)</li>
+     *   <li>{@code ["object", {...}]} -> {@code object}</li>
      * </ul>
+     *
+     * <p>Every result is a type the Kite language resolves: an undeclared name such as
+     * {@code Map} failed the import with "Variable not found: Map" (kitecorp/kite#109).</p>
      *
      * @param typeJson JSON-encoded cty type constraint
      * @return the Kite type string
@@ -318,16 +320,9 @@ public class TerraformSchemaConverter {
                 collectApiProperties(properties, nestedBlock.block());
                 continue;
             }
-            var nestedTypeName = toPascalCase(nestedBlock.typeName());
-            var kiteType = switch (nestedBlock.nesting()) {
-                case SINGLE -> nestedTypeName;
-                case LIST, SET -> nestedTypeName + "[]";
-                case MAP -> "Map";
-                default -> "any";
-            };
             properties.add(Property.builder()
                     .name(TerraformPropertyMapper.toCamelCase(nestedBlock.typeName()))
-                    .type(kiteType)
+                    .type(nestedKiteType(nestedBlock.nesting()))
                     .sensitive(nestedBlock.block().hasSensitiveValues())
                     .build());
         }
@@ -386,52 +381,52 @@ public class TerraformSchemaConverter {
     }
 
     /**
-     * The Kite type for an attribute. A tfplugin6 {@code nested_type} attribute
-     * renders as a first-class nested type (mirroring nested blocks) instead of
-     * the bare {@code Map} its synthesised cty object type would otherwise map to
-     * (kitecorp/kite-providers#12); every other attribute maps its cty type.
+     * The Kite type for an attribute. A tfplugin6 {@code nested_type} attribute takes
+     * its shape from its nesting mode, as a nested block does; every other attribute
+     * maps its cty type.
      */
     private String attributeKiteType(TfAttribute attr) {
         return attr.nestedType() != null
-                ? nestedAttributeKiteType(attr.name(), attr.nestedType())
+                ? nestedKiteType(attr.nestedType().nesting())
                 : ctyTypeToKiteType(attr.typeJson());
     }
 
     /**
-     * The Kite type for a nested attribute, mirroring {@link #appendNestedBlock}:
-     * the attribute's own name becomes the nested type name and the nesting mode
-     * picks the shape.
-     *
-     * <p>MAP renders as the untyped {@code Map} — as nested blocks do — because
-     * the Kite grammar has no typed-map syntax ({@code typeIdentifier} offers only
-     * an array suffix). The element structure survives in the cty type used for
-     * CRUD; it simply cannot be spelled in the DSL until the language gains a
-     * typed-map form (follow-up: kitecorp/kite-language).</p>
+     * The Kite type of a nested block or nested attribute. Its members have no Kite
+     * declaration the language could resolve: rendered under its own name
+     * ({@code RootBlockDevice}) the import failed with "Variable not found"
+     * (kitecorp/kite#109). So each instance is an {@code object}; the provider's own
+     * schema, which the bridge encodes the values against, still checks the members.
+     * GROUP blocks never get here: their attributes flatten into the parent.
      */
-    private static String nestedAttributeKiteType(String attributeName, TfObjectType nested) {
-        var typeName = toPascalCase(attributeName);
-        return switch (nested.nesting()) {
-            case SINGLE -> typeName;
-            case LIST, SET -> typeName + "[]";
-            case MAP -> "Map";
+    private static String nestedKiteType(TfNestedBlock.Nesting nesting) {
+        return switch (nesting) {
+            case SINGLE -> OBJECT;
+            case LIST, SET -> OBJECT + "[]";
+            case MAP -> stringKeyedMapOf(OBJECT);
             default -> "any";
         };
     }
+
+    /** A Terraform map in Kite: Terraform map keys are always strings. */
+    private static String stringKeyedMapOf(String elementType) {
+        return "map<string, " + elementType + ">";
+    }
+
+    private static final String OBJECT = "object";
 
     /**
      * Append a nested block according to its nesting mode.
      *
      * <ul>
-     *   <li>{@code SINGLE} -> {@code NestedType propertyName}</li>
-     *   <li>{@code LIST} or {@code SET} -> {@code NestedType[] propertyName}</li>
-     *   <li>{@code MAP} -> {@code Map propertyName}</li>
+     *   <li>{@code SINGLE} -> {@code object propertyName}</li>
+     *   <li>{@code LIST} or {@code SET} -> {@code object[] propertyName}</li>
+     *   <li>{@code MAP} -> {@code map<string, object> propertyName}</li>
      *   <li>{@code GROUP} -> flatten attributes into parent block</li>
      * </ul>
      */
     private void appendNestedBlock(StringBuilder sb, TfNestedBlock nestedBlock, String indent) {
-        var blockName = nestedBlock.typeName();
-        var kiteName = TerraformPropertyMapper.toCamelCase(blockName);
-        var nestedTypeName = toPascalCase(blockName);
+        var kiteName = TerraformPropertyMapper.toCamelCase(nestedBlock.typeName());
 
         // A nested block renders as one property line, so a sensitive attribute
         // anywhere inside it can only surface here — GROUP flattens attributes
@@ -444,11 +439,8 @@ public class TerraformSchemaConverter {
         switch (nestedBlock.nesting()) {
             // Flatten: merge nested block's attributes into the parent
             case GROUP -> appendBlockProperties(sb, nestedBlock.block(), indent);
-            case SINGLE -> sb.append(indent).append(sensitivePrefix).append(nestedTypeName).append(' ')
-                    .append(kiteName).append('\n');
-            case LIST, SET -> sb.append(indent).append(sensitivePrefix).append(nestedTypeName).append("[] ")
-                    .append(kiteName).append('\n');
-            case MAP -> sb.append(indent).append(sensitivePrefix).append("Map ").append(kiteName).append('\n');
+            case SINGLE, LIST, SET, MAP -> sb.append(indent).append(sensitivePrefix)
+                    .append(nestedKiteType(nestedBlock.nesting())).append(' ').append(kiteName).append('\n');
             default -> sb.append(indent).append("// unsupported nesting mode: ")
                     .append(nestedBlock.nesting()).append('\n');
         }
@@ -500,32 +492,16 @@ public class TerraformSchemaConverter {
     /**
      * Map a cty compound type (array node) to a Kite type string.
      *
-     * <p>Handles list, set (both produce {@code T[]}), map, and object types.</p>
+     * <p>Handles list, set (both produce {@code T[]}), map ({@code map<string, T>}) and
+     * object ({@code object}: its attributes differ in type, so no typed map fits).</p>
      */
     private String resolveCompoundType(JsonNode typeNode) {
         var kind = typeNode.get(0).asText();
         return switch (kind) {
             case "list", "set" -> resolveKiteType(typeNode.get(1)) + "[]";
-            case "map", "object" -> "Map";
+            case "map" -> stringKeyedMapOf(resolveKiteType(typeNode.get(1)));
+            case "object" -> OBJECT;
             default -> "any";
         };
-    }
-
-    /**
-     * Convert a snake_case name to PascalCase (for nested block type names).
-     *
-     * <p>Each underscore-delimited segment is title-cased and concatenated.</p>
-     */
-    private static String toPascalCase(String snakeCase) {
-        var parts = snakeCase.split("_");
-        var sb = new StringBuilder(snakeCase.length());
-        for (var part : parts) {
-            if (part.isEmpty()) {
-                continue;
-            }
-            sb.append(Character.toUpperCase(part.charAt(0)));
-            sb.append(part.substring(1));
-        }
-        return sb.toString();
     }
 }
