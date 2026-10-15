@@ -23,15 +23,15 @@ def protobufVersion = '4.33.2'
 
 dependencies {
     // Kite Provider SDK
-    implementation 'cloud.kitelang:kite-provider-sdk:0.2.4'
-    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.2.4'
+    implementation 'cloud.kitelang:kite-provider-sdk:0.3.0'
+    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.3.0'
 
     // Terraform plugin protocol client — the extracted standalone library. Provides the
     // go-plugin client, cty codec, tfplugin5/6 RPC facade + generated stubs, neutral schema
     // model, and registry download + OpenPGP signature verification. Its grpc-netty transport,
     // gRPC health service, and (reflectively-loaded) BouncyCastle OpenPGP deps arrive
     // transitively; the shadowJar minimize below keeps BouncyCastle.
-    implementation 'cloud.kitelang:tfplugin-jvm:0.1.0'
+    implementation 'cloud.kitelang:tfplugin-jvm:0.2.0'
 
     // gRPC + Protobuf: the bridge's handlers and tests name the generated tfplugin5/6 stubs
     // and protobuf messages directly. tfplugin-jvm re-exposes these as 'api', but the bridge
@@ -84,4 +84,18 @@ shadowJar {
         // TerraformRegistryClient/OpenPgpSignatureVerifier). Keep the whole library.
         exclude(dependency('org.bouncycastle:.*'))
     }
+}
+
+// Mockito's inline mock maker needs its Java agent; Java 25 warns when it is loaded
+// dynamically and a future JDK will refuse, so it is attached at JVM start instead
+configurations {
+    mockitoAgent
+}
+dependencies {
+    mockitoAgent('org.mockito:mockito-core:5.24.0') {
+        transitive = false
+    }
+}
+tasks.named('test') {
+    jvmArgs "-javaagent:${configurations.mockitoAgent.asPath}"
 }

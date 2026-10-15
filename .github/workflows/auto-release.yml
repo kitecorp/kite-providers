@@ -34,6 +34,9 @@ jobs:
 
       - name: Detect providers to release
         id: set-matrix
+        # Without a token `gh release view` always fails, so every provider looked unreleased
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           MANUAL_PROVIDER="${{ inputs.provider }}"
           PROVIDERS_TO_RELEASE=""

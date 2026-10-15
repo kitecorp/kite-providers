@@ -18,8 +18,8 @@ kiteProvider {
 
 dependencies {
     // Kite Provider SDK
-    implementation 'cloud.kitelang:kite-provider-sdk:0.2.4'
-    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.2.4'
+    implementation 'cloud.kitelang:kite-provider-sdk:0.3.0'
+    annotationProcessor 'cloud.kitelang:kite-provider-sdk:0.3.0'
 
     // GCP SDK - managed by BOM
     implementation platform('com.google.cloud:libraries-bom:26.51.0')
@@ -62,4 +62,18 @@ shadowJar {
         exclude(dependency('org.msgpack:.*'))
         exclude(dependency('cloud.kitelang:.*'))
     }
+}
+
+// Mockito's inline mock maker needs its Java agent; Java 25 warns when it is loaded
+// dynamically and a future JDK will refuse, so it is attached at JVM start instead
+configurations {
+    mockitoAgent
+}
+dependencies {
+    mockitoAgent('org.mockito:mockito-core:5.24.0') {
+        transitive = false
+    }
+}
+tasks.named('test') {
+    jvmArgs "-javaagent:${configurations.mockitoAgent.asPath}"
 }
