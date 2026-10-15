@@ -1,9 +1,11 @@
 name: Ask kitelang.cloud to rebuild
 description: >-
-  Sends the provider-released repository dispatch to kitecorp/kitelang.cloud.
-  Its deploy workflow builds the /providers/ pages from the docs on GitHub Pages,
-  so it waits until Pages serves the versions named here, then builds and deploys
-  (kitecorp/kitelang.cloud#64). Run it after docs/providers.json is pushed.
+  Waits until GitHub Pages has built this run's last push, then sends the
+  provider-released repository dispatch to kitecorp/kitelang.cloud. Its deploy
+  workflow builds the /providers/ pages from the docs on GitHub Pages, so it also
+  waits until Pages serves the versions named here, then builds and deploys
+  (kitecorp/kitelang.cloud#64). Run it after docs/providers.json is pushed, in a
+  job with `pages: read`.
 
 inputs:
   providers:
@@ -23,11 +25,16 @@ runs:
       shell: bash
       env:
         PROVIDERS: ${{ inputs.providers }}
-        GH_TOKEN: ${{ inputs.token }}
+        SITE_TOKEN: ${{ inputs.token }}
+        # Reads this repository's Pages builds and compares commits.
+        GH_TOKEN: ${{ github.token }}
+        # A Pages build takes about a minute.
+        PAGES_TIMEOUT_SECONDS: 600
+        PAGES_POLL_SECONDS: 15
       run: |
         set -euo pipefail
         # A missing secret must not fail a release that has already been published.
-        if [ -z "$GH_TOKEN" ]; then
+        if [ -z "$SITE_TOKEN" ]; then
           echo "::notice title=kitelang.cloud not rebuilt::The SITE_DISPATCH_TOKEN secret is not set, so kitelang.cloud was not asked to rebuild. Its /providers/ pages show this release after its next deploy."
           exit 0
         fi
@@ -47,6 +54,32 @@ runs:
           exit 1
         fi
 
+        # Wait until Pages has built a commit that contains this run's last push.
+        # The site cannot see this from the versions alone: re-releasing a version
+        # pushes new docs under a version Pages already lists. And GitHub keeps only
+        # one pending deploy run on the site, so a run that replaces this dispatch's
+        # run must find the docs already published.
+        PUSHED=$(git -C "$GITHUB_WORKSPACE" rev-parse HEAD)
+        DEADLINE=$(( $(date +%s) + PAGES_TIMEOUT_SECONDS ))
+        while :; do
+          BUILD=$(gh api "repos/$GITHUB_REPOSITORY/pages/builds/latest" --jq '.status + " " + .commit')
+          read -r STATUS BUILT <<< "$BUILD"
+          if [ "$STATUS" = built ]; then
+            # "identical" or "ahead": the built commit is the push or comes after it.
+            RELATION=$(gh api "repos/$GITHUB_REPOSITORY/compare/$PUSHED...$BUILT" --jq .status)
+            if [ "$RELATION" = identical ] || [ "$RELATION" = ahead ]; then
+              echo "GitHub Pages has built $BUILT, which contains $PUSHED."
+              break
+            fi
+          fi
+          if [ "$(date +%s)" -ge "$DEADLINE" ]; then
+            echo "::error title=kitelang.cloud not rebuilt::GitHub Pages has not built $PUSHED after $PAGES_TIMEOUT_SECONDS seconds (latest build: $STATUS, $BUILT). See the pages-build-deployment runs of $GITHUB_REPOSITORY."
+            exit 1
+          fi
+          echo "Waiting for GitHub Pages to build $PUSHED (latest build: $STATUS, $BUILT)"
+          sleep "$PAGES_POLL_SECONDS"
+        done
+
         echo "Sending to kitecorp/kitelang.cloud: $BODY"
-        gh api --method POST repos/kitecorp/kitelang.cloud/dispatches --input - <<< "$BODY"
+        GH_TOKEN="$SITE_TOKEN" gh api --method POST repos/kitecorp/kitelang.cloud/dispatches --input - <<< "$BODY"
         echo "kitelang.cloud deploys once GitHub Pages serves these versions: https://github.com/kitecorp/kitelang.cloud/actions/workflows/deploy.yml" >> "$GITHUB_STEP_SUMMARY"

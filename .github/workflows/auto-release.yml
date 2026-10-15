@@ -203,6 +203,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      # The last step waits for the Pages build of the released docs
+      pages: read
     steps:
       - uses: actions/checkout@v6
         with:
