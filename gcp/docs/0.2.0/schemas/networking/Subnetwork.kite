@@ -1,0 +1,15 @@
+// Subnetwork
+schema Subnetwork {
+    string  name                           // The name of the subnetwork
+    string  network                        // The VPC network name or self-link this subnet belongs to
+    string  ipCidrRange                    // The IPv4 CIDR range for this subnetwork (e.g., 10.0.1.0/24)
+    string  region                         // The GCP region for this subnetwork (e.g., us-central1)
+    boolean privateIpGoogleAccess = false  // Whether VMs in this subnet can access Google APIs without external IP
+    string  description                    // An optional description of the subnetwork
+    @cloud(importable)
+    string  subnetworkId                   // The unique subnetwork ID assigned by GCP
+    @cloud
+    string  selfLink                       // The self-link URL of the subnetwork
+    @cloud
+    string  gatewayAddress                 // The gateway address for default routing in this subnetwork
+}

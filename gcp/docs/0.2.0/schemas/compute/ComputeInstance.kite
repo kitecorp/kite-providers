@@ -1,0 +1,30 @@
+// ComputeInstance
+schema ComputeInstance {
+    string  name                 // The name of the instance
+    string  machineType          // The machine type (e.g., e2-medium, n1-standard-1)
+    string  zone                 // The zone where the instance will be created (e.g., us-central1-a)
+    string  imageFamily          // The image family to use for the boot disk (e.g., debian-12)
+    string  imageProject         // The project containing the image family (e.g., debian-cloud)
+    string  networkInterface     // The VPC network name or self-link for the primary network interface
+    string  subnetwork           // The subnetwork name or self-link for the primary network interface
+    any[]   tags                 // Network tags for firewall rules
+    object  labels               // Labels to apply to the instance
+    number  diskSizeGb           // Boot disk size in GB
+    @allowed(["pd-standard", "pd-ssd", "pd-balanced"])
+    string  diskType             // Boot disk type
+    boolean externalIp = true    // Whether to assign an external IP address
+    string  startupScript        // Startup script content
+    string  serviceAccount       // The service account email for the instance
+    any[]   scopes               // OAuth2 scopes for the service account
+    boolean preemptible = false  // Whether to enable preemptible/spot scheduling
+    @cloud(importable)
+    string  instanceId           // The unique instance ID assigned by GCP
+    @cloud
+    string  status               // The instance status (PROVISIONING, STAGING, RUNNING, STOPPING, STOPPED, TERMINATED)
+    @cloud
+    string  selfLink             // The self-link URL of the instance
+    @cloud
+    string  externalIpAddress    // The external (public) IP address
+    @cloud
+    string  internalIpAddress    // The internal (private) IP address
+}

@@ -1,0 +1,14 @@
+// CloudStorageBucket
+schema CloudStorageBucket {
+    string  name                             // Globally unique bucket name
+    string  location = "US"                  // The location of the bucket (e.g., US, EU, us-central1)
+    @allowed(["STANDARD", "NEARLINE", "COLDLINE", "ARCHIVE"])
+    string  storageClass = "STANDARD"        // The storage class for the bucket
+    boolean versioning = false               // Enable object versioning
+    object  labels                           // Labels to apply to the bucket
+    boolean uniformBucketLevelAccess = true  // Whether uniform bucket-level access is enabled
+    @cloud(importable)
+    string  selfLink                         // The self-link URL of the bucket
+    @cloud
+    string  timeCreated                      // The creation time of the bucket
+}

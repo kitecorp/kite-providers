@@ -1,0 +1,9 @@
+// ResourceRecordSet
+schema ResourceRecordSet {
+    string managedZone  // The managed zone name this record belongs to
+    string name         // The fully qualified domain name (must end with a dot)
+    @allowed(["A", "AAAA", "CNAME", "MX", "TXT", "NS", "SOA", "SRV", "CAA", "PTR", "SPF"])
+    string type         // The DNS record type
+    number ttl          // The TTL (time to live) in seconds
+    any[]  rrdatas      // The record data values
+}

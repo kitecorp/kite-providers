@@ -1,0 +1,21 @@
+// ForwardingRule
+schema ForwardingRule {
+    string name                              // The name of the forwarding rule
+    string target                            // The target resource URL (target pool, proxy, or backend service)
+    string portRange                         // The port range for this forwarding rule (e.g., '80', '8080-8090')
+    @allowed(["TCP", "UDP", "ESP", "AH", "SCTP", "ICMP"])
+    string ipProtocol = "TCP"                // The IP protocol for this forwarding rule
+    @allowed(["EXTERNAL", "EXTERNAL_MANAGED", "INTERNAL", "INTERNAL_MANAGED", "INTERNAL_SELF_MANAGED"])
+    string loadBalancingScheme = "EXTERNAL"  // The load balancing scheme
+    string network                           // The VPC network for internal load balancers
+    string subnetwork                        // The subnetwork for internal load balancers
+    string region                            // The GCP region for this forwarding rule (regional rules only)
+    object labels                            // Labels to apply to the forwarding rule
+    string description                       // An optional description
+    @cloud(importable)
+    string forwardingRuleId                  // The unique ID of the forwarding rule
+    @cloud
+    string selfLink                          // The self-link URL of the forwarding rule
+    @cloud
+    string ipAddress                         // The IP address assigned to this forwarding rule
+}
