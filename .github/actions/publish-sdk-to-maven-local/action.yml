@@ -1,8 +1,11 @@
 name: Publish the provider SDK to Maven Local
 description: >
-  Builds kite-api, kite-proto and kite-provider-sdk from their main branches in
-  sdk-build/ and publishes them to Maven Local, where the provider builds and the
-  distribution test resolve them. They are not on Maven Central.
+  Builds kite-api, kite-proto and kite-provider-sdk in sdk-build/ and publishes
+  them to Maven Local, where the provider builds and the distribution test
+  resolve them. They are not on Maven Central. Each checkout is pinned to the
+  commit that holds the version the providers ask for (kite-provider-sdk 0.3.0
+  in every build.gradle), because main moves on: SDK main is 0.4.0. When the
+  providers move to a newer SDK, update these three refs with them.
 
 runs:
   using: composite
@@ -11,18 +14,21 @@ runs:
       uses: actions/checkout@v6
       with:
         repository: kitecorp/kite-api
+        ref: b6d00a219c32a7897d1c4117790bbfd7baabbca7 # 0.2.0
         path: sdk-build/kite-api
 
     - name: Checkout kite-proto
       uses: actions/checkout@v6
       with:
         repository: kitecorp/kite-proto
+        ref: 963f5f6a2b85fde68d0abbb15904707648bcabe0 # 0.2.0
         path: sdk-build/kite-proto
 
     - name: Checkout kite-provider-sdk
       uses: actions/checkout@v6
       with:
         repository: kitecorp/kite-provider-sdk
+        ref: bd00265196a80509f716e11bd10adcf9630fe918 # 0.3.0
         path: sdk-build/kite-provider-sdk
 
     - name: Create multi-project settings
