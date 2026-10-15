@@ -44,9 +44,10 @@ runs:
 
     - name: Setup Gradle wrapper for SDK build
       shell: bash
-      working-directory: sdk-build
-      # setup-gradle, run by the calling job, provides the gradle command
-      run: gradle wrapper
+      # The SDK repositories have no wrapper. Borrow this repository's, which pins the
+      # same Gradle version as every provider; `gradle wrapper` would take whatever
+      # Gradle the runner image has on its PATH.
+      run: cp -R distribution-test/gradlew distribution-test/gradle sdk-build/
 
     - name: Build and publish SDK to Maven Local
       shell: bash

@@ -123,16 +123,17 @@ jobs:
           generate_release_notes: true
           draft: false
 
-      - name: Check the published zip serves every resource type
-        # The zip users download, not the one built here: azure 0.2.0 published a stale zip
-        # left on the release by an earlier run (kitecorp/kite-providers#22)
+      - name: Check the published zip is the zip checked above
+        # azure 0.2.0 shipped a stale zip an earlier run had left on the release
+        # (kitecorp/kite-providers#22). Comparing bytes proves users download the zip
+        # that passed the check, and needs no test code from the branch checked out now.
         env:
           GH_TOKEN: ${{ github.token }}
           PROVIDER: ${{ steps.extract.outputs.provider }}
           TAG: ${{ steps.extract.outputs.tag }}
         run: |
           gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern "$PROVIDER.zip" --dir "$RUNNER_TEMP/published"
-          distribution-test/check-zip.sh "$RUNNER_TEMP/published/$PROVIDER.zip"
+          cmp "$RUNNER_TEMP/$PROVIDER.zip" "$RUNNER_TEMP/published/$PROVIDER.zip"
 
       - name: Regenerate docs/providers.json index
         run: |

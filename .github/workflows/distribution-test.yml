@@ -43,14 +43,16 @@ jobs:
           DIRS=""
           for BUILD in */build.gradle; do
             PROVIDER="${BUILD%/build.gradle}"
-            [[ "$(<"$BUILD")" == *"id 'cloud.kitelang.provider'"* ]] || continue
+            # A provider applies the plugin, in either quote style
+            [[ "$(<"$BUILD")" == *"cloud.kitelang.provider"* ]] || continue
             # grpc-example and terraform-bridge build only inside the kite repo, against its
             # local SDK; every provider released from here has its own wrapper
-            if [ ! -x "$PROVIDER/gradlew" ]; then
+            if [ ! -f "$PROVIDER/gradlew" ]; then
               echo "::notice::Not checked: $PROVIDER has no Gradle wrapper, so it builds only inside the kite repo"
               continue
             fi
-            (cd "$PROVIDER" && ./gradlew installDist --no-daemon)
+            # Run through sh, as the release workflows chmod it: a lost executable bit must not skip a provider
+            (cd "$PROVIDER" && sh ./gradlew installDist --no-daemon)
             DIST="$(dirname "$PROVIDER"/build/install/*/provider.json)"
             echo "Built $PROVIDER into $DIST"
             DIRS="${DIRS:+$DIRS,}$PWD/$DIST"
