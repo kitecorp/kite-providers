@@ -45,8 +45,8 @@ import java.util.stream.Collectors;
  * TF RPC and re-enveloped on the way back to the engine.</p>
  *
  * <h3>CRUD mapping to Terraform RPCs</h3>
- * <p>Terraform core always validates the resource config and calls
- * {@code PlanResourceChange} before {@code ApplyResourceChange}; providers rely on
+ * <p>Terraform core validates the configuration of a resource it creates or updates,
+ * and always calls {@code PlanResourceChange} before {@code ApplyResourceChange}; providers rely on
  * the plan step to fill in computed values and to flag attributes that force
  * replacement, so the bridge mirrors that sequence:</p>
  * <ul>
@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  *   <li>{@link #update} &rarr; {@code Validate} + {@code Plan} + {@code Apply} using the
  *       engine-stored prior state; when the plan flags {@code requiresReplace} the bridge
  *       destroys and recreates (the Kite provider protocol has no replace concept)</li>
- *   <li>{@link #delete} &rarr; {@code Validate} + {@code Plan} + {@code Apply} (null planned state)</li>
+ *   <li>{@link #delete} &rarr; {@code Plan} + {@code Apply} (null planned state)</li>
  *   <li>{@link #plan}   &rarr; {@code Validate} + {@code Plan} only — diff preview where
  *       computed values surface as {@link CtyCodec#UNKNOWN} ("known after apply")</li>
  * </ul>
@@ -315,10 +315,17 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     }
 
     /**
-     * Deletes a resource: validate + plan the destroy (null proposed state and
-     * config) with the engine-stored private bytes, then {@code ApplyResourceChange}
-     * with the plan's output. The engine passes the stored prior state as the
-     * property map, so the destroy operates on what was actually applied.
+     * Deletes a resource: plan the destroy (null proposed state and config) with the
+     * engine-stored private bytes, then {@code ApplyResourceChange} with the plan's
+     * output. The engine passes the stored prior state as the property map, so the
+     * destroy operates on what was actually applied.
+     *
+     * <p>Unlike create and update, nothing is validated: a destroy has no configuration,
+     * and the stored state is not one. It holds what the provider filled in, which can
+     * conflict as configuration (aws_s3_bucket's state has both {@code bucket} and
+     * {@code bucket_prefix}), so validating it made such resources impossible to
+     * destroy (kitecorp/kite#109). Terraform core plans a destroy without validating
+     * the resource's state either.</p>
      *
      * @param properties camelCase prior state identifying the resource to delete
      * @param context    private bytes in, post-destroy private bytes out
@@ -334,10 +341,8 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
         var prior = restorePriorState(TerraformPropertyMapper.toSnakeCase(properties),
                 stored.schemaVersion(), "delete");
 
-        // Validate the last known configurable attributes — a nil config fails
-        // required-attribute checks. The destroy plan itself uses the null
-        // proposed state and config, matching a resource leaving the config.
-        validateConfig(encodeToMsgpack(withoutReadOnlyAttributes(prior.snakeProps())), "delete");
+        // The destroy plan uses the null proposed state and config, matching a
+        // resource leaving the config
         var plan = planChange(prior.msgpack(), nilMsgpack(), nilMsgpack(), stored.providerBytes(), "delete");
 
         log.debug("delete {} — sending ApplyResourceChange with null planned state", tfTypeName);

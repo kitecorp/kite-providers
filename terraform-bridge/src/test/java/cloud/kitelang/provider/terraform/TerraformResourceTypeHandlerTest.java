@@ -368,8 +368,8 @@ class TerraformResourceTypeHandlerTest {
         }
 
         @Test
-        @DisplayName("delete() should validate and plan the destroy with stored private bytes before applying")
-        void deleteShouldValidateAndPlanDestroy() {
+        @DisplayName("delete() should plan the destroy with stored private bytes before applying")
+        void deleteShouldPlanDestroy() {
             // Given — the engine passes the stored prior state as the property
             // map and the stored private bytes through the context
             var input = camelCaseProps("ami-12345", "t2.micro");
@@ -393,7 +393,6 @@ class TerraformResourceTypeHandlerTest {
             var inOrder = inOrder(stub);
             var planCaptor = ArgumentCaptor.forClass(PlanResourceChange.Request.class);
             var applyCaptor = ArgumentCaptor.forClass(ApplyResourceChange.Request.class);
-            inOrder.verify(stub).validateResourceTypeConfig(any());
             inOrder.verify(stub).planResourceChange(planCaptor.capture());
             inOrder.verify(stub).applyResourceChange(applyCaptor.capture());
 
@@ -853,6 +852,36 @@ class TerraformResourceTypeHandlerTest {
     @DisplayName("delete()")
     class Delete {
 
+        /**
+         * The stored state is not a configuration: it holds what the provider filled in,
+         * and those values can conflict as configuration. aws_s3_bucket's state has both
+         * bucket and bucket_prefix (""), which ConflictsWith refuses, so validating it
+         * made every bucket impossible to destroy (kitecorp/kite#109). Terraform core
+         * plans a destroy without validating the resource's state either.
+         */
+        @Test
+        @DisplayName("should destroy without validating the stored state as configuration")
+        void shouldDestroyWithoutValidatingStoredState() {
+            // Given — a provider that refuses the stored state as configuration
+            lenient().when(stub.validateResourceTypeConfig(any())).thenReturn(ValidateResourceTypeConfig.Response.newBuilder()
+                    .addDiagnostics(Diagnostic.newBuilder()
+                            .setSeverity(Diagnostic.Severity.ERROR)
+                            .setSummary("Conflicting configuration arguments")
+                            .setDetail("\"bucket_prefix\": conflicts with bucket"))
+                    .build());
+            when(stub.applyResourceChange(any())).thenReturn(ApplyResourceChange.Response.newBuilder()
+                    .setNewState(DynamicValue.newBuilder().setMsgpack(MSGPACK_NIL).build())
+                    .build());
+
+            // When
+            var result = handler.delete(camelCaseProps("ami-12345", "t2.micro"));
+
+            // Then
+            assertEquals(true, result);
+            verify(stub, never()).validateResourceTypeConfig(any());
+            verify(stub).applyResourceChange(any());
+        }
+
         @Test
         @DisplayName("should call ApplyResourceChange with prior state and null planned state")
         void shouldCallApplyWithNullPlannedState() {
@@ -1274,11 +1303,7 @@ class TerraformResourceTypeHandlerTest {
             assertEquals("{\"ami\":\"ami-old\",\"region\":\"us-east-1\"}",
                     upgradeCaptor.getValue().getRawState().getJson().toStringUtf8());
 
-            // ...validation and the destroy run against the UPGRADED state
-            var validateCaptor = ArgumentCaptor.forClass(ValidateResourceTypeConfig.Request.class);
-            verify(stub).validateResourceTypeConfig(validateCaptor.capture());
-            assertEquals(encodeToDynamicValue(upgradedState), validateCaptor.getValue().getConfig());
-
+            // ...and the destroy runs against the UPGRADED state
             var applyCaptor = ArgumentCaptor.forClass(ApplyResourceChange.Request.class);
             verify(stub).applyResourceChange(applyCaptor.capture());
             assertEquals(encodeToDynamicValue(upgradedState), applyCaptor.getValue().getPriorState());
