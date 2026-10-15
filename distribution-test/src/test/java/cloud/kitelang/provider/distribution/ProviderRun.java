@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * launcher process, stdout handshake, then the provider gRPC protocol.
  *
  * @param resourceTypes the resource type names GetProviderSchema returned
- * @param log           every line the provider wrote to stderr, where it logs
+ * @param log           every line the provider wrote, stderr and stdout, apart from the handshake
  */
 record ProviderRun(SortedSet<String> resourceTypes, List<String> log) {
 
@@ -50,7 +50,7 @@ record ProviderRun(SortedSet<String> resourceTypes, List<String> log) {
         var log = new CopyOnWriteArrayList<String>();
         var logReader = Thread.ofPlatform().daemon().start(() -> readLines(process.getErrorStream(), log::add));
         try {
-            var resourceTypes = askForResourceTypes(awaitHandshake(process));
+            var resourceTypes = askForResourceTypes(awaitHandshake(process, log::add));
             awaitExit(process, logReader);
             return new ProviderRun(resourceTypes, List.copyOf(log));
         } catch (RuntimeException | ExecutionException | TimeoutException e) {
@@ -58,6 +58,9 @@ record ProviderRun(SortedSet<String> resourceTypes, List<String> log) {
             awaitExit(process, logReader);
             throw new IllegalStateException(
                     "Provider " + distribution + " failed: " + e + "\nProvider log:\n" + String.join("\n", log), e);
+        } finally {
+            // An interrupt or an Error skips the catch; the provider must not outlive the test
+            process.destroyForcibly();
         }
     }
 
@@ -74,20 +77,25 @@ record ProviderRun(SortedSet<String> resourceTypes, List<String> log) {
         environment.put("JAVA_HOME", System.getProperty("java.home"));
         environment.put("KITE_PLUGIN_MAGIC_COOKIE", UUID.randomUUID().toString());
         environment.put("KITE_PLUGIN_PROTOCOL_VERSION", "1");
-        // A provider left behind by a failed run stops by itself
+        // Once serving, a provider whose test JVM was killed stops by itself
         environment.put("KITE_PLUGIN_IDLE_TIMEOUT", String.valueOf(TimeUnit.MINUTES.toMillis(2)));
         return builder.start();
     }
 
-    /** Returns the port from the handshake line the provider prints on stdout once it listens. */
-    private static int awaitHandshake(Process process)
+    /**
+     * Returns the port from the handshake line the provider prints on stdout once it listens,
+     * passing every other stdout line to {@code otherLines}.
+     */
+    private static int awaitHandshake(Process process, Consumer<String> otherLines)
             throws InterruptedException, ExecutionException, TimeoutException {
         var handshake = new CompletableFuture<String>();
         // Keeps reading after the handshake so the provider never blocks on a full pipe
         Thread.ofPlatform().daemon().start(() -> {
             readLines(process.getInputStream(), line -> {
-                if (line.startsWith(HANDSHAKE_PREFIX)) {
+                if (!handshake.isDone() && line.startsWith(HANDSHAKE_PREFIX)) {
                     handshake.complete(line);
+                } else {
+                    otherLines.accept(line);
                 }
             });
             handshake.complete(null);

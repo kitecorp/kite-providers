@@ -10,16 +10,15 @@ plugins {
 }
 
 repositories {
-    // kite-proto is not on Maven Central: CI publishes it to Maven Local from source,
-    // the same way the provider builds get the SDK
+    // The SDK is not on Maven Central: CI publishes it to Maven Local from source
     mavenLocal()
     mavenCentral()
 }
 
 dependencies {
-    // The same protocol and transport the engine uses to talk to a provider
-    testImplementation 'cloud.kitelang:kite-proto:0.2.0'
-    testRuntimeOnly 'io.grpc:grpc-netty-shaded:1.78.0'
+    // Used only for the provider gRPC protocol (kite-proto) and its transport, which the
+    // SDK brings in. The same SDK version the providers pin, so one bump moves all of them.
+    testImplementation 'cloud.kitelang:kite-provider-sdk:0.3.0'
 
     testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.18.4'
 
