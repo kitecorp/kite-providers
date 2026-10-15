@@ -67,7 +67,7 @@ public class AwsProvider extends KiteProvider {
 
     private String profile;
     private String region;
-    private String endpoint;
+    private URI endpoint;
 
     public AwsProvider() {
         // Name and version auto-loaded from provider-info.properties
@@ -109,7 +109,7 @@ public class AwsProvider extends KiteProvider {
             // Extract configuration
             this.profile = (String) config.get("profile");
             this.region = (String) config.get("region");
-            this.endpoint = (String) config.get("endpoint");
+            this.endpoint = endpointOf((String) config.get("endpoint"));
 
             log.info("Configuring AWS provider with profile: {}, region: {}, endpoint: {}", profile, region, endpoint);
 
@@ -177,10 +177,28 @@ public class AwsProvider extends KiteProvider {
         }
         // Without an override the SDK resolves the endpoint itself, which is what keeps
         // AWS_ENDPOINT_URL and AWS_ENDPOINT_URL_<SERVICE> working; an override replaces both
-        if (endpoint != null && !endpoint.isBlank()) {
-            builder.endpointOverride(URI.create(endpoint.trim()));
+        if (endpoint != null) {
+            builder.endpointOverride(endpoint);
         }
         return builder;
+    }
+
+    /**
+     * The configured endpoint as a URL, or null when none is set. Refuses anything but an http or
+     * https URL: the SDK takes {@code localhost:4566} as a URL whose scheme is {@code localhost} and
+     * fails only at the first call, with a message that does not name this setting.
+     */
+    private static URI endpointOf(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        var text = value.trim();
+        var scheme = text.contains("://") ? text.substring(0, text.indexOf("://")) : "";
+        if (!scheme.equalsIgnoreCase("http") && !scheme.equalsIgnoreCase("https")) {
+            throw new IllegalArgumentException("The aws endpoint must be an http or https URL, such as"
+                    + " http://127.0.0.1:4566, but is: " + text);
+        }
+        return URI.create(text);
     }
 
     /**
@@ -195,36 +213,6 @@ public class AwsProvider extends KiteProvider {
             }
         }
         log.debug("Wired AWS clients to {} resource type handlers", getResourceTypes().size());
-    }
-
-    /**
-     * Get or create an EC2 client.
-     * Creates a default client if not yet configured.
-     */
-    public Ec2Client getOrCreateEc2Client() {
-        if (ec2Client == null) {
-            synchronized (this) {
-                if (ec2Client == null) {
-                    ec2Client = Ec2Client.create();
-                }
-            }
-        }
-        return ec2Client;
-    }
-
-    /**
-     * Get or create an S3 client.
-     * Creates a default client if not yet configured.
-     */
-    public S3Client getOrCreateS3Client() {
-        if (s3Client == null) {
-            synchronized (this) {
-                if (s3Client == null) {
-                    s3Client = S3Client.create();
-                }
-            }
-        }
-        return s3Client;
     }
 
     public static void main(String[] args) throws Exception {

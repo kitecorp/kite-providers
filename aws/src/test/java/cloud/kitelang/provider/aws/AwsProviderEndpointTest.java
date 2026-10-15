@@ -6,12 +6,14 @@ import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.core.SdkClient;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * The endpoint the AWS provider sends its calls to (kitecorp/kite#107): an {@code endpoint} in the
@@ -24,22 +26,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AwsProviderEndpointTest {
 
     private static final String SDK_ENDPOINT_PROPERTY = "aws.endpointUrl";
+    /** configure() sets this one for the whole JVM; restored so other tests do not inherit it. */
+    private static final String SDK_REGION_PROPERTY = "aws.region";
 
-    private String endpointPropertyBefore;
+    private final Map<String, String> propertiesBefore = new HashMap<>();
 
     @BeforeEach
-    void rememberEndpointProperty() {
-        endpointPropertyBefore = System.getProperty(SDK_ENDPOINT_PROPERTY);
+    void rememberSdkProperties() {
+        for (var name : List.of(SDK_ENDPOINT_PROPERTY, SDK_REGION_PROPERTY)) {
+            propertiesBefore.put(name, System.getProperty(name));
+        }
         System.clearProperty(SDK_ENDPOINT_PROPERTY);
     }
 
     @AfterEach
-    void restoreEndpointProperty() {
-        if (endpointPropertyBefore == null) {
-            System.clearProperty(SDK_ENDPOINT_PROPERTY);
-        } else {
-            System.setProperty(SDK_ENDPOINT_PROPERTY, endpointPropertyBefore);
-        }
+    void restoreSdkProperties() {
+        propertiesBefore.forEach((name, value) -> {
+            if (value == null) {
+                System.clearProperty(name);
+            } else {
+                System.setProperty(name, value);
+            }
+        });
     }
 
     @Test
@@ -69,6 +77,17 @@ class AwsProviderEndpointTest {
         provider.configure(Map.of("region", "us-east-1"));
 
         assertEquals(everyClientAt("http://127.0.0.1:4567"), endpointsOf(provider));
+    }
+
+    @Test
+    void anEndpointWithoutHttpOrHttpsIsRefusedWithTheSettingNamed() {
+        var provider = new AwsProvider();
+
+        var refused = assertThrows(IllegalArgumentException.class,
+                () -> provider.configure(Map.of("region", "us-east-1", "endpoint", "localhost:4566")));
+
+        assertEquals("The aws endpoint must be an http or https URL, such as http://127.0.0.1:4566,"
+                + " but is: localhost:4566", refused.getMessage());
     }
 
     /**
