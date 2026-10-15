@@ -534,12 +534,13 @@ class Tfplugin6BridgeIntegrationTest {
             // nested_type attributes (kitecorp/kite-providers#12): object=SINGLE,
             // list=LIST, set=SET, map=MAP; nested blocks (kitecorp/kite#25):
             // list_block=LIST, set_block=SET. A nested type has no declaration the
-            // language could resolve, so each instance is an object.
+            // language could resolve, so each instance is an object. tfcoremock's id
+            // is optional+computed, so the user may set it: not @cloud.
             assertEquals("""
                     schema ComplexResource {
                         boolean bool
                         number float
-                        @cloud string id
+                        string id
                         number integer
                         object[] list
                         map<string, object> map

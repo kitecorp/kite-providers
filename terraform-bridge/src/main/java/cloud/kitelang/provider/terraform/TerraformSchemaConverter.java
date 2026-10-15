@@ -311,7 +311,7 @@ public class TerraformSchemaConverter {
             properties.add(Property.builder()
                     .name(TerraformPropertyMapper.toCamelCase(attr.name()))
                     .type(attributeKiteType(attr))
-                    .cloud(attr.computed())
+                    .cloud(TerraformResourceTypeHandler.isReadOnly(attr))
                     .sensitive(attr.sensitive())
                     .build());
         }
@@ -372,8 +372,10 @@ public class TerraformSchemaConverter {
             sb.append("@sensitive ");
         }
 
-        // @cloud decorator for computed properties
-        if (attr.computed()) {
+        // @cloud only for what the provider alone sets: the language refuses to set a
+        // @cloud property, and an optional+computed one is the user's to set
+        // (kitecorp/kite#109)
+        if (TerraformResourceTypeHandler.isReadOnly(attr)) {
             sb.append("@cloud ");
         }
 
