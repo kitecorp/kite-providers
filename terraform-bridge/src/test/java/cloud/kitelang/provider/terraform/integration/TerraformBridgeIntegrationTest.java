@@ -49,6 +49,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class TerraformBridgeIntegrationTest {
 
     private static final String PROVIDER_ADDRESS = "hashicorp/random";
+    /** Pinned, so a new release of the provider cannot change what these tests run. */
+    private static final String PROVIDER_VERSION = "3.9.1";
 
     /** Path to the downloaded random provider binary, or null if download failed. */
     private Path providerBinaryPath;
@@ -65,7 +67,7 @@ class TerraformBridgeIntegrationTest {
         try {
             var cacheDir = Files.createTempDirectory("kite-integration-test-providers");
             var registryClient = new TerraformRegistryClient(cacheDir);
-            providerBinaryPath = registryClient.ensureProvider(PROVIDER_ADDRESS, null);
+            providerBinaryPath = registryClient.ensureProvider(PROVIDER_ADDRESS, PROVIDER_VERSION);
         } catch (Exception e) {
             // Network failure or platform mismatch -- tests will be skipped
             System.err.println("Failed to download random provider (tests will be skipped): " + e.getMessage());
