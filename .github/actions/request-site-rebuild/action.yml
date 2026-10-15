@@ -1,11 +1,11 @@
 name: Ask kitelang.cloud to rebuild
 description: >-
-  Waits until GitHub Pages has built this run's last push, then sends the
-  provider-released repository dispatch to kitecorp/kitelang.cloud. Its deploy
-  workflow builds the /providers/ pages from the docs on GitHub Pages, so it also
-  waits until Pages serves the versions named here, then builds and deploys
-  (kitecorp/kitelang.cloud#64). Run it after docs/providers.json is pushed, in a
-  job with `pages: read`.
+  Waits until GitHub Pages has built this run's last push, then starts the deploy
+  workflow of kitecorp/kitelang.cloud (deploy.yml on main) with the released
+  providers as its providers input. That workflow builds the /providers/ pages
+  from the docs on GitHub Pages, so it also waits until Pages serves the versions
+  named here, then builds and deploys (kitecorp/kitelang.cloud#64). Run it after
+  docs/providers.json is pushed, in a job with `pages: read`.
 
 inputs:
   providers:
@@ -13,15 +13,15 @@ inputs:
     required: true
   token:
     description: >-
-      A token that may send repository dispatches to kitecorp/kitelang.cloud
-      (fine-grained: Contents read and write). When empty, nothing is sent and the
-      run shows a notice instead.
+      A token that may start workflows in kitecorp/kitelang.cloud (fine-grained:
+      Actions read and write, which cannot push code). When empty, nothing is
+      started and the run shows a notice instead.
     required: true
 
 runs:
   using: composite
   steps:
-    - name: Send provider-released to kitecorp/kitelang.cloud
+    - name: Start the kitelang.cloud deploy
       shell: bash
       env:
         PROVIDERS: ${{ inputs.providers }}
@@ -41,13 +41,14 @@ runs:
 
         # The versions come from the docs/providers.json this run pushed: the site
         # reads each provider's version from that file, so it waits for these values.
+        # Workflow inputs are strings, so the list goes in as JSON text.
         if ! BODY=$(jq -c --arg names "$PROVIDERS" '
           ($names | split(" ") | map(select(length > 0))) as $released
           | [.providers[] | select(.name | IN($released[])) | {name, version: .latestVersion}] as $entries
           | ($released - [$entries[].name]) as $missing
           | if ($released | length) == 0 then error("no provider names given")
             elif ($missing | length) > 0 then error("docs/providers.json has no entry for \($missing | join(", "))")
-            else {event_type: "provider-released", client_payload: {providers: $entries}}
+            else {ref: "main", inputs: {providers: ($entries | tojson)}}
             end
         ' "$GITHUB_WORKSPACE/docs/providers.json"); then
           echo "::error title=kitelang.cloud not rebuilt::Could not name the released versions from docs/providers.json (see the jq error above)."
@@ -57,8 +58,8 @@ runs:
         # Wait until Pages has built a commit that contains this run's last push.
         # The site cannot see this from the versions alone: re-releasing a version
         # pushes new docs under a version Pages already lists. And GitHub keeps only
-        # one pending deploy run on the site, so a run that replaces this dispatch's
-        # run must find the docs already published.
+        # one pending deploy run on the site, so a run that replaces the one started
+        # here must find the docs already published.
         PUSHED=$(git -C "$GITHUB_WORKSPACE" rev-parse HEAD)
         DEADLINE=$(( $(date +%s) + PAGES_TIMEOUT_SECONDS ))
         while :; do
@@ -80,6 +81,8 @@ runs:
           sleep "$PAGES_POLL_SECONDS"
         done
 
-        echo "Sending to kitecorp/kitelang.cloud: $BODY"
-        GH_TOKEN="$SITE_TOKEN" gh api --method POST repos/kitecorp/kitelang.cloud/dispatches --input - <<< "$BODY"
-        echo "kitelang.cloud deploys once GitHub Pages serves these versions: https://github.com/kitecorp/kitelang.cloud/actions/workflows/deploy.yml" >> "$GITHUB_STEP_SUMMARY"
+        echo "Starting the kitelang.cloud deploy: $BODY"
+        RUN=$(GH_TOKEN="$SITE_TOKEN" gh api --method POST repos/kitecorp/kitelang.cloud/actions/workflows/deploy.yml/dispatches --input - <<< "$BODY")
+        # The API answers with the new run's URL. An empty answer (204) also means it started.
+        RUN_URL=$(jq -r '.html_url // empty' <<< "$RUN")
+        echo "kitelang.cloud deploy started, it deploys once GitHub Pages serves these versions: ${RUN_URL:-https://github.com/kitecorp/kitelang.cloud/actions/workflows/deploy.yml}" | tee -a "$GITHUB_STEP_SUMMARY"
