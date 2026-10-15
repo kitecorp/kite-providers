@@ -1,0 +1,53 @@
+// Starts built provider distributions the way the engine does and checks, over the
+// provider gRPC protocol, that each one serves every resource type (kitecorp/kite-providers#22).
+//
+//   ./gradlew test -PdistributionDirs=../azure/build/install/azure-provider,../aws/build/install/aws-provider
+//
+// Each directory is an installDist output or an unzipped release zip. Relative paths
+// resolve against this directory.
+plugins {
+    id 'java'
+}
+
+repositories {
+    // kite-proto is not on Maven Central: CI publishes it to Maven Local from source,
+    // the same way the provider builds get the SDK
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    // The same protocol and transport the engine uses to talk to a provider
+    testImplementation 'cloud.kitelang:kite-proto:0.2.0'
+    testRuntimeOnly 'io.grpc:grpc-netty-shaded:1.78.0'
+
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.18.4'
+
+    testImplementation platform('org.junit:junit-bom:6.0.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
+}
+
+def distributionDirs = providers.gradleProperty('distributionDirs')
+        .map { dirs -> dirs.split(',').collect { file(it.trim()).absolutePath }.join(',') }
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
+    // Empty when the property is missing, which the test reports as a failure, not a skip
+    systemProperty 'kite.distribution.dirs', distributionDirs.getOrElse('')
+    // The distributions are the input, not this project's classes: a result Gradle
+    // considers up to date would not have started them
+    outputs.upToDateWhen { false }
+    // The gRPC client's shaded Netty uses sun.misc.Unsafe, which Java 25 warns about
+    jvmArgs '--sun-misc-unsafe-memory-access=allow'
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat = 'full'
+    }
+}
