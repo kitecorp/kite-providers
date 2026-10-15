@@ -1,0 +1,43 @@
+{
+  "provider": "files",
+  "version": "0.2.0",
+  "logoUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0c/File_alt_font_awesome.svg",
+  "generatedAt": "2026-10-15T01:35:40.630467889",
+  "resources": {
+    "File": {
+      "domain": "files",
+      "properties": {
+        "path": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "content": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "permissions": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": false,
+          "deprecated": false
+        },
+        "checksum": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        },
+        "lastModified": {
+          "type": "string",
+          "required": false,
+          "cloudManaged": true,
+          "deprecated": false
+        }
+      }
+    }
+  }
+}
