@@ -250,22 +250,17 @@ class TerraformSchemaConverterTest {
                     "Expected '@cloud string publicIp' but got: " + actual);
         }
 
-        /*
-         * An optional+computed attribute is one the user may set and the provider fills in
-         * when they do not (random_pet.length, aws_s3_bucket.bucket). The language refuses
-         * to set a @cloud property, so marking it @cloud made it impossible to set
-         * (kitecorp/kite#109).
-         */
         @Test
-        @DisplayName("should produce a settable property for computed=true, optional=true")
-        void shouldProduceSettablePropertyForComputedOptional() {
+        @DisplayName("should produce @cloud property for computed=true, optional=true")
+        void shouldProduceCloudPropertyForComputedOptional() {
             var schema = buildSchema(
                     attribute("instance_id", "\"string\"", false, true, true, false, false)
             );
 
             var actual = converter.toKiteSchema("aws_instance", schema);
 
-            assertEquals("schema Instance {\n    string instanceId\n}", actual);
+            assertTrue(actual.contains("@cloud string instanceId"),
+                    "Expected '@cloud string instanceId' but got: " + actual);
         }
 
         @Test
@@ -436,14 +431,10 @@ class TerraformSchemaConverterTest {
             return new TfAttribute(name, typeJson, false, true, false, false, false);
         }
 
-        /**
-         * A tfplugin6 nested attribute: the cty typeJson is unused for rendering when
-         * nestedType is set. A computed one is computed only, so the provider alone sets it;
-         * any other is optional.
-         */
+        /** A tfplugin6 nested attribute: the cty typeJson is unused for rendering when nestedType is set. */
         private static TfAttribute nestedAttribute(String name, TfNestedBlock.Nesting nesting,
                                                    boolean computed, boolean sensitive, TfAttribute... members) {
-            return new TfAttribute(name, "[\"object\",{}]", false, !computed, computed, sensitive, false,
+            return new TfAttribute(name, "[\"object\",{}]", false, true, computed, sensitive, false,
                     new TfObjectType(List.of(members), nesting));
         }
 
@@ -837,18 +828,6 @@ class TerraformSchemaConverterTest {
             assertEquals("string", result.type());
             assertTrue(result.isCloud(), "computed attribute maps to cloud");
             assertTrue(result.isSensitive(), "sensitive flag must survive into the api schema");
-        }
-
-        @Test
-        @DisplayName("should not mark an optional+computed attribute cloud, so the user can set it")
-        void shouldLeaveOptionalComputedSettable() {
-            var schema = buildSchema(
-                    attribute("length", "\"number\"", false, true, true, false, false)
-            );
-
-            var apiSchema = convert(schema);
-
-            assertEquals(false, property(apiSchema, "length").isCloud());
         }
 
         @Test

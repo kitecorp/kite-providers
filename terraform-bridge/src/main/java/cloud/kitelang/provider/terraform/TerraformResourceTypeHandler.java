@@ -117,21 +117,9 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
      */
     public static Set<String> readOnlyAttributeNames(TfBlock block) {
         return block.attributes().stream()
-                .filter(TerraformResourceTypeHandler::isReadOnly)
+                .filter(attr -> attr.computed() && !attr.optional() && !attr.required())
                 .map(TfAttribute::name)
                 .collect(Collectors.toUnmodifiableSet());
-    }
-
-    /**
-     * Whether only the provider sets an attribute: computed, and neither optional nor
-     * required. An optional+computed attribute is one the user may set and the provider
-     * fills in when they do not.
-     *
-     * @param attribute a resource or data source attribute
-     * @return true when the attribute cannot appear in configuration
-     */
-    public static boolean isReadOnly(TfAttribute attribute) {
-        return attribute.computed() && !attribute.optional() && !attribute.required();
     }
 
     /**
