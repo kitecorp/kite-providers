@@ -100,7 +100,9 @@ jobs:
           echo "Using install dir: $INSTALL_DIR"
           cd "$INSTALL_DIR"
           ls -la
-          zip -r $GITHUB_WORKSPACE/${{ steps.extract.outputs.provider }}.zip .
+          # Outside the checkout: the docs commit step stashes and drops untracked files,
+          # which deleted a zip kept in the workspace and left the release without assets
+          zip -r $RUNNER_TEMP/${{ steps.extract.outputs.provider }}.zip .
 
       - name: Commit regenerated docs to main
         env:
@@ -155,7 +157,8 @@ jobs:
         with:
           name: ${{ steps.extract.outputs.provider }} ${{ steps.extract.outputs.version }}
           tag_name: ${{ steps.extract.outputs.tag }}
-          files: ${{ steps.extract.outputs.provider }}.zip
+          files: ${{ runner.temp }}/${{ steps.extract.outputs.provider }}.zip
+          fail_on_unmatched_files: true
           generate_release_notes: true
           draft: false
 

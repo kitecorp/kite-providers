@@ -161,7 +161,9 @@ jobs:
         run: |
           INSTALL_DIR=$(find build/install -mindepth 1 -maxdepth 1 -type d | head -1)
           cd "$INSTALL_DIR"
-          zip -r $GITHUB_WORKSPACE/${{ matrix.provider }}.zip .
+          # Outside the checkout: the docs commit step stashes and drops untracked files,
+          # which deleted a zip kept in the workspace and left the release without assets
+          zip -r $RUNNER_TEMP/${{ matrix.provider }}.zip .
 
       - name: Commit regenerated docs
         env:
@@ -178,7 +180,7 @@ jobs:
           else
             git commit -m "docs($PROVIDER): regenerate for v$VERSION [skip ci]"
             # Move any leftover build artifacts aside so rebase has a clean tree.
-            # We don't need them — the zip was produced in the previous step.
+            # The release zip is in $RUNNER_TEMP, outside the checkout, so dropping them is safe.
             git stash push --include-untracked --message "build-leftovers" || true
             # Retry loop: another matrix job can push between our rebase and
             # our push. Keep pulling and retrying until the push sticks.
@@ -214,7 +216,8 @@ jobs:
         with:
           name: ${{ matrix.provider }} v${{ matrix.version }}
           tag_name: ${{ matrix.provider }}-v${{ matrix.version }}
-          files: ${{ matrix.provider }}.zip
+          files: ${{ runner.temp }}/${{ matrix.provider }}.zip
+          fail_on_unmatched_files: true
           generate_release_notes: true
           draft: false
 
