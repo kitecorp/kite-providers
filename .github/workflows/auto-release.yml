@@ -191,7 +191,7 @@ jobs:
           PROVIDER: ${{ matrix.provider }}
           TAG: ${{ matrix.provider }}-v${{ matrix.version }}
         run: |
-          gh release download "$TAG" --pattern "$PROVIDER.zip" --dir "$RUNNER_TEMP/published"
+          gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern "$PROVIDER.zip" --dir "$RUNNER_TEMP/published"
           distribution-test/check-zip.sh "$RUNNER_TEMP/published/$PROVIDER.zip"
 
   update-index:
