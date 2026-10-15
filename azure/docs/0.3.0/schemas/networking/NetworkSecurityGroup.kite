@@ -1,0 +1,18 @@
+// NetworkSecurityGroup
+schema NetworkSecurityGroup {
+    string name                 // The name of the network security group
+    string resourceGroup        // The Azure resource group name
+    string location             // The Azure region/location
+    any[]  securityRules        // List of security rules. Each rule defines allowed or denied traffic
+    object tags                 // Tags to apply to the NSG
+    @cloud(importable)
+    string id                   // The Azure resource ID
+    @cloud
+    string provisioningState    // The provisioning state
+    @cloud
+    string resourceGuid         // The resource GUID
+    @cloud
+    any[]  networkInterfaceIds  // List of network interfaces associated with this NSG
+    @cloud
+    any[]  subnetIds            // List of subnets associated with this NSG
+}
