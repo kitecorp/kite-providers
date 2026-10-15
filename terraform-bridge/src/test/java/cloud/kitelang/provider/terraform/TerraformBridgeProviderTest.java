@@ -468,6 +468,66 @@ class TerraformBridgeProviderTest {
         }
     }
 
+    /**
+     * Provider config blocks such as hashicorp/aws's {@code endpoints}, {@code assume_role}
+     * and {@code default_tags} are nested blocks, not attributes. Only attribute names
+     * were accepted, so the documented way to point the AWS provider at a local emulator
+     * failed with "Unknown provider configuration attribute(s) [endpoints]"
+     * (kitecorp/kite#109).
+     */
+    @Nested
+    @DisplayName("configure() with a nested provider config block")
+    class ConfigureWithNestedBlockTests {
+
+        private static final String CONFIG_TYPE =
+                "[\"object\",{\"region\":\"string\",\"endpoints\":[\"set\",[\"object\",{\"iam\":\"string\",\"s3\":\"string\"}]]}]";
+
+        private TerraformBridgeProvider provider;
+
+        @BeforeEach
+        void setUp() {
+            var endpoints = Schema.NestedBlock.newBuilder()
+                    .setTypeName("endpoints")
+                    .setNesting(Schema.NestedBlock.NestingMode.SET)
+                    .setBlock(buildSchema(Map.of("s3", "\"string\"", "iam", "\"string\"")).getBlock())
+                    .build();
+            var providerSchema = Schema.newBuilder()
+                    .setBlock(buildSchema(Map.of("region", "\"string\"")).getBlock().toBuilder()
+                            .addBlockTypes(endpoints))
+                    .build();
+            var schemaResponse = GetProviderSchema.Response.newBuilder().setProvider(providerSchema).build();
+            when(client.rpc()).thenReturn(new Tfplugin5Rpc(stub));
+            when(stub.getSchema(any(GetProviderSchema.Request.class))).thenReturn(schemaResponse);
+
+            provider = new TerraformBridgeProvider("aws", client);
+            provider.init();
+        }
+
+        @Test
+        @DisplayName("should send a nested block's entries to Configure, unset members as null")
+        void shouldSendNestedBlockToConfigure() {
+            when(stub.prepareProviderConfig(any(PrepareProviderConfig.Request.class)))
+                    .thenAnswer(invocation -> PrepareProviderConfig.Response.newBuilder()
+                            .setPreparedConfig(invocation
+                                    .<PrepareProviderConfig.Request>getArgument(0).getConfig())
+                            .build());
+            when(stub.configure(any(Configure.Request.class)))
+                    .thenReturn(Configure.Response.getDefaultInstance());
+
+            provider.configure(Map.<String, Object>of(
+                    "region", "us-east-1",
+                    "endpoints", List.of(Map.of("s3", "http://localhost:4566"))));
+
+            var captor = ArgumentCaptor.forClass(Configure.Request.class);
+            verify(stub).configure(captor.capture());
+            var endpoint = new LinkedHashMap<String, Object>();
+            endpoint.put("iam", null);
+            endpoint.put("s3", "http://localhost:4566");
+            assertEquals(Map.of("region", "us-east-1", "endpoints", List.of(endpoint)),
+                    new CtyCodec().decode(captor.getValue().getConfig().getMsgpack().toByteArray(), CONFIG_TYPE));
+        }
+    }
+
     @Nested
     @DisplayName("configure() without a provider config schema")
     class ConfigureWithoutProviderSchemaTests {

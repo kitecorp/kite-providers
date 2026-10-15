@@ -1,7 +1,6 @@
 package cloud.kitelang.provider.terraform;
 import cloud.kitelang.tfplugin.CtyCodec;
 import cloud.kitelang.tfplugin.GoPluginClient;
-import cloud.kitelang.tfplugin.TfAttribute;
 import cloud.kitelang.tfplugin.TfBlock;
 import cloud.kitelang.tfplugin.TfDiagnostic;
 import cloud.kitelang.tfplugin.TfNestedBlock;
@@ -12,10 +11,9 @@ import cloud.kitelang.provider.KiteProvider;
 import lombok.extern.slf4j.Slf4j;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -85,7 +83,11 @@ public class TerraformBridgeProvider extends KiteProvider {
      */
     private String providerConfigSchemaType;
 
-    /** snake_case attribute names of the provider config schema (used in configure()). */
+    /**
+     * snake_case names the provider config accepts (used in configure()): its attributes
+     * and its nested blocks, such as hashicorp/aws's {@code endpoints} and
+     * {@code default_tags} (kitecorp/kite#109).
+     */
     private Set<String> providerConfigAttributeNames = Set.of();
 
     /**
@@ -161,7 +163,7 @@ public class TerraformBridgeProvider extends KiteProvider {
                     .map(diagnostic -> diagnostic.summary()
                             + (diagnostic.detail() == null || diagnostic.detail().isBlank()
                                ? "" : ": " + diagnostic.detail()))
-                    .collect(java.util.stream.Collectors.joining("; "));
+                    .collect(Collectors.joining("; "));
             throw new IllegalStateException(
                     "Terraform provider '%s' failed GetProviderSchema: %s".formatted(providerName, details));
         }
@@ -174,10 +176,11 @@ public class TerraformBridgeProvider extends KiteProvider {
         // core always calls it (env-var-based auth happens there) — so the
         // absent-schema case is an empty object, not a skipped RPC.
         if (providerSchema.provider() != null) {
-            this.providerConfigSchemaType = buildObjectType(providerSchema.provider().block());
-            this.providerConfigAttributeNames = providerSchema.provider().block().attributes().stream()
-                    .map(TfAttribute::name)
-                    .collect(Collectors.toUnmodifiableSet());
+            var configBlock = providerSchema.provider().block();
+            this.providerConfigSchemaType = buildObjectType(configBlock);
+            // The fields of the object Configure is sent, so every key the encoding
+            // accepts is a key the user may write
+            this.providerConfigAttributeNames = Set.copyOf(fieldTypes(configBlock).keySet());
         } else {
             this.providerConfigSchemaType = EMPTY_OBJECT_TYPE;
             this.providerConfigAttributeNames = Set.of();
@@ -395,28 +398,33 @@ public class TerraformBridgeProvider extends KiteProvider {
      * @return JSON string representing the cty object type
      */
     static String buildObjectType(TfBlock block) {
-        var fields = new ArrayList<String>();
-        collectFieldTypes(block, fields);
+        var fields = fieldTypes(block).entrySet().stream()
+                .map(field -> '"' + field.getKey() + "\":" + field.getValue())
+                .toList();
         return "[\"object\",{" + String.join(",", fields) + "}]";
     }
 
     /**
-     * Appends {@code "name":ctyType} entries for a block's attributes and nested
-     * blocks, recursing so a GROUP block's attributes flatten into the parent.
-     * Attribute and block names are provider-supplied {@code [a-z0-9_]}, so no
-     * JSON escaping is needed (the same assumption the cty type bytes rely on).
+     * The fields of a block's cty object type, in schema order: each attribute and each
+     * nested block by name, with a GROUP block's attributes flattened into the parent.
+     * Attribute and block names are provider-supplied {@code [a-z0-9_]}, so no JSON
+     * escaping is needed (the same assumption the cty type bytes rely on).
+     *
+     * @return snake_case field name to its JSON-encoded cty type
      */
-    private static void collectFieldTypes(TfBlock block, List<String> fields) {
+    private static Map<String, String> fieldTypes(TfBlock block) {
+        var fields = new LinkedHashMap<String, String>();
         for (var attr : block.attributes()) {
-            fields.add('"' + attr.name() + "\":" + attr.typeJson());
+            fields.put(attr.name(), attr.typeJson());
         }
         for (var nested : block.blockTypes()) {
             if (nested.nesting() == TfNestedBlock.Nesting.GROUP) {
-                collectFieldTypes(nested.block(), fields);
+                fields.putAll(fieldTypes(nested.block()));
             } else {
-                fields.add('"' + nested.typeName() + "\":" + nestedBlockType(nested));
+                fields.put(nested.typeName(), nestedBlockType(nested));
             }
         }
+        return fields;
     }
 
     /**
