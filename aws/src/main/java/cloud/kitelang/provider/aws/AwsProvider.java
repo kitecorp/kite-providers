@@ -22,6 +22,7 @@ import software.amazon.awssdk.services.iam.IamClient;
 import software.amazon.awssdk.services.route53.Route53Client;
 import software.amazon.awssdk.services.s3.S3Client;
 
+import java.net.URI;
 import java.util.Map;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
@@ -29,27 +30,22 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 /**
- * AWS Provider for Kite.
+ * AWS Provider for Kite: networking, compute, storage, IAM, DNS and load balancing resources.
  *
- * Provides resources for managing AWS infrastructure:
- * - Vpc: Virtual Private Cloud
- *
- * Example usage in Kite:
+ * <p>It is configured by the {@code aws} credential of the environment in {@code kitefile.yml}:</p>
  * <pre>
- * provider "aws" {
- *     region = "us-east-1"
- * }
- *
- * resource Vpc main {
- *     cidr_block = "10.0.0.0/16"
- *     enable_dns_support = true
- *     enable_dns_hostnames = true
- *     tags = {
- *         Name = "main-vpc"
- *         Environment = "production"
- *     }
- * }
+ * environments:
+ *   - name: dev
+ *     credentials:
+ *       - type: aws
+ *         profile: dev-sandbox               # optional, a profile of the shared AWS config files
+ *         region: us-east-1
+ *         properties:
+ *           endpoint: http://127.0.0.1:4566  # optional, e.g. a local emulator such as Floci
  * </pre>
+ *
+ * <p>Every client the provider builds sends its calls to {@code endpoint}. Without one, the AWS
+ * SDK's own endpoint settings apply, such as the {@code AWS_ENDPOINT_URL} environment variable.</p>
  */
 @Slf4j
 public class AwsProvider extends KiteProvider {
@@ -71,6 +67,7 @@ public class AwsProvider extends KiteProvider {
 
     private String profile;
     private String region;
+    private String endpoint;
 
     public AwsProvider() {
         // Name and version auto-loaded from provider-info.properties
@@ -112,8 +109,9 @@ public class AwsProvider extends KiteProvider {
             // Extract configuration
             this.profile = (String) config.get("profile");
             this.region = (String) config.get("region");
+            this.endpoint = (String) config.get("endpoint");
 
-            log.info("Configuring AWS provider with profile: {}, region: {}", profile, region);
+            log.info("Configuring AWS provider with profile: {}, region: {}, endpoint: {}", profile, region, endpoint);
 
             // Set environment/system properties so AWS SDK picks them up
             // This affects all subsequent client creations in this JVM
@@ -134,8 +132,8 @@ public class AwsProvider extends KiteProvider {
 
     /**
      * Create all AWS SDK clients with the configured credentials.
-     * Builds EC2, S3, ELBv2, Route53, and IAM clients using the profile/region
-     * from the kitefile configuration.
+     * Builds EC2, S3, ELBv2, Route53, and IAM clients using the profile, region
+     * and endpoint from the kitefile configuration.
      */
     private void createClients() {
         AwsCredentialsProvider credentialsProvider = null;
@@ -161,7 +159,7 @@ public class AwsProvider extends KiteProvider {
     }
 
     /**
-     * Apply credentials and region to any AWS client builder.
+     * Apply credentials, region and the configured endpoint to any AWS client builder.
      *
      * @param builder             the AWS client builder
      * @param credentialsProvider the credentials provider, or null for default chain
@@ -176,6 +174,11 @@ public class AwsProvider extends KiteProvider {
         }
         if (awsRegion != null) {
             builder.region(awsRegion);
+        }
+        // Without an override the SDK resolves the endpoint itself, which is what keeps
+        // AWS_ENDPOINT_URL and AWS_ENDPOINT_URL_<SERVICE> working; an override replaces both
+        if (endpoint != null && !endpoint.isBlank()) {
+            builder.endpointOverride(URI.create(endpoint.trim()));
         }
         return builder;
     }
