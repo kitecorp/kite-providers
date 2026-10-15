@@ -131,7 +131,7 @@ public class TerraformDataSourceHandler extends AbstractTerraformHandler {
      * @return the data source state in camelCase
      */
     private Map<String, Object> readDataSource(Map<String, Object> properties, String operation) {
-        var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
+        var snakeProps = toSnakeCase(properties);
         var config = encodeToMsgpack(withoutReadOnlyAttributes(snakeProps));
 
         log.debug("{} data source {} — sending data source config validation", operation, tfTypeName);

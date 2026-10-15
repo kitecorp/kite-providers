@@ -408,4 +408,55 @@ class TerraformPropertyMapperTest {
             assertEquals(input, snakeMap);
         }
     }
+
+    /*
+     * The keys of a Terraform map are the user's data, not attribute names: tags = { Name:
+     * "web" } must reach the provider as tag Name, not name, and come back as Name. Only the
+     * keys of objects (attributes and nested blocks) are converted (kitecorp/kite#109).
+     */
+    @Nested
+    @DisplayName("Conversion along a cty type")
+    class AlongCtyType {
+
+        private static final String INSTANCE_TYPE = """
+                ["object", {"instance_type": "string", "tags": ["map", "string"],
+                  "ingress": ["list", ["object", {"from_port": "number"}]],
+                  "settings": ["map", ["object", {"max_size": "number"}]]}]""";
+
+        @Test
+        @DisplayName("toSnakeCase converts attribute names but keeps map keys")
+        void toSnakeCase_keepsMapKeys() {
+            var kite = Map.<String, Object>of(
+                    "instanceType", "t3.micro",
+                    "tags", Map.of("Name", "web", "costCenter", "42"),
+                    "ingress", List.of(Map.of("fromPort", 80)),
+                    "settings", Map.of("blueGreen", Map.of("maxSize", 3)));
+
+            var actual = TerraformPropertyMapper.toSnakeCase(kite, INSTANCE_TYPE);
+
+            assertEquals(Map.of(
+                    "instance_type", "t3.micro",
+                    "tags", Map.of("Name", "web", "costCenter", "42"),
+                    "ingress", List.of(Map.of("from_port", 80)),
+                    "settings", Map.of("blueGreen", Map.of("max_size", 3))), actual);
+        }
+
+        @Test
+        @DisplayName("toCamelCase converts attribute names but keeps map keys")
+        void toCamelCase_keepsMapKeys() {
+            var terraform = Map.<String, Object>of(
+                    "instance_type", "t3.micro",
+                    "tags", Map.of("Name", "web", "cost_center", "42"),
+                    "ingress", List.of(Map.of("from_port", 80)),
+                    "settings", Map.of("blue_green", Map.of("max_size", 3)));
+
+            var actual = TerraformPropertyMapper.toCamelCase(terraform, INSTANCE_TYPE);
+
+            assertEquals(Map.of(
+                    "instanceType", "t3.micro",
+                    "tags", Map.of("Name", "web", "cost_center", "42"),
+                    "ingress", List.of(Map.of("fromPort", 80)),
+                    "settings", Map.of("blue_green", Map.of("maxSize", 3))), actual);
+        }
+    }
 }

@@ -230,7 +230,7 @@ public class TerraformBridgeProvider extends KiteProvider {
         var configMap = configuration != null
                 ? (Map<String, Object>) configuration
                 : Map.<String, Object>of();
-        var snakeCaseConfig = TerraformPropertyMapper.toSnakeCase(configMap);
+        var snakeCaseConfig = TerraformPropertyMapper.toSnakeCase(configMap, providerConfigSchemaType);
         rejectUnknownAttributes(snakeCaseConfig.keySet());
 
         log.debug("Configuring TF provider '{}' with {} properties", providerName, snakeCaseConfig.size());

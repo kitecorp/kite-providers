@@ -1,9 +1,15 @@
 package cloud.kitelang.provider.terraform;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
 /**
  * Bidirectional property-name converter between Terraform's {@code snake_case}
@@ -173,6 +179,92 @@ public final class TerraformPropertyMapper {
     }
 
     // ------------------------------------------------------------------
+    // Conversions along a cty type
+    // ------------------------------------------------------------------
+
+    /**
+     * Converts a camelCase property map to snake_case along its cty object type: the keys
+     * of objects (attributes and nested blocks) are converted, the keys of maps are not.
+     * A map's keys are the user's data: {@code tags = { Name: "web" }} must reach the
+     * provider as the tag {@code Name} (kitecorp/kite#109). A value whose attribute the
+     * type does not name is converted deeply, as {@link #toSnakeCase(Map)} does.
+     *
+     * @param properties    the property map with camelCase keys, may be {@code null}
+     * @param ctyObjectType the JSON-encoded cty object type of the map
+     * @return a new map with snake_case attribute names
+     */
+    public static Map<String, Object> toSnakeCase(Map<String, Object> properties, String ctyObjectType) {
+        return convertObject(properties, parseType(ctyObjectType), TerraformPropertyMapper::toSnakeCase, true);
+    }
+
+    /**
+     * Converts a snake_case property map to camelCase along its cty object type, keeping
+     * the keys of maps as they are; see {@link #toSnakeCase(Map, String)}.
+     *
+     * @param properties    the property map with snake_case keys, may be {@code null}
+     * @param ctyObjectType the JSON-encoded cty object type of the map
+     * @return a new map with camelCase attribute names
+     */
+    public static Map<String, Object> toCamelCase(Map<String, Object> properties, String ctyObjectType) {
+        return convertObject(properties, parseType(ctyObjectType), TerraformPropertyMapper::toCamelCase, false);
+    }
+
+    /**
+     * Converts an object's keys, then each value along its attribute's type. The type is
+     * keyed by snake_case names, so it is looked up by the converted key when converting
+     * to snake_case and by the original key when converting to camelCase.
+     */
+    private static Map<String, Object> convertObject(Map<String, Object> object, JsonNode objectType,
+                                                     UnaryOperator<String> keyMapper, boolean toSnake) {
+        if (object == null || object.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        var attributeTypes = isKind(objectType, "object") ? objectType.get(1) : null;
+        var result = new LinkedHashMap<String, Object>(object.size());
+        for (var entry : object.entrySet()) {
+            var key = keyMapper.apply(entry.getKey());
+            var attributeType = attributeTypes == null ? null : attributeTypes.get(toSnake ? key : entry.getKey());
+            result.put(key, attributeType == null
+                    ? convertValue(entry.getValue(), keyMapper)
+                    : convertAlong(entry.getValue(), attributeType, keyMapper, toSnake));
+        }
+        return result;
+    }
+
+    /** Converts a value along its cty type: objects convert their keys, maps keep theirs. */
+    @SuppressWarnings("unchecked")
+    private static Object convertAlong(Object value, JsonNode type, UnaryOperator<String> keyMapper, boolean toSnake) {
+        if (value instanceof Map<?, ?> map && isKind(type, "object")) {
+            return convertObject((Map<String, Object>) map, type, keyMapper, toSnake);
+        }
+        if (value instanceof Map<?, ?> map && isKind(type, "map")) {
+            var result = new LinkedHashMap<String, Object>(map.size());
+            map.forEach((key, element) -> result.put((String) key, convertAlong(element, type.get(1), keyMapper, toSnake)));
+            return result;
+        }
+        if (value instanceof List<?> list && (isKind(type, "list") || isKind(type, "set"))) {
+            return list.stream().map(element -> convertAlong(element, type.get(1), keyMapper, toSnake)).toList();
+        }
+        // Primitives, and dynamic values, whose keys are the user's
+        return value;
+    }
+
+    /** Whether a cty type is the compound {@code [kind, ...]}. */
+    private static boolean isKind(JsonNode type, String kind) {
+        return type != null && type.isArray() && type.size() > 1 && kind.equals(type.get(0).asText());
+    }
+
+    private static JsonNode parseType(String ctyType) {
+        try {
+            return JSON.readTree(ctyType);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Invalid cty type JSON: " + ctyType, e);
+        }
+    }
+
+    private static final ObjectMapper JSON = new ObjectMapper();
+
+    // ------------------------------------------------------------------
     // Internal helpers
     // ------------------------------------------------------------------
 
@@ -182,7 +274,7 @@ public final class TerraformPropertyMapper {
      */
     private static Map<String, Object> convertMapKeys(
             Map<String, Object> map,
-            java.util.function.UnaryOperator<String> keyMapper
+            UnaryOperator<String> keyMapper
     ) {
         if (map == null || map.isEmpty()) {
             return Collections.emptyMap();
@@ -207,7 +299,7 @@ public final class TerraformPropertyMapper {
     @SuppressWarnings("unchecked")
     private static Object convertValue(
             Object value,
-            java.util.function.UnaryOperator<String> keyMapper
+            UnaryOperator<String> keyMapper
     ) {
         if (value instanceof Map<?, ?> nested) {
             return convertMapKeys((Map<String, Object>) nested, keyMapper);

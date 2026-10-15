@@ -124,6 +124,34 @@ class TerraformResourceTypeHandlerTest {
     @DisplayName("create()")
     class Create {
 
+        /**
+         * A map's keys are the user's data: tags = { Name: "web" } reached the provider
+         * as tag name, and the provider's answer came back as name too (kitecorp/kite#109).
+         */
+        @Test
+        @DisplayName("should send and return a map attribute's keys as the user wrote them")
+        void shouldKeepMapKeys() {
+            // Given — a type with a map attribute; the provider applies what it was planned
+            var schema = "[\"object\", {\"instance_type\": \"string\", \"tags\": [\"map\", \"string\"]}]";
+            var taggedHandler = new TerraformResourceTypeHandler(TF_TYPE_NAME, KITE_TYPE_NAME, client, schema, Set.of(), 0);
+            when(stub.applyResourceChange(any())).thenAnswer(invocation -> ApplyResourceChange.Response.newBuilder()
+                    .setNewState(invocation.<ApplyResourceChange.Request>getArgument(0).getPlannedState())
+                    .build());
+            var input = new LinkedHashMap<String, Object>();
+            input.put("instanceType", "t3.micro");
+            input.put("tags", Map.of("Name", "web"));
+
+            // When
+            var result = taggedHandler.create(input);
+
+            // Then
+            var captor = ArgumentCaptor.forClass(ApplyResourceChange.Request.class);
+            verify(stub).applyResourceChange(captor.capture());
+            assertEquals(Map.of("instance_type", "t3.micro", "tags", Map.of("Name", "web")),
+                    codec.decode(captor.getValue().getConfig().getMsgpack().toByteArray(), schema));
+            assertEquals(Map.of("instanceType", "t3.micro", "tags", Map.of("Name", "web")), result);
+        }
+
         @Test
         @DisplayName("should call ApplyResourceChange with null prior state and correct planned state")
         void shouldCallApplyResourceChangeWithNullPriorState() {

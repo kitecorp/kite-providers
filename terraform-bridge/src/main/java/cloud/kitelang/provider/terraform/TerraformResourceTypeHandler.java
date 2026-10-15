@@ -174,7 +174,7 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     @Override
     public Map<String, Object> create(Map<String, Object> properties,
                                       ResourceContext<Map<String, Object>> context) {
-        var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
+        var snakeProps = toSnakeCase(properties);
         var proposed = encodeToMsgpack(snakeProps);
         var config = encodeToMsgpack(withoutReadOnlyAttributes(snakeProps));
         var stored = SchemaVersionEnvelope.unwrap(context.privateData());
@@ -199,7 +199,7 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     @Override
     public Map<String, Object> read(Map<String, Object> properties,
                                     ResourceContext<Map<String, Object>> context) {
-        var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
+        var snakeProps = toSnakeCase(properties);
         var stored = SchemaVersionEnvelope.unwrap(context.privateData());
         var prior = restorePriorState(snakeProps, stored.schemaVersion(), "read");
 
@@ -274,7 +274,7 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
     @Override
     public Map<String, Object> update(Map<String, Object> properties,
                                       ResourceContext<Map<String, Object>> context) {
-        var snakeProps = TerraformPropertyMapper.toSnakeCase(properties);
+        var snakeProps = toSnakeCase(properties);
         // Proposed state keeps computed values (mirrors Terraform core, which
         // merges prior computed values into the proposal); config must not.
         var proposed = encodeToMsgpack(snakeProps);
@@ -282,7 +282,7 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
         var stored = SchemaVersionEnvelope.unwrap(context.privateData());
 
         var priorState = context.priorState() != null
-                ? restorePriorState(TerraformPropertyMapper.toSnakeCase(context.priorState()),
+                ? restorePriorState(toSnakeCase(context.priorState()),
                         stored.schemaVersion(), "update").msgpack()
                 : proposed;
         var priorPrivate = stored.providerBytes();
@@ -326,7 +326,7 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
         // The engine passes the stored prior state as the property map; when
         // that state predates the current schema it may not even encode under
         // it, so the upgrade must run before any cty encoding happens.
-        var prior = restorePriorState(TerraformPropertyMapper.toSnakeCase(properties),
+        var prior = restorePriorState(toSnakeCase(properties),
                 stored.schemaVersion(), "delete");
 
         // The destroy plan uses the null proposed state and config, matching a
@@ -355,12 +355,12 @@ public class TerraformResourceTypeHandler extends AbstractTerraformHandler {
      */
     @Override
     public Map<String, Object> plan(Map<String, Object> priorState, Map<String, Object> proposedState) {
-        var snakeProps = TerraformPropertyMapper.toSnakeCase(proposedState);
+        var snakeProps = toSnakeCase(proposedState);
         var proposed = encodeToMsgpack(snakeProps);
         var config = encodeToMsgpack(withoutReadOnlyAttributes(snakeProps));
         var prior = priorState == null
                 ? nilMsgpack()
-                : encodeToMsgpack(TerraformPropertyMapper.toSnakeCase(priorState));
+                : encodeToMsgpack(toSnakeCase(priorState));
 
         validateConfig(config, "plan");
         var plan = planChange(prior, proposed, config, new byte[0], "plan");

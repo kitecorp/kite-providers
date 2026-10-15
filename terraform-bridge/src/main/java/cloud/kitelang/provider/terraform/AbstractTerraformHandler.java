@@ -152,7 +152,18 @@ abstract class AbstractTerraformHandler extends ResourceTypeHandler<Map<String, 
      */
     protected Map<String, Object> decodeState(byte[] stateMsgpack) {
         var snakeCaseResult = codec.decode(stateMsgpack, schemaTypeJson);
-        return TerraformPropertyMapper.toCamelCase(snakeCaseResult);
+        return TerraformPropertyMapper.toCamelCase(snakeCaseResult, schemaTypeJson);
+    }
+
+    /**
+     * Converts a camelCase property map from the engine to the snake_case attribute
+     * names of this type, keeping the keys of its map attributes as the user wrote them.
+     *
+     * @param camelCaseProps the property map with camelCase keys
+     * @return a new map with snake_case attribute names
+     */
+    protected Map<String, Object> toSnakeCase(Map<String, Object> camelCaseProps) {
+        return TerraformPropertyMapper.toSnakeCase(camelCaseProps, schemaTypeJson);
     }
 
     /**
