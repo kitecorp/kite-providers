@@ -197,7 +197,8 @@ jobs:
 
   update-index:
     name: Regenerate providers.json index
-    needs: release
+    # detect: for the names of the released providers, sent to kitelang.cloud below
+    needs: [detect, release]
     if: always() && needs.release.result == 'success'
     runs-on: ubuntu-latest
     permissions:
@@ -261,3 +262,12 @@ jobs:
               fi
             done
           fi
+
+      # After the last push of the run: one request for every provider it
+      # released. The site waits until GitHub Pages serves their docs, then
+      # rebuilds /providers/ (kitecorp/kitelang.cloud#64).
+      - name: Ask kitelang.cloud to rebuild
+        uses: ./.github/actions/request-site-rebuild
+        with:
+          providers: ${{ join(fromJson(needs.detect.outputs.matrix).include.*.provider, ' ') }}
+          token: ${{ secrets.SITE_DISPATCH_TOKEN }}
