@@ -1,0 +1,29 @@
+// S3Bucket
+schema S3Bucket {
+    string  bucket                        // Bucket name (globally unique, DNS-compliant)
+    @allowed(["private", "public-read", "public-read-write", "authenticated-read"])
+    string  acl = "private"               // Canned ACL for the bucket
+    boolean versioning = false            // Enable versioning for the bucket
+    string  region                        // AWS region for the bucket
+    @allowed(["AES256", "aws:kms"])
+    string  serverSideEncryption          // Server-side encryption algorithm
+    string  kmsKeyId                      // KMS key ID for encryption (when using aws:kms)
+    boolean blockPublicAccess = true      // Block all public access
+    string  websiteIndexDocument          // Index document for static website hosting
+    string  websiteErrorDocument          // Error document for static website hosting
+    string  websiteRedirectAllRequestsTo  // Redirect all requests to another host
+    any[]   corsRules                     // CORS configuration rules
+    any[]   lifecycleRules                // Lifecycle rules for object management
+    any     logging                       // Access logging configuration
+    object  tags                          // Tags to apply to the bucket
+    @cloud(importable)
+    string  arn                           // The ARN of the bucket
+    @cloud
+    string  domainName                    // The domain name of the bucket
+    @cloud
+    string  regionalDomainName            // The regional domain name of the bucket
+    @cloud
+    string  websiteEndpoint               // Website endpoint (if hosting enabled)
+    @cloud
+    string  creationDate                  // The creation date of the bucket
+}
