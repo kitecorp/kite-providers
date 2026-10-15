@@ -1,0 +1,54 @@
+name: Publish the provider SDK to Maven Local
+description: >
+  Builds kite-api, kite-proto and kite-provider-sdk from their main branches in
+  sdk-build/ and publishes them to Maven Local, where the provider builds and the
+  distribution test resolve them. They are not on Maven Central.
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout kite-api
+      uses: actions/checkout@v6
+      with:
+        repository: kitecorp/kite-api
+        path: sdk-build/kite-api
+
+    - name: Checkout kite-proto
+      uses: actions/checkout@v6
+      with:
+        repository: kitecorp/kite-proto
+        path: sdk-build/kite-proto
+
+    - name: Checkout kite-provider-sdk
+      uses: actions/checkout@v6
+      with:
+        repository: kitecorp/kite-provider-sdk
+        path: sdk-build/kite-provider-sdk
+
+    - name: Create multi-project settings
+      shell: bash
+      run: |
+        cat > sdk-build/settings.gradle << 'EOF'
+        plugins {
+            id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+        }
+        rootProject.name = 'kite-sdk-build'
+        include 'kite-api'
+        include 'kite-proto'
+        include 'kite-provider-sdk'
+        EOF
+
+        cat > sdk-build/build.gradle << 'EOF'
+        // Root build file - subprojects have their own build.gradle
+        EOF
+
+    - name: Setup Gradle wrapper for SDK build
+      shell: bash
+      working-directory: sdk-build
+      # setup-gradle, run by the calling job, provides the gradle command
+      run: gradle wrapper
+
+    - name: Build and publish SDK to Maven Local
+      shell: bash
+      working-directory: sdk-build
+      run: ./gradlew :kite-api:publishToMavenLocal :kite-proto:publishToMavenLocal :kite-provider-sdk:publishToMavenLocal --no-daemon

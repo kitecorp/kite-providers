@@ -39,50 +39,8 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
-      - name: Checkout kite-api
-        uses: actions/checkout@v6
-        with:
-          repository: kitecorp/kite-api
-          path: sdk-build/kite-api
-
-      - name: Checkout kite-proto
-        uses: actions/checkout@v6
-        with:
-          repository: kitecorp/kite-proto
-          path: sdk-build/kite-proto
-
-      - name: Checkout kite-provider-sdk
-        uses: actions/checkout@v6
-        with:
-          repository: kitecorp/kite-provider-sdk
-          path: sdk-build/kite-provider-sdk
-
-      - name: Create multi-project settings
-        run: |
-          cat > sdk-build/settings.gradle << 'EOF'
-          plugins {
-              id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
-          }
-          rootProject.name = 'kite-sdk-build'
-          include 'kite-api'
-          include 'kite-proto'
-          include 'kite-provider-sdk'
-          EOF
-
-          cat > sdk-build/build.gradle << 'EOF'
-          // Root build file - subprojects have their own build.gradle
-          EOF
-
-      - name: Setup Gradle wrapper for SDK build
-        working-directory: sdk-build
-        run: |
-          # Generate Gradle wrapper (setup-gradle provides gradle command)
-          gradle wrapper
-
-      - name: Build and publish SDK to Maven Local
-        working-directory: sdk-build
-        run: |
-          ./gradlew :kite-api:publishToMavenLocal :kite-proto:publishToMavenLocal :kite-provider-sdk:publishToMavenLocal --no-daemon
+      - name: Publish the provider SDK to Maven Local
+        uses: ./.github/actions/publish-sdk-to-maven-local
 
       - name: Build provider
         working-directory: ${{ steps.extract.outputs.provider }}
@@ -103,6 +61,9 @@ jobs:
           # Outside the checkout: the docs commit step stashes and drops untracked files,
           # which deleted a zip kept in the workspace and left the release without assets
           zip -r $RUNNER_TEMP/${{ steps.extract.outputs.provider }}.zip .
+
+      - name: Check the zip serves every resource type
+        run: distribution-test/check-zip.sh "$RUNNER_TEMP/${{ steps.extract.outputs.provider }}.zip"
 
       - name: Commit regenerated docs to main
         env:
@@ -161,6 +122,17 @@ jobs:
           fail_on_unmatched_files: true
           generate_release_notes: true
           draft: false
+
+      - name: Check the published zip serves every resource type
+        # The zip users download, not the one built here: azure 0.2.0 published a stale zip
+        # left on the release by an earlier run (kitecorp/kite-providers#22)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROVIDER: ${{ steps.extract.outputs.provider }}
+          TAG: ${{ steps.extract.outputs.tag }}
+        run: |
+          gh release download "$TAG" --pattern "$PROVIDER.zip" --dir "$RUNNER_TEMP/published"
+          distribution-test/check-zip.sh "$RUNNER_TEMP/published/$PROVIDER.zip"
 
       - name: Regenerate docs/providers.json index
         run: |
