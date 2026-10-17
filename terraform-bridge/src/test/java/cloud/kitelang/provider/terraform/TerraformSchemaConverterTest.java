@@ -15,6 +15,8 @@ import tfplugin5.Tfplugin5.Schema;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -807,6 +809,24 @@ class TerraformSchemaConverterTest {
                     .findFirst()
                     .orElseThrow(() -> new AssertionError(
                             "property '" + name + "' missing from " + schema.getProperties()));
+        }
+
+        @Test
+        @DisplayName("should mark a property required exactly when its Terraform attribute is required")
+        void shouldCarryRequiredFromTheAttribute() {
+            var schema = buildSchema(
+                    attribute("ami", "\"string\"", true, false, false, false, false),
+                    attribute("key_name", "\"string\"", false, true, false, false, false)
+            );
+
+            var apiSchema = convert(schema);
+
+            // The SDK's docs and GetProviderSchema read required from here (kitecorp/kite-providers#30)
+            var requiredByName = apiSchema.getProperties().stream()
+                    .collect(Collectors.toMap(
+                            cloud.kitelang.api.resource.Property::name,
+                            cloud.kitelang.api.resource.Property::required));
+            assertEquals(Map.of("ami", true, "keyName", false), requiredByName);
         }
 
         @Test

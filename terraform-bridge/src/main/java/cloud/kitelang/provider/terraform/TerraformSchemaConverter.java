@@ -313,6 +313,7 @@ public class TerraformSchemaConverter {
                     .type(attributeKiteType(attr))
                     .cloud(attr.computed())
                     .sensitive(attr.sensitive())
+                    .required(attr.required())
                     .build());
         }
         for (var nestedBlock : block.blockTypes()) {
@@ -320,6 +321,8 @@ public class TerraformSchemaConverter {
                 collectApiProperties(properties, nestedBlock.block());
                 continue;
             }
+            // Left optional: Terraform makes a block required through min_items, which
+            // TfNestedBlock does not carry
             properties.add(Property.builder()
                     .name(TerraformPropertyMapper.toCamelCase(nestedBlock.typeName()))
                     .type(nestedKiteType(nestedBlock.nesting()))
